@@ -64,7 +64,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         controller = TahomaApi(username, password)
         controller.get_setup()
         devices = controller.get_devices()
-        scenes = api.get_action_groups()
+        scenes = controller.get_action_groups()
 
     # TODO Add better exception handling
     except RequestException:

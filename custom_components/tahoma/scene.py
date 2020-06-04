@@ -4,9 +4,10 @@ from typing import Any
 
 from homeassistant.components.scene import Scene
 
-from . import DOMAIN as TAHOMA_DOMAIN
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma locks from a config entry."""
@@ -21,6 +22,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     async_add_entities(entities)
 
+
 class TahomaScene(Scene):
     """Representation of a Tahoma scene entity."""
 
@@ -33,6 +35,11 @@ class TahomaScene(Scene):
     def activate(self, **kwargs: Any) -> None:
         """Activate the scene."""
         self.controller.launch_action_group(self.tahoma_scene.oid)
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique ID."""
+        return self.tahoma_scene.oid
 
     @property
     def name(self):
