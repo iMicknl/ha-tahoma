@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/iMicknl/ha-tahoma/master/media/tahoma_device_page.png)
+
 # Somfy Tahoma - Home Assistant (work in progress)
 
 > The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
