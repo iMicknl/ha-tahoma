@@ -44,6 +44,7 @@ PLATFORMS = [
     "lock",
     "sensor",
     "switch",
+    "alarm_control_panel"
 ]
 
 

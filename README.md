@@ -44,11 +44,11 @@ If your device is not supported, it will show the following message in the loggi
 | OccupancySensor   | binary_sensor           |
 | Light             | light                   |
 | Awning            | cover                   |
+| Alarm             | alarm_control_panel     |
 
 ## Not supported (yet)
 
 | Somfy uiClass    |
 | ---------------- |
 | RemoteController |
-| Alarm            |
 | HeatingSystem    |

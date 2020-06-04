@@ -36,7 +36,8 @@ TAHOMA_TYPES = {
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
-    "Awning": "cover"
+    "Awning": "cover",
+    "Alarm": "alarm_control_panel"
 }
 
 TAHOMA_COVER_DEVICE_CLASSES = {
