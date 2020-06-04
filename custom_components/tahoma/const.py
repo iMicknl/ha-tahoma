@@ -9,7 +9,7 @@ from homeassistant.components.cover import (
 
 from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_SMOKE,
-    DEVICE_CLASS_MOTION,
+    DEVICE_CLASS_OCCUPANCY,
     DEVICE_CLASS_OPENING
 )
 
@@ -34,7 +34,7 @@ TAHOMA_TYPES = {
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
-    "MotionSensor": "binary_sensor",
+    "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover"
 }
@@ -53,7 +53,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
-    "MotionSensor": DEVICE_CLASS_MOTION,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING 
 }
 

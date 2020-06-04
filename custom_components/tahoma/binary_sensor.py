@@ -68,8 +68,9 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             )
 
         if CORE_OCCUPANCY_STATE in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get(
-                CORE_OCCUPANCY_STATE
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_OCCUPANCY_STATE)
+                == "personInside"
             )
 
         if CORE_SMOKE_STATE in self.tahoma_device.active_states:
