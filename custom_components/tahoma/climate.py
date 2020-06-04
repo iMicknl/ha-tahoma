@@ -3,10 +3,10 @@ from datetime import timedelta
 import logging
 from typing import List, Optional
 
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    HVAC_MODE_OFF,
+    HVAC_MODE_HEAT,
     HVAC_MODE_AUTO,
     PRESET_AWAY,
     PRESET_HOME,
@@ -48,10 +48,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
-        self._preset_modes = [PRESET_AWAY, PRESET_FP, PRESET_HOME, PRESET_NONE, PRESET_SLEEP]
-        self._preset_mode = None
-        self._hvac_modes = [HVAC_MODE_OFF, HVAC_MODE_AUTO]
+        self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = None
+        self._preset_mode = None
+        self._preset_modes = [PRESET_NONE, PRESET_FP, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+        self._target_temp = None
 
     def update(self):
         """Update the state."""
@@ -79,6 +80,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """
         return self._hvac_modes
 
+    def set_hvac_mode(self, hvac_mode: str) -> None:
+        """Set new target hvac mode."""
+        raise NotImplementedError()  # TODO implement
+
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
@@ -99,3 +104,20 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         Requires SUPPORT_PRESET_MODE.
         """
         return self._preset_modes
+
+    def set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+        raise NotImplementedError()  # TODO implement
+
+    @property
+    def target_temperature(self):
+        """Return the temperature we try to reach."""
+        return self._target_temp
+
+    def set_temperature(self, **kwargs) -> None:
+        """Set new target temperature."""
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        if temperature is None:
+            return
+        self._target_temp = temperature
+        self.schedule_update_ha_state()
