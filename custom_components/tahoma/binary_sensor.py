@@ -56,7 +56,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         self.controller.get_states([self.tahoma_device])
 
         if "core:ContactState" in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get("core:ContactState")
+            self.current_value = self.tahoma_device.active_states.get("core:ContactState") == "open"
 
         if "core:OccupancyState" in self.tahoma_device.active_states:
             self.current_value = self.tahoma_device.active_states.get("core:OccupancyState")

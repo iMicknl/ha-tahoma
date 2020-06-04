@@ -27,9 +27,13 @@ TAHOMA_TYPES = {
     "RemoteController": "",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
+    "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
     "HumiditySensor": "sensor",
+    "GarageDoor": "cover",
+    "ContactSensor": "binary_sensor",
+    "ExteriorVenetianBlind": "cover"
 }
 
 ## TODO Make sure widgetName has priority over uiClass for specific overrides.
@@ -38,13 +42,17 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+    "GarageDoor": DEVICE_CLASS_GARAGE,
+    "HorizontalAwning": DEVICE_CLASS_AWNING,
+    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
 }
 
-# TODO ADD io:SomfyContactIOSystemSensor & io:SomfyBasicContactIOSystemSensor & rtds:RTDSContactSensor & rtds:RTDSMotionSensor
+# TODO ADD io:SomfyBasicContactIOSystemSensor & rtds:RTDSContactSensor & rtds:RTDSMotionSensor
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "Smoke": DEVICE_CLASS_SMOKE,
     "Motion": DEVICE_CLASS_MOTION,
-    "Contact": DEVICE_CLASS_OPENING
+    "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
 # Tahoma Attributes
