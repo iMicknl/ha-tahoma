@@ -1,8 +1,10 @@
+![](https://raw.githubusercontent.com/iMicknl/ha-tahoma/master/media/tahoma_device_page.png)
+
 # Somfy Tahoma - Home Assistant (work in progress)
 
 > The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
 
-This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant and the goal is to get those changes merged in core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test the new changes. 
+This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant and the goal is to get those changes merged in core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test [all changes](./CHANGELOG.md).
 
 ## Installation
 
@@ -41,6 +43,7 @@ If your device is not supported, it will show the following message in the loggi
 | SmokeSensor       | binary_sensor           |
 | MotionSensor      | binary_sensor           |
 | Light             | light                   |
+| Awning            | cover                   |
 
 ## Not supported (yet)
 
@@ -49,3 +52,4 @@ If your device is not supported, it will show the following message in the loggi
 | RemoteController |
 | Alarm            |
 | HeatingSystem    |
+
