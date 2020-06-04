@@ -312,12 +312,24 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         supported_features = 0
 
-        if "setOrientation" in self.tahoma_device.command_definitions:
+        if "openSlats" in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_OPEN_TILT
-                | SUPPORT_CLOSE_TILT
-                | SUPPORT_STOP_TILT
-                | SUPPORT_SET_TILT_POSITION
+            )
+
+            if "stop" in self.tahoma_device.command_definitions:
+                supported_features |= (
+                    SUPPORT_STOP_TILT
+                )
+
+        if "closeSlats" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_CLOSE_TILT
+            )
+
+        if "setOrientation" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_SET_TILT_POSITION
             )
 
         if "setPosition" in self.tahoma_device.command_definitions or "setClosure" in self.tahoma_device.command_definitions:
@@ -329,15 +341,15 @@ class TahomaCover(TahomaDevice, CoverEntity):
             supported_features |= (
                 SUPPORT_OPEN
             )
+            
+            if "stop" in self.tahoma_device.command_definitions:
+                supported_features |= (
+                    SUPPORT_STOP
+                )
 
         if "close" in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_CLOSE
-            )
-
-        if "stop" in self.tahoma_device.command_definitions:
-            supported_features |= (
-                SUPPORT_STOP
             )
 
         return supported_features
