@@ -8,6 +8,7 @@ from homeassistant.const import (
     STATE_ALARM_ARMED_AWAY,
     STATE_ALARM_ARMED_HOME,
     STATE_ALARM_DISARMED,
+    STATE_ALARM_TRIGGERED
 )
 
 from homeassistant.components.alarm_control_panel import (
@@ -71,6 +72,12 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             self._state = STATE_ALARM_ARMED_HOME
         else:
             self._state = None
+
+        if "core:IntrusionState" in self.tahoma_device.active_states:
+            state = self.tahoma_device.active_states.get("core:IntrusionState")
+
+        if state == True:
+            self._state = STATE_ALARM_TRIGGERED
 
     @property
     def state(self):
