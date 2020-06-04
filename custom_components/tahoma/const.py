@@ -7,6 +7,12 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_WINDOW,
 )
 
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_SMOKE,
+    DEVICE_CLASS_OCCUPANCY,
+    DEVICE_CLASS_OPENING
+)
+
 """Constants for the Tahoma integration."""
 
 DOMAIN = "tahoma"
@@ -21,17 +27,34 @@ TAHOMA_TYPES = {
     "RemoteController": "",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
+    "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
     "HumiditySensor": "sensor",
+    "GarageDoor": "cover",
+    "ContactSensor": "binary_sensor",
+    "SmokeSensor": "binary_sensor",
+    "OccupancySensor": "binary_sensor",
+    "ExteriorVenetianBlind": "cover",
+    "Awning": "cover"
 }
 
-## TODO Make sure widgetName has priority over uiClass for specific overrides.
 TAHOMA_COVER_DEVICE_CLASSES = {
+    "Awning": DEVICE_CLASS_AWNING,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+    "Blind": DEVICE_CLASS_BLIND,
+    "GarageDoor": DEVICE_CLASS_GARAGE,
+    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
+}
+
+TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
+    "SmokeSensor": DEVICE_CLASS_SMOKE,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
+    "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
 # Tahoma Attributes
@@ -50,6 +73,13 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
+CORE_CONTACT_STATE = "core:ContactState"
+CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_SMOKE_STATE = "core:SmokeState"
+CORE_TEMPERATURE_STATE = "core:TemperatureState"
+CORE_LUMINANCE_STATE = "core:LuminanceState"
+CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
+
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
