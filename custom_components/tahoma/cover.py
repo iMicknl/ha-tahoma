@@ -83,7 +83,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def update(self):
         """Update method."""
         self.controller.get_states([self.tahoma_device])
-        
+
         # Set current position.
         # Home Assistant: 0 is closed, 100 is fully open.
         # core:ClosureState: 100 is closed, 0 is fully open.
@@ -93,10 +93,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
             self._position = 100 - self.tahoma_device.active_states.get(
                 CORE_CLOSURE_STATE)
 
+            # TODO Check if this offset is really necessary
             if self._position <= 5:
-                    self._position = 0
+                self._position = 0
             if self._position >= 95:
-                    self._position = 100
+                self._position = 100
 
         # Set position for horizontal covers
         if CORE_DEPLOYMENT_STATE in self.tahoma_device.active_states:
@@ -106,12 +107,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
             self._position = 100 - self.tahoma_device.active_states.get(
                 CORE_CLOSURE_STATE)
 
+            # TODO Check if this offset is really necessary
             if self._position <= 5:
-                    self._position = 0
+                self._position = 0
             if self._position >= 95:
-                    self._position = 100
+                self._position = 100
 
-        # Set position for pergola covers
+        # Set position for covers with slats
         if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
             self._tilt_position = 100 - self.tahoma_device.active_states.get(
                 CORE_SLATS_ORIENTATION_STATE
@@ -192,16 +194,19 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if "core:OpenClosedState" in self.tahoma_device.active_states:
             return self.tahoma_device.active_states.get("core:OpenClosedState") == "closed"
-        
+
+        if "core:SlatsOpenClosedState" in self.tahoma_device.active_states:
+            return self.tahoma_device.active_states.get("core:SlatsOpenClosedState") == "closed"
+
         if "core:OpenClosedPartialState" in self.tahoma_device.active_states:
             return self.tahoma_device.active_states.get("core:OpenClosedPartialState") == "closed"
 
-        if self._position is not None:
+        if getattr(self, "_position", None) is not None:
             return self._position == 0
 
-        if self._tilt_position is not None:
+        if getattr(self, "_tilt_position", None) is not None:
             return self._tilt_position == 0
-            
+
         return None
 
     @property
@@ -236,7 +241,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        # Change icon based on lock timer
         if self._lock_timer > 0:
             if self._lock_originator == "wind":
                 return "mdi:weather-windy"
