@@ -224,6 +224,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "core:OpenClosedPedestrianState" in self.tahoma_device.active_states:
             return self.tahoma_device.active_states.get("core:OpenClosedPedestrianState") == "closed"
 
+        if "core:OpenClosedUnknownState" in self.tahoma_device.active_states:
+            return self.tahoma_device.active_states.get("core:OpenClosedUnknownState") == "closed"
+
         if getattr(self, "_position", None) is not None:
             return self._position == 0
 
