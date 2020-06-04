@@ -3,6 +3,7 @@ from datetime import timedelta
 import logging
 from typing import List, Optional
 
+from homeassistant.const import TEMP_CELSIUS
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_OFF,
@@ -56,6 +57,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
         # TODO implement update method
+
+    @property
+    def temperature_unit(self) -> str:
+        """Return the unit of measurement used by the platform."""
+        return TEMP_CELSIUS
 
     @property
     def hvac_mode(self) -> str:
