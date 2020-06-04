@@ -136,8 +136,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 CORE_PRIORITY_LOCK_TIMER_STATE
             ]
 
-            # Derive timestamps from _lock_timer, only if not already set or
-            # something has changed
+            # Derive timestamps from _lock_timer, only if not already set or something has changed
             if self._lock_timer > 0:
                 _LOGGER.debug("Update %s, lock_timer: %d",
                               self._name, self._lock_timer)
@@ -190,7 +189,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action(COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_POSITION, 0))
+        self.apply_action(COMMAND_SET_ORIENTATION, 100 -
+                          kwargs.get(ATTR_POSITION, 0))
 
     @property
     def is_closed(self):

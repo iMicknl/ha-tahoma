@@ -56,7 +56,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "MotionSensor": DEVICE_CLASS_MOTION,
-    "ContactSensor": DEVICE_CLASS_OPENING 
+    "ContactSensor": DEVICE_CLASS_OPENING
 }
 
 # Tahoma Attributes
