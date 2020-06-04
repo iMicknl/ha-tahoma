@@ -66,9 +66,18 @@ class TahomaSensor(TahomaDevice, Entity):
                 "core:LuminanceState"
             )
 
+        if "core:RelativeHumidityState" in self.tahoma_device.active_states:
+            self.current_value = float(
+                "{:.2f}".format(
+                    self.tahoma_device.active_states.get("core:RelativeHumidityState")
+                )
+            )
+
         if "core:TemperatureState" in self.tahoma_device.active_states:
-            self.current_value = round(
-                float(self.tahoma_device.active_states.get("core:TemperatureState"), 1)
+            self.current_value = float(
+                "{:.2f}".format(
+                    self.tahoma_device.active_states.get("core:TemperatureState")
+                )
             )
 
         _LOGGER.debug("Update %s, value: %d", self._name, self.current_value)
