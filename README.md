@@ -41,7 +41,7 @@ If your device is not supported, it will show the following message in the loggi
 | GarageDoor        | cover                   |
 | ContactSensor     | binary_sensor           |
 | SmokeSensor       | binary_sensor           |
-| MotionSensor      | binary_sensor           |
+| OccupancySensor   | binary_sensor           |
 | Light             | light                   |
 | Awning            | cover                   |
 
@@ -52,4 +52,3 @@ If your device is not supported, it will show the following message in the loggi
 | RemoteController |
 | Alarm            |
 | HeatingSystem    |
-
