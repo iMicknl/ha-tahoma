@@ -43,6 +43,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma covers from a config entry."""
 
@@ -56,6 +57,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             entities.append(TahomaCover(device, controller))
 
     async_add_entities(entities)
+
 
 class TahomaCover(TahomaDevice, CoverEntity):
     """Representation a Tahoma Cover."""
@@ -91,11 +93,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Set position for vertical covers
         if CORE_CLOSURE_STATE in self.tahoma_device.active_states:
-            self._closure = self.tahoma_device.active_states.get(CORE_CLOSURE_STATE)
+            self._closure = self.tahoma_device.active_states.get(
+                CORE_CLOSURE_STATE)
 
         # Set position for horizontal covers
         if CORE_DEPLOYMENT_STATE in self.tahoma_device.active_states:
-            self._closure = self.tahoma_device.active_states.get(CORE_DEPLOYMENT_STATE)
+            self._closure = self.tahoma_device.active_states.get(
+                CORE_DEPLOYMENT_STATE)
 
         # Set position for pergola covers
         if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
@@ -113,7 +117,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
             # Derive timestamps from _lock_timer, only if not already set or
             # something has changed
             if self._lock_timer > 0:
-                _LOGGER.debug("Update %s, lock_timer: %d", self._name, self._lock_timer)
+                _LOGGER.debug("Update %s, lock_timer: %d",
+                              self._name, self._lock_timer)
                 if self._lock_start_ts is None:
                     self._lock_start_ts = utcnow()
                 if self._lock_end_ts is None or old_lock_timer != self._lock_timer:
@@ -201,15 +206,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        if self.tahoma_device.type == "io:WindowOpenerVeluxIOComponent":
-            command = "setClosure"
-        else:
-            command = "setPosition"
 
-        if self.tahoma_device.type == "io:HorizontalAwningIOComponent":
-            self.apply_action(command, kwargs.get(ATTR_POSITION, 0))
-        else:
-            self.apply_action(command, 100 - kwargs.get(ATTR_POSITION, 0))
+        if "setPosition" in self.tahoma_device.command_definitions:
+            return self.apply_action("setPosition", 100 - kwargs.get(ATTR_POSITION, 0))
+
+        if "setClosure" in self.tahoma_device.command_definitions:
+            return self.apply_action("setClosure", 100 - kwargs.get(ATTR_POSITION, 0))
+  
+        # TODO See if above code needs to be reversed for HorizontalAwningIO component
+        # if self.tahoma_device.type == "io:HorizontalAwningIOComponent":
+        #     self.apply_action(command, kwargs.get(ATTR_POSITION, 0))
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
@@ -262,30 +268,39 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-        if (
-            self.tahoma_device.type
-            == "io:RollerShutterWithLowSpeedManagementIOComponent"
-        ):
-            self.apply_action("setPosition", "secured")
-        elif self.tahoma_device.type in {
-            "io:ExteriorVenetianBlindIOComponent",
-            "rts:BlindRTSComponent",
-            "rts:DualCurtainRTSComponent",
-            "rts:ExteriorVenetianBlindRTSComponent",
-            "rts:VenetianBlindRTSComponent",
-        }:
-            self.apply_action("my")
-        elif self.tahoma_device.type in {
-            "io:HorizontalAwningIOComponent",
-            "io:AwningValanceIOComponent",
-            "io:RollerShutterGenericIOComponent",
-            "io:VerticalExteriorAwningIOComponent",
-            "io:VerticalInteriorBlindVeluxIOComponent",
-            "io:WindowOpenerVeluxIOComponent",
-        }:
-            self.apply_action("stop")
-        else:
-            self.apply_action("stopIdentify")
+
+        if "stop" in self.tahoma_device.command_definitions:
+            return self.apply_action("stop")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
+
+        # TODO Figure out which devices need which stop function
+
+        # if (
+        #     self.tahoma_device.type
+        #     == "io:RollerShutterWithLowSpeedManagementIOComponent"
+        # ):
+        #     self.apply_action("setPosition", "secured")
+        # elif self.tahoma_device.type in {
+        #     "io:ExteriorVenetianBlindIOComponent",
+        #     "rts:BlindRTSComponent",
+        #     "rts:DualCurtainRTSComponent",
+        #     "rts:ExteriorVenetianBlindRTSComponent",
+        #     "rts:VenetianBlindRTSComponent",
+        # }:
+        #     self.apply_action("my")
+        # elif self.tahoma_device.type in {
+        #     "io:HorizontalAwningIOComponent",
+        #     "io:AwningValanceIOComponent",
+        #     "io:RollerShutterGenericIOComponent",
+        #     "io:VerticalExteriorAwningIOComponent",
+        #     "io:VerticalInteriorBlindVeluxIOComponent",
+        #     "io:WindowOpenerVeluxIOComponent",
+        # }:
+        #     self.apply_action("stop")
+        # else:
+        #     self.apply_action("stopIdentify")
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
@@ -297,17 +312,32 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         supported_features = 0
 
-        if self.current_cover_position is not None:
-            supported_features |= (
-                SUPPORT_OPEN | SUPPORT_CLOSE | SUPPORT_STOP | SUPPORT_SET_POSITION
-            )
-
-        if self.current_cover_tilt_position is not None:
+        if "setOrientation" in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_OPEN_TILT
                 | SUPPORT_CLOSE_TILT
                 | SUPPORT_STOP_TILT
                 | SUPPORT_SET_TILT_POSITION
+            )
+
+        if "setPosition" in self.tahoma_device.command_definitions or "setClosure" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_SET_POSITION
+            )
+
+        if "open" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_OPEN
+            )
+
+        if "close" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_CLOSE
+            )
+
+        if "stop" in self.tahoma_device.command_definitions:
+            supported_features |= (
+                SUPPORT_STOP
             )
 
         return supported_features
