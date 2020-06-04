@@ -35,16 +35,18 @@ TAHOMA_TYPES = {
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
     "MotionSensor": "binary_sensor",
-    "ExteriorVenetianBlind": "cover"
+    "ExteriorVenetianBlind": "cover",
+    "Awning": "cover"
 }
 
 TAHOMA_COVER_DEVICE_CLASSES = {
+    "Awning": DEVICE_CLASS_AWNING,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+    "Blind": DEVICE_CLASS_BLIND,
     "GarageDoor": DEVICE_CLASS_GARAGE,
-    "HorizontalAwning": DEVICE_CLASS_AWNING,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND
 }
