@@ -7,6 +7,12 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_WINDOW,
 )
 
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_SMOKE,
+    DEVICE_CLASS_MOTION,
+    DEVICE_CLASS_OPENING
+)
+
 """Constants for the Tahoma integration."""
 
 DOMAIN = "tahoma"
@@ -21,17 +27,32 @@ TAHOMA_TYPES = {
     "RemoteController": "",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
+    "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
     "HumiditySensor": "sensor",
+    "GarageDoor": "cover",
+    "ContactSensor": "binary_sensor",
+    "SmokeSensor": "binary_sensor",
+    "MotionSensor": "binary_sensor",
+    "ExteriorVenetianBlind": "cover"
 }
 
-## TODO Make sure widgetName has priority over uiClass for specific overrides.
 TAHOMA_COVER_DEVICE_CLASSES = {
     "ExteriorScreen": DEVICE_CLASS_BLIND,
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+    "GarageDoor": DEVICE_CLASS_GARAGE,
+    "HorizontalAwning": DEVICE_CLASS_AWNING,
+    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
+}
+
+TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
+    "SmokeSensor": DEVICE_CLASS_SMOKE,
+    "MotionSensor": DEVICE_CLASS_MOTION,
+    "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
 # Tahoma Attributes
