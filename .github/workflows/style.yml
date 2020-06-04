@@ -1,0 +1,17 @@
+name: Style validation (jq and tox)
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  validate:
+    runs-on: "ubuntu-latest"
+    steps:
+        - uses: "actions/checkout@v2"
+        - uses: home-assistant/actions/jq@maste
+        - uses: home-assistant/actions/py37-tox@master
+        - uses: home-assistant/actions/py36-tox@master
+        - uses: home-assistant/actions/py35-tox@master
