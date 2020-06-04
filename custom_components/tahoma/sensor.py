@@ -60,31 +60,25 @@ class TahomaSensor(TahomaDevice, Entity):
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
+        
         if self.tahoma_device.type == "io:LightIOSystemSensor":
             self.current_value = self.tahoma_device.active_states["core:LuminanceState"]
-            self._available = bool(
-                self.tahoma_device.active_states.get("core:StatusState") == "available"
-            )
+
         if self.tahoma_device.type == "io:SomfyContactIOSystemSensor":
             self.current_value = self.tahoma_device.active_states["core:ContactState"]
-            self._available = bool(
-                self.tahoma_device.active_states.get("core:StatusState") == "available"
-            )
+
         if self.tahoma_device.type == "io:SomfyBasicContactIOSystemSensor":
             self.current_value = self.tahoma_device.active_states["core:ContactState"]
-            self._available = bool(
-                self.tahoma_device.active_states.get("core:StatusState") == "available"
-            )
+    
         if self.tahoma_device.type == "rtds:RTDSContactSensor":
             self.current_value = self.tahoma_device.active_states["core:ContactState"]
-            self._available = True
+
         if self.tahoma_device.type == "rtds:RTDSMotionSensor":
             self.current_value = self.tahoma_device.active_states["core:OccupancyState"]
-            self._available = True
+
         if self.tahoma_device.type == "io:TemperatureIOSystemSensor":
             self.current_value = round(
                 float(self.tahoma_device.active_states["core:TemperatureState"]), 1
             )
-            self._available = True
 
         _LOGGER.debug("Update %s, value: %d", self._name, self.current_value)

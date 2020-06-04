@@ -38,6 +38,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 PLATFORMS = [
+    "binary_sensor",
     "cover",
     "light",
     "lock",

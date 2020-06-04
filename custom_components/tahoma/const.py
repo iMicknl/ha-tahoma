@@ -7,6 +7,12 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_WINDOW,
 )
 
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_SMOKE,
+    DEVICE_CLASS_MOTION,
+    DEVICE_CLASS_OPENING
+)
+
 """Constants for the Tahoma integration."""
 
 DOMAIN = "tahoma"
@@ -32,6 +38,13 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+}
+
+# TODO ADD io:SomfyContactIOSystemSensor & io:SomfyBasicContactIOSystemSensor & rtds:RTDSContactSensor & rtds:RTDSMotionSensor
+TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
+    "Smoke": DEVICE_CLASS_SMOKE,
+    "Motion": DEVICE_CLASS_MOTION,
+    "Contact": DEVICE_CLASS_OPENING
 }
 
 # Tahoma Attributes
