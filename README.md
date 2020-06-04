@@ -2,9 +2,9 @@
 
 > The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
 
-This component is an updated version of the original Tahoma integration in Home Assistant and the goal is to get those changes merged in core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test the new changes.
+This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant and the goal is to get those changes merged in core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test the new changes.
 
-# Supported devices
+## Supported devices
 
 The Tahoma component doesn't have a hardcoded list of devices anymore, but relies on the `uiclass` of every Somfy device.
 
