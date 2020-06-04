@@ -5,7 +5,14 @@ import logging
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
-from .const import DOMAIN, TAHOMA_TYPES, TAHOMA_BINARY_SENSOR_DEVICE_CLASSES
+from .const import (
+    DOMAIN,
+    TAHOMA_TYPES,
+    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
+    CORE_SMOKE_STATE,
+    CORE_OCCUPANCY_STATE,
+    CORE_CONTACT_STATE,
+)
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,15 +62,21 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
 
-        if "core:ContactState" in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get("core:ContactState") == "open"
+        if CORE_CONTACT_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_CONTACT_STATE) == "open"
+            )
 
-        if "core:OccupancyState" in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get("core:OccupancyState")
+        if CORE_OCCUPANCY_STATE in self.tahoma_device.active_states:
+            self.current_value = self.tahoma_device.active_states.get(
+                CORE_OCCUPANCY_STATE
+            )
 
-        if "core:SmokeState" in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get("core:SmokeState") != "notDetected"
-           
+        if CORE_SMOKE_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_SMOKE_STATE) != "notDetected"
+            )
+
         if self.current_value:
             self._state = STATE_ON
         else:

@@ -71,6 +71,13 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
+CORE_CONTACT_STATE = "core:ContactState"
+CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_SMOKE_STATE = "core:SmokeState"
+CORE_TEMPERATURE_STATE = "core:TemperatureState"
+CORE_LUMINANCE_STATE = "core:LuminanceState"
+CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
+
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
