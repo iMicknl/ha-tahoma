@@ -1,8 +1,13 @@
 """Support for Tahoma climate."""
 from datetime import timedelta
 import logging
+from typing import List
 
 from homeassistant.components.climate import ClimateEntity
+from homeassistant.components.climate.const import (
+    HVAC_MODE_OFF,
+    HVAC_MODE_AUTO,
+)
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
@@ -32,7 +37,26 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
+        self._hvac_modes = [HVAC_MODE_OFF, HVAC_MODE_AUTO]
+        self._hvac_mode = None
 
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
+        #TODO implement update method
+
+    @property
+    def hvac_mode(self) -> str:
+        """Return hvac operation ie. heat, cool mode.
+
+        Need to be one of HVAC_MODE_*.
+        """
+        return self._hvac_mode
+
+    @property
+    def hvac_modes(self) -> List[str]:
+        """Return the list of available hvac operation modes.
+
+        Need to be a subset of HVAC_MODES.
+        """
+        return self._hvac_modes
