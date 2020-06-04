@@ -30,21 +30,21 @@ If your device is not supported, it will show the following message in the loggi
 
 | Somfy uiClass     | Home Assistant platform |
 | ----------------- | ----------------------- |
+| Awning            | cover                   |
 | ExteriorScreen    | cover                   |
+| GarageDoor        | cover                   |
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |
 | Window            | cover                   |
-| TemperatureSensor | sensor                  |
 | HumiditySensor    | sensor                  |
+| LightSensor       | sensor                  |
+| TemperatureSensor | sensor                  |
 | DoorLock          | lock                    |
 | OnOff             | switch                  |
-| LightSensor       | sensor                  |
-| GarageDoor        | cover                   |
 | ContactSensor     | binary_sensor           |
-| SmokeSensor       | binary_sensor           |
 | MotionSensor      | binary_sensor           |
+| SmokeSensor       | binary_sensor           |
 | Light             | light                   |
-| Awning            | cover                   |
 
 ## Not supported (yet)
 
