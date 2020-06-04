@@ -81,7 +81,7 @@ CORE_SMOKE_STATE = "core:SmokeState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
-
+CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
@@ -89,3 +89,4 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 # Commands
 COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_SET_ORIENTATION = "setOrientation"

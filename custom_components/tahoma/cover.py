@@ -18,7 +18,7 @@ from homeassistant.components.cover import (
     SUPPORT_OPEN_TILT,
     SUPPORT_CLOSE_TILT,
     SUPPORT_STOP_TILT,
-    SUPPORT_SET_TILT_POSITION,
+    SUPPORT_SET_TILT_POSITION
 )
 from homeassistant.util.dt import utcnow
 
@@ -37,8 +37,12 @@ from .const import (
     CORE_DEPLOYMENT_STATE,
     CORE_PRIORITY_LOCK_TIMER_STATE,
     CORE_SLATS_ORIENTATION_STATE,
+    CORE_MEMORIZED_1_POSITION_STATE,
     IO_PRIORITY_LOCK_LEVEL_STATE,
-    IO_PRIORITY_LOCK_ORIGINATOR_STATE
+    IO_PRIORITY_LOCK_ORIGINATOR_STATE,
+    COMMAND_SET_CLOSURE,
+    COMMAND_SET_POSITION,
+    COMMAND_SET_ORIENTATION
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -174,11 +178,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
 
-        if "setPosition" in self.tahoma_device.command_definitions:
-            return self.apply_action("setPosition", 100 - kwargs.get(ATTR_POSITION, 0))
+        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_SET_POSITION, 100 - kwargs.get(ATTR_POSITION, 0))
 
-        if "setClosure" in self.tahoma_device.command_definitions:
-            return self.apply_action("setClosure", 100 - kwargs.get(ATTR_POSITION, 0))
+        if COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_SET_CLOSURE, 100 - kwargs.get(ATTR_POSITION, 0))
 
         # TODO See if above code needs to be reversed for HorizontalAwningIO component
         # if self.tahoma_device.type == "io:HorizontalAwningIOComponent":
@@ -186,7 +190,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action("setOrientation", 100 - kwargs.get(ATTR_POSITION, 0))
+        self.apply_action(COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_POSITION, 0))
 
     @property
     def is_closed(self):
@@ -223,9 +227,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if super_attr is not None:
             attr.update(super_attr)
 
-        if "core:Memorized1PositionState" in self.tahoma_device.active_states:
+        if CORE_MEMORIZED_1_POSITION_STATE in self.tahoma_device.active_states:
             attr[ATTR_MEM_POS] = self.tahoma_device.active_states[
-                "core:Memorized1PositionState"
+                CORE_MEMORIZED_1_POSITION_STATE
             ]
         if self._lock_start_ts is not None:
             attr[ATTR_LOCK_START_TS] = self._lock_start_ts.isoformat()
@@ -294,12 +298,12 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 SUPPORT_CLOSE_TILT
             )
 
-        if "setOrientation" in self.tahoma_device.command_definitions:
+        if COMMAND_SET_ORIENTATION in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_SET_TILT_POSITION
             )
 
-        if "setPosition" in self.tahoma_device.command_definitions or "setClosure" in self.tahoma_device.command_definitions:
+        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions or COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_SET_POSITION
             )
