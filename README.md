@@ -32,6 +32,7 @@ If your device is not supported, it will show the following message in the loggi
 | ----------------- | ----------------------- |
 | Awning            | cover                   |
 | ExteriorScreen    | cover                   |
+| Gate              | cover                   |
 | GarageDoor        | cover                   |
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |

@@ -5,6 +5,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_GARAGE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
+    DEVICE_CLASS_GATE
 )
 
 from homeassistant.components.binary_sensor import (
@@ -36,7 +37,8 @@ TAHOMA_TYPES = {
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
-    "Awning": "cover"
+    "Awning": "cover",
+    "Gate": "cover"
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
@@ -49,7 +51,8 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "Blind": DEVICE_CLASS_BLIND,
     "GarageDoor": DEVICE_CLASS_GARAGE,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
+    "Gate": DEVICE_CLASS_GATE
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes

@@ -129,6 +129,19 @@ class TahomaCover(TahomaDevice, CoverEntity):
             if self._tilt_position >= 95:
                 self._tilt_position = 100
 
+
+        # Set position for gates
+        if "core:PedestrianPositionState" in self.tahoma_device.active_states:
+            self._position = 100 - self.tahoma_device.active_states.get(
+                "core:PedestrianPositionState"
+            )
+
+            # TODO Check if this offset is really necessary
+            if self._position <= 5:
+                self._position = 0
+            if self._position >= 95:
+                self._position = 100
+
         # Set Lock Timers
         if CORE_PRIORITY_LOCK_TIMER_STATE in self.tahoma_device.active_states:
             old_lock_timer = self._lock_timer
@@ -183,6 +196,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
             return self.apply_action(COMMAND_SET_CLOSURE, 100 - kwargs.get(ATTR_POSITION, 0))
 
+        if "setPedestrianPosition" in self.tahoma_device.command_definitions:
+            return self.apply_action("setPedestrianPosition", 100 - kwargs.get(ATTR_POSITION, 0))
+
         # TODO See if above code needs to be reversed for HorizontalAwningIO component
         # if self.tahoma_device.type == "io:HorizontalAwningIOComponent":
         #     self.apply_action(command, kwargs.get(ATTR_POSITION, 0))
@@ -203,6 +219,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
             return self.tahoma_device.active_states.get("core:SlatsOpenClosedState") == "closed"
 
         if "core:OpenClosedPartialState" in self.tahoma_device.active_states:
+            return self.tahoma_device.active_states.get("core:OpenClosedPartialState") == "closed"
+
+        if "core:OpenClosedPedestrianState" in self.tahoma_device.active_states:
             return self.tahoma_device.active_states.get("core:OpenClosedPartialState") == "closed"
 
         if getattr(self, "_position", None) is not None:
@@ -303,7 +322,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 SUPPORT_SET_TILT_POSITION
             )
 
-        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions or COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
+        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions or COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions or "setPedestrianPosition" in self.tahoma_device.command_definitions:
             supported_features |= (
                 SUPPORT_SET_POSITION
             )
