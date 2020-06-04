@@ -38,6 +38,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 PLATFORMS = [
+    "climate",
     "cover",
     "light",
     "lock",
