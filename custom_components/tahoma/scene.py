@@ -10,7 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma locks from a config entry."""
+    """Set up the Tahoma scenes from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
