@@ -47,7 +47,7 @@ class TahomaSensor(TahomaDevice, Entity):
         """Return the unit of measurement of this entity, if any."""
 
         if self.tahoma_device.uiclass == "TemperatureSensor":
-            return TEMP_CELSIUS
+            return TEMP_CELSIUS  # TODO Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin
 
         if self.tahoma_device.uiclass == "HumiditySensor":
             return UNIT_PERCENTAGE
@@ -60,25 +60,15 @@ class TahomaSensor(TahomaDevice, Entity):
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
-        
-        if self.tahoma_device.type == "io:LightIOSystemSensor":
-            self.current_value = self.tahoma_device.active_states["core:LuminanceState"]
 
-        if self.tahoma_device.type == "io:SomfyContactIOSystemSensor":
-            self.current_value = self.tahoma_device.active_states["core:ContactState"]
+        if "core:LuminanceState" in self.tahoma_device.active_states:
+            self.current_value = self.tahoma_device.active_states.get(
+                "core:LuminanceState"
+            )
 
-        if self.tahoma_device.type == "io:SomfyBasicContactIOSystemSensor":
-            self.current_value = self.tahoma_device.active_states["core:ContactState"]
-    
-        if self.tahoma_device.type == "rtds:RTDSContactSensor":
-            self.current_value = self.tahoma_device.active_states["core:ContactState"]
-
-        if self.tahoma_device.type == "rtds:RTDSMotionSensor":
-            self.current_value = self.tahoma_device.active_states["core:OccupancyState"]
-
-        if self.tahoma_device.type == "io:TemperatureIOSystemSensor":
+        if "core:TemperatureState" in self.tahoma_device.active_states:
             self.current_value = round(
-                float(self.tahoma_device.active_states["core:TemperatureState"]), 1
+                float(self.tahoma_device.active_states.get("core:TemperatureState"), 1)
             )
 
         _LOGGER.debug("Update %s, value: %d", self._name, self.current_value)
