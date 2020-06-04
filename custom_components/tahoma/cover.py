@@ -65,14 +65,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the device."""
         super().__init__(tahoma_device, controller)
-
-        # if 'setPosition' in self.tahoma_device.command_definitions or 'setClosure' in self.tahoma_device.command_definitions:
-        #     self._position = 100
-
-        # if 'setOrientation' in self.tahoma_device.command_definitions:
-        #     self._tilt_position = 100
-
-        self._closed = False
+        
+        self._closed = None
         self._icon = None
         self._lock_timer = 0  # Can be 0 and bigger
         self._lock_start_ts = None
@@ -103,9 +97,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Set position for pergola covers
         if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
-            self._closure = self.tahoma_device.active_states.get(
+            self._tilt_position = 100 - self.tahoma_device.active_states.get(
                 CORE_SLATS_ORIENTATION_STATE
             )
+
+            # TODO Check if this offset is really necessary
+            if self._tilt_position <= 5:
+                self._tilt_position = 0
+            if self._tilt_position >= 95:
+                self._tilt_position = 100
+            self._closed = self._tilt_position == 0
 
         # Set Lock Timers
         if CORE_PRIORITY_LOCK_TIMER_STATE in self.tahoma_device.active_states:
@@ -141,15 +142,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
             IO_PRIORITY_LOCK_ORIGINATOR_STATE
         )
 
-        # Set icon for lock timer
-        if self._lock_timer > 0:
-            if self._lock_originator == "wind":
-                self._icon = "mdi:weather-windy"
-            else:
-                self._icon = "mdi:lock-alert"
-        else:
-            self._icon = None
-
         # Define current position.
         #   _position: 0 is closed, 100 is fully open.
         #   'core:ClosureState': 100 is closed, 0 is fully open.
@@ -182,15 +174,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
                     )
                 else:
                     self._closed = False
-
-        if "setOrientation" in self.tahoma_device.command_definitions:
-            self._tilt_position = 100 - self._closure
-
-            if self._tilt_position <= 5:
-                self._tilt_position = 0
-            if self._tilt_position >= 95:
-                self._tilt_position = 100
-            self._closed = self._tilt_position == 0
 
     @property
     def current_cover_position(self):
@@ -236,6 +219,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return the device state attributes."""
         attr = {}
         super_attr = super().device_state_attributes
+
         if super_attr is not None:
             attr.update(super_attr)
 
@@ -251,11 +235,20 @@ class TahomaCover(TahomaDevice, CoverEntity):
             attr[ATTR_LOCK_LEVEL] = self._lock_level
         if self._lock_originator is not None:
             attr[ATTR_LOCK_ORIG] = self._lock_originator
+            
         return attr
 
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
+
+        # Change icon based on lock timer
+        if self._lock_timer > 0:
+            if self._lock_originator == "wind":
+                return "mdi:weather-windy"
+            else:
+                return "mdi:lock-alert"
+ 
         return self._icon
 
     def open_cover(self, **kwargs):
