@@ -1,0 +1,6 @@
+{
+  "name": "Tahoma",
+  "domains": ["cover", "light", "lock", "sensor", "switch"],
+  "homeassistant": "0.99.9",
+  "render_readme": "true"
+}
