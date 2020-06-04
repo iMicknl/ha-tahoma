@@ -21,7 +21,7 @@ from homeassistant.helpers import (
 
 _LOGGER = logging.getLogger(__name__)
 
-#TODO Deprecate EXCLUDE for the native method of disabling entities
+# TODO Deprecate EXCLUDE for the native method of disabling entities
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
@@ -61,17 +61,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data[CONF_PASSWORD]
 
     try:
-        controller = TahomaApi(username, password)
-        controller.get_setup()
-        devices = controller.get_devices()
-        # scenes = api.get_action_groups()
+        controller = await hass.async_add_executor_job(TahomaApi, username, password)
+        await hass.async_add_executor_job(controller.get_setup)
+        devices = await hass.async_add_executor_job(controller.get_devices)
+        scenes = await hass.async_add_executor_job(controller.get_action_groups)
 
     # TODO Add better exception handling
     except RequestException:
         _LOGGER.exception("Error when getting devices from the Tahoma API")
         return False
 
-    hass.data[DOMAIN][entry.entry_id] = {"controller": controller, "devices": []}
+    hass.data[DOMAIN][entry.entry_id] = {"controller": controller, "devices": [], "scenes": []}
 
     # List devices
     for device in devices:
@@ -93,6 +93,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 _device.uiclass,
                 _device.widget,
             )
+
+    for scene in scenes:
+        hass.data[DOMAIN][entry.entry_id]["scenes"].append(scene)
 
     return True
 

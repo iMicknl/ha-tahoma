@@ -42,7 +42,7 @@ If your device is not supported, it will show the following message in the loggi
 | DoorLock          | lock                    |
 | OnOff             | switch                  |
 | ContactSensor     | binary_sensor           |
-| MotionSensor      | binary_sensor           |
+| OccupancySensor   | binary_sensor           |
 | SmokeSensor       | binary_sensor           |
 | Light             | light                   |
 
