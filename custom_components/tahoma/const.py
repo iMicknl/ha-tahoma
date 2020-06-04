@@ -33,10 +33,11 @@ TAHOMA_TYPES = {
     "HumiditySensor": "sensor",
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
+    "SmokeSensor": "binary_sensor",
+    "MotionSensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover"
 }
 
-## TODO Make sure widgetName has priority over uiClass for specific overrides.
 TAHOMA_COVER_DEVICE_CLASSES = {
     "ExteriorScreen": DEVICE_CLASS_BLIND,
     "Pergola": DEVICE_CLASS_AWNING,
@@ -48,10 +49,9 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND
 }
 
-# TODO ADD io:SomfyBasicContactIOSystemSensor & rtds:RTDSContactSensor & rtds:RTDSMotionSensor
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
-    "Smoke": DEVICE_CLASS_SMOKE,
-    "Motion": DEVICE_CLASS_MOTION,
+    "SmokeSensor": DEVICE_CLASS_SMOKE,
+    "MotionSensor": DEVICE_CLASS_MOTION,
     "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
