@@ -3,6 +3,7 @@ import logging
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.components.switch import DEVICE_CLASS_SWITCH
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
@@ -49,27 +50,18 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def device_class(self):
         """Return the class of the device."""
 
-        #TODO Map GarageDoor as Cover with DEVICE_CLASS_GARAGE
-        if self.tahoma_device.type == "rts:GarageDoor4TRTSComponent":
-            return "garage"
-        return None
+        return DEVICE_CLASS_SWITCH
 
     def turn_on(self, **kwargs):
         """Send the on command."""
         _LOGGER.debug("Turn on: %s", self._name)
-        if self.tahoma_device.type == "rts:GarageDoor4TRTSComponent":
-            self.toggle()
-        else:
-            self.apply_action("on")
-            self._skip_update = True
-            self._state = STATE_ON
+
+        self.apply_action("on")
+        self._skip_update = True
+        self._state = STATE_ON
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-        _LOGGER.debug("Turn off: %s", self._name)
-        if self.tahoma_device.type == "rts:GarageDoor4TRTSComponent":
-            return
-
         self.apply_action("off")
         self._skip_update = True
         self._state = STATE_OFF
@@ -81,6 +73,4 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        if self.tahoma_device.type == "rts:GarageDoor4TRTSComponent":
-            return False
         return bool(self._state == STATE_ON)
