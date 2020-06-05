@@ -63,6 +63,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                      self.tahoma_device.url.replace("#1", "#3")
                  ).label.replace(" ", "_").lower()
         self._humidity_sensor_entity_id = device
+        _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = None
@@ -83,9 +84,13 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         @callback
         def _async_startup(event):
             """Init on startup."""
-            sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
-            if sensor_state and sensor_state.state != STATE_UNKNOWN:
-                self.update_temp(sensor_state)
+            temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
+            if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
+                self.update_temp(temp_sensor_state)
+
+            humidity_sensor_state = self.hass.states.get(self._humidity_sensor_entity_id)
+            if humidity_sensor_state and humidity_sensor_state.state != STATE_UNKNOWN:
+                self.update_humidity(humidity_sensor_state)
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
 
