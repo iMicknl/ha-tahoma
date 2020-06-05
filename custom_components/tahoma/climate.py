@@ -56,22 +56,29 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self.controller.get_device(
                 self.tahoma_device.url.replace("#1", "#2")
             ).label.replace("°", "deg").replace(" ", "_").lower()
-        _LOGGER.debug("device: %s", device)
         self._temp_sensor_entity_id = device
         self._current_temp = None
         self._target_temp = None
+        device = "sensor." + \
+                 self.controller.get_device(
+                     self.tahoma_device.url.replace("#1", "#3")
+                 ).label.replace(" ", "_").lower()
+        self._humidity_sensor_entity_id = device
+        self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = None
         self._preset_mode = None
         self._preset_modes = [
             PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
-        self.schedule_update_ha_state()
 
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
 
         async_track_state_change(
-            self.hass, self._temp_sensor_entity_id, self._async_sensor_changed
+            self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+        )
+        async_track_state_change(
+            self.hass, self._temp_sensor_entity_id, self._async_humidity_sensor_changed
         )
 
         @callback
@@ -83,7 +90,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
 
-    async def _async_sensor_changed(self, entity_id, old_state, new_state):
+    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
         """Handle temperature changes."""
         if new_state is None:
             return
@@ -102,6 +109,25 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
+    async def _async_humidity_sensor_changed(self, entity_id, old_state, new_state):
+        """Handle temperature changes."""
+        if new_state is None:
+            return
+
+        self.update_humidity(new_state)
+        self.schedule_update_ha_state()
+
+    @callback
+    def update_humidity(self, state):
+        """Update thermostat with latest state from sensor."""
+        if state is None:
+            state = self.hass.states.get(self._humidity_sensor_entity_id)
+
+        try:
+            self._current_humidity = float(state.state)
+        except ValueError as ex:
+            _LOGGER.error("Unable to update from sensor: %s", ex)
+
     def update(self):
         """Update the state."""
         self.apply_action("refreshState")
@@ -112,16 +138,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         else:
             self._hvac_mode = HVAC_MODE_AUTO
         self.update_temp(None)
-
-    @property
-    def temperature_sensor(self) -> str:
-        """Return the id of the temperature sensor"""
-        return self._temp_sensor_entity_id
-
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
 
     @property
     def hvac_mode(self) -> str:
@@ -166,6 +182,26 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         raise NotImplementedError()  # TODO implement
+
+    @property
+    def humidity_sensor(self) -> str:
+        """Return the id of the temperature sensor"""
+        return self._humidity_sensor_entity_id
+
+    @property
+    def current_humidity(self) -> Optional[int]:
+        """Return the current humidity"""
+        return self._current_humidity
+
+    @property
+    def temperature_sensor(self) -> str:
+        """Return the id of the temperature sensor"""
+        return self._temp_sensor_entity_id
+
+    @property
+    def temperature_unit(self) -> str:
+        """Return the unit of measurement used by the platform."""
+        return TEMP_CELSIUS
 
     @property
     def current_temperature(self) -> Optional[float]:
