@@ -65,6 +65,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._preset_mode = None
         self._preset_modes = [
             PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+        self.update_temp(None)
 
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
@@ -93,6 +94,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @callback
     def update_temp(self, state):
         """Update thermostat with latest state from sensor."""
+        if state is None:
+            state = self.hass.states.get(self._temp_sensor_entity_id)
+
         try:
             self._current_temp = float(state.state)
         except ValueError as ex:
@@ -107,13 +111,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self._hvac_mode = HVAC_MODE_HEAT
         else:
             self._hvac_mode = HVAC_MODE_AUTO
-        _LOGGER.debug("\nmodes: \n\t%s: %s\n\t%s: %s\n\t%s: %s",
-                      'somfythermostat:DerogationHeatingModeState',
-                      self.tahoma_device.active_states[
-                          'somfythermostat:DerogationHeatingModeState'],
-                      'somfythermostat:HeatingModeState',
-                      self.tahoma_device.active_states['somfythermostat:HeatingModeState'],
-                      'hvac_mode', self.hvac_mode)
+        self.update_temp(None)
 
     @property
     def temperature_sensor(self) -> str:
