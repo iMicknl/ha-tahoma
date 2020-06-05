@@ -52,8 +52,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
         self._temp_sensor_entity_id = "sensor."+(
-            self.controller.get_device(self.tahoma_device.url.replace("#1", "#2"))
-        ).replace("°", "deg").replace(" ", "_")
+            self.controller.get_device(self.tahoma_device.url.replace("#1", "#2")).label
+        ).replace("°", "deg").replace(" ", "_").lower()
         self._current_temp = None
         self._target_temp = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
