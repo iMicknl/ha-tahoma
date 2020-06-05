@@ -30,9 +30,11 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 PRESET_FROST_GUARD = "Frost Guard"
 
+
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma sensors from a config entry."""
@@ -56,18 +58,18 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
-        device = "sensor." + \
-                 self.controller.get_device(
-                     self.tahoma_device.url.replace("#1", "#2")
-                 ).label.replace("°", "deg").replace(" ", "_").lower()
-        self._temp_sensor_entity_id = remove_accents(device)
+        device1 = "sensor." + \
+                  self.controller.get_device(
+                      self.tahoma_device.url.replace("#1", "#2")
+                  ).label.replace("°", "deg").replace(" ", "_").lower()
+        self._temp_sensor_entity_id = remove_accents(device1)
         self._current_temp = None
         self._target_temp = None
-        device = "sensor." + \
-                 self.controller.get_device(
-                     self.tahoma_device.url.replace("#1", "#3")
-                 ).label.replace(" ", "_").lower()
-        self._humidity_sensor_entity_id = remove_accents(device)
+        device2 = "sensor." + \
+                  self.controller.get_device(
+                      self.tahoma_device.url.replace("#1", "#3")
+                  ).label.replace(" ", "_").lower()
+        self._humidity_sensor_entity_id = remove_accents(device2)
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
@@ -160,7 +162,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             state = self.hass.states.get(self._humidity_sensor_entity_id)
         _LOGGER.debug("retrieved humidity: %s", str(state))
         try:
-            self._current_humidity = int(state.state)
+            self._current_humidity = float(state.state)
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
@@ -225,7 +227,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         return self._humidity_sensor_entity_id
 
     @property
-    def current_humidity(self) -> Optional[int]:
+    def current_humidity(self) -> Optional[float]:
         """Return the current humidity"""
         return self._current_humidity
 
