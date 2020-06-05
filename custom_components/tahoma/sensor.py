@@ -5,7 +5,13 @@ import logging
 from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import (
+    DOMAIN,
+    TAHOMA_TYPES,
+    CORE_RELATIVE_HUMIDITY_STATE,
+    CORE_LUMINANCE_STATE,
+    CORE_TEMPERATURE_STATE,
+)
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,7 +40,7 @@ class TahomaSensor(TahomaDevice, Entity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         self.current_value = None
-        self._available = False
+
         super().__init__(tahoma_device, controller)
 
     @property
@@ -61,14 +67,23 @@ class TahomaSensor(TahomaDevice, Entity):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
 
-        if "core:LuminanceState" in self.tahoma_device.active_states:
+        if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
             self.current_value = self.tahoma_device.active_states.get(
-                "core:LuminanceState"
+                CORE_LUMINANCE_STATE
             )
 
-        if "core:TemperatureState" in self.tahoma_device.active_states:
-            self.current_value = round(
-                float(self.tahoma_device.active_states.get("core:TemperatureState"), 1)
+        if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
+            self.current_value = float(
+                "{:.2f}".format(
+                    self.tahoma_device.active_states.get(CORE_RELATIVE_HUMIDITY_STATE)
+                )
+            )
+
+        if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
+            self.current_value = float(
+                "{:.2f}".format(
+                    self.tahoma_device.active_states.get(CORE_TEMPERATURE_STATE)
+                )
             )
 
         _LOGGER.debug("Update %s, value: %d", self._name, self.current_value)

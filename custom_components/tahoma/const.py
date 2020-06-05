@@ -9,7 +9,7 @@ from homeassistant.components.cover import (
 
 from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_SMOKE,
-    DEVICE_CLASS_MOTION,
+    DEVICE_CLASS_OCCUPANCY,
     DEVICE_CLASS_OPENING
 )
 
@@ -34,24 +34,26 @@ TAHOMA_TYPES = {
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
-    "MotionSensor": "binary_sensor",
-    "ExteriorVenetianBlind": "cover"
+    "OccupancySensor": "binary_sensor",
+    "ExteriorVenetianBlind": "cover",
+    "Awning": "cover"
 }
 
 TAHOMA_COVER_DEVICE_CLASSES = {
+    "Awning": DEVICE_CLASS_AWNING,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
     "Window": DEVICE_CLASS_WINDOW,
+    "Blind": DEVICE_CLASS_BLIND,
     "GarageDoor": DEVICE_CLASS_GARAGE,
-    "HorizontalAwning": DEVICE_CLASS_AWNING,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND
 }
 
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
-    "MotionSensor": DEVICE_CLASS_MOTION,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
@@ -71,6 +73,13 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
+CORE_CONTACT_STATE = "core:ContactState"
+CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_SMOKE_STATE = "core:SmokeState"
+CORE_TEMPERATURE_STATE = "core:TemperatureState"
+CORE_LUMINANCE_STATE = "core:LuminanceState"
+CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
+
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
