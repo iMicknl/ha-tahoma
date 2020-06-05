@@ -1,6 +1,5 @@
 """Support for Tahoma climate."""
 from datetime import timedelta
-from time import sleep
 import logging
 from typing import List, Optional
 
@@ -138,6 +137,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         else:
             self._hvac_mode = HVAC_MODE_AUTO
         self.update_temp(None)
+        self.update_humidity(None)
 
     @property
     def hvac_mode(self) -> str:
@@ -155,7 +155,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self.apply_action("exitDerogation")
         elif hvac_mode == HVAC_MODE_HEAT and self._hvac_mode != HVAC_MODE_HEAT:
             self.apply_action("setDerogation", self.current_temperature, "further_notice")
-        sleep(10)
         self.schedule_update_ha_state()
 
     @property
