@@ -1,9 +1,13 @@
 """Support for Tahoma climate."""
 from datetime import timedelta
+from time import sleep
 import logging
 from typing import List, Optional
 
-from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE
+from homeassistant.core import callback
+from homeassistant.helpers.event import async_track_state_change
+from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE, EVENT_HOMEASSISTANT_START, \
+    STATE_UNKNOWN
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
@@ -47,6 +51,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
+        self._temp_sensor_entity_id = "sensor."+(
+            self.controller.get_device(self.tahoma_device.url.replace("#1", "#2"))
+        ).replace("°", "deg").replace(" ", "_")
         self._current_temp = None
         self._target_temp = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
@@ -54,6 +61,38 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._preset_mode = None
         self._preset_modes = [
             PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+
+    async def async_added_to_hass(self):
+        await super().async_added_to_hass()
+
+        async_track_state_change(
+            self.hass, self._temp_sensor_entity_id, self._async_sensor_changed
+        )
+
+        @callback
+        def _async_startup(event):
+            """Init on startup."""
+            sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
+            if sensor_state and sensor_state.state != STATE_UNKNOWN:
+                self.update_temp(sensor_state)
+
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
+
+    async def _async_sensor_changed(self, entity_id, old_state, new_state):
+        """Handle temperature changes."""
+        if new_state is None:
+            return
+
+        self.update_temp(new_state)
+        self.schedule_update_ha_state()
+
+    @callback
+    def update_temp(self, state):
+        """Update thermostat with latest state from sensor."""
+        try:
+            self._current_temp = float(state.state)
+        except ValueError as ex:
+            _LOGGER.error("Unable to update from sensor: %s", ex)
 
     def update(self):
         """Update the state."""
@@ -71,6 +110,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                       self.tahoma_device.active_states['somfythermostat:HeatingModeState'],
                       'hvac_mode', self.hvac_mode)
 
+    @property
+    def temperature_sensor(self) -> str:
+        """Return the id of the temperature sensor"""
+        return self._temp_sensor_entity_id
 
     @property
     def temperature_unit(self) -> str:
@@ -89,11 +132,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        if hvac_mode == HVAC_MODE_AUTO:
+        if hvac_mode == HVAC_MODE_AUTO and self._hvac_mode != HVAC_MODE_AUTO:
             self.apply_action("exitDerogation")
-        elif hvac_mode == HVAC_MODE_HEAT:
+        elif hvac_mode == HVAC_MODE_HEAT and self._hvac_mode != HVAC_MODE_HEAT:
             self.apply_action("setDerogation", self.current_temperature, "further_notice")
-        self.apply_action("refreshState")
+        sleep(10)
+        self.schedule_update_ha_state()
 
     @property
     def supported_features(self) -> int:
