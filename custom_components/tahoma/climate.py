@@ -2,6 +2,7 @@
 from datetime import timedelta
 import logging
 from typing import List, Optional
+import unicodedata
 
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
@@ -29,6 +30,9 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 PRESET_FROST_GUARD = "Frost Guard"
 
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma sensors from a config entry."""
@@ -53,17 +57,17 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
         device = "sensor." + \
-            self.controller.get_device(
-                self.tahoma_device.url.replace("#1", "#2")
-            ).label.replace("°", "deg").replace(" ", "_").lower()
-        self._temp_sensor_entity_id = device
+                 self.controller.get_device(
+                     self.tahoma_device.url.replace("#1", "#2")
+                 ).label.replace("°", "deg").replace(" ", "_").lower()
+        self._temp_sensor_entity_id = remove_accents(device)
         self._current_temp = None
         self._target_temp = None
         device = "sensor." + \
                  self.controller.get_device(
                      self.tahoma_device.url.replace("#1", "#3")
                  ).label.replace(" ", "_").lower()
-        self._humidity_sensor_entity_id = device
+        self._humidity_sensor_entity_id = remove_accents(device)
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
@@ -114,7 +118,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
 
         else:
             if self._target_temp is None:
-               self._target_temp = self.min_temp
+                self._target_temp = self.min_temp
             _LOGGER.warning(
                 "No previously saved temperature, setting to %s", self._target_temp
             )
