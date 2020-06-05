@@ -93,7 +93,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         elif hvac_mode == HVAC_MODE_HEAT:
             self.apply_action("setDerogation", self.current_temperature, "further_notice")
         self.apply_action("refreshState")
-        raise NotImplementedError()  # TODO implement
 
     @property
     def supported_features(self) -> int:
