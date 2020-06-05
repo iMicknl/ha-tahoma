@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE, EVENT_HOMEASSISTANT_START, \
     STATE_UNKNOWN
 from homeassistant.components.climate import ClimateEntity
@@ -16,7 +17,7 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
     PRESET_SLEEP,
     SUPPORT_PRESET_MODE,
-    SUPPORT_TARGET_TEMPERATURE,
+    SUPPORT_TARGET_TEMPERATURE, ATTR_PRESET_MODE,
 )
 
 from .const import DOMAIN, TAHOMA_TYPES
@@ -45,7 +46,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
 
-class TahomaClimate(TahomaDevice, ClimateEntity):
+class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     """Representation of a Tahoma thermostat."""
 
     def __init__(self, tahoma_device, controller):
@@ -70,6 +71,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._preset_mode = None
         self._preset_modes = [
             PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+        self._is_away = None
 
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
@@ -93,6 +95,32 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 self.update_humidity(humidity_sensor_state)
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
+
+        old_state = await self.async_get_last_state()
+        if old_state is not None:
+            if self._target_temp is None:
+                if old_state.attributes.get(ATTR_TEMPERATURE) is None:
+                    self._target_temp = self.min_temp
+                    _LOGGER.warning(
+                        "Undefined target temperature, falling back to %s",
+                        self._target_temp,
+                    )
+                else:
+                    self._target_temp = float(old_state.attributes[ATTR_TEMPERATURE])
+            if old_state.attributes.get(ATTR_PRESET_MODE) == PRESET_AWAY:
+                self._is_away = True
+            if not self._hvac_mode and old_state.state:
+                self._hvac_mode = old_state.state
+
+        else:
+            if self._target_temp is None:
+               self._target_temp = self.min_temp
+            _LOGGER.warning(
+                "No previously saved temperature, setting to %s", self._target_temp
+            )
+
+        if not self._hvac_mode:
+            self._hvac_mode = HVAC_MODE_HEAT
 
     async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
         """Handle temperature changes."""
