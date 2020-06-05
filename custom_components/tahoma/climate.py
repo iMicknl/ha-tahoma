@@ -96,6 +96,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Update thermostat with latest state from sensor."""
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
+        _LOGGER.debug("state: %s", str(state))
 
         try:
             self._current_temp = float(state.state)
