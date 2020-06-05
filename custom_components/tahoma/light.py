@@ -43,6 +43,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self._skip_update = False
         self._effect = None
+        self._brightness = None
 
         self.update()
 
