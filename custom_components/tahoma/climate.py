@@ -23,8 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
 
-PRESET_FP = "Frost Protection"
-
+PRESET_FROST_GUARD = "Frost Guard"
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma sensors from a config entry."""
@@ -48,15 +47,22 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
+        self._current_temp = None
+        self._target_temp = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = None
         self._preset_mode = None
-        self._preset_modes = [PRESET_NONE, PRESET_FP, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
-        self._target_temp = None
+        self._preset_modes = [
+            PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
 
     def update(self):
         """Update the state."""
+        self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
+        if self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']:
+            self._hvac_mode = HVAC_MODE_HEAT
+        else:
+            self._hvac_mode = HVAC_MODE_AUTO
         # TODO implement update method
 
     @property
@@ -82,6 +88,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
+        if hvac_mode == HVAC_MODE_AUTO:
+            self.apply_action("exitDerogation")
+        elif hvac_mode == HVAC_MODE_HEAT:
+            self.apply_action("setDerogation", self.current_temperature, "further_notice")
+        self.apply_action("refreshState")
         raise NotImplementedError()  # TODO implement
 
     @property
@@ -108,6 +119,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         raise NotImplementedError()  # TODO implement
+
+    @property
+    def current_temperature(self) -> Optional[float]:
+        """Return the current temperature"""
+        return self._current_temp
 
     @property
     def target_temperature(self):
