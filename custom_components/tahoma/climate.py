@@ -29,6 +29,7 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 PRESET_FROST_GUARD = "Frost Guard"
 
+
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma sensors from a config entry."""
 
@@ -51,8 +52,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
-        device = self.controller.get_device(
-            self.tahoma_device.url.replace("#1", "#2")).label.replace("°", "deg").replace(" ", "_").lower()
+        device = "sensor." + \
+            self.controller.get_device(
+                self.tahoma_device.url.replace("#1", "#2")
+            ).label.replace("°", "deg").replace(" ", "_").lower()
         _LOGGER.debug("device: %s", device)
         self._temp_sensor_entity_id = device
         self._current_temp = None
@@ -99,7 +102,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Update the state."""
         self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
-        if self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState'] == "manualMode":
+        if self.tahoma_device.active_states[
+            'somfythermostat:DerogationHeatingModeState'] == "manualMode":
             self._hvac_mode = HVAC_MODE_HEAT
         else:
             self._hvac_mode = HVAC_MODE_AUTO
