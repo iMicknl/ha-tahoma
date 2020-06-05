@@ -57,6 +57,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
+        self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
         if self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState'] == "manualMode":
             self._hvac_mode = HVAC_MODE_HEAT
@@ -78,18 +79,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     @property
     def hvac_mode(self) -> str:
-        """Return hvac operation ie. heat, cool mode.
-
-        Need to be one of HVAC_MODE_*.
-        """
+        """Return hvac operation ie. heat, cool mode."""
         return self._hvac_mode
 
     @property
     def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes.
-
-        Need to be a subset of HVAC_MODES.
-        """
+        """Return the list of available hvac operation modes."""
         return self._hvac_modes
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
