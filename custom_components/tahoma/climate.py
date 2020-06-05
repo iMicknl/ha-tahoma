@@ -154,7 +154,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         """Update thermostat with latest state from sensor."""
         if state is None:
             state = self.hass.states.get(self._humidity_sensor_entity_id)
-
+        _LOGGER.debug("retrieved humidity: %s", str(state))
         try:
             self._current_humidity = int(state.state)
         except ValueError as ex:
