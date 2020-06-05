@@ -124,7 +124,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             state = self.hass.states.get(self._humidity_sensor_entity_id)
 
         try:
-            self._current_humidity = float(state.state)
+            self._current_humidity = int(state.state)
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
