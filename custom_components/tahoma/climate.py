@@ -57,8 +57,13 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
-        self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
+        _LOGGER.debug("modes: \n%s: %s\n,%s:%s",
+                      'somfythermostat:DerogationHeatingModeState',
+                      self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState'],
+                      'somfythermostat:HeatingModeState',
+                      self.tahoma_device.active_states['somfythermostat:HeatingModeState'])
+
         if self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']:
             self._hvac_mode = HVAC_MODE_HEAT
         else:
