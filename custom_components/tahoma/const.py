@@ -5,6 +5,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_GARAGE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
+    DEVICE_CLASS_GATE
 )
 
 from homeassistant.components.binary_sensor import (
@@ -17,7 +18,7 @@ from homeassistant.components.binary_sensor import (
 
 DOMAIN = "tahoma"
 
-# Tahoma to Home Assistant mapping
+# Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
     "Light": "light",
     "ExteriorScreen": "cover",
@@ -36,9 +37,11 @@ TAHOMA_TYPES = {
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
-    "Awning": "cover"
+    "Awning": "cover",
+    "Gate": "cover"
 }
 
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
@@ -48,9 +51,11 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "Blind": DEVICE_CLASS_BLIND,
     "GarageDoor": DEVICE_CLASS_GARAGE,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
+    "Gate": DEVICE_CLASS_GATE
 }
 
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
@@ -79,7 +84,7 @@ CORE_SMOKE_STATE = "core:SmokeState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
-
+CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
@@ -87,3 +92,4 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 # Commands
 COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_SET_ORIENTATION = "setOrientation"

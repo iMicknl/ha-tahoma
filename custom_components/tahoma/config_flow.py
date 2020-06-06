@@ -13,20 +13,23 @@ from requests.exceptions import RequestException
 _LOGGER = logging.getLogger(__name__)
 
 # TODO adjust the data schema to the data that you need
-DATA_SCHEMA = vol.Schema({CONF_USERNAME: str, CONF_PASSWORD: str})
+DATA_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str
+    })
+
 
 async def validate_input(hass: core.HomeAssistant, data):
     """Validate the user input allows us to connect.
 
     Data has the keys from DATA_SCHEMA with values provided by the user.
     """
-    # TODO use async executor?
-
     username = data.get(CONF_USERNAME)
     password = data.get(CONF_PASSWORD)
 
     try:
-        api = TahomaApi(username, password)
+        controller = await hass.async_add_executor_job(TahomaApi, username, password)
+
     except RequestException:
         _LOGGER.exception("Error when trying to log in to the Tahoma API")
         raise CannotConnect
@@ -49,11 +52,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
+
         if user_input is not None:
+            unique_id = user_input.get(CONF_USERNAME)
+            await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured()
+
             try:
                 info = await validate_input(self.hass, user_input)
-
                 return self.async_create_entry(title=info["title"], data=user_input)
+
             except CannotConnect:
                 errors["base"] = "cannot_connect"
             except InvalidAuth:
@@ -65,7 +73,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
-
 
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""
