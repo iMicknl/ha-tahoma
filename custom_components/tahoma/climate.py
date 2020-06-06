@@ -86,7 +86,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
         )
         async_track_state_change(
-            self.hass, self._temp_sensor_entity_id, self._async_humidity_sensor_changed
+            self.hass, self._humidity_sensor_entity_id, self._async_humidity_sensor_changed
         )
 
         @callback
