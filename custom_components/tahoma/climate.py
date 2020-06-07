@@ -4,7 +4,7 @@ import logging
 from typing import List, Optional
 import unicodedata
 
-from homeassistant.core import callback
+from homeassistant.core import callback, State
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE, EVENT_HOMEASSISTANT_START, \
@@ -28,11 +28,16 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
 
-PRESET_FREEZE = "freeze"
-MAP_MODE = {
+HVAC_MODE_KEY = 'somfythermostat:DerogationTypeState'
+MAP_HVAC_MODE = {
     "date": HVAC_MODE_AUTO,
     "next_mode": HVAC_MODE_HEAT,
     "further_notice": HVAC_MODE_HEAT
+}
+PRESET_FREEZE = "freeze"
+MAP_PRESET_KEY = {
+    HVAC_MODE_AUTO: 'somfythermostat:HeatingModeState',
+    HVAC_MODE_HEAT: 'somfythermostat:DerogationHeatingModeState'
 }
 MAP_PRESET = {
     "sleepingMode": PRESET_SLEEP,
@@ -41,6 +46,14 @@ MAP_PRESET = {
     "freezeMode": PRESET_FREEZE,
     "manualMode": PRESET_NONE
 }
+MAP_TARGET_TEMP_KEY = {
+    HVAC_MODE_AUTO: 'core:TargetTemperatureState',
+    HVAC_MODE_HEAT: 'core:DerogatedTargetTemperatureState'
+}
+COMMAND_REFRESH = "refreshState"
+COMMAND_EXIT_DEROGATION = "exitDerogation"
+COMMAND_SET_DEROGATION = "setDerogation"
+COMMAND_OPTION_FURTHER_NOTICE = "further_notice"
 
 
 def remove_accents(input_str):
@@ -76,8 +89,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
                   ).label.replace("°", "deg").replace(" ", "_").lower()
         self._temp_sensor_entity_id = remove_accents(device1)
         self._current_temp = None
-        self._target_temp = self.tahoma_device.active_states[
-            'core:DerogatedTargetTemperatureState']
+        self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         device2 = "sensor." + \
                   self.controller.get_device(
                       self.tahoma_device.url.replace("#1", "#3")
@@ -86,13 +98,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
-        self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
-        if self._hvac_mode == HVAC_MODE_AUTO:
-            self._preset_mode = MAP_PRESET[
-                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
-        else:
-            self._preset_mode = MAP_PRESET[
-                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
+        self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[HVAC_MODE_KEY]]
+        self._preset_mode = MAP_PRESET[self.tahoma_device.active_states[MAP_PRESET_KEY[self._hvac_mode]]]
         self._preset_modes = [
             PRESET_NONE, PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
         self._is_away = None
@@ -147,7 +154,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             self._hvac_mode = HVAC_MODE_HEAT
         self.schedule_update_ha_state()
 
-    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
+    async def _async_temp_sensor_changed(self, entity_id: str, old_state: State, new_state: State) -> None:
         """Handle temperature changes."""
         if new_state is None:
             return
@@ -166,7 +173,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
-    async def _async_humidity_sensor_changed(self, entity_id, old_state, new_state):
+    async def _async_humidity_sensor_changed(self, entity_id: str, old_state: State, new_state: State) -> None:
         """Handle temperature changes."""
         if new_state is None:
             return
@@ -179,7 +186,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         """Update thermostat with latest state from sensor."""
         if state is None:
             state = self.hass.states.get(self._humidity_sensor_entity_id)
-        _LOGGER.debug("retrieved humidity: %s", str(state))
         try:
             self._current_humidity = float(state.state)
         except ValueError as ex:
@@ -187,16 +193,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
 
     def update(self):
         """Update the state."""
-        self.apply_action("refreshState")
+        self.apply_action(COMMAND_REFRESH)
         self.controller.get_states([self.tahoma_device])
-        self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
-        if self._hvac_mode == HVAC_MODE_AUTO:
-            self._preset_mode = MAP_PRESET[
-                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
-        else:
-            self._preset_mode = MAP_PRESET[
-                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
-        self._target_temp = self.tahoma_device.active_states['core:DerogatedTargetTemperatureState']
+        self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[HVAC_MODE_KEY]]
+        self._preset_mode = MAP_PRESET[self.tahoma_device.active_states[MAP_PRESET_KEY[self._hvac_mode]]]
+        self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         self.update_temp(None)
         self.update_humidity(None)
 
@@ -213,9 +214,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_AUTO and self._hvac_mode != HVAC_MODE_AUTO:
-            self.apply_action("exitDerogation")
+            self.apply_action(COMMAND_EXIT_DEROGATION)
         elif hvac_mode == HVAC_MODE_HEAT and self._hvac_mode != HVAC_MODE_HEAT:
-            self.apply_action("setDerogation", self.current_temperature, "further_notice")
+            self.apply_action(COMMAND_SET_DEROGATION, self.current_temperature, COMMAND_OPTION_FURTHER_NOTICE)
         self.schedule_update_ha_state()
 
     @property
