@@ -75,12 +75,10 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         if CORE_SMOKE_STATE in self.tahoma_device.active_states:
             self.current_value = (
-                self.tahoma_device.active_states.get(CORE_SMOKE_STATE) != "notDetected"
+                self.tahoma_device.active_states.get(CORE_SMOKE_STATE) == "detected"
             )
 
         if self.current_value:
             self._state = STATE_ON
         else:
-            self._sate = STATE_OFF
-
-        _LOGGER.debug("Update %s, state: %s", self._name, self._state)
+            self._state = STATE_OFF
