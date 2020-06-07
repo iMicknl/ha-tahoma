@@ -118,7 +118,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 CORE_PEDESTRIAN_POSITION_STATE
             )
 
-        if _position is not None:
+        if getattr(self, "_position", False):
             # PositionableHorizontalAwning (e.g. io:HorizontalAwningIOComponent uses a reversed position)
             if self.tahoma_device.widget == "PositionableHorizontalAwning":
                 self._position = 100 - self._position
