@@ -118,15 +118,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 CORE_PEDESTRIAN_POSITION_STATE
             )
 
-        # PositionableHorizontalAwning (e.g. io:HorizontalAwningIOComponent uses a reversed position)
-        if self.tahoma_device.widget == "PositionableHorizontalAwning":
-            self._position = 100 - self._position
+        if _position is not None:
+            # PositionableHorizontalAwning (e.g. io:HorizontalAwningIOComponent uses a reversed position)
+            if self.tahoma_device.widget == "PositionableHorizontalAwning":
+                self._position = 100 - self._position
 
-        # TODO Check if this offset is really necessary
-        if self._position <= 5:
-            self._position = 0
-        if self._position >= 95:
-            self._position = 100
+            # TODO Check if this offset is really necessary
+            if self._position <= 5:
+                self._position = 0
+            if self._position >= 95:
+                self._position = 100
 
         # Set Lock Timers
         if CORE_PRIORITY_LOCK_TIMER_STATE in self.tahoma_device.active_states:
