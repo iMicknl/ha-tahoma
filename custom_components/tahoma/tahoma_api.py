@@ -73,7 +73,7 @@ class TahomaApi:
 
     def send_request(self, method, url: str, headers, data=None, timeout: int = 10,
                      retries: int = 3):
-        """Wrap the post request and retries
+        """Wrap the http requests and retries
 
         :param method: The method to use for the request: post, get, delete.
         :param url: The url to send the POST to.
