@@ -1,3 +1,5 @@
+from typing import List
+
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import ATTR_BATTERY_LEVEL
 
@@ -92,9 +94,15 @@ class TahomaDevice(Entity):
             "sw_version": self.tahoma_device.type
         }
 
-    def apply_action(self, cmd_name, *args):
+    def apply_actions(self, commands):
         """Apply Action to Device."""
-
         action = Action(self.tahoma_device.url)
-        action.add_command(cmd_name, *args)
+        if isinstance(commands, str):
+            action.add_command(commands)
+        elif isinstance(commands, List):
+            for command in commands:
+                if isinstance(command, str):
+                    action.add_command(command)
+                else:
+                    action.add_command(*command)
         self.controller.apply_actions("HomeAssistant", [action])
