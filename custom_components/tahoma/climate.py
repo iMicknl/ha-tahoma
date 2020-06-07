@@ -28,7 +28,19 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
 
-PRESET_FROST_GUARD = "Frost Guard"
+PRESET_FREEZE = "freeze"
+MAP_MODE = {
+    "date": HVAC_MODE_AUTO,
+    "next_mode": HVAC_MODE_HEAT,
+    "further_notice": HVAC_MODE_HEAT
+}
+MAP_PRESET = {
+    "sleepingMode": PRESET_SLEEP,
+    "atHomeMode": PRESET_HOME,
+    "awayMode": PRESET_AWAY,
+    "freezeMode": PRESET_FREEZE,
+    "manualMode": PRESET_NONE
+}
 
 
 def remove_accents(input_str):
@@ -64,7 +76,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
                   ).label.replace("°", "deg").replace(" ", "_").lower()
         self._temp_sensor_entity_id = remove_accents(device1)
         self._current_temp = None
-        self._target_temp = None
+        self._target_temp = self.tahoma_device.active_states[
+            'core:DerogatedTargetTemperatureState']
         device2 = "sensor." + \
                   self.controller.get_device(
                       self.tahoma_device.url.replace("#1", "#3")
@@ -73,10 +86,15 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
-        self._hvac_mode = None
-        self._preset_mode = None
+        self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
+        if self._hvac_mode == HVAC_MODE_AUTO:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
+        else:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
         self._preset_modes = [
-            PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+            PRESET_NONE, PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
         self._is_away = None
 
     async def async_added_to_hass(self):
@@ -127,6 +145,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
 
         if not self._hvac_mode:
             self._hvac_mode = HVAC_MODE_HEAT
+        self.schedule_update_ha_state()
 
     async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
         """Handle temperature changes."""
@@ -170,11 +189,14 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         """Update the state."""
         self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
-        if self.tahoma_device.active_states[
-            'somfythermostat:DerogationHeatingModeState'] == "manualMode":
-            self._hvac_mode = HVAC_MODE_HEAT
+        self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
+        if self._hvac_mode == HVAC_MODE_AUTO:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
         else:
-            self._hvac_mode = HVAC_MODE_AUTO
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
+        self._target_temp = self.tahoma_device.active_states['core:DerogatedTargetTemperatureState']
         self.update_temp(None)
         self.update_humidity(None)
 
