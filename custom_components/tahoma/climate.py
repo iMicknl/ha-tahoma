@@ -87,7 +87,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
-        self._preset_mode = MAP_PRESET[self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
+        if self._hvac_mode == HVAC_MODE_AUTO:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
+        else:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
         self._preset_modes = [
             PRESET_NONE, PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
         self._is_away = None
@@ -185,7 +190,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         self.apply_action("refreshState")
         self.controller.get_states([self.tahoma_device])
         self._hvac_mode = MAP_MODE[self.tahoma_device.active_states['somfythermostat:DerogationTypeState']]
-        self._preset_mode = MAP_PRESET[self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
+        if self._hvac_mode == HVAC_MODE_AUTO:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:HeatingModeState']]
+        else:
+            self._preset_mode = MAP_PRESET[
+                self.tahoma_device.active_states['somfythermostat:DerogationHeatingModeState']]
         self._target_temp = self.tahoma_device.active_states['core:DerogatedTargetTemperatureState']
         self.update_temp(None)
         self.update_humidity(None)
