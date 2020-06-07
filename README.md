@@ -1,6 +1,6 @@
 ![](https://raw.githubusercontent.com/iMicknl/ha-tahoma/master/media/tahoma_device_page.png)
 
-# Somfy Tahoma - Home Assistant (work in progress)
+# Somfy TaHoma - Home Assistant (work in progress)
 
 > The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
 
@@ -10,11 +10,11 @@ This component is an updated version of the [original Tahoma integration](https:
 
 ### Manual
 
-Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Tahoma integration via the integrations page.
+Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page.
 
 ### HACS
 
-Add the repository url below to HACS, search for the `Tahoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
+Add the repository url below to HACS, search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
 
 ```
 https://github.com/imicknl/ha-tahoma
