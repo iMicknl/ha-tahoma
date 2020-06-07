@@ -105,11 +105,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Set position for horizontal covers
         if CORE_DEPLOYMENT_STATE in self.tahoma_device.active_states:
-            self._closure = self.tahoma_device.active_states.get(
+            self._position = self.tahoma_device.active_states.get(
                 CORE_DEPLOYMENT_STATE)
-
-            self._position = 100 - self.tahoma_device.active_states.get(
-                CORE_CLOSURE_STATE)
 
             # TODO Check if this offset is really necessary
             if self._position <= 5:
