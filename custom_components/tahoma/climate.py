@@ -73,7 +73,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
-        self._hvac_mode = None
+        if self.tahoma_device.active_states['somfythermostat:DerogationTypeState'] == 'date':
+            self._hvac_mode = HVAC_MODE_AUTO
+        else:
+            self._hvac_mode = HVAC_MODE_HEAT
         self._preset_mode = None
         self._preset_modes = [
             PRESET_NONE, PRESET_FROST_GUARD, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
@@ -127,6 +130,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
 
         if not self._hvac_mode:
             self._hvac_mode = HVAC_MODE_HEAT
+        self.schedule_update_ha_state()
 
     async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
         """Handle temperature changes."""
@@ -173,6 +177,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         if self.tahoma_device.active_states[
             'somfythermostat:DerogationHeatingModeState'] == "manualMode":
             self._hvac_mode = HVAC_MODE_HEAT
+            self._target_temp = self.tahoma_device.active_states[
+                'core:DerogatedTargetTemperatureState']
         else:
             self._hvac_mode = HVAC_MODE_AUTO
         self.update_temp(None)
