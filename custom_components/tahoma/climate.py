@@ -100,8 +100,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
                                              device.url.replace("#1", "#3")
                                          ).label.replace(" ", "_").lower())
                 entities.append(TahomaClimate(device, controller, device1, device2))
-            else:
-                entities.append(TahomaClimate(device, controller)
+            elif device.widget in SUPPORTED_CLIMATE_DEVICES:
+                entities.append(TahomaClimate(device, controller))
 
     async_add_entities(entities)
 
@@ -114,7 +114,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         super().__init__(tahoma_device, controller)
         self._temp_sensor_entity_id = remove_accents(device1)
         self._current_temp = None
-        self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         self._humidity_sensor_entity_id = device2
         _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
@@ -124,6 +123,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             self.tahoma_device.active_states[MAP_PRESET_KEY[self._hvac_mode]]]
         self._preset_modes = [
             PRESET_NONE, PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]
+        self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         self._is_away = None
 
     async def async_added_to_hass(self):
