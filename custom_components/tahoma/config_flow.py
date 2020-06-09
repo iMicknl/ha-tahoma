@@ -1,4 +1,4 @@
-"""Config flow for Tahoma integration."""
+"""Config flow for TaHoma integration."""
 import logging
 
 import voluptuous as vol
@@ -31,7 +31,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         controller = await hass.async_add_executor_job(TahomaApi, username, password)
 
     except RequestException:
-        _LOGGER.exception("Error when trying to log in to the Tahoma API")
+        _LOGGER.exception("Error when trying to log in to the TaHoma API")
         raise CannotConnect
 
     # If you cannot connect:
@@ -44,7 +44,7 @@ async def validate_input(hass: core.HomeAssistant, data):
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Tahoma."""
+    """Handle a config flow for TaHoma."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
