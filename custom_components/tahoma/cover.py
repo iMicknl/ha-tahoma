@@ -121,9 +121,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
             )
             
         if CORE_TARGET_CLOSURE_STATE in self.tahoma_device.active_states:
-            self._position = 100 - self.tahoma_device.active_states.get(
+            self._position = self.tahoma_device.active_states.get(
                 CORE_TARGET_CLOSURE_STATE
             )
+            # Fix for unknown position after moving with remote control
+            # and closure states over 100
+            if self._position > 0:
+                self._position = self._position - 50
 
         if getattr(self, "_position", False):
             # HorizontalAwning devices need a reversed position that can not be obtained via the API
