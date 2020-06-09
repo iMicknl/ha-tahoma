@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Entrez vos identifiants TaHoma.",
+        "data": {
+          "username": "Courriel",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connexion impossible",
+      "invalid_auth": "Mot de passe ou nom d'utilisateur incorrect",
+      "unknown": "Une erreur inconnue est survenue."
+    },
+    "abort": {
+      "already_configured": "Votre compte a déjà été ajouté pour cette intégration."
+    }
+  }
+}

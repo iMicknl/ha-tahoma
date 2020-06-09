@@ -1,8 +1,8 @@
 {
-  "title": "Tahoma",
   "config": {
     "step": {
       "user": {
+        "description": "Enter your tahoma credentials for the Tahoma App or the tahomalink.com platform.",
         "data": {
           "username": "[%key:common::config_flow::data::username%]",
           "password": "[%key:common::config_flow::data::password%]"
