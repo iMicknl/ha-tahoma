@@ -4,18 +4,18 @@
       "user": {
         "description": "Entrez vos identifiants Tahoma, les mêmes que pour l'Application of le Dashboard tahomalink.com",
         "data": {
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]"
+          "username": "Courriel",
+          "password": "Mot de passe"
         }
       }
     },
     "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
-      "unknown": "[%key:common::config_flow::error::unknown%]"
+      "cannot_connect": "Connexion impossible",
+      "invalid_auth": "Mot de passe ou nom d'utilisateur incorrect",
+      "unknown": "Une erreur inconnue est survenue."
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "already_configured": "Votre compte a déjà été ajouté pour cette intégration."
     }
   }
 }
