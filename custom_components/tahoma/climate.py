@@ -194,7 +194,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
 
     def update(self):
         """Update the state."""
-        self.apply_action(COMMAND_REFRESH)
+        if COMMAND_REFRESH in self.tahoma_device.command_definitions:
+            self.apply_action(COMMAND_REFRESH)
         self.controller.get_states([self.tahoma_device])
         self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[KEY_HVAC_MODE]]
         self._preset_mode = MAP_PRESET[
