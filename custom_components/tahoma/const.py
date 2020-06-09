@@ -14,9 +14,9 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_OPENING
 )
 
-"""Constants for the Tahoma integration."""
+"""Constants for the TaHoma integration."""
 
-DOMAIN = "tahoma"
+DOMAIN = "TaHoma"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
@@ -62,7 +62,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
-# Tahoma Attributes
+# TaHoma Attributes
 ATTR_MEM_POS = "memorized_position"
 ATTR_RSSI_LEVEL = "rssi_level"
 ATTR_LOCK_START_TS = "lock_start_ts"
@@ -70,7 +70,7 @@ ATTR_LOCK_END_TS = "lock_end_ts"
 ATTR_LOCK_LEVEL = "lock_level"
 ATTR_LOCK_ORIG = "lock_originator"
 
-# Tahoma internal device states
+# TaHoma internal device states
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_STATUS_STATE = "core:StatusState"
 CORE_CLOSURE_STATE = "core:ClosureState"

@@ -1,4 +1,4 @@
-"""Tahoma light platform that implements dimmable tahoma lights."""
+"""TaHoma light platform that implements dimmable TaHoma lights."""
 import logging
 from datetime import timedelta
 
@@ -21,7 +21,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma lights from a config entry."""
+    """Set up the TaHoma lights from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 

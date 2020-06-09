@@ -1,4 +1,4 @@
-"""The Tahoma integration."""
+"""The TaHoma integration."""
 import asyncio
 
 import voluptuous as vol
@@ -48,12 +48,12 @@ PLATFORMS = [
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Tahoma component."""
+    """Set up the TaHoma component."""
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up Tahoma from a config entry."""
+    """Set up TaHoma from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
 
@@ -68,7 +68,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # TODO Add better exception handling
     except RequestException:
-        _LOGGER.exception("Error when getting devices from the Tahoma API")
+        _LOGGER.exception("Error when getting devices from the TaHoma API")
         return False
 
     hass.data[DOMAIN][entry.entry_id] = {
@@ -87,7 +87,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
         else:
             _LOGGER.warning(
-                "Unsupported Tahoma device (%s - %s - %s)",
+                "Unsupported TaHoma device (%s - %s - %s)",
                 _device.type,
                 _device.uiclass,
                 _device.widget,

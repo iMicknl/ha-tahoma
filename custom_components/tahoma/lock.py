@@ -1,4 +1,4 @@
-"""Support for Tahoma lock."""
+"""Support for TaHoma lock."""
 from datetime import timedelta
 import logging
 
@@ -15,7 +15,7 @@ TAHOMA_STATE_LOCKED = "locked"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma locks from a config entry."""
+    """Set up the TaHoma locks from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -30,7 +30,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaLock(TahomaDevice, LockEntity):
-    """Representation a Tahoma lock."""
+    """Representation a TaHoma lock."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the device."""

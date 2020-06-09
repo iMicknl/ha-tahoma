@@ -1,4 +1,4 @@
-"""Support for Tahoma cover - shutters etc."""
+"""Support for TaHoma cover - shutters etc."""
 from datetime import timedelta
 import logging
 
@@ -51,7 +51,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma covers from a config entry."""
+    """Set up the TaHoma covers from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -66,7 +66,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaCover(TahomaDevice, CoverEntity):
-    """Representation a Tahoma Cover."""
+    """Representation a TaHoma Cover."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the device."""
