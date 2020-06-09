@@ -1,4 +1,4 @@
-"""Support for Tahoma sensors."""
+"""Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
 
@@ -20,7 +20,7 @@ SCAN_INTERVAL = timedelta(seconds=60)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma sensors from a config entry."""
+    """Set up the TaHoma sensors from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -35,7 +35,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaSensor(TahomaDevice, Entity):
-    """Representation of a Tahoma Sensor."""
+    """Representation of a TaHoma Sensor."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""

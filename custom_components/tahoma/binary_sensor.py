@@ -1,4 +1,4 @@
-"""Support for Tahoma binary sensors."""
+"""Support for TaHoma binary sensors."""
 from datetime import timedelta
 import logging
 
@@ -21,7 +21,7 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma sensors from a config entry."""
+    """Set up the TaHoma sensors from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -36,7 +36,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
-    """Representation of a Tahoma Binary Sensor."""
+    """Representation of a TaHoma Binary Sensor."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
