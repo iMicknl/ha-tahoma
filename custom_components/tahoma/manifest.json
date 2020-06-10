@@ -2,7 +2,7 @@
   "domain": "tahoma",
   "name": "Somfy TaHoma",
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/TaHoma",
+  "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [],
   "codeowners": ["@philklei", "@imicknl", "@vlebourl"]
 }
