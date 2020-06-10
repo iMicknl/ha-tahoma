@@ -42,6 +42,7 @@ PLATFORMS = [
     "cover",
     "light",
     "lock",
+    "scene",
     "sensor",
     "switch",
 ]
