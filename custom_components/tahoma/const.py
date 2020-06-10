@@ -16,7 +16,7 @@ from homeassistant.components.binary_sensor import (
 
 """Constants for the TaHoma integration."""
 
-DOMAIN = "TaHoma"
+DOMAIN = "tahoma"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
