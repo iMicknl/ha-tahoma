@@ -2,10 +2,10 @@
   "config": {
     "step": {
       "user": {
-        "description": "Enter your TaHoma credentials for the TaHoma App or the tahomalink.com platform.",
+        "description": "Voer uw TaHoma inloggegevens in voor de TaHoma-app of het tahomalink.com platform.",
         "data": {
-          "username": "Email address",
-          "password": "Password"
+          "username": "E-mail adres",
+          "password": "Wachtwoord"
         }
       }
     },
