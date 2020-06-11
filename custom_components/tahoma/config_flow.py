@@ -13,7 +13,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 
-from .const import DOMAIN, TAHOMA_TYPES, TAHOMA_TYPE_HEATING_SYSTEM  # pylint:disable=unused-import
+from .const import DOMAIN, TAHOMA_TYPES  # pylint:disable=unused-import
 from .tahoma_api import TahomaApi
 from requests.exceptions import RequestException
 
@@ -137,6 +137,7 @@ async def validate_options_input(hass: core.HomeAssistant, data):
             _LOGGER.exception("Please select a valid sensor from the list")
             raise InvalidSensor
 
+TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
 
 class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle Tahoma options for thermostat."""

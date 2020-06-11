@@ -43,8 +43,6 @@ TAHOMA_TYPES = {
     "Gate": "cover"
 }
 
-TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
-
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,

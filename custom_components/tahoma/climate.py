@@ -2,13 +2,16 @@
 from datetime import timedelta
 import logging
 from typing import List, Optional
-import unicodedata
 
 from homeassistant.core import callback, State
 from homeassistant.helpers.event import async_track_state_change
-from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.const import TEMP_CELSIUS, ATTR_TEMPERATURE, EVENT_HOMEASSISTANT_START, \
-    STATE_UNKNOWN
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    DEVICE_CLASS_TEMPERATURE,
+    EVENT_HOMEASSISTANT_START,
+    STATE_UNKNOWN,
+    TEMP_CELSIUS,
+)
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
@@ -18,10 +21,14 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
     PRESET_SLEEP,
     SUPPORT_PRESET_MODE,
-    SUPPORT_TARGET_TEMPERATURE, ATTR_PRESET_MODE,
+    SUPPORT_TARGET_TEMPERATURE,
+    ATTR_PRESET_MODE,
 )
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import (
+    DOMAIN,
+    TAHOMA_TYPES,
+)
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,6 +80,7 @@ MAP_TARGET_TEMP_KEY = {
     HVAC_MODE_AUTO: KEY_TARGET_TEMPERATURE,
     HVAC_MODE_HEAT: KEY_DEROGATION_TARGET_TEMPERATURE
 }
+TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -80,21 +88,32 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     data = hass.data[DOMAIN][entry.entry_id]
 
+    entry.add_update_listener(update_listener)
+
     entities = []
     controller = data.get("controller")
 
     for device in data.get("devices"):
         if TAHOMA_TYPES[device.uiclass] == "climate":
-            if device.url in entry.data and device.widget == "SomfyThermostat":
-                sensor_id = entry.data[device.url]
+            options = dict(entry.options)
+            if device.url in options[TAHOMA_TYPE_HEATING_SYSTEM] and device.widget == "SomfyThermostat":
+                sensor_id = options[DEVICE_CLASS_TEMPERATURE][device.url]
                 entities.append(TahomaClimate(device, controller, sensor_id))
             elif device.widget in SUPPORTED_CLIMATE_DEVICES:
                 entities.append(TahomaClimate(device, controller))
 
     async_add_entities(entities)
 
+async def update_listener(hass, entry):
+    """Handle options update."""
+    options = dict(entry.options)
+    for entity in hass.data["climate"].entities:
+        if entity.unique_id in options[TAHOMA_TYPE_HEATING_SYSTEM]:
+            entity.set_temperature_sensor(options[DEVICE_CLASS_TEMPERATURE][entity.unique_id])
+            entity.update_temp()
 
-class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
+
+class TahomaClimate(TahomaDevice, ClimateEntity):
     """Representation of a Tahoma thermostat."""
 
     def __init__(self, tahoma_device, controller, sensor_id=None):
@@ -102,6 +121,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         super().__init__(tahoma_device, controller)
         self._temp_sensor_entity_id = sensor_id
         self._current_temp = None
+        if self._temp_sensor_entity_id is not None:
+            self.update_temp()
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[KEY_HVAC_MODE]]
@@ -141,7 +162,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         self.schedule_update_ha_state()
 
     @callback
-    def update_temp(self, state):
+    def update_temp(self, state=None):
         """Update thermostat with latest state from sensor."""
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
@@ -215,6 +236,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     def temperature_sensor(self) -> str:
         """Return the id of the temperature sensor"""
         return self._temp_sensor_entity_id
+
+    def set_temperature_sensor(self, sensor_id: str):
+        self._temp_sensor_entity_id = sensor_id
 
     @property
     def temperature_unit(self) -> str:
