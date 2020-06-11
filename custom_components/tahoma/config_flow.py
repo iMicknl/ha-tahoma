@@ -143,8 +143,8 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry):
         """Initialize Tahoma options flow."""
+        self.config_entry = config_entry
         self.options = copy.deepcopy(dict(config_entry.options))
-        self.data = copy.deepcopy(dict(config_entry.data))
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
@@ -153,8 +153,8 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             try:
                 await validate_options_input(self.hass, user_input)
-                self.data[DEVICE_CLASS_TEMPERATURE] = user_input
-                return self.async_create_entry(title="", data=self.data)
+                self.options[DEVICE_CLASS_TEMPERATURE] = user_input
+                return self.async_create_entry(title="", data=self.options)
 
             except InvalidSensor:
                 errors["base"] = "invalid_sensor"
@@ -168,11 +168,14 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
                 available_sensors.append(k)
 
         schema = {}
-        if TAHOMA_TYPE_HEATING_SYSTEM in self.data:
-            for k, v in self.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
+        if TAHOMA_TYPE_HEATING_SYSTEM in self.config_entry.data:
+            for k, v in self.config_entry.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
+                default = self.config_entry.options.get(DEVICE_CLASS_TEMPERATURE).get(k)
+                if default is None:
+                    default = v
                 key = vol.Required(
                     k,
-                    default=v,
+                    default=default,
                     msg="temperature sensor for " + v)
                 value = vol.In([v] + available_sensors)
                 schema[key] = value
