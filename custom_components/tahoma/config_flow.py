@@ -1,12 +1,19 @@
 """Config flow for TaHoma integration."""
+import copy
 import logging
 
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    CONF_ENTITY_ID,
+    DEVICE_CLASS_TEMPERATURE
+)
+from homeassistant.core import callback
 
-from .const import DOMAIN  # pylint:disable=unused-import
+from .const import DOMAIN, TAHOMA_TYPES, TAHOMA_TYPE_HEATING_SYSTEM  # pylint:disable=unused-import
 from .tahoma_api import TahomaApi
 from requests.exceptions import RequestException
 
@@ -34,13 +41,22 @@ async def validate_input(hass: core.HomeAssistant, data):
         _LOGGER.exception("Error when trying to log in to the TaHoma API")
         raise CannotConnect
 
+    return_dict = {"title": username}
+    controller.get_setup()
+    devices = controller.get_devices()
+    for key, device in devices.items():
+        if device.uiclass == TAHOMA_TYPE_HEATING_SYSTEM:
+            if TAHOMA_TYPE_HEATING_SYSTEM not in return_dict:
+                return_dict[TAHOMA_TYPE_HEATING_SYSTEM] = {}
+            return_dict[TAHOMA_TYPE_HEATING_SYSTEM][device.url] = device.label
+
     # If you cannot connect:
     # throw CannotConnect
     # If the authentication is wrong:
     # InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": username}
+    return return_dict
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -48,6 +64,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return ThermoOptionsFlowHandler(config_entry)
+
+    def __init__(self):
+        self._user_input = {}
+        self._thermos = {}
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
@@ -60,6 +85,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             try:
                 info = await validate_input(self.hass, user_input)
+                if TAHOMA_TYPE_HEATING_SYSTEM in info:
+                    user_input[TAHOMA_TYPE_HEATING_SYSTEM] = info[TAHOMA_TYPE_HEATING_SYSTEM]
+                    # self._user_input = user_input
+                    # self._thermos = info[TAHOMA_TYPE_HEATING_SYSTEM]
+                    # return await self.async_step_thermo()
                 return self.async_create_entry(title=info["title"], data=user_input)
 
             except CannotConnect:
@@ -73,6 +103,79 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
+
+    # async def async_step_thermo(self, user_input=None):
+    #     """Handle thermo step"""
+    #     errors = {}
+    #     device_url = None
+    #     device_name = None
+    #     data = self._user_input
+    #     thermos = self._thermos
+    #
+    #     device_url = next(iter(thermos.keys()))
+    #     device_name = next(iter(thermos.values()))
+    #
+    #     if user_input is not None:
+    #         data[device_url] = next(iter(user_input.values()))
+    #         thermos.pop(device_url)
+    #         if len(thermos) > 0:
+    #             return await self.async_step_thermo()
+    #         return self.async_create_entry(title=data[CONF_USERNAME], data=data)
+    #
+    #     return self.async_show_form(
+    #         step_id="thermo",
+    #         data_schema=vol.Schema({
+    #             vol.Required(CONF_ENTITY_ID, description={"suggested_value": device_name}): str
+    #         }),
+    #         errors=errors
+    #     )
+
+
+class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle Tahoma options for thermostat."""
+
+    def __init__(self, config_entry):
+        """Initialize Tahoma options flow."""
+        self.options = copy.deepcopy(dict(config_entry.options))
+        self.data = copy.deepcopy(dict(config_entry.data))
+
+    async def async_step_init(self, user_input=None):
+        """Manage the options."""
+        errors = {}
+
+        if user_input is not None:
+            try:
+                for k, v in user_input.items():
+                    for u, l in self.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
+                        if v == l:
+                            raise Exception("Invalid sensor", "Please select a sensor from the list")
+                self.data[DEVICE_CLASS_TEMPERATURE] = user_input
+                return self.async_create_entry(title="", data=self.data)
+
+            except Exception as e:  # pylint: disable=broad-except
+                _LOGGER.exception(str(e))
+                errors["base"] = str(e)
+
+        available_sensors = []
+        for k, v in self.hass.data['entity_registry'].entities.items():
+            if str.startswith(k, "sensor") and v.device_class == DEVICE_CLASS_TEMPERATURE:
+                available_sensors.append(k)
+
+        schema = {}
+        if TAHOMA_TYPE_HEATING_SYSTEM in self.data:
+            for k, v in self.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
+                key = vol.Required(
+                    k,
+                    default=v,
+                    msg="temperature sensor for "+v)
+                value = vol.In([v]+available_sensors)
+                schema[key] = value
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(schema),
+        )
+
 
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""

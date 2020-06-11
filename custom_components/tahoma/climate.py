@@ -75,11 +75,6 @@ MAP_TARGET_TEMP_KEY = {
 }
 
 
-def remove_accents(input_str):
-    nfkd_form = unicodedata.normalize('NFKD', input_str)
-    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-
-
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Tahoma sensors from a config entry."""
 
@@ -90,16 +85,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     for device in data.get("devices"):
         if TAHOMA_TYPES[device.uiclass] == "climate":
-            if device.widget == "SomfyThermostat":
-                device1 = "sensor." + \
-                          controller.get_device(
-                              device.url.replace("#1", "#2")
-                          ).label.replace("°", "deg").replace(" ", "_").lower()
-                device2 = remove_accents("sensor." + \
-                                         controller.get_device(
-                                             device.url.replace("#1", "#3")
-                                         ).label.replace(" ", "_").lower())
-                entities.append(TahomaClimate(device, controller, device1, device2))
+            if device.url in entry.data and device.widget == "SomfyThermostat":
+                sensor_id = entry.data[device.url]
+                entities.append(TahomaClimate(device, controller, sensor_id))
             elif device.widget in SUPPORTED_CLIMATE_DEVICES:
                 entities.append(TahomaClimate(device, controller))
 
@@ -109,13 +97,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     """Representation of a Tahoma thermostat."""
 
-    def __init__(self, tahoma_device, controller, device1=None, device2=None):
+    def __init__(self, tahoma_device, controller, sensor_id=None):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
-        self._temp_sensor_entity_id = remove_accents(device1)
+        self._temp_sensor_entity_id = sensor_id
         self._current_temp = None
-        self._humidity_sensor_entity_id = device2
-        _LOGGER.debug("humidity sensor: %s", self._humidity_sensor_entity_id)
         self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[KEY_HVAC_MODE]]
@@ -132,10 +118,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             async_track_state_change(
                 self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
             )
-        if self._humidity_sensor_entity_id is not None:
-            async_track_state_change(
-                self.hass, self._humidity_sensor_entity_id, self._async_humidity_sensor_changed
-            )
 
         @callback
         def _async_startup(event):
@@ -144,10 +126,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
                 temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
                 if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
                     self.update_temp(temp_sensor_state)
-            if self._humidity_sensor_entity_id is not None:
-                humidity_sensor_state = self.hass.states.get(self._humidity_sensor_entity_id)
-                if humidity_sensor_state and humidity_sensor_state.state != STATE_UNKNOWN:
-                    self.update_humidity(humidity_sensor_state)
 
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
 
@@ -173,25 +151,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
-    async def _async_humidity_sensor_changed(self, entity_id: str, old_state: State,
-                                             new_state: State) -> None:
-        """Handle temperature changes."""
-        if new_state is None:
-            return
-
-        self.update_humidity(new_state)
-        self.schedule_update_ha_state()
-
-    @callback
-    def update_humidity(self, state):
-        """Update thermostat with latest state from sensor."""
-        if state is None:
-            state = self.hass.states.get(self._humidity_sensor_entity_id)
-        try:
-            self._current_humidity = float(state.state)
-        except ValueError as ex:
-            _LOGGER.error("Unable to update from sensor: %s", ex)
-
     def update(self):
         """Update the state."""
         if COMMAND_REFRESH in self.tahoma_device.command_definitions:
@@ -202,7 +161,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
             self.tahoma_device.active_states[MAP_PRESET_KEY[self._hvac_mode]]]
         self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         self.update_temp(None)
-        self.update_humidity(None)
 
     @property
     def hvac_mode(self) -> str:
@@ -247,11 +205,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity, RestoreEntity):
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         raise NotImplementedError()  # TODO implement
-
-    @property
-    def humidity_sensor(self) -> str:
-        """Return the id of the temperature sensor"""
-        return self._humidity_sensor_entity_id
 
     @property
     def current_humidity(self) -> Optional[float]:
