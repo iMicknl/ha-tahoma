@@ -131,6 +131,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     #     )
 
 
+async def validate_options_input(hass: core.HomeAssistant, data):
+    for k, v in data.items():
+        if not str.startswith(v, "sensor"):
+            _LOGGER.exception("Please select a valid sensor from the list")
+            raise InvalidSensor
+
+
 class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle Tahoma options for thermostat."""
 
@@ -145,16 +152,15 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             try:
-                for k, v in user_input.items():
-                    for u, l in self.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
-                        if v == l:
-                            raise Exception("Invalid sensor", "Please select a sensor from the list")
+                await validate_options_input(self.hass, user_input)
                 self.data[DEVICE_CLASS_TEMPERATURE] = user_input
                 return self.async_create_entry(title="", data=self.data)
 
-            except Exception as e:  # pylint: disable=broad-except
-                _LOGGER.exception(str(e))
-                errors["base"] = str(e)
+            except InvalidSensor:
+                errors["base"] = "invalid_sensor"
+            except Exception:  # pylint: disable=broad-except
+                _LOGGER.exception("Unexpected exception")
+                errors["base"] = "unknown"
 
         available_sensors = []
         for k, v in self.hass.data['entity_registry'].entities.items():
@@ -167,13 +173,14 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
                 key = vol.Required(
                     k,
                     default=v,
-                    msg="temperature sensor for "+v)
-                value = vol.In([v]+available_sensors)
+                    msg="temperature sensor for " + v)
+                value = vol.In([v] + available_sensors)
                 schema[key] = value
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(schema),
+            errors=errors
         )
 
 
@@ -183,3 +190,7 @@ class CannotConnect(exceptions.HomeAssistantError):
 
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""
+
+
+class InvalidSensor(exceptions.HomeAssistantError):
+    """Error to indicate the selection is not a sensor."""
