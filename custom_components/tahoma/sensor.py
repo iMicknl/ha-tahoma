@@ -9,9 +9,10 @@ from homeassistant.helpers.entity import Entity
 from .const import (
     DOMAIN,
     TAHOMA_TYPES,
+    TAHOMA_SENSOR_DEVICE_CLASSES,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_LUMINANCE_STATE,
-    CORE_TEMPERATURE_STATE, TAHOMA_SENSOR_DEVICE_CLASSES,
+    CORE_TEMPERATURE_STATE, 
 )
 from .tahoma_device import TahomaDevice
 
