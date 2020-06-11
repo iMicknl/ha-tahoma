@@ -63,6 +63,22 @@ class TahomaSensor(TahomaDevice, Entity):
 
         return None
 
+    
+    @property
+    def device_class(self) -> Optional[str]:
+        """Return the device class of this entity if any."""
+
+        if self.tahoma_device.uiclass == "TemperatureSensor":
+            return DEVICE_CLASS_TEMPERATURE
+
+        if self.tahoma_device.uiclass == "HumiditySensor":
+            return DEVICE_CLASS_HUMIDITY
+
+        if self.tahoma_device.uiclass == "LightSensor":
+            return DEVICE_CLASS_ILLUMINANCE
+
+        return None
+    
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
