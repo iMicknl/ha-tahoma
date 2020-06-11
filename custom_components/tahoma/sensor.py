@@ -1,6 +1,7 @@
 """Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
+from typing import Optional
 
 from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE
 from homeassistant.helpers.entity import Entity
@@ -10,7 +11,7 @@ from .const import (
     TAHOMA_TYPES,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_LUMINANCE_STATE,
-    CORE_TEMPERATURE_STATE,
+    CORE_TEMPERATURE_STATE, TAHOMA_SENSOR_DEVICE_CLASSES,
 )
 from .tahoma_device import TahomaDevice
 
@@ -63,7 +64,6 @@ class TahomaSensor(TahomaDevice, Entity):
 
         return None
 
-    
     @property
     def device_class(self) -> Optional[str]:
         """Return the device class of this entity if any."""
@@ -72,7 +72,7 @@ class TahomaSensor(TahomaDevice, Entity):
                 or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
                 or None
         )
-    
+
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
