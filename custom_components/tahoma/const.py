@@ -13,6 +13,8 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_OCCUPANCY,
     DEVICE_CLASS_OPENING
 )
+from homeassistant.const import DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY, \
+    DEVICE_CLASS_ILLUMINANCE
 
 """Constants for the TaHoma integration."""
 
@@ -41,6 +43,8 @@ TAHOMA_TYPES = {
     "Gate": "cover"
 }
 
+TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
+
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
@@ -60,6 +64,13 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING 
+}
+
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
+TAHOMA_SENSOR_DEVICE_CLASSES = {
+    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
+    "HumiditySensor": DEVICE_CLASS_HUMIDITY,
+    "LightSensor": DEVICE_CLASS_ILLUMINANCE
 }
 
 # TaHoma Attributes
