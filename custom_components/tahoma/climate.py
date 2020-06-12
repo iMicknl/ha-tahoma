@@ -110,7 +110,7 @@ async def update_listener(hass, entry):
     for entity in hass.data["climate"].entities:
         if entity.unique_id in options[TAHOMA_TYPE_HEATING_SYSTEM]:
             entity.set_temperature_sensor(options[DEVICE_CLASS_TEMPERATURE][entity.unique_id])
-            entity.update_temp()
+            entity.schedule_update_ha_state()
 
 
 class TahomaClimate(TahomaDevice, ClimateEntity):
@@ -121,9 +121,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         super().__init__(tahoma_device, controller)
         self._temp_sensor_entity_id = sensor_id
         self._current_temp = None
-        if self._temp_sensor_entity_id is not None:
-            self.update_temp()
-        self._current_humidity = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
         self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[KEY_HVAC_MODE]]
         self._preset_mode = MAP_PRESET[
@@ -226,11 +223,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         raise NotImplementedError()  # TODO implement
-
-    @property
-    def current_humidity(self) -> Optional[float]:
-        """Return the current humidity"""
-        return self._current_humidity
 
     @property
     def temperature_sensor(self) -> str:
