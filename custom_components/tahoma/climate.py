@@ -167,6 +167,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
 
+        if state.state == "unknown":
+            return float("nan")
+
         try:
             self._current_temp = float(state.state)
         except ValueError as ex:
@@ -269,5 +272,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is None:
             return
+        if temperature < 15:
+            self.apply_action("setDerogation", "freezeMode", "further_notice")
+        if temperature > 26:
+            temperature = 26
         self._target_temp = temperature
+        self.apply_action("setDerogation", temperature, "further_notice")
+        self.apply_action("setModeTemperature", "manualMode", temperature)
         self.schedule_update_ha_state()
