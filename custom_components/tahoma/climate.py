@@ -119,6 +119,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller, sensor_id=None):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
+        self._uiclass = tahoma_device.uiclass
+        self._unique_id = tahoma_device.url
+        self._widget = tahoma_device.widget
         self._temp_sensor_entity_id = sensor_id
         self._current_temp = None
         self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_AUTO]
@@ -179,6 +182,20 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self.tahoma_device.active_states[MAP_PRESET_KEY[self._hvac_mode]]]
         self._target_temp = self.tahoma_device.active_states[MAP_TARGET_TEMP_KEY[self._hvac_mode]]
         self.update_temp(None)
+
+    @property
+    def device_info(self):
+        """Return the device info for the thermostat/valve."""
+        return {
+            "url": self._unique_id,
+            "uiClass": self._uiclass,
+            "widget": self._widget,
+        }
+
+    @property
+    def unique_id(self):
+        """Return a unique ID."""
+        return self._unique_id
 
     @property
     def hvac_mode(self) -> str:
