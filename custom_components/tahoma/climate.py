@@ -51,11 +51,11 @@ COMMAND_REFRESH = "refreshState"
 COMMAND_EXIT_DEROGATION = "exitDerogation"
 COMMAND_SET_DEROGATION = "setDerogation"
 
-KEY_HVAC_MODE = 'somfythermostat:DerogationTypeState'
-KEY_HEATING_MODE = 'somfythermostat:HeatingModeState'
-KEY_DEROGATION_HEATING_MODE = 'somfythermostat:DerogationHeatingModeState'
-KEY_TARGET_TEMPERATURE = 'core:TargetTemperatureState'
-KEY_DEROGATION_TARGET_TEMPERATURE = 'core:DerogatedTargetTemperatureState'
+ST_DEROGATION_TYPE_STATE = 'somfythermostat:DerogationTypeState'
+ST_HEATING_MODE_STATE = 'somfythermostat:HeatingModeState'
+ST_DEROGATION_HEATING_MODE_STATE = 'somfythermostat:DerogationHeatingModeState'
+CORE_TARGET_TEMPERATURE_STATE = 'core:TargetTemperatureState'
+CORE_DEROGATED_TARGET_TEMPERATURE_STATE = 'core:DerogatedTargetTemperatureState'
 
 PRESET_FREEZE = "freeze"
 
@@ -195,7 +195,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
         try:
             self._current_temperature = (
-                None if state.state == STATE_UNKNOWN
+                0 if state.state == STATE_UNKNOWN
                 else float(state.state)
             )
         except ValueError as ex:
