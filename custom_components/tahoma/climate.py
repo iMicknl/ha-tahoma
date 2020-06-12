@@ -230,7 +230,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @property
     def available(self) -> bool:
         """If the device hasn't been able to connect, mark as unavailable."""
-        return bool(self._current_temperature == 0)
+        return bool(self._current_temperature != 0)
 
     @property
     def hvac_mode(self) -> str:
