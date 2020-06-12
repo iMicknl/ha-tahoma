@@ -87,9 +87,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 info = await validate_input(self.hass, user_input)
                 if TAHOMA_TYPE_HEATING_SYSTEM in info:
                     user_input[TAHOMA_TYPE_HEATING_SYSTEM] = info[TAHOMA_TYPE_HEATING_SYSTEM]
-                    # self._user_input = user_input
-                    # self._thermos = info[TAHOMA_TYPE_HEATING_SYSTEM]
-                    # return await self.async_step_thermo()
                 return self.async_create_entry(title=info["title"], data=user_input)
 
             except CannotConnect:
@@ -103,32 +100,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
-
-    # async def async_step_thermo(self, user_input=None):
-    #     """Handle thermo step"""
-    #     errors = {}
-    #     device_url = None
-    #     device_name = None
-    #     data = self._user_input
-    #     thermos = self._thermos
-    #
-    #     device_url = next(iter(thermos.keys()))
-    #     device_name = next(iter(thermos.values()))
-    #
-    #     if user_input is not None:
-    #         data[device_url] = next(iter(user_input.values()))
-    #         thermos.pop(device_url)
-    #         if len(thermos) > 0:
-    #             return await self.async_step_thermo()
-    #         return self.async_create_entry(title=data[CONF_USERNAME], data=data)
-    #
-    #     return self.async_show_form(
-    #         step_id="thermo",
-    #         data_schema=vol.Schema({
-    #             vol.Required(CONF_ENTITY_ID, description={"suggested_value": device_name}): str
-    #         }),
-    #         errors=errors
-    #     )
 
 
 async def validate_options_input(hass: core.HomeAssistant, data):
