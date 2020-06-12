@@ -650,7 +650,7 @@ class Device:
     def set_active_state(self, name, value):
         """Set active state."""
         if name not in self.__active_states.keys():
-            self.__active_states[name] = value
+            raise ValueError("Can not set unknown state '" + name + "'")
 
         if (isinstance(self.__active_states[name], int) and
                 isinstance(value, str)):
