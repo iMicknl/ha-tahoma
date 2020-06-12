@@ -1,7 +1,6 @@
 """Support for Tahoma climate."""
 from datetime import timedelta
 import logging
-from math import nan
 from typing import List, Optional
 
 from homeassistant.core import callback, State
@@ -182,6 +181,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                                          new_state: State) -> None:
         """Handle temperature changes."""
         if new_state is None:
+            return
+        if old_state == new_state:
             return
 
         self.update_temp(new_state)
