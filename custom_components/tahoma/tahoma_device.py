@@ -1,3 +1,5 @@
+import logging
+
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import ATTR_BATTERY_LEVEL
 
@@ -11,6 +13,7 @@ from .const import (
     CORE_SENSOR_DEFECT_STATE,
 )
 
+_LOGGER = logging.getLogger(__name__)
 
 class TahomaDevice(Entity):
     """Representation of a TaHoma device entity."""
@@ -97,4 +100,6 @@ class TahomaDevice(Entity):
 
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
-        self.controller.apply_actions("HomeAssistant", [action])
+        exec_id = self.controller.apply_actions("HomeAssistant", [action])
+        while exec_id in self.controller.get_current_executions():
+            _LOGGER.info("Waiting for action to execute")
