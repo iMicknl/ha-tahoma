@@ -361,10 +361,7 @@ class TahomaApi:
                 BASE_URL + 'events/register',
                 header)
 
-            self.__events_registration = json.loads(register_response.text)["id"]
-            if register_response.status_code != 200:
-                self.__events_registration = None
-                self.get_events()
+            self.__events_registration = register_response["id"]
 
         result = self.send_request(
             requests.post,
@@ -399,8 +396,8 @@ class TahomaApi:
     def get_current_executions(self):
         """Get all current running executions.
 
-        :return: Returns a set of running Executions or empty list.
-        :rtype: list
+        :return: Returns a dict of running Executions or empty dict.
+        :rtype: dict
 
         raises ValueError in case of protocol issues
 
@@ -418,11 +415,11 @@ class TahomaApi:
             BASE_URL + 'exec/current',
             headers=header)
 
-        executions = []
+        executions = {}
 
         for execution_data in result:
             exe = Execution(execution_data)
-            executions.append(exe)
+            executions[exe.execution_id] = exe
 
         return executions
 
