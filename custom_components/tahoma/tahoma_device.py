@@ -8,6 +8,7 @@ from .tahoma_api import Action
 from .const import (
     DOMAIN,
     ATTR_RSSI_LEVEL,
+    COMMAND_REFRESH_STATE,
     CORE_RSSI_LEVEL_STATE,
     CORE_STATUS_STATE,
     CORE_SENSOR_DEFECT_STATE,
@@ -107,3 +108,6 @@ class TahomaDevice(Entity):
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
         while exec_id in self.controller.get_current_executions():
             _LOGGER.info("Waiting for action to execute")
+        if COMMAND_REFRESH_STATE in self.tahoma_device.command_definitions:
+            self.apply_action(COMMAND_REFRESH_STATE)
+

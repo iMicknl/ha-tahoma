@@ -239,8 +239,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
-        if COMMAND_REFRESH_STATE in self.tahoma_device.command_definitions:
-            self.apply_action(COMMAND_REFRESH_STATE)
         self.controller.get_states([self.tahoma_device])
         self.update_temp(None)
         if self._widget == W_ST:
