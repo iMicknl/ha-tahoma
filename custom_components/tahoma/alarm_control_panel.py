@@ -62,7 +62,8 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         state = None
 
         if "myfox:AlarmStatusState" in self.tahoma_device.active_states:
-            state = self.tahoma_device.active_states.get("myfox:AlarmStatusState")
+            state = self.tahoma_device.active_states.get(
+                "myfox:AlarmStatusState")
 
             if state == "armed":
                 self._state = STATE_ALARM_ARMED_AWAY
@@ -101,7 +102,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             attr["cloud_device_status"] = self.tahoma_device.active_states[
                 "core:CloudDeviceStatusState"
             ]
-            
+
         return attr
 
     @property
@@ -110,29 +111,53 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
         supported_features = 0
 
-        # if "arm" in self.tahoma_device.command_definitions:
-        #     supported_features |= SUPPORT_ALARM_ARM_AWAY
+        if "arm" in self.tahoma_device.command_definitions or "alarmZoneOn" in self.tahoma_device.command_definitions:
+            supported_features |= SUPPORT_ALARM_ARM_AWAY
 
-        supported_features |= SUPPORT_ALARM_ARM_AWAY
-        supported_features |= SUPPORT_ALARM_ARM_CUSTOM_BYPASS
-        supported_features |= SUPPORT_ALARM_ARM_HOME
-        supported_features |= SUPPORT_ALARM_ARM_NIGHT
-        supported_features |= SUPPORT_ALARM_TRIGGER
+        if "alarmPartial1" in self.tahoma_device.command_definitions:
+            supported_features |= SUPPORT_ALARM_ARM_HOME
+
+        if "partial" in self.tahoma_device.command_definitions or "alarmPartial2" in self.tahoma_device.command_definitions:
+            supported_features |= SUPPORT_ALARM_ARM_NIGHT
+
+        if "setAlarmStatus" in self.tahoma_device.command_definitions:
+            supported_features |= SUPPORT_ALARM_TRIGGER
+            supported_features |= SUPPORT_ALARM_ARM_CUSTOM_BYPASS
 
         return supported_features
-        # return SUPPORT_ALARM_ARM_HOME | SUPPORT_ALARM_ARM_AWAY
 
     def alarm_disarm(self, code=None):
         """Send disarm command."""
-        self.apply_action("disarm")
+
+        if "disarm" in self.tahoma_device.command_definitions:
+            return self.apply_action("disarm")
+
+        if "alarmOff" in self.tahoma_device.command_definitions:
+            return self.apply_action("alarmOff")
 
     def alarm_arm_home(self, code=None):
         """Send arm home command."""
-        self.apply_action("partial")
+
+        if "alarmPartial1" in self.tahoma_device.command_definitions:
+            return self.apply_action("alarmPartial1")
+
+    def alarm_arm_night(self, code=None):
+        """Send arm night command."""
+
+        if "partial" in self.tahoma_device.command_definitions:
+            return self.apply_action("partial")
+
+        if "alarmPartial2" in self.tahoma_device.command_definitions:
+            return self.apply_action("alarmPartial2")
 
     def alarm_arm_away(self, code=None):
         """Send arm away command."""
-        self.apply_action("arm")
+
+        if "arm" in self.tahoma_device.command_definitions:
+            return self.apply_action("arm")
+
+        if "alarmZoneOn" in self.tahoma_device.command_definitions:
+            return self.apply_action("alarmZoneOn")
 
     def alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
@@ -141,4 +166,3 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     def alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
         self.apply_action("setAlarmStatus", "undetected")
-
