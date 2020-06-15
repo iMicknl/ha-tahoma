@@ -1,4 +1,4 @@
-"""Support for Tahoma sensors."""
+"""Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
 
@@ -17,7 +17,7 @@ from homeassistant.components.alarm_control_panel import (
     SUPPORT_ALARM_ARM_CUSTOM_BYPASS,
     SUPPORT_ALARM_ARM_HOME,
     SUPPORT_ALARM_ARM_NIGHT,
-    SUPPORT_ALARM_TRIGGER,
+    SUPPORT_ALARM_TRIGGER
 )
 
 from .const import (
@@ -47,7 +47,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
-    """Representation of a Tahoma Sensor."""
+    """Representation of a TaHoma Alarm Control Panel."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
@@ -64,20 +64,20 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         if "myfox:AlarmStatusState" in self.tahoma_device.active_states:
             state = self.tahoma_device.active_states.get("myfox:AlarmStatusState")
 
-        if state == "armed":
-            self._state = STATE_ALARM_ARMED_AWAY
-        elif state == "disarmed":
-            self._state = STATE_ALARM_DISARMED
-        elif state == "partial":
-            self._state = STATE_ALARM_ARMED_HOME
-        else:
-            self._state = None
+            if state == "armed":
+                self._state = STATE_ALARM_ARMED_AWAY
+            elif state == "disarmed":
+                self._state = STATE_ALARM_DISARMED
+            elif state == "partial":
+                self._state = STATE_ALARM_ARMED_HOME
+            else:
+                self._state = None
 
         if "core:IntrusionState" in self.tahoma_device.active_states:
             state = self.tahoma_device.active_states.get("core:IntrusionState")
 
-        if state == True:
-            self._state = STATE_ALARM_TRIGGERED
+            if state == True:
+                self._state = STATE_ALARM_TRIGGERED
 
     @property
     def state(self):
@@ -103,6 +103,24 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             ]
             
         return attr
+
+    @property
+    def supported_features(self) -> int:
+        """Return the list of supported features."""
+
+        supported_features = 0
+
+        # if "arm" in self.tahoma_device.command_definitions:
+        #     supported_features |= SUPPORT_ALARM_ARM_AWAY
+
+        supported_features |= SUPPORT_ALARM_ARM_AWAY
+        supported_features |= SUPPORT_ALARM_ARM_CUSTOM_BYPASS
+        supported_features |= SUPPORT_ALARM_ARM_HOME
+        supported_features |= SUPPORT_ALARM_ARM_NIGHT
+        supported_features |= SUPPORT_ALARM_TRIGGER
+
+        return supported_features
+        # return SUPPORT_ALARM_ARM_HOME | SUPPORT_ALARM_ARM_AWAY
 
     def alarm_disarm(self, code=None):
         """Send disarm command."""

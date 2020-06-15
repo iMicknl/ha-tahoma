@@ -22,6 +22,7 @@ DOMAIN = "tahoma"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
+    "Alarm": "alarm_control_panel",
     "Light": "light",
     "ExteriorScreen": "cover",
     "Pergola": "cover",
@@ -40,8 +41,7 @@ TAHOMA_TYPES = {
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
-    "Gate": "cover",
-    "Alarm": "alarm_control_panel"
+    "Gate": "cover"
 }
 
 TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
@@ -64,7 +64,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
-    "ContactSensor": DEVICE_CLASS_OPENING 
+    "ContactSensor": DEVICE_CLASS_OPENING
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes

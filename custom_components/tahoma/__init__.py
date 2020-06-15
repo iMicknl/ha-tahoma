@@ -38,7 +38,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 PLATFORMS = [
-    "alarm_control_panel"
+    "alarm_control_panel",
     "binary_sensor",
     "cover",
     "light",
