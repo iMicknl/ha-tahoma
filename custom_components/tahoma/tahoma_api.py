@@ -1,7 +1,7 @@
 """
-Connection to Tahoma API.
+Connection to TaHoma API.
 
-Connection to Somfy Tahoma REST API
+Connection to Somfy TaHoma REST API
 """
 
 import json
@@ -13,12 +13,12 @@ BASE_HEADERS = {'User-Agent': 'mine'}
 
 
 class TahomaApi:
-    """Connection to Tahoma API."""
+    """Connection to TaHoma API."""
 
     def __init__(self, userName, userPassword, **kwargs):
-        """Initalize the Tahoma protocol.
+        """Initalize the TaHoma protocol.
 
-        :param userName: Tahoma username
+        :param userName: TaHoma username
         :param userPassword: Password
         :param kwargs: Ignore, only for unit test reasons
         """
@@ -34,7 +34,7 @@ class TahomaApi:
         self.login()
 
     def login(self):
-        """Login to Tahoma API."""
+        """Login to TaHoma API."""
         if self.__logged_in:
             return
         login = {'userId': self.__username, 'userPassword': self.__password}
@@ -73,7 +73,7 @@ class TahomaApi:
 
     def send_request(self, method, url: str, headers, data=None, timeout: int = 10,
                      retries: int = 3):
-        """Wrap the post request and retries
+        """Wrap the http requests and retries
 
         :param method: The method to use for the request: post, get, delete.
         :param url: The url to send the POST to.
@@ -181,11 +181,11 @@ class TahomaApi:
 
     @property
     def location(self):
-        """Return the location information stored in your Tahoma box.
+        """Return the location information stored in your TaHoma box.
 
         When the configuration has been loaded via get_setup this
         method retrieves all the location details which have
-        been saved for your Tahoma box.
+        been saved for your TaHoma box.
         :return: a dict with all the informations
         :rtype: dict
         :Example:
@@ -218,10 +218,10 @@ class TahomaApi:
 
     @property
     def gateway(self):
-        """Return information about your Tahoma box.
+        """Return information about your TaHoma box.
 
         When the configuration has been loaded via get_setup this
-        method retrieves all  details your Tahoma box.
+        method retrieves all  details your TaHoma box.
 
         :return: a list of all gateways with a dict per gateway with
         all the informations
@@ -292,7 +292,7 @@ class TahomaApi:
         """Start to execute an action or a group of actions.
 
         This method takes a bunch of actions and runs them on your
-        Tahoma box.
+        TaHoma box.
 
         :param name_of_action: the label/name for the action
         :param actions: an array of Action objects
@@ -526,10 +526,10 @@ class TahomaApi:
 
 
 class Device:
-    """Represents an Tahoma Device."""
+    """Represents an TaHoma Device."""
 
     def __init__(self, protocol, dataInput):
-        """Initalize the Tahoma Device."""
+        """Initalize the TaHoma Device."""
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
@@ -696,10 +696,10 @@ class Device:
 
 
 class Action:
-    """Represents an Tahoma Action."""
+    """Represents an TaHoma Action."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action."""
+        """Initalize the TaHoma Action."""
         self.__commands = []
 
         if isinstance(data, dict):
@@ -765,10 +765,10 @@ class Action:
 
 
 class Command:
-    """Represents an Tahoma Command."""
+    """Represents an TaHoma Command."""
 
     def __init__(self, cmd_name, *args):
-        """Initalize the Tahoma Command."""
+        """Initalize the TaHoma Command."""
         self.__name = cmd_name
 
         if len(args):
@@ -815,10 +815,10 @@ class Command:
 
 
 class ActionGroup:
-    """Represents an Tahoma Action Group."""
+    """Represents an TaHoma Action Group."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action Group."""
+        """Initalize the TaHoma Action Group."""
         if hasattr(data, 'lastUpdateTime'):
             self.__last_update = data['lastUpdateTime']
         else:
@@ -853,11 +853,11 @@ class ActionGroup:
 
 
 class Event:
-    """Represents an Tahoma Event."""
+    """Represents an TaHoma Event."""
 
     @staticmethod
     def factory(data):
-        """Tahoma Event factory."""
+        """TaHoma Event factory."""
         if data['name'] == "DeviceStateChangedEvent":
             return DeviceStateChangedEvent(data)
         elif data['name'] == "ExecutionStateChangedEvent":
@@ -871,10 +871,10 @@ class Event:
 
 
 class DeviceStateChangedEvent(Event):
-    """Represents an Tahoma DeviceStateChangedEvent."""
+    """Represents an TaHoma DeviceStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma DeviceStateChangedEvent."""
+        """Initalize the TaHoma DeviceStateChangedEvent."""
         self.__device_url = data['deviceURL']
         self.__states = data['deviceStates']
 
@@ -890,10 +890,10 @@ class DeviceStateChangedEvent(Event):
 
 
 class CommandExecutionStateChangedEvent(Event):
-    """Represents an Tahoma CommandExecutionStateChangedEvent."""
+    """Represents an TaHoma CommandExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma CommandExecutionStateChangedEvent."""
+        """Initalize the TaHoma CommandExecutionStateChangedEvent."""
         self.__exec_id = data['execId']
         self.__device_url = data['deviceURL']
 
@@ -929,10 +929,10 @@ class CommandExecutionStateChangedEvent(Event):
 
 
 class ExecutionStateChangedEvent(Event):
-    """Represents an Tahoma ExecutionStateChangedEvent."""
+    """Represents an TaHoma ExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma ExecutionStateChangedEvent."""
+        """Initalize the TaHoma ExecutionStateChangedEvent."""
         self.__exec_id = data['execId']
 
         try:
@@ -970,10 +970,10 @@ class ExecutionStateChangedEvent(Event):
 
 
 class EventState():
-    """Represents an Tahoma EventState."""
+    """Represents an TaHoma EventState."""
 
     def __init__(self, state):
-        """Initalize the Tahoma EventState."""
+        """Initalize the TaHoma EventState."""
         if isinstance(state, int):
             if state is EventState.Unknown0:
                 self.__state = EventState.Unknown0
@@ -1041,10 +1041,10 @@ class EventState():
 
 
 class Execution:
-    """Represents an Tahoma Execution."""
+    """Represents an TaHoma Execution."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Execution."""
+        """Initalize the TaHoma Execution."""
         self.__execution_id = data['id']
         self.__start_time = data['startTime']
         self.__state = EventState(data['state'])
