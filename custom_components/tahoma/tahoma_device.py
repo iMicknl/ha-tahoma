@@ -13,13 +13,17 @@ from .const import (
 
 
 class TahomaDevice(Entity):
-    """Representation of a Tahoma device entity."""
+    """Representation of a TaHoma device entity."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the device."""
         self.tahoma_device = tahoma_device
         self._name = self.tahoma_device.label
         self.controller = controller
+
+    async def async_added_to_hass(self):
+        await super().async_added_to_hass()
+        self.schedule_update_ha_state(True)
 
     @property
     def name(self):
@@ -89,6 +93,7 @@ class TahomaDevice(Entity):
             "manufacturer": "Somfy",
             "name": self.name,
             "model": self.tahoma_device.widget,
+            "sw_version": self.tahoma_device.type
         }
 
     def apply_action(self, cmd_name, *args):

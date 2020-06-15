@@ -1,4 +1,4 @@
-"""Tahoma light platform that implements dimmable tahoma lights."""
+"""TaHoma light platform that implements dimmable TaHoma lights."""
 import logging
 from datetime import timedelta
 
@@ -21,7 +21,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma lights from a config entry."""
+    """Set up the TaHoma lights from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -43,20 +43,19 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self._skip_update = False
         self._effect = None
-
-        device_type = self.tahoma_device.widget
+        self._brightness = None
+        self._state = None
+        
         self.update()
 
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        _LOGGER.debug("[THM] Called to get brightness %s" % (self._brightness))
         return int(self._brightness * (255 / 100))
 
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        _LOGGER.debug("[THM] Called to check is on %s" % (self._state))
         return self._state
 
     @property
@@ -75,7 +74,6 @@ class TahomaLight(TahomaDevice, LightEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the light on."""
-        _LOGGER.debug("[THM] Called to turn on (%s, %s)", kwargs, self._brightness)
         self._state = True
         self._skip_update = True
 
@@ -86,14 +84,12 @@ class TahomaLight(TahomaDevice, LightEntity):
             self._effect = kwargs[ATTR_EFFECT]
             self.apply_action("wink", 100)
         else:
-            self._brightness = 100
             self.apply_action("on")
 
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the light off."""
-        _LOGGER.debug("[THM] Called to turn off")
         self._state = False
         self._skip_update = True
         self.apply_action("off")
@@ -119,7 +115,6 @@ class TahomaLight(TahomaDevice, LightEntity):
             self._skip_update = False
             return
 
-        _LOGGER.debug("[THM] Updating state...")
         self.controller.get_states([self.tahoma_device])
 
         if "core:LightIntensityState" in self.tahoma_device.active_states:

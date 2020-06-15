@@ -1,4 +1,4 @@
-"""Support for Tahoma scenes."""
+"""Support for TaHoma scenes."""
 import logging
 from typing import Any
 
@@ -10,7 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma scenes from a config entry."""
+    """Set up the TaHoma scenes from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -24,7 +24,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaScene(Scene):
-    """Representation of a Tahoma scene entity."""
+    """Representation of a TaHoma scene entity."""
 
     def __init__(self, tahoma_scene, controller):
         """Initialize the scene."""

@@ -1,4 +1,4 @@
-"""The Tahoma integration."""
+"""The TaHoma integration."""
 import asyncio
 
 import voluptuous as vol
@@ -42,6 +42,7 @@ PLATFORMS = [
     "cover",
     "light",
     "lock",
+    "scene",
     "sensor",
     "switch",
     "alarm_control_panel"
@@ -49,12 +50,12 @@ PLATFORMS = [
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Tahoma component."""
+    """Set up the TaHoma component."""
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up Tahoma from a config entry."""
+    """Set up TaHoma from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
 
@@ -69,31 +70,35 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # TODO Add better exception handling
     except RequestException:
-        _LOGGER.exception("Error when getting devices from the Tahoma API")
+        _LOGGER.exception("Error when getting devices from the TaHoma API")
         return False
 
-    hass.data[DOMAIN][entry.entry_id] = {"controller": controller, "devices": [], "scenes": []}
+    hass.data[DOMAIN][entry.entry_id] = {
+        "controller": controller,
+        "devices": [],
+        "scenes": [],
+    }
 
-    # List devices
     for device in devices:
         _device = controller.get_device(device)
 
         if _device.uiclass in TAHOMA_TYPES:
             if TAHOMA_TYPES[_device.uiclass] in PLATFORMS:
                 component = TAHOMA_TYPES[_device.uiclass]
-
                 hass.data[DOMAIN][entry.entry_id]["devices"].append(_device)
 
-                hass.async_create_task(
-                    hass.config_entries.async_forward_entry_setup(entry, component)
-                )
         else:
             _LOGGER.warning(
-                "Unsupported Tahoma device (%s - %s - %s)",
+                "Unsupported TaHoma device (%s - %s - %s)",
                 _device.type,
                 _device.uiclass,
                 _device.widget,
             )
+
+    for component in PLATFORMS:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, component)
+        )
 
     for scene in scenes:
         hass.data[DOMAIN][entry.entry_id]["scenes"].append(scene)

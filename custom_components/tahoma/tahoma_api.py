@@ -1,23 +1,24 @@
 """
-Connection to Tahoma API.
+Connection to TaHoma API.
 
-Connection to Somfy Tahoma REST API
+Connection to Somfy TaHoma REST API
 """
 
 import json
 import requests
 import urllib.parse
 
-BASE_URL = 'https://tahomalink.com/enduser-mobile-web/enduserAPI/' # /doc for API doc
+BASE_URL = 'https://tahomalink.com/enduser-mobile-web/enduserAPI/'  # /doc for API doc
 BASE_HEADERS = {'User-Agent': 'mine'}
 
+
 class TahomaApi:
-    """Connection to Tahoma API."""
+    """Connection to TaHoma API."""
 
     def __init__(self, userName, userPassword, **kwargs):
-        """Initalize the Tahoma protocol.
+        """Initalize the TaHoma protocol.
 
-        :param userName: Tahoma username
+        :param userName: TaHoma username
         :param userPassword: Password
         :param kwargs: Ignore, only for unit test reasons
         """
@@ -33,7 +34,7 @@ class TahomaApi:
         self.login()
 
     def login(self):
-        """Login to Tahoma API."""
+        """Login to TaHoma API."""
         if self.__logged_in:
             return
         login = {'userId': self.__username, 'userPassword': self.__password}
@@ -70,6 +71,35 @@ class TahomaApi:
         self.__logged_in = True
         return self.__logged_in
 
+    def send_request(self, method, url: str, headers, data=None, timeout: int = 10,
+                     retries: int = 3):
+        """Wrap the http requests and retries
+
+        :param method: The method to use for the request: post, get, delete.
+        :param url: The url to send the POST to.
+        :param headers: The headers of the request.
+        :param data: The data of the request.
+        :param timeout: The timeout of the request.
+        :param retries: Maximum number of retries.
+        :return:
+        """
+        if not self.__logged_in:
+            self.login()
+
+        request = method(url, headers=headers, data=data, timeout=timeout)
+        if request.status_code == 200:
+            try:
+                result = request.json()
+            except ValueError as error:
+                raise Exception(
+                    "Not a valid result, protocol error: " + str(error))
+            return result
+        elif retries == 0:
+            raise Exception(
+                "Maximum number of consecutive retries reached. Error is:\n" + request.text)
+        else:
+            self.send_request(method, url, headers, data, timeout, retries - 1)
+
     def get_user(self):
         """Get the user informations from the server.
 
@@ -98,21 +128,10 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.get(BASE_URL + 'enduser/mainAccount',
-                               headers=header,
-                               timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.get_user()
-            return
-
-        try:
-            result = request.json()
-        except ValueError:
-            raise Exception(
-                "Not a valid result for getEndUser, protocol error!")
+        result = self.send_request(
+            requests.get,
+            BASE_URL + 'enduser/mainAccount',
+            headers=header, )
 
         return result
 
@@ -137,23 +156,12 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.get(BASE_URL + 'setup',
-                               headers=header,
-                               timeout=10)
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.get_setup()
-            return
+        result = self.send_request(
+            requests.get,
+            BASE_URL + 'setup',
+            headers=header)
 
-        try:
-            result = request.json()
-            self.__setup = result
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for getSetup, " +
-                "protocol error: " + error)
-
+        self.__setup = result
         self._get_setup(result)
 
     def _get_setup(self, result):
@@ -173,11 +181,11 @@ class TahomaApi:
 
     @property
     def location(self):
-        """Return the location information stored in your Tahoma box.
+        """Return the location information stored in your TaHoma box.
 
         When the configuration has been loaded via get_setup this
         method retrieves all the location details which have
-        been saved for your Tahoma box.
+        been saved for your TaHoma box.
         :return: a dict with all the informations
         :rtype: dict
         :Example:
@@ -210,10 +218,10 @@ class TahomaApi:
 
     @property
     def gateway(self):
-        """Return information about your Tahoma box.
+        """Return information about your TaHoma box.
 
         When the configuration has been loaded via get_setup this
-        method retrieves all  details your Tahoma box.
+        method retrieves all  details your TaHoma box.
 
         :return: a list of all gateways with a dict per gateway with
         all the informations
@@ -284,7 +292,7 @@ class TahomaApi:
         """Start to execute an action or a group of actions.
 
         This method takes a bunch of actions and runs them on your
-        Tahoma box.
+        TaHoma box.
 
         :param name_of_action: the label/name for the action
         :param actions: an array of Action objects
@@ -311,25 +319,7 @@ class TahomaApi:
         data = {"label": name_of_action, "actions": actions_serialized}
         json_data = json.dumps(data, indent=None, sort_keys=True)
 
-        request = requests.post(
-            BASE_URL + "exec/apply",
-            headers=header,
-            data=json_data,
-            timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.apply_actions(name_of_action, actions)
-            return
-
-        try:
-            result = request.json()
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for applying an " +
-                "action, protocol error: " + request.status_code +
-                ' - ' + request.reason + " (" + error + ")")
+        result = self.send_request(requests.post, BASE_URL + "exec/apply", header, json_data)
 
         if 'execId' not in result.keys():
             raise Exception("Could not run actions, missing execId.")
@@ -366,31 +356,17 @@ class TahomaApi:
         header['Cookie'] = self.__cookie
 
         if self.__events_registration is None:
-            register_response = requests.post(BASE_URL + 'events/register',
-                                    headers=header,
-                                    timeout=10)
+            register_response = self.send_request(
+                requests.post,
+                BASE_URL + 'events/register',
+                header)
 
-            self.__events_registration = json.loads(register_response.text)["id"]
-            if register_response.status_code != 200:
-                self.__events_registration = None
-                self.get_events()
+            self.__events_registration = register_response["id"]
 
-        request = requests.post(BASE_URL + 'events/' + self.__events_registration + '/fetch',
-                                headers=header,
-                                timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.get_events()
-            return
-
-        try:
-            result = request.json()
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for getEvent," +
-                " protocol error: " + error)
+        result = self.send_request(
+            requests.post,
+            BASE_URL + 'events/' + self.__events_registration + '/fetch',
+            headers=header)
 
         return self._get_events(result)
 
@@ -420,8 +396,8 @@ class TahomaApi:
     def get_current_executions(self):
         """Get all current running executions.
 
-        :return: Returns a set of running Executions or empty list.
-        :rtype: list
+        :return: Returns a dict of running Executions or empty dict.
+        :rtype: dict
 
         raises ValueError in case of protocol issues
 
@@ -434,30 +410,16 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.get(
-            BASE_URL +
-            'exec/current',
-            headers=header,
-            timeout=10)
+        result = self.send_request(
+            requests.get,
+            BASE_URL + 'exec/current',
+            headers=header)
 
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.get_current_executions()
-            return
-
-        try:
-            result = request.json()
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for" +
-                "get_current_executions, protocol error: " + error)
-
-        executions = []
+        executions = {}
 
         for execution_data in result:
             exe = Execution(execution_data)
-            executions.append(exe)
+            executions[exe.execution_id] = exe
 
         return executions
 
@@ -466,23 +428,10 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.get(
+        result = self.send_request(
+            requests.get,
             BASE_URL + 'history',
-            headers=header,
-            timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.get_history()
-            return
-
-        try:
-            result = request.json()
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for" +
-                "get_history, protocol error: " + error)
+            headers=header)
 
         return result
 
@@ -494,15 +443,7 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.delete(BASE_URL + 'exec/current/setup',
-                               headers=header,
-                               timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.cancel_all_executions()
-            return
+        self.send_request(requests.delete, BASE_URL + 'exec/current/setup', headers=header)
 
     def get_action_groups(self):
         """Get all Action Groups.
@@ -541,25 +482,10 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.post(
+        result = self.send_request(
+            requests.post,
             BASE_URL + 'exec/' + action_id,
-            headers=header,
-            timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.launch_action_group(action_id)
-            return
-
-        try:
-            result = request.json()
-        except ValueError as error:
-            raise Exception(
-                "Not a valid result for launch" +
-                "action group, protocol error: " +
-                request.status_code + ' - ' + request.reason +
-                " (" + error + ")")
+            headers=header)
 
         if 'execId' not in result.keys():
             raise Exception(
@@ -575,16 +501,10 @@ class TahomaApi:
 
         for device in devices:
             path = 'setup/devices/' + urllib.parse.quote_plus(device.url) + '/states'
-            states_response = requests.get(
+            result = self.send_request(
+                requests.get,
                 BASE_URL + path,
-                headers=header,
-                timeout=10)
-            try:
-                result = states_response.json()
-            except ValueError as error:
-                raise Exception(
-                    "Not a valid result for" +
-                    "setup/devices/..../status, protocol error:" + error)
+                headers=header)
 
             try:
                 self.__devices[device.url].set_active_states(result)
@@ -596,23 +516,17 @@ class TahomaApi:
         header = BASE_HEADERS.copy()
         header['Cookie'] = self.__cookie
 
-        request = requests.post(
+        self.send_request(
+            requests.post,
             BASE_URL + "setup/devices/states/refresh",
-            headers=header,
-            timeout=10)
-
-        if request.status_code != 200:
-            self.__logged_in = False
-            self.login()
-            self.refresh_all_states()
-            return
+            headers=header)
 
 
 class Device:
-    """Represents an Tahoma Device."""
+    """Represents an TaHoma Device."""
 
     def __init__(self, protocol, dataInput):
-        """Initalize the Tahoma Device."""
+        """Initalize the TaHoma Device."""
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
@@ -675,7 +589,7 @@ class Device:
         self.__command_def = dataInput['definition']['commands']
 
         self.__states_def = dataInput['definition']['states']
-        
+
         # Parse active states
 
         # calculate the amount of known active states
@@ -694,7 +608,7 @@ class Device:
         if len(self.state_definitions) > 0:
 
             if 'states' in dataInput.keys():
-                #raise ValueError("No active states given.")
+                # raise ValueError("No active states given.")
 
                 for state in dataInput['states']:
 
@@ -733,7 +647,7 @@ class Device:
     def set_active_state(self, name, value):
         """Set active state."""
         if name not in self.__active_states.keys():
-            raise ValueError("Can not set unknown state '" + name + "'")
+            self.__active_states[name] = value
 
         if (isinstance(self.__active_states[name], int) and
                 isinstance(value, str)):
@@ -779,10 +693,10 @@ class Device:
 
 
 class Action:
-    """Represents an Tahoma Action."""
+    """Represents an TaHoma Action."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action."""
+        """Initalize the TaHoma Action."""
         self.__commands = []
 
         if isinstance(data, dict):
@@ -836,7 +750,7 @@ class Action:
             indent=4,
             sort_keys=True,
             separators=(',', ': ')
-            )
+        )
 
     def __repr__(self):
         """Format to json."""
@@ -848,10 +762,10 @@ class Action:
 
 
 class Command:
-    """Represents an Tahoma Command."""
+    """Represents an TaHoma Command."""
 
     def __init__(self, cmd_name, *args):
-        """Initalize the Tahoma Command."""
+        """Initalize the TaHoma Command."""
         self.__name = cmd_name
 
         if len(args):
@@ -898,16 +812,16 @@ class Command:
 
 
 class ActionGroup:
-    """Represents an Tahoma Action Group."""
+    """Represents an TaHoma Action Group."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action Group."""
+        """Initalize the TaHoma Action Group."""
         if hasattr(data, 'lastUpdateTime'):
             self.__last_update = data['lastUpdateTime']
         else:
             self.__last_update = -1
         self.__name = data['label']
-        self.__oid  = data['oid']
+        self.__oid = data['oid']
 
         self.__actions = []
 
@@ -923,7 +837,7 @@ class ActionGroup:
     def name(self):
         """Get name of action group."""
         return self.__name
-    
+
     @property
     def oid(self):
         """Get oid of the action group."""
@@ -936,11 +850,11 @@ class ActionGroup:
 
 
 class Event:
-    """Represents an Tahoma Event."""
+    """Represents an TaHoma Event."""
 
     @staticmethod
     def factory(data):
-        """Tahoma Event factory."""
+        """TaHoma Event factory."""
         if data['name'] == "DeviceStateChangedEvent":
             return DeviceStateChangedEvent(data)
         elif data['name'] == "ExecutionStateChangedEvent":
@@ -949,15 +863,15 @@ class Event:
             return CommandExecutionStateChangedEvent(data)
         else:
             print("Unknown event '" + data['name'] + "' occurred.")
-            #raise ValueError("Unknown event '" + data['name'] + "' occurred.")
+            # raise ValueError("Unknown event '" + data['name'] + "' occurred.")
             return None
 
 
 class DeviceStateChangedEvent(Event):
-    """Represents an Tahoma DeviceStateChangedEvent."""
+    """Represents an TaHoma DeviceStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma DeviceStateChangedEvent."""
+        """Initalize the TaHoma DeviceStateChangedEvent."""
         self.__device_url = data['deviceURL']
         self.__states = data['deviceStates']
 
@@ -973,10 +887,10 @@ class DeviceStateChangedEvent(Event):
 
 
 class CommandExecutionStateChangedEvent(Event):
-    """Represents an Tahoma CommandExecutionStateChangedEvent."""
+    """Represents an TaHoma CommandExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma CommandExecutionStateChangedEvent."""
+        """Initalize the TaHoma CommandExecutionStateChangedEvent."""
         self.__exec_id = data['execId']
         self.__device_url = data['deviceURL']
 
@@ -1012,10 +926,10 @@ class CommandExecutionStateChangedEvent(Event):
 
 
 class ExecutionStateChangedEvent(Event):
-    """Represents an Tahoma ExecutionStateChangedEvent."""
+    """Represents an TaHoma ExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma ExecutionStateChangedEvent."""
+        """Initalize the TaHoma ExecutionStateChangedEvent."""
         self.__exec_id = data['execId']
 
         try:
@@ -1053,10 +967,10 @@ class ExecutionStateChangedEvent(Event):
 
 
 class EventState():
-    """Represents an Tahoma EventState."""
+    """Represents an TaHoma EventState."""
 
     def __init__(self, state):
-        """Initalize the Tahoma EventState."""
+        """Initalize the TaHoma EventState."""
         if isinstance(state, int):
             if state is EventState.Unknown0:
                 self.__state = EventState.Unknown0
@@ -1081,7 +995,7 @@ class EventState():
             elif state == "TRANSMITTED":
                 self.__state = EventState.Transmitted
             elif state == "IN_PROGRESS":
-                self.__state = EventState.InProgress                             
+                self.__state = EventState.InProgress
             elif state == "COMPLETED":
                 self.__state = EventState.Completed
             elif state == "FAILED":
@@ -1122,11 +1036,12 @@ class EventState():
     Transmitted = 11
     InProgress = 12
 
+
 class Execution:
-    """Represents an Tahoma Execution."""
+    """Represents an TaHoma Execution."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Execution."""
+        """Initalize the TaHoma Execution."""
         self.__execution_id = data['id']
         self.__start_time = data['startTime']
         self.__state = EventState(data['state'])

@@ -1,6 +1,7 @@
-"""Support for Tahoma sensors."""
+"""Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
+from typing import Optional
 
 from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE
 from homeassistant.helpers.entity import Entity
@@ -8,9 +9,10 @@ from homeassistant.helpers.entity import Entity
 from .const import (
     DOMAIN,
     TAHOMA_TYPES,
+    TAHOMA_SENSOR_DEVICE_CLASSES,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_LUMINANCE_STATE,
-    CORE_TEMPERATURE_STATE,
+    CORE_TEMPERATURE_STATE, 
 )
 from .tahoma_device import TahomaDevice
 
@@ -20,7 +22,7 @@ SCAN_INTERVAL = timedelta(seconds=60)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma sensors from a config entry."""
+    """Set up the TaHoma sensors from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -35,7 +37,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaSensor(TahomaDevice, Entity):
-    """Representation of a Tahoma Sensor."""
+    """Representation of a TaHoma Sensor."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""
@@ -62,6 +64,15 @@ class TahomaSensor(TahomaDevice, Entity):
             return "lx"
 
         return None
+
+    @property
+    def device_class(self) -> Optional[str]:
+        """Return the device class of this entity if any."""
+        return (
+                TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.widget)
+                or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
+                or None
+        )
 
     def update(self):
         """Update the state."""

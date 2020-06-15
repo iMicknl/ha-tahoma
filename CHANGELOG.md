@@ -6,7 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0]
+### Added
+
+- Added support for Gate devices
+
+### Changed
+
+- Removed all hardcoded device strings from the cover component
+
+## [1.0.0] - 04-06-2020
 
 ### Added
 

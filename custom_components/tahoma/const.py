@@ -5,6 +5,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_GARAGE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
+    DEVICE_CLASS_GATE
 )
 
 from homeassistant.components.binary_sensor import (
@@ -12,12 +13,14 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_OCCUPANCY,
     DEVICE_CLASS_OPENING
 )
+from homeassistant.const import DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY, \
+    DEVICE_CLASS_ILLUMINANCE
 
-"""Constants for the Tahoma integration."""
+"""Constants for the TaHoma integration."""
 
 DOMAIN = "tahoma"
 
-# Tahoma to Home Assistant mapping
+# Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
     "Light": "light",
     "ExteriorScreen": "cover",
@@ -37,9 +40,12 @@ TAHOMA_TYPES = {
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
-    "Alarm": "alarm_control_panel"
+    "Gate": "cover"
 }
 
+TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
+
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
@@ -49,16 +55,25 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "Blind": DEVICE_CLASS_BLIND,
     "GarageDoor": DEVICE_CLASS_GARAGE,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
+    "Gate": DEVICE_CLASS_GATE
 }
 
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING 
 }
 
-# Tahoma Attributes
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
+TAHOMA_SENSOR_DEVICE_CLASSES = {
+    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
+    "HumiditySensor": DEVICE_CLASS_HUMIDITY,
+    "LightSensor": DEVICE_CLASS_ILLUMINANCE
+}
+
+# TaHoma Attributes
 ATTR_MEM_POS = "memorized_position"
 ATTR_RSSI_LEVEL = "rssi_level"
 ATTR_LOCK_START_TS = "lock_start_ts"
@@ -66,7 +81,7 @@ ATTR_LOCK_END_TS = "lock_end_ts"
 ATTR_LOCK_LEVEL = "lock_level"
 ATTR_LOCK_ORIG = "lock_originator"
 
-# Tahoma internal device states
+# TaHoma internal device states
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_STATUS_STATE = "core:StatusState"
 CORE_CLOSURE_STATE = "core:ClosureState"
@@ -80,7 +95,8 @@ CORE_SMOKE_STATE = "core:SmokeState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
-
+CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
+CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
@@ -88,3 +104,5 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 # Commands
 COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_SET_ORIENTATION = "setOrientation"
+COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
