@@ -110,7 +110,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             and device.widget in SUPPORTED_CLIMATE_DEVICES
         ):
             options = dict(entry.options)
-            if device.url in options[TAHOMA_TYPE_HEATING_SYSTEM]:
+            if device.url in options[DEVICE_CLASS_TEMPERATURE]:
                     sensor_id = options[DEVICE_CLASS_TEMPERATURE][device.url]
                     entities.append(TahomaClimate(device, controller, sensor_id))
             else:
@@ -123,7 +123,7 @@ async def update_listener(hass, entry):
     """Handle options update."""
     options = dict(entry.options)
     for entity in hass.data["climate"].entities:
-        if entity.unique_id in options[TAHOMA_TYPE_HEATING_SYSTEM]:
+        if entity.unique_id in options[DEVICE_CLASS_TEMPERATURE]:
             entity.set_temperature_sensor(
                 options[DEVICE_CLASS_TEMPERATURE][entity.unique_id]
             )
