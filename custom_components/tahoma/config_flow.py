@@ -142,7 +142,10 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
         schema = {}
         if TAHOMA_TYPE_HEATING_SYSTEM in self.config_entry.data:
             for k, v in self.config_entry.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
-                default = self.config_entry.options.get(DEVICE_CLASS_TEMPERATURE).get(k)
+                if DEVICE_CLASS_TEMPERATURE not in self.config_entry.options:
+                    default = None
+                else:
+                    default = self.config_entry.options.get(DEVICE_CLASS_TEMPERATURE).get(k)
                 if default is None:
                     default = v
                 key = vol.Required(
