@@ -104,8 +104,6 @@ class TahomaDevice(Entity):
         """Apply Action to Device."""
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
-        if COMMAND_REFRESH_STATE in self.tahoma_device.command_definitions:
-            action.add_command(COMMAND_REFRESH_STATE)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
         while exec_id in self.controller.get_current_executions():
             _LOGGER.info("Waiting for action to execute")

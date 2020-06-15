@@ -307,6 +307,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                     self._target_temp,
                     STATE_DEROGATION_FURTHER_NOTICE,
                 )
+            self.apply_action(COMMAND_EXIT_DEROGATION)
         if self._widget == W_AEH:
             if hvac_mode == HVAC_MODE_OFF:
                 self.apply_action(COMMAND_OFF)
@@ -365,6 +366,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self.apply_action(
                 COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
             )
+            self.apply_action(COMMAND_EXIT_DEROGATION)
         if self._widget == W_AEH:
             self._target_temp = temperature
             self._control_heating()
@@ -440,6 +442,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 self.apply_action(
                     COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, self._target_temp
                 )
+            self.apply_action(COMMAND_EXIT_DEROGATION)
         elif self._widget == W_AEH:
             self.apply_action(
                 COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[preset_mode]
