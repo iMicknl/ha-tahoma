@@ -123,11 +123,12 @@ async def update_listener(hass, entry):
     """Handle options update."""
     options = dict(entry.options)
     for entity in hass.data["climate"].entities:
-        if entity.unique_id in options[TAHOMA_TYPE_HEATING_SYSTEM]:
-            entity.set_temperature_sensor(
-                options[DEVICE_CLASS_TEMPERATURE][entity.unique_id]
-            )
-            entity.schedule_update_ha_state()
+        if TAHOMA_TYPE_HEATING_SYSTEM in options:
+            if entity.unique_id in options[TAHOMA_TYPE_HEATING_SYSTEM]:
+                entity.set_temperature_sensor(
+                    options[DEVICE_CLASS_TEMPERATURE][entity.unique_id]
+                )
+                entity.schedule_update_ha_state()
 
 
 class TahomaClimate(TahomaDevice, ClimateEntity):
