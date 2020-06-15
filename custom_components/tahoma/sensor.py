@@ -75,6 +75,15 @@ class TahomaSensor(TahomaDevice, Entity):
         return None
 
     @property
+    def icon(self) -> Optional[str]:
+        """Return the icon to use in the frontend, if any."""
+
+        if self.tahoma_device.uiclass == "AirSensor":
+            return "mdi:periodic-table-co2"
+
+        return None
+
+    @property
     def device_class(self) -> Optional[str]:
         """Return the device class of this entity if any."""
         return (
