@@ -38,6 +38,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 PLATFORMS = [
+    "alarm_control_panel"
     "binary_sensor",
     "cover",
     "light",
@@ -45,7 +46,6 @@ PLATFORMS = [
     "scene",
     "sensor",
     "switch",
-    "alarm_control_panel"
 ]
 
 
@@ -111,7 +111,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     unload_ok = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
+                hass.config_entries.async_forward_entry_unload(
+                    entry, component)
                 for component in PLATFORMS
             ]
         )

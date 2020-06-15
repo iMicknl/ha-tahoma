@@ -30,6 +30,7 @@ If your device is not supported, it will show the following message in the loggi
 
 | Somfy uiClass     | Home Assistant platform |
 | ----------------- | ----------------------- |
+| Alarm             | alarm_control_panel     |
 | Awning            | cover                   |
 | ExteriorScreen    | cover                   |
 | Gate              | cover                   |
@@ -52,5 +53,4 @@ If your device is not supported, it will show the following message in the loggi
 | Somfy uiClass    |
 | ---------------- |
 | RemoteController |
-| Alarm            |
 | HeatingSystem    |

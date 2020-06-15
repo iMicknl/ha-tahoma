@@ -40,7 +40,8 @@ TAHOMA_TYPES = {
     "OccupancySensor": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
-    "Gate": "cover"
+    "Gate": "cover",
+    "Alarm": "alarm_control_panel"
 }
 
 TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
