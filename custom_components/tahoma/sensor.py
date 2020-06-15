@@ -70,7 +70,7 @@ class TahomaSensor(TahomaDevice, Entity):
             return "W"
 
         if self.tahoma_device.uiclass == "AirSensor":
-            return "µmol"
+            return "ppm"
 
         return None
 

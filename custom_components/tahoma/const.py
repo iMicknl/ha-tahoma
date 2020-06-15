@@ -31,7 +31,6 @@ TAHOMA_TYPES = {
     "Pergola": "cover",
     "RollerShutter": "cover",
     "Window": "cover",
-    "RemoteController": "",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
     "LightSensor": "sensor",
@@ -84,7 +83,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "ElectricitySensor": DEVICE_CLASS_POWER,
-    "AirSensor": "carbondioxide"
+    "AirSensor": "carbon dioxide"
 }
 
 # TaHoma Attributes
