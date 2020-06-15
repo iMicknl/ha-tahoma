@@ -37,6 +37,8 @@ If your device is not supported, it will show the following message in the loggi
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |
 | Window            | cover                   |
+| AirSensor         | sensor                  |
+| ElectricitySensor | sensor                  |
 | HumiditySensor    | sensor                  |
 | LightSensor       | sensor                  |
 | TemperatureSensor | sensor                  |
@@ -49,8 +51,14 @@ If your device is not supported, it will show the following message in the loggi
 
 ## Not supported (yet)
 
-| Somfy uiClass    |
-| ---------------- |
-| RemoteController |
-| Alarm            |
-| HeatingSystem    |
+| Somfy uiClass         |
+| --------------------- |
+| RemoteController      |
+| Alarm                 |
+| HeatingSystem         |
+| EvoHome               |
+| HitachiHeatingSystem  |
+| ExteriorHeatingSystem |
+| Fan                   |
+| Siren                 |
+| MusicPlayer           |
