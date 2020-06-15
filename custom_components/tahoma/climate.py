@@ -226,6 +226,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @callback
     def update_temp(self, state=None):
         """Update thermostat with latest state from sensor."""
+        if self._temp_sensor_entity_id is None:
+            return
+
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
 
