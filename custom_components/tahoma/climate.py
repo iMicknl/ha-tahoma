@@ -311,6 +311,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 self.apply_action(COMMAND_OFF)
             if hvac_mode == HVAC_MODE_HEAT:
                 self.apply_action(COMMAND_SET_HEATING_LEVEL,AEH_MAP_PRESET_REVERSE[self._preset_mode])
+            self._control_heating()
             return
 
     @property
@@ -442,3 +443,5 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self.apply_action(
                 COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[preset_mode]
             )
+            self._control_heating()
+
