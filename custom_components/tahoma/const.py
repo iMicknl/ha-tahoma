@@ -42,11 +42,13 @@ TAHOMA_TYPES = {
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
+    "WindowHandle" : "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
     "Gate": "cover",
     "Curtain": "cover",
     "Generic": "cover",
+    "SwingingShutter": "cover",
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor"
 }
@@ -64,7 +66,8 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
     "Gate": DEVICE_CLASS_GATE,
-    "Curtain": DEVICE_CLASS_CURTAIN
+    "Curtain": DEVICE_CLASS_CURTAIN,
+    "SwingingShutter" : DEVICE_CLASS_SHUTTER
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
@@ -72,6 +75,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING,
+    "WindowHandle": DEVICE_CLASS_OPENING
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes

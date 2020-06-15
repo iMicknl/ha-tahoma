@@ -31,11 +31,13 @@ If your device is not supported, it will show the following message in the loggi
 | Somfy uiClass     | Home Assistant platform |
 | ----------------- | ----------------------- |
 | Awning            | cover                   |
+| Curtain           | cover                   |
 | ExteriorScreen    | cover                   |
 | Gate              | cover                   |
 | GarageDoor        | cover                   |
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |
+| SwingingShutter   | cover                   |
 | Window            | cover                   |
 | AirSensor         | sensor                  |
 | ElectricitySensor | sensor                  |
@@ -47,6 +49,7 @@ If your device is not supported, it will show the following message in the loggi
 | ContactSensor     | binary_sensor           |
 | OccupancySensor   | binary_sensor           |
 | SmokeSensor       | binary_sensor           |
+| WindowHandle      | binary_sensor           |
 | Light             | light                   |
 
 ## Not supported (yet)
@@ -62,3 +65,4 @@ If your device is not supported, it will show the following message in the loggi
 | Fan                   |
 | Siren                 |
 | MusicPlayer           |
+| VentilationSystem     |
