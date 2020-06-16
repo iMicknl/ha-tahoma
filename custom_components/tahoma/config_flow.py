@@ -1,6 +1,7 @@
 """Config flow for TaHoma integration."""
 import logging
 
+from requests.exceptions import RequestException
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
@@ -8,7 +9,6 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 
 from .const import DOMAIN  # pylint:disable=unused-import
 from .tahoma_api import TahomaApi
-from requests.exceptions import RequestException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     password = data.get(CONF_PASSWORD)
 
     try:
-        controller = await hass.async_add_executor_job(TahomaApi, username, password)
+        await hass.async_add_executor_job(TahomaApi, username, password)
 
     except RequestException:
         _LOGGER.exception("Error when trying to log in to the TaHoma API")

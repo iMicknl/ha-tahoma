@@ -1,26 +1,25 @@
+"""Constants for the TaHoma integration."""
+
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_OCCUPANCY,
+    DEVICE_CLASS_OPENING,
+    DEVICE_CLASS_SMOKE,
+)
 from homeassistant.components.cover import (
     DEVICE_CLASS_AWNING,
     DEVICE_CLASS_BLIND,
     DEVICE_CLASS_CURTAIN,
     DEVICE_CLASS_GARAGE,
+    DEVICE_CLASS_GATE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
-    DEVICE_CLASS_GATE,
-)
-
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_SMOKE,
-    DEVICE_CLASS_OCCUPANCY,
-    DEVICE_CLASS_OPENING,
 )
 from homeassistant.const import (
-    DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
+    DEVICE_CLASS_TEMPERATURE,
 )
-
-"""Constants for the TaHoma integration."""
 
 DOMAIN = "tahoma"
 

@@ -5,8 +5,9 @@ Connection to Somfy TaHoma REST API
 """
 
 import json
-import requests
 import urllib.parse
+
+import requests
 
 BASE_URL = "https://tahomalink.com/enduser-mobile-web/enduserAPI/"  # /doc for API doc
 BASE_HEADERS = {"User-Agent": "mine"}
@@ -16,7 +17,7 @@ class TahomaApi:
     """Connection to TaHoma API."""
 
     def __init__(self, userName, userPassword, **kwargs):
-        """Initalize the TaHoma protocol.
+        """Initialize the TaHoma protocol.
 
         :param userName: TaHoma username
         :param userPassword: Password
@@ -82,7 +83,7 @@ class TahomaApi:
     def send_request(
         self, method, url: str, headers, data=None, timeout: int = 10, retries: int = 3
     ):
-        """Wrap the http requests and retries
+        """Wrap the http requests and retries.
 
         :param method: The method to use for the request: post, get, delete.
         :param url: The url to send the POST to.
@@ -111,25 +112,25 @@ class TahomaApi:
             self.send_request(method, url, headers, data, timeout, retries - 1)
 
     def get_user(self):
-        """Get the user informations from the server.
+        """Get the user information from the server.
 
-        :return: a dict with all the informations
+        :return: a dict with all the information
         :rtype: dict
 
         raises ValueError in case of protocol issues
 
         :Example:
 
-        >>> "creationTime": <time>,
-        >>> "lastUpdateTime": <time>,
-        >>> "userId": "<email for login>",
-        >>> "title": 0,
-        >>> "firstName": "<First>",
-        >>> "lastName": "<Last>",
-        >>> "email": "<contact email>",
-        >>> "phoneNumber": "<phone>",
-        >>> "mobilePhone": "<mobile>",
-        >>> "locale": "<two char country code>"
+          "creationTime": <time>,
+          "lastUpdateTime": <time>,
+          "userId": "<email for login>",
+          "title": 0,
+          "firstName": "<First>",
+          "lastName": "<Last>",
+          "email": "<contact email>",
+          "phoneNumber": "<phone>",
+          "mobilePhone": "<mobile>",
+          "locale": "<two char country code>"
 
         :Warning:
 
@@ -171,7 +172,7 @@ class TahomaApi:
         self._get_setup(result)
 
     def _get_setup(self, result):
-        """Internal method which process the results from the server."""
+        """Process the results from the server."""
         self.__devices = {}
 
         if "devices" not in result.keys():
@@ -191,25 +192,25 @@ class TahomaApi:
         When the configuration has been loaded via get_setup this
         method retrieves all the location details which have
         been saved for your TaHoma box.
-        :return: a dict with all the informations
+        :return: a dict with all the information
         :rtype: dict
         :Example:
-        >>> "creationTime": <time>,
-        >>> "lastUpdateTime": <time>,
-        >>> "addressLine1": "<street>",
-        >>> "postalCode": "<zip>",
-        >>> "city": "<city>",
-        >>> "country": "<country>",
-        >>> "timezone": "Europe/<city>",
-        >>> "longitude": 2.343,
-        >>> "latitude": 48.857,
-        >>> "twilightMode": 2,
-        >>> "twilightCity": "<city>",
-        >>> "summerSolsticeDuskMinutes": 1290,
-        >>> "winterSolsticeDuskMinutes": 990,
-        >>> "twilightOffsetEnabled": False,
-        >>> "dawnOffset": 0,
-        >>> "duskOffset": 0
+          "creationTime": <time>,
+          "lastUpdateTime": <time>,
+          "addressLine1": "<street>",
+          "postalCode": "<zip>",
+          "city": "<city>",
+          "country": "<country>",
+          "timezone": "Europe/<city>",
+          "longitude": 2.343,
+          "latitude": 48.857,
+          "twilightMode": 2,
+          "twilightCity": "<city>",
+          "summerSolsticeDuskMinutes": 1290,
+          "winterSolsticeDuskMinutes": 990,
+          "twilightOffsetEnabled": False,
+          "dawnOffset": 0,
+          "duskOffset": 0
 
         :Warning:
 
@@ -229,27 +230,27 @@ class TahomaApi:
         method retrieves all  details your TaHoma box.
 
         :return: a list of all gateways with a dict per gateway with
-        all the informations
+        all the information
         :rtype: list
 
         :Example:
 
-        >>> [{
-        >>>     "gatewayId": "1234-1234-1234",
-        >>>     "type": 15,
-        >>>     "placeOID": "12345678-1234-1234-1234-12345678",
-        >>>     "alive": True,
-        >>>     "timeReliable": True,
-        >>>     "connectivity": {
-        >>>         "status": "OK",
-        >>>         "protocolVersion": "8"
-        >>>     },
-        >>>     "upToDate": True,
-        >>>     "functions": "INTERNET_AUTHORIZATION,SCENARIO_DOWNLOAD,
+          [{
+              "gatewayId": "1234-1234-1234",
+              "type": 15,
+              "placeOID": "12345678-1234-1234-1234-12345678",
+              "alive": True,
+              "timeReliable": True,
+              "connectivity": {
+                  "status": "OK",
+                  "protocolVersion": "8"
+              },
+              "up-to-date": True,
+              "functions": "INTERNET_AUTHORIZATION,SCENARIO_DOWNLOAD,
                 SCENARIO_AUTO_LAUNCHING,SCENARIO_TELECO_LAUNCHING,
                 INTERNET_UPLOAD,INTERNET_UPDATE,TRIGGERS_SENSORS",
-        >>>     "mode": "ACTIVE"
-        >>> }]
+              "mode": "ACTIVE"
+          }]
 
         :Warning:
 
@@ -336,9 +337,9 @@ class TahomaApi:
     def get_events(self):
         """Return a set of events.
 
-        Which have been occured since the last call of this method.
+        Which have been occurred since the last call of this method.
 
-        This method should be called regulary to get all occuring
+        This method should be called regulary to get all occurring
         Events. There are three different Event types/classes
         which can be returned:
 
@@ -378,7 +379,7 @@ class TahomaApi:
         return self._get_events(result)
 
     def _get_events(self, result):
-        """"Internal method for being able to run unit tests."""
+        """Run unit tests."""
         events = []
 
         for event_data in result:
@@ -522,7 +523,7 @@ class Device:
     """Represents an TaHoma Device."""
 
     def __init__(self, protocol, dataInput):
-        """Initalize the TaHoma Device."""
+        """Initialize the TaHoma Device."""
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
@@ -602,7 +603,7 @@ class Device:
         # make sure there are not more active states than definitions
         if active_states_amount > len(self.state_definitions):
             raise ValueError(
-                "Missmatch of state definition and active states ("
+                "Mismatch of state definition and active states ("
                 + str(len(self.state_definitions))
                 + "/"
                 + str(active_states_amount)
@@ -688,12 +689,12 @@ class Device:
 
     @property
     def uiclass(self):
-        """Get device ui class"""
+        """Get device ui class."""
         return self.__uiclass
 
     @property
     def widget(self):
-        """Get device widget type"""
+        """Get device widget type."""
         return self.__widget
 
     # def execute_action(self, action):
@@ -705,7 +706,7 @@ class Action:
     """Represents an TaHoma Action."""
 
     def __init__(self, data):
-        """Initalize the TaHoma Action."""
+        """Initialize the TaHoma Action."""
         self.__commands = []
 
         if isinstance(data, dict):
@@ -768,7 +769,7 @@ class Command:
     """Represents an TaHoma Command."""
 
     def __init__(self, cmd_name, *args):
-        """Initalize the TaHoma Command."""
+        """Initialize the TaHoma Command."""
         self.__name = cmd_name
 
         if len(args):
@@ -815,7 +816,7 @@ class ActionGroup:
     """Represents an TaHoma Action Group."""
 
     def __init__(self, data):
-        """Initalize the TaHoma Action Group."""
+        """Initialize the TaHoma Action Group."""
         if hasattr(data, "lastUpdateTime"):
             self.__last_update = data["lastUpdateTime"]
         else:
@@ -871,7 +872,7 @@ class DeviceStateChangedEvent(Event):
     """Represents an TaHoma DeviceStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the TaHoma DeviceStateChangedEvent."""
+        """Initialize the TaHoma DeviceStateChangedEvent."""
         self.__device_url = data["deviceURL"]
         self.__states = data["deviceStates"]
 
@@ -890,7 +891,7 @@ class CommandExecutionStateChangedEvent(Event):
     """Represents an TaHoma CommandExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the TaHoma CommandExecutionStateChangedEvent."""
+        """Initialize the TaHoma CommandExecutionStateChangedEvent."""
         self.__exec_id = data["execId"]
         self.__device_url = data["deviceURL"]
 
@@ -929,7 +930,7 @@ class ExecutionStateChangedEvent(Event):
     """Represents an TaHoma ExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the TaHoma ExecutionStateChangedEvent."""
+        """Initialize the TaHoma ExecutionStateChangedEvent."""
         self.__exec_id = data["execId"]
 
         try:
@@ -970,7 +971,7 @@ class EventState:
     """Represents an TaHoma EventState."""
 
     def __init__(self, state):
-        """Initalize the TaHoma EventState."""
+        """Initialize the TaHoma EventState."""
         if isinstance(state, int):
             if state is EventState.Unknown0:
                 self.__state = EventState.Unknown0
@@ -1040,7 +1041,7 @@ class Execution:
     """Represents an TaHoma Execution."""
 
     def __init__(self, data):
-        """Initalize the TaHoma Execution."""
+        """Initialize the TaHoma Execution."""
         self.__execution_id = data["id"]
         self.__start_time = data["startTime"]
         self.__state = EventState(data["state"])
