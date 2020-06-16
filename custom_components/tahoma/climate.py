@@ -139,9 +139,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._cold_tolerance = 0.3
         self._hot_tolerance = 0.3
         self._supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-        if COMMAND_REFRESH_STATE in self.tahoma_device.command_definitions:
-            self.apply_action(COMMAND_REFRESH_STATE)
-        self.controller.get_states([self.tahoma_device])
         self._uiclass = tahoma_device.uiclass
         self._unique_id = tahoma_device.url
         self._widget = tahoma_device.widget
