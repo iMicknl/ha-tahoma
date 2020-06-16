@@ -75,6 +75,7 @@ The [logger](https://www.home-assistant.io/integrations/logger/) integration let
 
 ```yaml
 logger:
+  default: critical
   logs:
     custom_components.tahoma: debug
 ```
