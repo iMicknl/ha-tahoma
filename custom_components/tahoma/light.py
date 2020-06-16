@@ -70,7 +70,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         return supported_features
 
-    async def async_turn_on(self, **kwargs) -> None:
+    def turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         self._state = True
         self._skip_update = True
@@ -86,7 +86,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self.async_write_ha_state()
 
-    async def async_turn_off(self, **kwargs) -> None:
+    def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._state = False
         self._skip_update = True
