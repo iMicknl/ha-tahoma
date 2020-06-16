@@ -3,18 +3,24 @@ from datetime import timedelta
 import logging
 from typing import Optional
 
-from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE, POWER_WATT, CONCENTRATION_PARTS_PER_MILLION
+from homeassistant.const import (
+    ATTR_BATTERY_LEVEL,
+    CONCENTRATION_PARTS_PER_MILLION,
+    POWER_WATT,
+    TEMP_CELSIUS,
+    UNIT_PERCENTAGE,
+)
 from homeassistant.helpers.entity import Entity
 
 from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-    TAHOMA_SENSOR_DEVICE_CLASSES,
-    CORE_RELATIVE_HUMIDITY_STATE,
-    CORE_LUMINANCE_STATE,
-    CORE_TEMPERATURE_STATE,
+    CORE_CO2_CONCENTRATION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-    CORE_CO2_CONCENTRATION_STATE
+    CORE_LUMINANCE_STATE,
+    CORE_RELATIVE_HUMIDITY_STATE,
+    CORE_TEMPERATURE_STATE,
+    DOMAIN,
+    TAHOMA_SENSOR_DEVICE_CLASSES,
+    TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
 
@@ -104,16 +110,14 @@ class TahomaSensor(TahomaDevice, Entity):
         if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
             self.current_value = float(
                 "{:.2f}".format(
-                    self.tahoma_device.active_states.get(
-                        CORE_RELATIVE_HUMIDITY_STATE)
+                    self.tahoma_device.active_states.get(CORE_RELATIVE_HUMIDITY_STATE)
                 )
             )
 
         if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
             self.current_value = float(
                 "{:.2f}".format(
-                    self.tahoma_device.active_states.get(
-                        CORE_TEMPERATURE_STATE)
+                    self.tahoma_device.active_states.get(CORE_TEMPERATURE_STATE)
                 )
             )
 
@@ -121,12 +125,12 @@ class TahomaSensor(TahomaDevice, Entity):
             self.current_value = float(
                 "{:.2f}".format(
                     self.tahoma_device.active_states.get(
-                        CORE_ELECTRIC_POWER_CONSUMPTION_STATE)
+                        CORE_ELECTRIC_POWER_CONSUMPTION_STATE
+                    )
                 )
             )
 
         if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:
             self.current_value = int(
-                self.tahoma_device.active_states.get(
-                    CORE_CO2_CONCENTRATION_STATE)
+                self.tahoma_device.active_states.get(CORE_CO2_CONCENTRATION_STATE)
             )
