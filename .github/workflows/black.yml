@@ -11,7 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Black Code Formatter
-        uses: lgeiger/black-action@master
-        with:
-          args: ". --check --diff"
+      - name: Python Lint (isort/black)
+        uses: wrboyce/python-lint-action@v1.0.0
