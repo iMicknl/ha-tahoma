@@ -17,7 +17,7 @@ from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
-    DEVICE_CLASS_POWER
+    DEVICE_CLASS_POWER,
 )
 
 """Constants for the TaHoma integration."""
@@ -41,7 +41,7 @@ TAHOMA_TYPES = {
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
-    "WindowHandle" : "binary_sensor",
+    "WindowHandle": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
     "Gate": "cover",
@@ -49,7 +49,7 @@ TAHOMA_TYPES = {
     "Generic": "cover",
     "SwingingShutter": "cover",
     "ElectricitySensor": "sensor",
-    "AirSensor": "sensor"
+    "AirSensor": "sensor",
 }
 
 
@@ -66,7 +66,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
     "Gate": DEVICE_CLASS_GATE,
     "Curtain": DEVICE_CLASS_CURTAIN,
-    "SwingingShutter" : DEVICE_CLASS_SHUTTER
+    "SwingingShutter": DEVICE_CLASS_SHUTTER,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
@@ -74,7 +74,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING,
-    "WindowHandle": DEVICE_CLASS_OPENING
+    "WindowHandle": DEVICE_CLASS_OPENING,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
@@ -83,7 +83,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "ElectricitySensor": DEVICE_CLASS_POWER,
-    "AirSensor": "carbon dioxide"
+    "AirSensor": "carbon dioxide",
 }
 
 # TaHoma Attributes

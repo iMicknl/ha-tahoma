@@ -14,9 +14,8 @@ _LOGGER = logging.getLogger(__name__)
 
 # TODO adjust the data schema to the data that you need
 DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str
-    })
+    {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
+)
 
 
 async def validate_input(hass: core.HomeAssistant, data):
@@ -73,6 +72,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
+
 
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""

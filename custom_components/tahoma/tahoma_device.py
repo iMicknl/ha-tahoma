@@ -93,7 +93,7 @@ class TahomaDevice(Entity):
             "manufacturer": "Somfy",
             "name": self.name,
             "model": self.tahoma_device.widget,
-            "sw_version": self.tahoma_device.type
+            "sw_version": self.tahoma_device.type,
         }
 
     def apply_action(self, cmd_name, *args):
