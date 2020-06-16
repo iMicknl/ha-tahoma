@@ -66,3 +66,15 @@ If your device is not supported, it will show the following message in the loggi
 | Siren                 |
 | MusicPlayer           |
 | VentilationSystem     |
+
+## Advanced
+
+### Enable debug logging
+
+The [logger](https://www.home-assistant.io/integrations/logger/) integration lets you define the level of logging activities in Home Assistant. Turning on debug mode will show more information about unsupported devices in your logbook.
+
+```yaml
+logger:
+  logs:
+    custom_components.tahoma: debug
+```
