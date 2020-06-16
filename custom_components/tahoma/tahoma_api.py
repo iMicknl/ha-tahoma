@@ -687,6 +687,16 @@ class Device:
         """Get device widget type"""
         return self.__widget
 
+    @property
+    def command_def(self):
+        """Get device widget type"""
+        return self.__command_def
+
+    @property
+    def states_def(self):
+        """Get device widget type"""
+        return self.__states_def
+
     # def execute_action(self, action):
     #    """Exceute action."""
     #    self.__protocol
