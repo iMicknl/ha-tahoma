@@ -45,8 +45,6 @@ class TahomaLight(TahomaDevice, LightEntity):
         self._effect = None
         self._brightness = None
         self._state = None
-        
-        self.update()
 
     @property
     def brightness(self) -> int:
