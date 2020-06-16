@@ -123,6 +123,8 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
         errors = {}
 
         if user_input is not None:
+            if not user_input or 'no-climate' in user_input:
+                return self.async_create_entry(title="", data=dict(self.config_entry.data))
             try:
                 await validate_options_input(self.hass, user_input)
                 self.options[DEVICE_CLASS_TEMPERATURE] = user_input
@@ -133,6 +135,13 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
+
+        # if TAHOMA_TYPE_HEATING_SYSTEM not in dict(self.config_entry.data):
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema({vol.Optional("no-climate"): str}),
+            errors=errors
+        )
 
         available_sensors = []
         for k, v in self.hass.data['entity_registry'].entities.items():

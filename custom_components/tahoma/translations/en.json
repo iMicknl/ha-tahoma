@@ -23,7 +23,8 @@
       "init": {
         "description": "Select temperature sensors for thermostats",
         "data": {
-          "_": "entity"
+          "_": "entity",
+          "no-climate": "No climate device, you can close this window"
         }
       }
     },
