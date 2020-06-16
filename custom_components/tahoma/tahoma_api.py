@@ -5,11 +5,16 @@ Connection to Somfy TaHoma REST API
 """
 
 import json
+import logging
+import pprint
 import requests
+import traceback
 import urllib.parse
 
 BASE_URL = 'https://tahomalink.com/enduser-mobile-web/enduserAPI/'  # /doc for API doc
 BASE_HEADERS = {'User-Agent': 'mine'}
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class TahomaApi:
@@ -86,6 +91,11 @@ class TahomaApi:
         if not self.__logged_in:
             self.login()
 
+        stack = pprint.pformat(traceback.extract_stack())
+        if "asyncio" in stack:
+            _LOGGER.warning(
+                "I/O stack trace:\n"+stack
+            )
         request = method(url, headers=headers, data=data, timeout=timeout)
         if request.status_code == 200:
             try:
