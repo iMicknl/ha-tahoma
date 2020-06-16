@@ -3,7 +3,7 @@ from datetime import timedelta
 import logging
 from typing import Optional
 
-from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE
+from homeassistant.const import ATTR_BATTERY_LEVEL, TEMP_CELSIUS, UNIT_PERCENTAGE, POWER_WATT, CONCENTRATION_PARTS_PER_MILLION
 from homeassistant.helpers.entity import Entity
 
 from .const import (
@@ -67,10 +67,10 @@ class TahomaSensor(TahomaDevice, Entity):
             return "lx"
 
         if self.tahoma_device.uiclass == "ElectricitySensor":
-            return "W"
+            return POWER_WATT
 
         if self.tahoma_device.uiclass == "AirSensor":
-            return "ppm"
+            return CONCENTRATION_PARTS_PER_MILLION
 
         return None
 
