@@ -29,3 +29,10 @@ repos:
           - flake8-docstrings==1.5.0
           - pydocstyle==5.0.2
         files: ^(custom_components)/.+\.py$
+  - repo: https://github.com/timothycrosley/isort
+    rev: 4.3.21-2
+    hooks:
+      - id: isort
+        args:
+          - --recursive
+        files: ^((custom_components)/.+)?[^/]+\.py$
