@@ -1,15 +1,16 @@
-from homeassistant.helpers.entity import Entity
-from homeassistant.const import ATTR_BATTERY_LEVEL
+"""Parent class for every TaHoma devices."""
 
-from .tahoma_api import Action
+from homeassistant.const import ATTR_BATTERY_LEVEL
+from homeassistant.helpers.entity import Entity
 
 from .const import (
-    DOMAIN,
     ATTR_RSSI_LEVEL,
     CORE_RSSI_LEVEL_STATE,
-    CORE_STATUS_STATE,
     CORE_SENSOR_DEFECT_STATE,
+    CORE_STATUS_STATE,
+    DOMAIN,
 )
+from .tahoma_api import Action
 
 
 class TahomaDevice(Entity):
@@ -22,6 +23,7 @@ class TahomaDevice(Entity):
         self.controller = controller
 
     async def async_added_to_hass(self):
+        """Entity created."""
         await super().async_added_to_hass()
         self.schedule_update_ha_state(True)
 
@@ -93,7 +95,7 @@ class TahomaDevice(Entity):
             "manufacturer": "Somfy",
             "name": self.name,
             "model": self.tahoma_device.widget,
-            "sw_version": self.tahoma_device.type
+            "sw_version": self.tahoma_device.type,
         }
 
     def apply_action(self, cmd_name, *args):

@@ -35,16 +35,7 @@ CONFIG_SCHEMA = vol.Schema(
     extra=vol.ALLOW_EXTRA,
 )
 
-PLATFORMS = [
-    "alarm_control_panel",
-    "binary_sensor",
-    "cover",
-    "light",
-    "lock",
-    "scene",
-    "sensor",
-    "switch",
-]
+PLATFORMS = ["binary_sensor", "cover", "light", "lock", "scene", "sensor", "switch"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict):

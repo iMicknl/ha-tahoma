@@ -25,7 +25,6 @@ DOMAIN = "tahoma"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
-    "Alarm": "alarm_control_panel",
     "Light": "light",
     "ExteriorScreen": "cover",
     "Pergola": "cover",

@@ -30,7 +30,6 @@ If your device is not supported, it will show the following message in the loggi
 
 | Somfy uiClass     | Home Assistant platform |
 | ----------------- | ----------------------- |
-| Alarm             | alarm_control_panel     |
 | Awning            | cover                   |
 | Curtain           | cover                   |
 | ExteriorScreen    | cover                   |

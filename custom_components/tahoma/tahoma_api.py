@@ -11,7 +11,6 @@ import traceback
 import urllib.parse
 
 import requests
-import urllib.parse
 
 BASE_URL = "https://tahomalink.com/enduser-mobile-web/enduserAPI/"  # /doc for API doc
 BASE_HEADERS = {"User-Agent": "mine"}
@@ -114,7 +113,9 @@ class TahomaApi:
             return result
         elif retries == 0:
             raise Exception(
-                "Maximum number of consecutive retries reached. Error is:\n" + request.text)
+                "Maximum number of consecutive retries reached. Error is:\n"
+                + request.text
+            )
         else:
             self.send_request(method, url, headers, data, timeout, retries - 1)
 

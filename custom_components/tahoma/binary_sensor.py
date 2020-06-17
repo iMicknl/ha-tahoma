@@ -6,12 +6,12 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
 from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
-    CORE_SMOKE_STATE,
-    CORE_OCCUPANCY_STATE,
     CORE_CONTACT_STATE,
+    CORE_OCCUPANCY_STATE,
+    CORE_SMOKE_STATE,
+    DOMAIN,
+    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
+    TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
 

@@ -1,9 +1,8 @@
 """Support for TaHoma switches."""
 import logging
 
-from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON
-from homeassistant.components.switch import DEVICE_CLASS_SWITCH
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
