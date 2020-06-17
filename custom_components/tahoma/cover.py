@@ -10,42 +10,41 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_GARAGE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
-    CoverEntity,
-    SUPPORT_OPEN,
     SUPPORT_CLOSE,
-    SUPPORT_SET_POSITION,
-    SUPPORT_STOP,
-    SUPPORT_OPEN_TILT,
     SUPPORT_CLOSE_TILT,
-    SUPPORT_STOP_TILT,
+    SUPPORT_OPEN,
+    SUPPORT_OPEN_TILT,
+    SUPPORT_SET_POSITION,
     SUPPORT_SET_TILT_POSITION,
+    SUPPORT_STOP,
+    SUPPORT_STOP_TILT,
+    CoverEntity,
 )
 from homeassistant.util.dt import utcnow
 
-from .tahoma_device import TahomaDevice
-
 from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-    TAHOMA_COVER_DEVICE_CLASSES,
-    ATTR_MEM_POS,
-    ATTR_LOCK_START_TS,
     ATTR_LOCK_END_TS,
     ATTR_LOCK_LEVEL,
     ATTR_LOCK_ORIG,
+    ATTR_LOCK_START_TS,
+    ATTR_MEM_POS,
+    COMMAND_SET_CLOSURE,
+    COMMAND_SET_ORIENTATION,
+    COMMAND_SET_PEDESTRIAN_POSITION,
+    COMMAND_SET_POSITION,
     CORE_CLOSURE_STATE,
     CORE_DEPLOYMENT_STATE,
+    CORE_MEMORIZED_1_POSITION_STATE,
     CORE_PEDESTRIAN_POSITION_STATE,
     CORE_PRIORITY_LOCK_TIMER_STATE,
     CORE_SLATS_ORIENTATION_STATE,
-    CORE_MEMORIZED_1_POSITION_STATE,
+    DOMAIN,
     IO_PRIORITY_LOCK_LEVEL_STATE,
     IO_PRIORITY_LOCK_ORIGINATOR_STATE,
-    COMMAND_SET_CLOSURE,
-    COMMAND_SET_POSITION,
-    COMMAND_SET_ORIENTATION,
-    COMMAND_SET_PEDESTRIAN_POSITION,
+    TAHOMA_COVER_DEVICE_CLASSES,
+    TAHOMA_TYPES,
 )
+from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -169,6 +168,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def current_cover_tilt_position(self):
         """Return current position of cover tilt.
+
         None is unknown, 0 is closed, 100 is fully open.
         """
         return getattr(self, "_tilt_position", None)

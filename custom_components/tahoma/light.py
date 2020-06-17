@@ -1,15 +1,14 @@
 """TaHoma light platform that implements dimmable TaHoma lights."""
-import logging
 from datetime import timedelta
+import logging
 
 from homeassistant.components.light import (
-    LightEntity,
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
     SUPPORT_BRIGHTNESS,
     SUPPORT_EFFECT,
+    LightEntity,
 )
-
 from homeassistant.const import STATE_OFF, STATE_ON
 
 from .const import DOMAIN, TAHOMA_TYPES
@@ -36,9 +35,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaLight(TahomaDevice, LightEntity):
-    """Representation of a Tahome light"""
+    """Representation of a Tahome light."""
 
     def __init__(self, tahoma_device, controller):
+        """Initialize a device."""
         super().__init__(tahoma_device, controller)
 
         self._skip_update = False
@@ -106,6 +106,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
     def update(self):
         """Fetch new state data for this light.
+
         This is the only method that should fetch new data for Home Assistant.
         """
         # Postpone the immediate state check for changes that take time.
