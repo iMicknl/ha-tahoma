@@ -41,8 +41,8 @@ async def validate_input(hass: core.HomeAssistant, data):
         raise CannotConnect
 
     return_dict = {"title": username}
-    controller.get_setup()
-    devices = controller.get_devices()
+    await hass.async_add_executor_job(controller.get_setup)
+    devices = await hass.async_add_executor_job(controller.get_devices)
     for key, device in devices.items():
         if device.uiclass == TAHOMA_TYPE_HEATING_SYSTEM:
             if TAHOMA_TYPE_HEATING_SYSTEM not in return_dict:
