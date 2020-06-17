@@ -2,6 +2,7 @@
 import copy
 import logging
 
+from requests.exceptions import RequestException
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
@@ -9,21 +10,19 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_USERNAME,
     CONF_ENTITY_ID,
-    DEVICE_CLASS_TEMPERATURE
+    DEVICE_CLASS_TEMPERATURE,
 )
 from homeassistant.core import callback
 
 from .const import DOMAIN, TAHOMA_TYPES  # pylint:disable=unused-import
 from .tahoma_api import TahomaApi
-from requests.exceptions import RequestException
 
 _LOGGER = logging.getLogger(__name__)
 
 # TODO adjust the data schema to the data that you need
 DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str
-    })
+    {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
+)
 
 
 async def validate_input(hass: core.HomeAssistant, data):
@@ -68,9 +67,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
+        """Return the option flow."""
         return ThermoOptionsFlowHandler(config_entry)
 
     def __init__(self):
+        """Initialize the config flow."""
         self._user_input = {}
         self._thermos = {}
 
@@ -86,7 +87,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 info = await validate_input(self.hass, user_input)
                 if TAHOMA_TYPE_HEATING_SYSTEM in info:
-                    user_input[TAHOMA_TYPE_HEATING_SYSTEM] = info[TAHOMA_TYPE_HEATING_SYSTEM]
+                    user_input[TAHOMA_TYPE_HEATING_SYSTEM] = info[
+                        TAHOMA_TYPE_HEATING_SYSTEM
+                    ]
                 return self.async_create_entry(title=info["title"], data=user_input)
 
             except CannotConnect:
@@ -103,12 +106,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 async def validate_options_input(hass: core.HomeAssistant, data):
+    """Validate the options user input."""
     for k, v in data.items():
         if not str.startswith(v, "sensor"):
             _LOGGER.exception("Please select a valid sensor from the list")
             raise InvalidSensor
 
+
 TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
+
 
 class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle Tahoma options for thermostat."""
@@ -123,8 +129,10 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
         errors = {}
 
         if user_input is not None:
-            if not user_input or 'no-climate' in user_input:
-                return self.async_create_entry(title="", data=dict(self.config_entry.data))
+            if not user_input or "no-climate" in user_input:
+                return self.async_create_entry(
+                    title="", data=dict(self.config_entry.data)
+                )
             try:
                 await validate_options_input(self.hass, user_input)
                 self.options[DEVICE_CLASS_TEMPERATURE] = user_input
@@ -140,12 +148,15 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({vol.Optional("no-climate"): str}),
-            errors=errors
+            errors=errors,
         )
 
         available_sensors = []
-        for k, v in self.hass.data['entity_registry'].entities.items():
-            if str.startswith(k, "sensor") and v.device_class == DEVICE_CLASS_TEMPERATURE:
+        for k, v in self.hass.data["entity_registry"].entities.items():
+            if (
+                str.startswith(k, "sensor")
+                and v.device_class == DEVICE_CLASS_TEMPERATURE
+            ):
                 available_sensors.append(k)
 
         schema = {}
@@ -154,20 +165,19 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
                 if DEVICE_CLASS_TEMPERATURE not in self.config_entry.options:
                     default = None
                 else:
-                    default = self.config_entry.options.get(DEVICE_CLASS_TEMPERATURE).get(k)
+                    default = self.config_entry.options.get(
+                        DEVICE_CLASS_TEMPERATURE
+                    ).get(k)
                 if default is None:
                     default = v
                 key = vol.Required(
-                    k,
-                    default=default,
-                    msg="temperature sensor for " + v)
+                    k, default=default, msg="temperature sensor for " + v
+                )
                 value = vol.In([v] + available_sensors)
                 schema[key] = value
 
         return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema(schema),
-            errors=errors
+            step_id="init", data_schema=vol.Schema(schema), errors=errors
         )
 
 
