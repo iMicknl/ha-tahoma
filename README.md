@@ -32,12 +32,16 @@ If your device is not supported, it will show the following message in the loggi
 | ----------------- | ----------------------- |
 | Alarm             | alarm_control_panel     |
 | Awning            | cover                   |
+| Curtain           | cover                   |
 | ExteriorScreen    | cover                   |
 | Gate              | cover                   |
 | GarageDoor        | cover                   |
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |
+| SwingingShutter   | cover                   |
 | Window            | cover                   |
+| AirSensor         | sensor                  |
+| ElectricitySensor | sensor                  |
 | HumiditySensor    | sensor                  |
 | LightSensor       | sensor                  |
 | TemperatureSensor | sensor                  |
@@ -46,11 +50,20 @@ If your device is not supported, it will show the following message in the loggi
 | ContactSensor     | binary_sensor           |
 | OccupancySensor   | binary_sensor           |
 | SmokeSensor       | binary_sensor           |
+| WindowHandle      | binary_sensor           |
 | Light             | light                   |
 
 ## Not supported (yet)
 
-| Somfy uiClass    |
-| ---------------- |
-| RemoteController |
-| HeatingSystem    |
+| Somfy uiClass         |
+| --------------------- |
+| RemoteController      |
+| Alarm                 |
+| HeatingSystem         |
+| EvoHome               |
+| HitachiHeatingSystem  |
+| ExteriorHeatingSystem |
+| Fan                   |
+| Siren                 |
+| MusicPlayer           |
+| VentilationSystem     |

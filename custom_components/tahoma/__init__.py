@@ -1,23 +1,21 @@
 """The TaHoma integration."""
 import asyncio
-
-import voluptuous as vol
 import logging
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, CONF_EXCLUDE
-
-from .const import DOMAIN, TAHOMA_TYPES
-from .tahoma_api import TahomaApi
 from requests.exceptions import RequestException
+import voluptuous as vol
 
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
     discovery,
 )
+
+from .const import DOMAIN, TAHOMA_TYPES
+from .tahoma_api import TahomaApi
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -111,13 +109,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     unload_ok = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(
-                    entry, component)
+                hass.config_entries.async_forward_entry_unload(entry, component)
                 for component in PLATFORMS
             ]
         )
     )
     if unload_ok:
-        hass.data[DOMAIN][entry.entry_id].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok

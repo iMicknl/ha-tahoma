@@ -1,22 +1,25 @@
+"""Constants for the TaHoma integration."""
+
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_OCCUPANCY,
+    DEVICE_CLASS_OPENING,
+    DEVICE_CLASS_SMOKE,
+)
 from homeassistant.components.cover import (
     DEVICE_CLASS_AWNING,
     DEVICE_CLASS_BLIND,
     DEVICE_CLASS_CURTAIN,
     DEVICE_CLASS_GARAGE,
+    DEVICE_CLASS_GATE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
-    DEVICE_CLASS_GATE
 )
-
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_SMOKE,
-    DEVICE_CLASS_OCCUPANCY,
-    DEVICE_CLASS_OPENING
+from homeassistant.const import (
+    DEVICE_CLASS_HUMIDITY,
+    DEVICE_CLASS_ILLUMINANCE,
+    DEVICE_CLASS_POWER,
+    DEVICE_CLASS_TEMPERATURE,
 )
-from homeassistant.const import DEVICE_CLASS_TEMPERATURE, DEVICE_CLASS_HUMIDITY, \
-    DEVICE_CLASS_ILLUMINANCE
-
-"""Constants for the TaHoma integration."""
 
 DOMAIN = "tahoma"
 
@@ -28,7 +31,6 @@ TAHOMA_TYPES = {
     "Pergola": "cover",
     "RollerShutter": "cover",
     "Window": "cover",
-    "RemoteController": "",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
     "LightSensor": "sensor",
@@ -39,12 +41,17 @@ TAHOMA_TYPES = {
     "ContactSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
+    "WindowHandle": "binary_sensor",
     "ExteriorVenetianBlind": "cover",
     "Awning": "cover",
-    "Gate": "cover"
+    "Gate": "cover",
+    "Curtain": "cover",
+    "Generic": "cover",
+    "SwingingShutter": "cover",
+    "ElectricitySensor": "sensor",
+    "AirSensor": "sensor",
 }
 
-TAHOMA_TYPE_HEATING_SYSTEM = "HeatingSystem"
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_COVER_DEVICE_CLASSES = {
@@ -57,21 +64,26 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "GarageDoor": DEVICE_CLASS_GARAGE,
     "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
     "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
-    "Gate": DEVICE_CLASS_GATE
+    "Gate": DEVICE_CLASS_GATE,
+    "Curtain": DEVICE_CLASS_CURTAIN,
+    "SwingingShutter": DEVICE_CLASS_SHUTTER,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
-    "ContactSensor": DEVICE_CLASS_OPENING
+    "ContactSensor": DEVICE_CLASS_OPENING,
+    "WindowHandle": DEVICE_CLASS_OPENING,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_SENSOR_DEVICE_CLASSES = {
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
-    "LightSensor": DEVICE_CLASS_ILLUMINANCE
+    "LightSensor": DEVICE_CLASS_ILLUMINANCE,
+    "ElectricitySensor": DEVICE_CLASS_POWER,
+    "AirSensor": "carbon dioxide",
 }
 
 # TaHoma Attributes
@@ -98,6 +110,8 @@ CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
+CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
+CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
