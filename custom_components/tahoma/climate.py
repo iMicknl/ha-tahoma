@@ -352,7 +352,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Apply action to the climate device."""
         exec_id = self.apply_action(cmd_name, *args)
         while exec_id in self.controller.get_current_executions():
-            _LOGGER.info("Waiting for action to execute")
+            continue
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
