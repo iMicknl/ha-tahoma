@@ -85,9 +85,7 @@ class TahomaLock(TahomaDevice, LockEntity):
     @property
     def device_state_attributes(self):
         """Return the lock state attributes."""
-        attr = {
-            ATTR_BATTERY_LEVEL: self._battery_level,
-        }
+        attr = {ATTR_BATTERY_LEVEL: self._battery_level}
         super_attr = super().device_state_attributes
         if super_attr is not None:
             attr.update(super_attr)
