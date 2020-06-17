@@ -7,9 +7,10 @@ Connection to Somfy TaHoma REST API
 import json
 import logging
 import pprint
-import requests
 import traceback
 import urllib.parse
+
+import requests
 
 BASE_URL = "https://tahomalink.com/enduser-mobile-web/enduserAPI/"  # /doc for API doc
 BASE_HEADERS = {"User-Agent": "mine"}
