@@ -1,7 +1,6 @@
 """Support for Tahoma climate."""
-import logging
 from datetime import timedelta
-from time import sleep
+import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
@@ -36,21 +35,21 @@ from homeassistant.core import State, callback
 from homeassistant.helpers.event import async_track_state_change
 
 from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-    ST_DEROGATION_TYPE_STATE,
-    ST_HEATING_MODE_STATE,
-    ST_DEROGATION_HEATING_MODE_STATE,
-    CORE_TARGET_TEMPERATURE_STATE,
-    CORE_DEROGATED_TARGET_TEMPERATURE_STATE,
-    CORE_ON_OFF_STATE,
-    IO_TARGET_HEATING_LEVEL_STATE,
     COMMAND_EXIT_DEROGATION,
-    COMMAND_SET_DEROGATION,
-    COMMAND_REFRESH_STATE,
     COMMAND_OFF,
+    COMMAND_REFRESH_STATE,
+    COMMAND_SET_DEROGATION,
     COMMAND_SET_HEATING_LEVEL,
     COMMAND_SET_MODE_TEMPERATURE,
+    CORE_DEROGATED_TARGET_TEMPERATURE_STATE,
+    CORE_ON_OFF_STATE,
+    CORE_TARGET_TEMPERATURE_STATE,
+    DOMAIN,
+    IO_TARGET_HEATING_LEVEL_STATE,
+    ST_DEROGATION_HEATING_MODE_STATE,
+    ST_DEROGATION_TYPE_STATE,
+    ST_HEATING_MODE_STATE,
+    TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
 

@@ -7,9 +7,9 @@ import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import (
+    CONF_ENTITY_ID,
     CONF_PASSWORD,
     CONF_USERNAME,
-    CONF_ENTITY_ID,
     DEVICE_CLASS_TEMPERATURE,
 )
 from homeassistant.core import callback
