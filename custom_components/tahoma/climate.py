@@ -272,7 +272,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
         self.update_temp(new_state)
         if self._widget == W_AEH:
-            self._control_heating()
+            await self.hass.async_add_executor_job(self._control_heating)
         self.schedule_update_ha_state()
 
     @callback
@@ -310,10 +310,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 self.tahoma_device.active_states[ST_HEATING_MODE_STATE]
                 if self._hvac_mode == HVAC_MODE_AUTO
                 else self.tahoma_device.active_states[ST_DEROGATION_HEATING_MODE_STATE]
-            ]
-        elif self._widget == W_AEH:
-            self._hvac_mode = MAP_HVAC_MODE[
-                self.tahoma_device.active_states[CORE_ON_OFF_STATE]
             ]
         self._current_hvac_modes = (
             CURRENT_HVAC_OFF
@@ -376,12 +372,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 )
             self._apply_action(COMMAND_REFRESH_STATE)
         if self._widget == W_AEH:
-            if hvac_mode == HVAC_MODE_OFF:
-                self._apply_action(COMMAND_OFF)
-            if hvac_mode == HVAC_MODE_HEAT:
-                self._apply_action(
-                    COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[self._preset_mode]
-                )
+            self._hvac_mode = hvac_mode
             self._control_heating()
             return
 
@@ -451,8 +442,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def _control_heating(self) -> None:
         """Control whether heater should be turned on or off."""
-        if self._current_temperature == 0:
+        if self._current_temperature == 0 or self._hvac_mode == HVAC_MODE_OFF:
+            self.turn_off()
             return
+
         too_cold = self._target_temp - self._current_temperature >= self._cold_tolerance
         too_hot = self._current_temperature - self._target_temp >= self._hot_tolerance
         if too_hot:
@@ -463,11 +456,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def turn_off(self):
         """Turn the entity off."""
         if self._widget == W_AEH:
-            if self._preset_mode == PRESET_NONE:
-                return
-            self._apply_action(
-                COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_NONE]
-            )
+            self._apply_action(COMMAND_OFF)
 
     def turn_on(self):
         """Turn the entity on."""
