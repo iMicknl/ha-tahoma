@@ -6,6 +6,11 @@ from requests.exceptions import RequestException
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
+from homeassistant.components.climate.const import (
+    PRESET_AWAY,
+    PRESET_COMFORT,
+    PRESET_ECO,
+)
 from homeassistant.const import (
     CONF_ENTITY_ID,
     CONF_PASSWORD,
@@ -108,7 +113,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 async def validate_options_input(hass: core.HomeAssistant, data):
     """Validate the options user input."""
     for k, v in data.items():
-        if not str.startswith(v, "sensor"):
+        if k not in [
+            "freeze",
+            PRESET_AWAY,
+            PRESET_ECO,
+            PRESET_COMFORT,
+        ] and not str.startswith(v, "sensor"):
             _LOGGER.exception("Please select a valid sensor from the list")
             raise InvalidSensor
 
@@ -144,30 +154,21 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
 
-        # if TAHOMA_TYPE_HEATING_SYSTEM not in dict(self.config_entry.data):
-        return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema({vol.Optional("no-climate"): str}),
-            errors=errors,
-        )
-
-        available_sensors = []
-        for k, v in self.hass.data["entity_registry"].entities.items():
-            if (
-                str.startswith(k, "sensor")
-                and v.device_class == DEVICE_CLASS_TEMPERATURE
-            ):
-                available_sensors.append(k)
-
-        schema = {}
         if TAHOMA_TYPE_HEATING_SYSTEM in self.config_entry.data:
+            available_sensors = []
+            for k, v in self.hass.data["entity_registry"].entities.items():
+                if (
+                    str.startswith(k, "sensor")
+                    and v.device_class == DEVICE_CLASS_TEMPERATURE
+                ):
+                    available_sensors.append(k)
+            options = dict(self.config_entry.options)
+            schema = {}
             for k, v in self.config_entry.data[TAHOMA_TYPE_HEATING_SYSTEM].items():
-                if DEVICE_CLASS_TEMPERATURE not in self.config_entry.options:
+                if DEVICE_CLASS_TEMPERATURE not in options:
                     default = None
                 else:
-                    default = self.config_entry.options.get(
-                        DEVICE_CLASS_TEMPERATURE
-                    ).get(k)
+                    default = options.get(DEVICE_CLASS_TEMPERATURE).get(k)
                 if default is None:
                     default = v
                 key = vol.Required(
@@ -175,9 +176,27 @@ class ThermoOptionsFlowHandler(config_entries.OptionsFlow):
                 )
                 value = vol.In([v] + available_sensors)
                 schema[key] = value
+            default = {
+                "freeze": "",
+                PRESET_AWAY: "",
+                PRESET_ECO: "",
+                PRESET_COMFORT: "",
+            }
+            if DEVICE_CLASS_TEMPERATURE in options:
+                for k, v in options[DEVICE_CLASS_TEMPERATURE].items():
+                    if k in default:
+                        default[k] = v
+            for k, v in default.items():
+                schema[vol.Optional(k, default=default[k])] = str
+
+            return self.async_show_form(
+                step_id="init", data_schema=vol.Schema(schema), errors=errors
+            )
 
         return self.async_show_form(
-            step_id="init", data_schema=vol.Schema(schema), errors=errors
+            step_id="init",
+            data_schema=vol.Schema({vol.Optional("no_climate"): str}),
+            errors=errors,
         )
 
 

@@ -125,12 +125,36 @@ async def async_setup_entry(hass, entry, async_add_entities):
             and device.widget in SUPPORTED_CLIMATE_DEVICES
         ):
             options = dict(entry.options)
+            preset_temp = {
+                PRESET_FREEZE: None,
+                PRESET_AWAY: None,
+                PRESET_ECO: None,
+                PRESET_COMFORT: None,
+            }
             if DEVICE_CLASS_TEMPERATURE in options:
                 if device.url in options[DEVICE_CLASS_TEMPERATURE]:
                     sensor_id = options[DEVICE_CLASS_TEMPERATURE][device.url]
-                    entities.append(TahomaClimate(device, controller, sensor_id))
+                    if device.widget == W_ST:
+                        entities.append(
+                            TahomaClimate(device, controller, sensor_id, preset_temp)
+                        )
+                    else:
+                        for k, v in preset_temp.items():
+                            if (
+                                k in options[DEVICE_CLASS_TEMPERATURE]
+                                and options[DEVICE_CLASS_TEMPERATURE][k] != ""
+                            ):
+                                preset_temp[k] = float(
+                                    options[DEVICE_CLASS_TEMPERATURE][k]
+                                )
+                        entities.append(
+                            TahomaClimate(device, controller, sensor_id, preset_temp)
+                        )
+
             else:
-                entities.append(TahomaClimate(device, controller))
+                entities.append(
+                    TahomaClimate(device, controller, preset_temp=preset_temp)
+                )
 
     async_add_entities(entities)
 
@@ -143,13 +167,27 @@ async def update_listener(hass, entry):
             entity.set_temperature_sensor(
                 options[DEVICE_CLASS_TEMPERATURE][entity.unique_id]
             )
+            if entity.widget != W_ST:
+                preset_temp = {
+                    PRESET_FREEZE: None,
+                    PRESET_AWAY: None,
+                    PRESET_ECO: None,
+                    PRESET_COMFORT: None,
+                }
+                for k, v in preset_temp.items():
+                    if (
+                        k in options[DEVICE_CLASS_TEMPERATURE]
+                        and options[DEVICE_CLASS_TEMPERATURE][k] != ""
+                    ):
+                        preset_temp[k] = float(options[DEVICE_CLASS_TEMPERATURE][k])
+                entity.set_preset_temperatures(preset_temp)
             entity.schedule_update_ha_state()
 
 
 class TahomaClimate(TahomaDevice, ClimateEntity):
     """Representation of a Tahoma thermostat."""
 
-    def __init__(self, tahoma_device, controller, sensor_id=None):
+    def __init__(self, tahoma_device, controller, sensor_id=None, preset_temp={}):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
         self._cold_tolerance = 0.3
@@ -162,6 +200,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._current_temperature = 0
         self._current_hvac_modes = CURRENT_HVAC_IDLE
         self._target_temp = None
+        self._saved_target_temp = self._target_temp
+        self._preset_temperatures = preset_temp
         if self._widget == W_ST:
             self._hvac_modes = [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
             self._hvac_mode = MAP_HVAC_MODE[
@@ -194,13 +234,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self._preset_mode = MAP_PRESET[
                 self.tahoma_device.active_states[IO_TARGET_HEATING_LEVEL_STATE]
             ]
-            self._preset_modes = [
-                PRESET_NONE,
-                PRESET_FREEZE,
-                PRESET_ECO,
-                PRESET_COMFORT,
-            ]
             self._target_temp = 19
+            self._preset_modes = [PRESET_NONE]
+            for k, v in self._preset_temperatures.items():
+                if v:
+                    self._preset_modes.append(k)
         self._stored_target_temp = self._target_temp
 
     async def async_added_to_hass(self):
@@ -277,9 +315,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self._hvac_mode = MAP_HVAC_MODE[
                 self.tahoma_device.active_states[CORE_ON_OFF_STATE]
             ]
-            self._preset_mode = MAP_PRESET[
-                self.tahoma_device.active_states[IO_TARGET_HEATING_LEVEL_STATE]
-            ]
         self._current_hvac_modes = (
             CURRENT_HVAC_OFF
             if self._hvac_mode == HVAC_MODE_OFF
@@ -296,6 +331,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             bool(self._current_temperature != 0)
             and self.hass.states.get(self._temp_sensor_entity_id) is not None
         )
+
+    @property
+    def widget(self) -> str:
+        """Return the widget attached to this device."""
+        return self._widget
 
     @property
     def hvac_mode(self) -> str:
@@ -359,6 +399,14 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Set the temperature sensor."""
         self._temp_sensor_entity_id = sensor_id
         self.schedule_update_ha_state()
+
+    def set_preset_temperatures(self, preset_temp):
+        """Set the preset temperatures if supported."""
+        self._preset_temperatures = preset_temp
+        self._preset_modes = [PRESET_NONE]
+        for k, v in self._preset_temperatures.items():
+            if v:
+                self._preset_modes.append(k)
 
     @property
     def temperature_unit(self) -> str:
@@ -424,10 +472,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def turn_on(self):
         """Turn the entity on."""
         if self._widget == W_AEH:
-            if self._preset_mode == PRESET_NONE:
-                self._preset_mode = PRESET_COMFORT
             self._apply_action(
-                COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[self._preset_mode]
+                COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_COMFORT]
             )
 
     @property
@@ -476,7 +522,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 )
             self._apply_action(COMMAND_REFRESH_STATE)
         elif self._widget == W_AEH:
-            self._apply_action(
-                COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[preset_mode]
-            )
+            if preset_mode == PRESET_NONE:
+                self._preset_mode = PRESET_NONE
+                self._target_temp = self._saved_target_temp
+            else:
+                if self._preset_mode == PRESET_NONE:
+                    self._saved_target_temp = self._target_temp
+                self._preset_mode = preset_mode
+                self._target_temp = self._preset_temperatures[preset_mode]
             self._control_heating()
