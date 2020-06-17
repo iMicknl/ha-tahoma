@@ -2,28 +2,23 @@
 from datetime import timedelta
 import logging
 
-from homeassistant.const import ATTR_BATTERY_LEVEL
-
-from homeassistant.const import (
-    STATE_ALARM_ARMED_AWAY,
-    STATE_ALARM_ARMED_HOME,
-    STATE_ALARM_DISARMED,
-    STATE_ALARM_TRIGGERED
-)
-
 from homeassistant.components.alarm_control_panel import (
-    AlarmControlPanelEntity,
     SUPPORT_ALARM_ARM_AWAY,
     SUPPORT_ALARM_ARM_CUSTOM_BYPASS,
     SUPPORT_ALARM_ARM_HOME,
     SUPPORT_ALARM_ARM_NIGHT,
-    SUPPORT_ALARM_TRIGGER
+    SUPPORT_ALARM_TRIGGER,
+    AlarmControlPanelEntity,
+)
+from homeassistant.const import (
+    ATTR_BATTERY_LEVEL,
+    STATE_ALARM_ARMED_AWAY,
+    STATE_ALARM_ARMED_HOME,
+    STATE_ALARM_DISARMED,
+    STATE_ALARM_TRIGGERED,
 )
 
-from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-)
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,8 +57,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         state = None
 
         if "myfox:AlarmStatusState" in self.tahoma_device.active_states:
-            state = self.tahoma_device.active_states.get(
-                "myfox:AlarmStatusState")
+            state = self.tahoma_device.active_states.get("myfox:AlarmStatusState")
 
             if state == "armed":
                 self._state = STATE_ALARM_ARMED_AWAY
@@ -77,7 +71,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         if "core:IntrusionState" in self.tahoma_device.active_states:
             state = self.tahoma_device.active_states.get("core:IntrusionState")
 
-            if state == True:
+            if state:
                 self._state = STATE_ALARM_TRIGGERED
 
     @property
@@ -94,9 +88,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             attr.update(super_attr)
 
         if "core:IntrusionState" in self.tahoma_device.active_states:
-            attr["intrusion"] = self.tahoma_device.active_states[
-                "core:IntrusionState"
-            ]
+            attr["intrusion"] = self.tahoma_device.active_states["core:IntrusionState"]
 
         if "core:CloudDeviceStatusState" in self.tahoma_device.active_states:
             attr["cloud_device_status"] = self.tahoma_device.active_states[
@@ -111,13 +103,19 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
         supported_features = 0
 
-        if "arm" in self.tahoma_device.command_definitions or "alarmZoneOn" in self.tahoma_device.command_definitions:
+        if (
+            "arm" in self.tahoma_device.command_definitions
+            or "alarmZoneOn" in self.tahoma_device.command_definitions
+        ):
             supported_features |= SUPPORT_ALARM_ARM_AWAY
 
         if "alarmPartial1" in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_ALARM_ARM_HOME
 
-        if "partial" in self.tahoma_device.command_definitions or "alarmPartial2" in self.tahoma_device.command_definitions:
+        if (
+            "partial" in self.tahoma_device.command_definitions
+            or "alarmPartial2" in self.tahoma_device.command_definitions
+        ):
             supported_features |= SUPPORT_ALARM_ARM_NIGHT
 
         if "setAlarmStatus" in self.tahoma_device.command_definitions:
