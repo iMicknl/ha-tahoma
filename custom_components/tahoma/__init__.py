@@ -1,5 +1,6 @@
 """The TaHoma integration."""
 import asyncio
+import json
 import logging
 
 from requests.exceptions import RequestException
@@ -86,11 +87,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 hass.data[DOMAIN][entry.entry_id]["devices"].append(_device)
 
         else:
-            _LOGGER.warning(
-                "Unsupported TaHoma device (%s - %s - %s)",
+            _LOGGER.debug(
+                "Unsupported Tahoma device (%s). Create an issue on Github with the following information. \n\n %s \n %s \n %s",
                 _device.type,
-                _device.uiclass,
-                _device.widget,
+                _device.type + " - " + _device.uiclass + " - " + _device.widget,
+                json.dumps(_device.command_def) + ",",
+                json.dumps(_device.states_def),
             )
 
     for component in PLATFORMS:
