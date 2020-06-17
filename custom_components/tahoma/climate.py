@@ -35,7 +35,23 @@ from homeassistant.const import (
 from homeassistant.core import State, callback
 from homeassistant.helpers.event import async_track_state_change
 
-from .const import *
+from .const import (
+    DOMAIN,
+    TAHOMA_TYPES,
+    ST_DEROGATION_TYPE_STATE,
+    ST_HEATING_MODE_STATE,
+    ST_DEROGATION_HEATING_MODE_STATE,
+    CORE_TARGET_TEMPERATURE_STATE,
+    CORE_DEROGATED_TARGET_TEMPERATURE_STATE,
+    CORE_ON_OFF_STATE,
+    IO_TARGET_HEATING_LEVEL_STATE,
+    COMMAND_EXIT_DEROGATION,
+    COMMAND_SET_DEROGATION,
+    COMMAND_REFRESH_STATE,
+    COMMAND_OFF,
+    COMMAND_SET_HEATING_LEVEL,
+    COMMAND_SET_MODE_TEMPERATURE,
+)
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -173,7 +189,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             )
         elif self._widget == W_AEH:
             self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_OFF]
-            self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[CORE_ON_OFF_STATE]]
+            self._hvac_mode = MAP_HVAC_MODE[
+                self.tahoma_device.active_states[CORE_ON_OFF_STATE]
+            ]
             self._preset_mode = MAP_PRESET[
                 self.tahoma_device.active_states[IO_TARGET_HEATING_LEVEL_STATE]
             ]
@@ -187,6 +205,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self._stored_target_temp = self._target_temp
 
     async def async_added_to_hass(self):
+        """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
         if self._temp_sensor_entity_id is not None:
             async_track_state_change(
@@ -256,7 +275,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 else self.tahoma_device.active_states[ST_DEROGATION_HEATING_MODE_STATE]
             ]
         elif self._widget == W_AEH:
-            self._hvac_mode = MAP_HVAC_MODE[self.tahoma_device.active_states[CORE_ON_OFF_STATE]]
+            self._hvac_mode = MAP_HVAC_MODE[
+                self.tahoma_device.active_states[CORE_ON_OFF_STATE]
+            ]
             self._preset_mode = MAP_PRESET[
                 self.tahoma_device.active_states[IO_TARGET_HEATING_LEVEL_STATE]
             ]
@@ -273,8 +294,8 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def available(self) -> bool:
         """If the device hasn't been able to connect, mark as unavailable."""
         return (
-                bool(self._current_temperature != 0) and
-                self.hass.states.get(self._temp_sensor_entity_id) is not None
+            bool(self._current_temperature != 0)
+            and self.hass.states.get(self._temp_sensor_entity_id) is not None
         )
 
     @property
@@ -293,7 +314,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         return self._current_hvac_modes
 
     def _apply_action(self, cmd_name, *args):
-        """Apply action to the climate device"""
+        """Apply action to the climate device."""
         exec_id = self.apply_action(cmd_name, *args)
         while exec_id in self.controller.get_current_executions():
             _LOGGER.info("Waiting for action to execute")
@@ -319,7 +340,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             if hvac_mode == HVAC_MODE_OFF:
                 self._apply_action(COMMAND_OFF)
             if hvac_mode == HVAC_MODE_HEAT:
-                self._apply_action(COMMAND_SET_HEATING_LEVEL,AEH_MAP_PRESET_REVERSE[self._preset_mode])
+                self._apply_action(
+                    COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[self._preset_mode]
+                )
             self._control_heating()
             return
 
@@ -330,10 +353,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     @property
     def temperature_sensor(self) -> str:
-        """Return the id of the temperature sensor"""
+        """Return the id of the temperature sensor."""
         return self._temp_sensor_entity_id
 
     def set_temperature_sensor(self, sensor_id: str):
+        """Set the temperature sensor."""
         self._temp_sensor_entity_id = sensor_id
         self.schedule_update_ha_state()
 
@@ -344,7 +368,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     @property
     def current_temperature(self) -> Optional[float]:
-        """Return the current temperature"""
+        """Return the current temperature."""
         return self._current_temperature
 
     @property
@@ -379,7 +403,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             self._control_heating()
 
     def _control_heating(self) -> None:
-        """Controls whether heater should be turned on or off"""
+        """Control whether heater should be turned on or off."""
         if self._current_temperature == 0:
             return
         too_cold = self._target_temp - self._current_temperature >= self._cold_tolerance
@@ -394,7 +418,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if self._widget == W_AEH:
             if self._preset_mode == PRESET_NONE:
                 return
-            self._apply_action(COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_NONE])
+            self._apply_action(
+                COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_NONE]
+            )
 
     def turn_on(self):
         """Turn the entity on."""
@@ -455,4 +481,3 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[preset_mode]
             )
             self._control_heating()
-
