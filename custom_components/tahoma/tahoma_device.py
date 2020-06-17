@@ -98,6 +98,10 @@ class TahomaDevice(Entity):
             "sw_version": self.tahoma_device.type,
         }
 
+    async def async_apply_action(self, cmd_name, *args):
+        """Apply Action to Device in async context."""
+        await self.hass.async_add_executor_job(self.apply_action, cmd_name, *args)
+
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
 
