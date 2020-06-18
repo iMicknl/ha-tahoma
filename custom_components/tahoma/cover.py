@@ -339,7 +339,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if (
             "open" in self.tahoma_device.command_definitions
-            or "up" in self.tahoma_device.command_definitions*
+            or "up" in self.tahoma_device.command_definitions
         ):
             supported_features |= SUPPORT_OPEN
 
