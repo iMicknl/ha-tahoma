@@ -286,7 +286,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             return self.apply_action("open")
 
         if "up" in self.tahoma_device.command_definitions:
-            return self.apply_action("open")
+            return self.apply_action("up")
 
     def close_cover(self, **kwargs):
         """Close the cover."""
