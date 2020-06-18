@@ -281,11 +281,20 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        self.apply_action("open")
+
+        if "open" in self.tahoma_device.command_definitions:
+            return self.apply_action("open")
+
+        if "up" in self.tahoma_device.command_definitions:
+            return self.apply_action("open")
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        self.apply_action("close")
+        if "close" in self.tahoma_device.command_definitions:
+            return self.apply_action("close")
+
+        if "down" in self.tahoma_device.command_definitions:
+            return self.apply_action("down")
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
@@ -328,7 +337,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         ):
             supported_features |= SUPPORT_SET_POSITION
 
-        if "open" in self.tahoma_device.command_definitions:
+        if (
+            "open" in self.tahoma_device.command_definitions
+            or "up" in self.tahoma_device.command_definitions*
+        ):
             supported_features |= SUPPORT_OPEN
 
             if (
@@ -338,7 +350,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
             ):
                 supported_features |= SUPPORT_STOP
 
-        if "close" in self.tahoma_device.command_definitions:
+        if (
+            "close" in self.tahoma_device.command_definitions
+            or "down" in self.tahoma_device.command_definitions
+        ):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features
