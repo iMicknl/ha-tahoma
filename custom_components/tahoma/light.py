@@ -95,11 +95,11 @@ class TahomaLight(TahomaDevice, LightEntity):
         self._state = True
         self._skip_update = True
 
-        _LOGGER.debug(f"light.turn_on kwargs: {kwargs}")
+        _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
 
         if ATTR_RGB_COLOR in kwargs:
             self._rgb = [int(float(c)) for c in kwargs[ATTR_RGB_COLOR]]
-            _LOGGER.debug(f"self._rgb: {self._rgb}")
+            _LOGGER.warning(f"self._rgb: {self._rgb}")
             self.apply_action("setRGB", *self._rgb)
 
         if ATTR_BRIGHTNESS in kwargs:
@@ -143,7 +143,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self.controller.get_states([self.tahoma_device])
 
-        _LOGGER.debug(f"light states:\n{self.tahoma_device.active_states}")
+        _LOGGER.warning(f"light states:\n{self.tahoma_device.active_states}")
 
         if "core:LightIntensityState" in self.tahoma_device.active_states:
             self._brightness = self.tahoma_device.active_states.get(
