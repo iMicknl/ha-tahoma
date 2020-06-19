@@ -31,12 +31,16 @@ If your device is not supported, it will show the following message in the loggi
 | Somfy uiClass     | Home Assistant platform |
 | ----------------- | ----------------------- |
 | Awning            | cover                   |
+| Curtain           | cover                   |
 | ExteriorScreen    | cover                   |
 | Gate              | cover                   |
 | GarageDoor        | cover                   |
 | Pergola           | cover                   |
 | RollerShutter     | cover                   |
+| SwingingShutter   | cover                   |
 | Window            | cover                   |
+| AirSensor         | sensor                  |
+| ElectricitySensor | sensor                  |
 | HumiditySensor    | sensor                  |
 | LightSensor       | sensor                  |
 | TemperatureSensor | sensor                  |
@@ -45,12 +49,33 @@ If your device is not supported, it will show the following message in the loggi
 | ContactSensor     | binary_sensor           |
 | OccupancySensor   | binary_sensor           |
 | SmokeSensor       | binary_sensor           |
+| WindowHandle      | binary_sensor           |
 | Light             | light                   |
 
 ## Not supported (yet)
 
-| Somfy uiClass    |
-| ---------------- |
-| RemoteController |
-| Alarm            |
-| HeatingSystem    |
+| Somfy uiClass         |
+| --------------------- |
+| RemoteController      |
+| Alarm                 |
+| HeatingSystem         |
+| EvoHome               |
+| HitachiHeatingSystem  |
+| ExteriorHeatingSystem |
+| Fan                   |
+| Siren                 |
+| MusicPlayer           |
+| VentilationSystem     |
+
+## Advanced
+
+### Enable debug logging
+
+The [logger](https://www.home-assistant.io/integrations/logger/) integration lets you define the level of logging activities in Home Assistant. Turning on debug mode will show more information about unsupported devices in your logbook.
+
+```yaml
+logger:
+  default: critical
+  logs:
+    custom_components.tahoma: debug
+```

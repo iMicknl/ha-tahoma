@@ -1,15 +1,14 @@
-"""Tahoma light platform that implements dimmable tahoma lights."""
-import logging
+"""TaHoma light platform that implements dimmable TaHoma lights."""
 from datetime import timedelta
+import logging
 
 from homeassistant.components.light import (
-    LightEntity,
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
     SUPPORT_BRIGHTNESS,
     SUPPORT_EFFECT,
+    LightEntity,
 )
-
 from homeassistant.const import STATE_OFF, STATE_ON
 
 from .const import DOMAIN, TAHOMA_TYPES
@@ -21,7 +20,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma lights from a config entry."""
+    """Set up the TaHoma lights from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -36,17 +35,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaLight(TahomaDevice, LightEntity):
-    """Representation of a Tahome light"""
+    """Representation of a Tahome light."""
 
     def __init__(self, tahoma_device, controller):
+        """Initialize a device."""
         super().__init__(tahoma_device, controller)
 
         self._skip_update = False
         self._effect = None
         self._brightness = None
         self._state = None
-        
-        self.update()
 
     @property
     def brightness(self) -> int:
@@ -72,7 +70,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         return supported_features
 
-    async def async_turn_on(self, **kwargs) -> None:
+    def turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         self._state = True
         self._skip_update = True
@@ -88,7 +86,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self.async_write_ha_state()
 
-    async def async_turn_off(self, **kwargs) -> None:
+    def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._state = False
         self._skip_update = True
@@ -108,6 +106,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
     def update(self):
         """Fetch new state data for this light.
+
         This is the only method that should fetch new data for Home Assistant.
         """
         # Postpone the immediate state check for changes that take time.
