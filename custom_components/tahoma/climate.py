@@ -284,6 +284,9 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
 
+        if state.state is None:
+            return
+
         try:
             self._current_temperature = (
                 0 if state.state == STATE_UNKNOWN else float(state.state)
