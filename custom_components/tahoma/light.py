@@ -5,6 +5,7 @@ import logging
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
+    ATTR_HS_COLOR,
     ATTR_RGB_COLOR,
     SUPPORT_BRIGHTNESS,
     SUPPORT_COLOR,
@@ -102,7 +103,8 @@ class TahomaLight(TahomaDevice, LightEntity):
         _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
 
         if ATTR_RGB_COLOR in kwargs:
-            self._rgb = [int(float(c)) for c in kwargs[ATTR_RGB_COLOR]]
+            rgb = color_util.color_hs_to_RGB(kwargs[ATTR_HS_COLOR])
+            self._rgb = [int(float(c)) for c in rgb]
             _LOGGER.warning(f"self._rgb: {self._rgb}")
             self._apply_action("setRGB", *self._rgb)
 
