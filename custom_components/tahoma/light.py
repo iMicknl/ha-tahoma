@@ -99,6 +99,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if ATTR_RGB_COLOR in kwargs:
             self._rgb = [int(float(c)) for c in kwargs[ATTR_RGB_COLOR]]
+            _LOGGER.debug(f"self._rgb: {self._rgb}")
             self.apply_action("setRGB", *self._rgb)
 
         if ATTR_BRIGHTNESS in kwargs:
