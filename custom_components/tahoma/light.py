@@ -12,8 +12,15 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.const import STATE_OFF, STATE_ON
+import homeassistant.util.color as color_util
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import (
+    CORE_BLUE_COLOR_INTENSITY_STATE,
+    CORE_GREEN_COLOR_INTENSITY_STATE,
+    CORE_RED_COLOR_INTENSITY_STATE,
+    DOMAIN,
+    TAHOMA_TYPES,
+)
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,6 +65,13 @@ class TahomaLight(TahomaDevice, LightEntity):
     def is_on(self) -> bool:
         """Return true if light is on."""
         return self._state
+
+    @property
+    def hs_color(self):
+        """Return the hue and saturation color value [float, float]."""
+        if self.supported_features & SUPPORT_COLOR:
+            return color_util.color_RGB_to_hs(*self._rgb)
+        return None
 
     @property
     def supported_features(self) -> int:
@@ -135,3 +149,10 @@ class TahomaLight(TahomaDevice, LightEntity):
             self._state = True
         else:
             self._state = False
+
+        if CORE_RED_COLOR_INTENSITY_STATE in self.tahoma_device.active_states:
+            self._rgb = [
+                self.tahoma_device.active_states.get(CORE_RED_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
+            ]
