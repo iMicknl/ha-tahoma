@@ -5,7 +5,9 @@ import logging
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
+    ATTR_RGB_COLOR,
     SUPPORT_BRIGHTNESS,
+    SUPPORT_COLOR,
     SUPPORT_EFFECT,
     LightEntity,
 )
@@ -45,6 +47,7 @@ class TahomaLight(TahomaDevice, LightEntity):
         self._effect = None
         self._brightness = None
         self._state = None
+        self._rgb = []
 
     @property
     def brightness(self) -> int:
@@ -68,12 +71,19 @@ class TahomaLight(TahomaDevice, LightEntity):
         if "wink" in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_EFFECT
 
+        if "setRGB" in self.tahoma_device.command_definitions:
+            supported_features |= SUPPORT_COLOR
+
         return supported_features
 
     def turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         self._state = True
         self._skip_update = True
+
+        if ATTR_RGB_COLOR in kwargs:
+            self._rgb = [int(float(c) / 255 * 100) for c in kwargs[ATTR_RGB_COLOR]]
+            self.apply_action("setRGB", *self._rgb)
 
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
