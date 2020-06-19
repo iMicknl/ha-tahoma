@@ -82,7 +82,7 @@ class TahomaLight(TahomaDevice, LightEntity):
         self._skip_update = True
 
         if ATTR_RGB_COLOR in kwargs:
-            self._rgb = [int(float(c) / 255 * 100) for c in kwargs[ATTR_RGB_COLOR]]
+            self._rgb = [int(float(c)) for c in kwargs[ATTR_RGB_COLOR]]
             self.apply_action("setRGB", *self._rgb)
 
         if ATTR_BRIGHTNESS in kwargs:
