@@ -103,7 +103,7 @@ class TahomaLight(TahomaDevice, LightEntity):
         _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
 
         if ATTR_HS_COLOR in kwargs:
-            rgb = color_util.color_hs_to_RGB(kwargs[ATTR_HS_COLOR])
+            rgb = color_util.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
             self._rgb = [int(float(c)) for c in rgb]
             _LOGGER.warning(f"self._rgb: {self._rgb}")
             self._apply_action("setRGB", *self._rgb)
