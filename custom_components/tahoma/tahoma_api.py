@@ -1,24 +1,30 @@
 """
-Connection to Tahoma API.
+Connection to TaHoma API.
 
-Connection to Somfy Tahoma REST API
+Connection to Somfy TaHoma REST API
 """
 
 import json
-import requests
+import logging
+import pprint
+import traceback
 import urllib.parse
 
-BASE_URL = 'https://tahomalink.com/enduser-mobile-web/enduserAPI/'  # /doc for API doc
-BASE_HEADERS = {'User-Agent': 'mine'}
+import requests
+
+BASE_URL = "https://tahomalink.com/enduser-mobile-web/enduserAPI/"  # /doc for API doc
+BASE_HEADERS = {"User-Agent": "mine"}
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class TahomaApi:
-    """Connection to Tahoma API."""
+    """Connection to TaHoma API."""
 
     def __init__(self, userName, userPassword, **kwargs):
-        """Initalize the Tahoma protocol.
+        """Initialize the TaHoma protocol.
 
-        :param userName: Tahoma username
+        :param userName: TaHoma username
         :param userPassword: Password
         :param kwargs: Ignore, only for unit test reasons
         """
@@ -34,33 +40,41 @@ class TahomaApi:
         self.login()
 
     def login(self):
-        """Login to Tahoma API."""
+        """Login to TaHoma API."""
         if self.__logged_in:
             return
-        login = {'userId': self.__username, 'userPassword': self.__password}
+        login = {"userId": self.__username, "userPassword": self.__password}
         header = BASE_HEADERS.copy()
-        request = requests.post(BASE_URL + 'login',
-                                data=login,
-                                headers=header,
-                                timeout=10)
+        request = requests.post(
+            BASE_URL + "login", data=login, headers=header, timeout=10
+        )
 
         try:
             result = request.json()
         except ValueError as error:
             raise Exception(
-                "Not a valid result for login, " +
-                "protocol error: " + request.status_code + ' - ' +
-                request.reason + "(" + error + ")")
+                "Not a valid result for login, "
+                + "protocol error: "
+                + request.status_code
+                + " - "
+                + request.reason
+                + "("
+                + error
+                + ")"
+            )
 
-        if 'error' in result.keys():
-            raise Exception("Could not login: " + result['error'])
+        if "error" in result.keys():
+            raise Exception("Could not login: " + result["error"])
 
         if request.status_code != 200:
             raise Exception(
-                "Could not login, HTTP code: " +
-                str(request.status_code) + ' - ' + request.reason)
+                "Could not login, HTTP code: "
+                + str(request.status_code)
+                + " - "
+                + request.reason
+            )
 
-        if 'success' not in result.keys() or not result['success']:
+        if "success" not in result.keys() or not result["success"]:
             raise Exception("Could not login, no success")
 
         cookie = request.headers.get("set-cookie")
@@ -71,9 +85,10 @@ class TahomaApi:
         self.__logged_in = True
         return self.__logged_in
 
-    def send_request(self, method, url: str, headers, data=None, timeout: int = 10,
-                     retries: int = 3):
-        """Wrap the http requests and retries
+    def send_request(
+        self, method, url: str, headers, data=None, timeout: int = 10, retries: int = 3
+    ):
+        """Wrap the http requests and retries.
 
         :param method: The method to use for the request: post, get, delete.
         :param url: The url to send the POST to.
@@ -86,52 +101,55 @@ class TahomaApi:
         if not self.__logged_in:
             self.login()
 
+        stack = pprint.pformat(traceback.extract_stack())
+        if "asyncio" in stack:
+            _LOGGER.warning("I/O stack trace:\n" + stack)
         request = method(url, headers=headers, data=data, timeout=timeout)
         if request.status_code == 200:
             try:
                 result = request.json()
             except ValueError as error:
-                raise Exception(
-                    "Not a valid result, protocol error: " + str(error))
+                raise Exception("Not a valid result, protocol error: " + str(error))
             return result
         elif retries == 0:
             raise Exception(
-                "Maximum number of consecutive retries reached. Error is:\n" + request.text)
+                "Maximum number of consecutive retries reached. Error is:\n"
+                + request.text
+            )
         else:
             self.send_request(method, url, headers, data, timeout, retries - 1)
 
     def get_user(self):
-        """Get the user informations from the server.
+        """Get the user information from the server.
 
-        :return: a dict with all the informations
+        :return: a dict with all the information
         :rtype: dict
 
         raises ValueError in case of protocol issues
 
         :Example:
 
-        >>> "creationTime": <time>,
-        >>> "lastUpdateTime": <time>,
-        >>> "userId": "<email for login>",
-        >>> "title": 0,
-        >>> "firstName": "<First>",
-        >>> "lastName": "<Last>",
-        >>> "email": "<contact email>",
-        >>> "phoneNumber": "<phone>",
-        >>> "mobilePhone": "<mobile>",
-        >>> "locale": "<two char country code>"
+          "creationTime": <time>,
+          "lastUpdateTime": <time>,
+          "userId": "<email for login>",
+          "title": 0,
+          "firstName": "<First>",
+          "lastName": "<Last>",
+          "email": "<contact email>",
+          "phoneNumber": "<phone>",
+          "mobilePhone": "<mobile>",
+          "locale": "<two char country code>"
 
         :Warning:
 
         The type and amount of values in the dictionary can change any time.
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         result = self.send_request(
-            requests.get,
-            BASE_URL + 'enduser/mainAccount',
-            headers=header, )
+            requests.get, BASE_URL + "enduser/mainAccount", headers=header
+        )
 
         return result
 
@@ -154,57 +172,53 @@ class TahomaApi:
         - gateway
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
-        result = self.send_request(
-            requests.get,
-            BASE_URL + 'setup',
-            headers=header)
+        result = self.send_request(requests.get, BASE_URL + "setup", headers=header)
 
         self.__setup = result
         self._get_setup(result)
 
     def _get_setup(self, result):
-        """Internal method which process the results from the server."""
+        """Process the results from the server."""
         self.__devices = {}
 
-        if ('devices' not in result.keys()):
-            raise Exception(
-                "Did not find device definition.")
+        if "devices" not in result.keys():
+            raise Exception("Did not find device definition.")
 
-        for device_data in result['devices']:
+        for device_data in result["devices"]:
             device = Device(self, device_data)
             self.__devices[device.url] = device
 
-        self.__location = result['location']
-        self.__gateway = result['gateways']
+        self.__location = result["location"]
+        self.__gateway = result["gateways"]
 
     @property
     def location(self):
-        """Return the location information stored in your Tahoma box.
+        """Return the location information stored in your TaHoma box.
 
         When the configuration has been loaded via get_setup this
         method retrieves all the location details which have
-        been saved for your Tahoma box.
-        :return: a dict with all the informations
+        been saved for your TaHoma box.
+        :return: a dict with all the information
         :rtype: dict
         :Example:
-        >>> "creationTime": <time>,
-        >>> "lastUpdateTime": <time>,
-        >>> "addressLine1": "<street>",
-        >>> "postalCode": "<zip>",
-        >>> "city": "<city>",
-        >>> "country": "<country>",
-        >>> "timezone": "Europe/<city>",
-        >>> "longitude": 2.343,
-        >>> "latitude": 48.857,
-        >>> "twilightMode": 2,
-        >>> "twilightCity": "<city>",
-        >>> "summerSolsticeDuskMinutes": 1290,
-        >>> "winterSolsticeDuskMinutes": 990,
-        >>> "twilightOffsetEnabled": False,
-        >>> "dawnOffset": 0,
-        >>> "duskOffset": 0
+          "creationTime": <time>,
+          "lastUpdateTime": <time>,
+          "addressLine1": "<street>",
+          "postalCode": "<zip>",
+          "city": "<city>",
+          "country": "<country>",
+          "timezone": "Europe/<city>",
+          "longitude": 2.343,
+          "latitude": 48.857,
+          "twilightMode": 2,
+          "twilightCity": "<city>",
+          "summerSolsticeDuskMinutes": 1290,
+          "winterSolsticeDuskMinutes": 990,
+          "twilightOffsetEnabled": False,
+          "dawnOffset": 0,
+          "duskOffset": 0
 
         :Warning:
 
@@ -218,33 +232,33 @@ class TahomaApi:
 
     @property
     def gateway(self):
-        """Return information about your Tahoma box.
+        """Return information about your TaHoma box.
 
         When the configuration has been loaded via get_setup this
-        method retrieves all  details your Tahoma box.
+        method retrieves all  details your TaHoma box.
 
         :return: a list of all gateways with a dict per gateway with
-        all the informations
+        all the information
         :rtype: list
 
         :Example:
 
-        >>> [{
-        >>>     "gatewayId": "1234-1234-1234",
-        >>>     "type": 15,
-        >>>     "placeOID": "12345678-1234-1234-1234-12345678",
-        >>>     "alive": True,
-        >>>     "timeReliable": True,
-        >>>     "connectivity": {
-        >>>         "status": "OK",
-        >>>         "protocolVersion": "8"
-        >>>     },
-        >>>     "upToDate": True,
-        >>>     "functions": "INTERNET_AUTHORIZATION,SCENARIO_DOWNLOAD,
+          [{
+              "gatewayId": "1234-1234-1234",
+              "type": 15,
+              "placeOID": "12345678-1234-1234-1234-12345678",
+              "alive": True,
+              "timeReliable": True,
+              "connectivity": {
+                  "status": "OK",
+                  "protocolVersion": "8"
+              },
+              "up-to-date": True,
+              "functions": "INTERNET_AUTHORIZATION,SCENARIO_DOWNLOAD,
                 SCENARIO_AUTO_LAUNCHING,SCENARIO_TELECO_LAUNCHING,
                 INTERNET_UPLOAD,INTERNET_UPDATE,TRIGGERS_SENSORS",
-        >>>     "mode": "ACTIVE"
-        >>> }]
+              "mode": "ACTIVE"
+          }]
 
         :Warning:
 
@@ -292,7 +306,7 @@ class TahomaApi:
         """Start to execute an action or a group of actions.
 
         This method takes a bunch of actions and runs them on your
-        Tahoma box.
+        TaHoma box.
 
         :param name_of_action: the label/name for the action
         :param actions: an array of Action objects
@@ -308,8 +322,8 @@ class TahomaApi:
         - get_current_executions
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
-        header['Content-Type'] = 'application/json'
+        header["Cookie"] = self.__cookie
+        header["Content-Type"] = "application/json"
 
         actions_serialized = []
 
@@ -319,19 +333,21 @@ class TahomaApi:
         data = {"label": name_of_action, "actions": actions_serialized}
         json_data = json.dumps(data, indent=None, sort_keys=True)
 
-        result = self.send_request(requests.post, BASE_URL + "exec/apply", header, json_data)
+        result = self.send_request(
+            requests.post, BASE_URL + "exec/apply", header, json_data
+        )
 
-        if 'execId' not in result.keys():
+        if "execId" not in result.keys():
             raise Exception("Could not run actions, missing execId.")
 
-        return result['execId']
+        return result["execId"]
 
     def get_events(self):
         """Return a set of events.
 
-        Which have been occured since the last call of this method.
+        Which have been occurred since the last call of this method.
 
-        This method should be called regulary to get all occuring
+        This method should be called regulary to get all occurring
         Events. There are three different Event types/classes
         which can be returned:
 
@@ -353,28 +369,25 @@ class TahomaApi:
         - get_history
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         if self.__events_registration is None:
             register_response = self.send_request(
-                requests.post,
-                BASE_URL + 'events/register',
-                header)
+                requests.post, BASE_URL + "events/register", header
+            )
 
-            self.__events_registration = json.loads(register_response.text)["id"]
-            if register_response.status_code != 200:
-                self.__events_registration = None
-                self.get_events()
+            self.__events_registration = register_response["id"]
 
         result = self.send_request(
             requests.post,
-            BASE_URL + 'events/' + self.__events_registration + '/fetch',
-            headers=header)
+            BASE_URL + "events/" + self.__events_registration + "/fetch",
+            headers=header,
+        )
 
         return self._get_events(result)
 
     def _get_events(self, result):
-        """"Internal method for being able to run unit tests."""
+        """Run unit tests."""
         events = []
 
         for event_data in result:
@@ -387,20 +400,21 @@ class TahomaApi:
                     # change device state
                     if self.__devices[event.device_url] is None:
                         raise Exception(
-                            "Received device change " +
-                            "state for unknown device '" +
-                            event.device_url + "'")
+                            "Received device change "
+                            + "state for unknown device '"
+                            + event.device_url
+                            + "'"
+                        )
 
-                    self.__devices[event.device_url].set_active_states(
-                        event.states)
+                    self.__devices[event.device_url].set_active_states(event.states)
 
         return events
 
     def get_current_executions(self):
         """Get all current running executions.
 
-        :return: Returns a set of running Executions or empty list.
-        :rtype: list
+        :return: Returns a dict of running Executions or empty dict.
+        :rtype: dict
 
         raises ValueError in case of protocol issues
 
@@ -411,30 +425,26 @@ class TahomaApi:
         - get_history
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         result = self.send_request(
-            requests.get,
-            BASE_URL + 'exec/current',
-            headers=header)
+            requests.get, BASE_URL + "exec/current", headers=header
+        )
 
-        executions = []
+        executions = {}
 
         for execution_data in result:
             exe = Execution(execution_data)
-            executions.append(exe)
+            executions[exe.execution_id] = exe
 
         return executions
 
     def get_history(self):
         """Get history."""
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
-        result = self.send_request(
-            requests.get,
-            BASE_URL + 'history',
-            headers=header)
+        result = self.send_request(requests.get, BASE_URL + "history", headers=header)
 
         return result
 
@@ -444,9 +454,11 @@ class TahomaApi:
         raises ValueError in case of any protocol issues.
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
-        self.send_request(requests.delete, BASE_URL + 'exec/current/setup', headers=header)
+        self.send_request(
+            requests.delete, BASE_URL + "exec/current/setup", headers=header
+        )
 
     def get_action_groups(self):
         """Get all Action Groups.
@@ -454,11 +466,9 @@ class TahomaApi:
         :return: List of Action Groups
         """
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
-        request = requests.get(BASE_URL + "actionGroups",
-                               headers=header,
-                               timeout=10)
+        request = requests.get(BASE_URL + "actionGroups", headers=header, timeout=10)
 
         if request.status_code != 200:
             self.__logged_in = False
@@ -469,8 +479,7 @@ class TahomaApi:
         try:
             result = request.json()
         except ValueError:
-            raise Exception(
-                "get_action_groups: Not a valid result for ")
+            raise Exception("get_action_groups: Not a valid result for ")
 
         groups = []
 
@@ -483,31 +492,25 @@ class TahomaApi:
     def launch_action_group(self, action_id):
         """Start action group."""
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         result = self.send_request(
-            requests.post,
-            BASE_URL + 'exec/' + action_id,
-            headers=header)
+            requests.post, BASE_URL + "exec/" + action_id, headers=header
+        )
 
-        if 'execId' not in result.keys():
-            raise Exception(
-                "Could not launch action" +
-                "group, missing execId.")
+        if "execId" not in result.keys():
+            raise Exception("Could not launch action" + "group, missing execId.")
 
-        return result['execId']
+        return result["execId"]
 
     def get_states(self, devices):
         """Get States of Devices."""
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         for device in devices:
-            path = 'setup/devices/' + urllib.parse.quote_plus(device.url) + '/states'
-            result = self.send_request(
-                requests.get,
-                BASE_URL + path,
-                headers=header)
+            path = "setup/devices/" + urllib.parse.quote_plus(device.url) + "/states"
+            result = self.send_request(requests.get, BASE_URL + path, headers=header)
 
             try:
                 self.__devices[device.url].set_active_states(result)
@@ -517,115 +520,129 @@ class TahomaApi:
     def refresh_all_states(self):
         """Update all states."""
         header = BASE_HEADERS.copy()
-        header['Cookie'] = self.__cookie
+        header["Cookie"] = self.__cookie
 
         self.send_request(
-            requests.post,
-            BASE_URL + "setup/devices/states/refresh",
-            headers=header)
+            requests.post, BASE_URL + "setup/devices/states/refresh", headers=header
+        )
 
 
 class Device:
-    """Represents an Tahoma Device."""
+    """Represents an TaHoma Device."""
 
     def __init__(self, protocol, dataInput):
-        """Initalize the Tahoma Device."""
+        """Initialize the TaHoma Device."""
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
 
         debug_output = json.dumps(dataInput)
 
-        if 'label' not in dataInput.keys():
-            raise ValueError('No device name found: ' + debug_output)
+        if "label" not in dataInput.keys():
+            raise ValueError("No device name found: " + debug_output)
 
-        self.__label = dataInput['label']
+        self.__label = dataInput["label"]
 
-        if 'controllableName' not in dataInput.keys():
-            raise ValueError('No control label name found: ' + debug_output)
+        if "controllableName" not in dataInput.keys():
+            raise ValueError("No control label name found: " + debug_output)
 
-        self.__type = dataInput['controllableName']
+        self.__type = dataInput["controllableName"]
 
-        if 'deviceURL' not in dataInput.keys():
-            raise ValueError('No control URL: ' + debug_output)
+        if "deviceURL" not in dataInput.keys():
+            raise ValueError("No control URL: " + debug_output)
 
-        self.__url = dataInput['deviceURL']
+        self.__url = dataInput["deviceURL"]
 
-        if 'uiClass' not in dataInput.keys():
-            raise ValueError('No ui Class: ' + debug_output)
+        if "uiClass" not in dataInput.keys():
+            raise ValueError("No ui Class: " + debug_output)
 
-        self.__uiclass = dataInput['uiClass']
+        self.__uiclass = dataInput["uiClass"]
 
-        if 'widget' not in dataInput.keys():
-            raise ValueError('No widget: ' + debug_output)
+        if "widget" not in dataInput.keys():
+            raise ValueError("No widget: " + debug_output)
 
-        self.__widget = dataInput['widget']
+        self.__widget = dataInput["widget"]
 
         # Parse definitions
 
-        if 'definition' not in dataInput.keys():
-            raise ValueError('No device definition found: ' + debug_output)
+        if "definition" not in dataInput.keys():
+            raise ValueError("No device definition found: " + debug_output)
 
-        self.__definitions = {
-            'commands': [],
-            'states': []
-        }
+        self.__definitions = {"commands": [], "states": []}
 
-        definition = dataInput['definition']
+        definition = dataInput["definition"]
 
-        if 'commands' in definition.keys():
-            for command in definition['commands']:
-                if command['commandName'] in self.__definitions['commands']:
-                    raise ValueError("Command '" + command['commandName'] +
-                                     "' double defined - " + debug_output)
+        if "commands" in definition.keys():
+            for command in definition["commands"]:
+                if command["commandName"] in self.__definitions["commands"]:
+                    raise ValueError(
+                        "Command '"
+                        + command["commandName"]
+                        + "' double defined - "
+                        + debug_output
+                    )
 
-                self.__definitions['commands'].append(command['commandName'])
+                self.__definitions["commands"].append(command["commandName"])
 
-        if 'states' in definition.keys():
-            for state in definition['states']:
-                if state['qualifiedName'] in self.__definitions['states']:
-                    raise ValueError("State '" + state['qualifiedName'] +
-                                     "' double defined - " + debug_output)
+        if "states" in definition.keys():
+            for state in definition["states"]:
+                if state["qualifiedName"] in self.__definitions["states"]:
+                    raise ValueError(
+                        "State '"
+                        + state["qualifiedName"]
+                        + "' double defined - "
+                        + debug_output
+                    )
 
-                self.__definitions['states'].append(state['qualifiedName'])
+                self.__definitions["states"].append(state["qualifiedName"])
 
-        self.__command_def = dataInput['definition']['commands']
+        self.__command_def = dataInput["definition"]["commands"]
 
-        self.__states_def = dataInput['definition']['states']
+        self.__states_def = dataInput["definition"]["states"]
 
         # Parse active states
 
         # calculate the amount of known active states
         active_states_amount = 0
-        if 'states' in dataInput.keys():
-            for state in dataInput['states']:
+        if "states" in dataInput.keys():
+            for state in dataInput["states"]:
                 active_states_amount += 1
 
         # make sure there are not more active states than definitions
         if active_states_amount > len(self.state_definitions):
             raise ValueError(
-                "Missmatch of state definition and active states (" +
-                str(len(self.state_definitions)) + "/" +
-                str(active_states_amount) + "): " + debug_output)
+                "Mismatch of state definition and active states ("
+                + str(len(self.state_definitions))
+                + "/"
+                + str(active_states_amount)
+                + "): "
+                + debug_output
+            )
 
         if len(self.state_definitions) > 0:
 
-            if 'states' in dataInput.keys():
+            if "states" in dataInput.keys():
                 # raise ValueError("No active states given.")
 
-                for state in dataInput['states']:
+                for state in dataInput["states"]:
 
-                    if state['name'] not in self.state_definitions:
+                    if state["name"] not in self.state_definitions:
                         raise ValueError(
-                            "Active state '" + state['name'] +
-                            "' has not been defined: " + debug_output)
+                            "Active state '"
+                            + state["name"]
+                            + "' has not been defined: "
+                            + debug_output
+                        )
 
-                    if state['name'] in self.__active_states.keys():
+                    if state["name"] in self.__active_states.keys():
                         raise ValueError(
-                            "Active state '" + state['name'] +
-                            "' has been double defined: " + debug_output)
+                            "Active state '"
+                            + state["name"]
+                            + "' has been double defined: "
+                            + debug_output
+                        )
 
-                    self.__active_states[state['name']] = state['value']
+                    self.__active_states[state["name"]] = state["value"]
 
     @property
     def label(self):
@@ -635,12 +652,12 @@ class Device:
     @property
     def command_definitions(self):
         """List of command devinitions."""
-        return self.__definitions['commands']
+        return self.__definitions["commands"]
 
     @property
     def state_definitions(self):
         """State of command devinition."""
-        return self.__definitions['states']
+        return self.__definitions["states"]
 
     @property
     def active_states(self):
@@ -650,15 +667,13 @@ class Device:
     def set_active_state(self, name, value):
         """Set active state."""
         if name not in self.__active_states.keys():
-            raise ValueError("Can not set unknown state '" + name + "'")
+            self.__active_states[name] = value
 
-        if (isinstance(self.__active_states[name], int) and
-                isinstance(value, str)):
+        if isinstance(self.__active_states[name], int) and isinstance(value, str):
             # we get an update as str but current value is
             # an int, try to convert
             self.__active_states[name] = int(value)
-        elif (isinstance(self.__active_states[name], float) and
-              isinstance(value, str)):
+        elif isinstance(self.__active_states[name], float) and isinstance(value, str):
             # we get an update as str but current value is
             # a float, try to convert
             self.__active_states[name] = float(value)
@@ -668,7 +683,7 @@ class Device:
     def set_active_states(self, states):
         """Set active states to device."""
         for state in states:
-            self.set_active_state(state['name'], state['value'])
+            self.set_active_state(state["name"], state["value"])
 
     @property
     def type(self):
@@ -682,13 +697,23 @@ class Device:
 
     @property
     def uiclass(self):
-        """Get device ui class"""
+        """Get device ui class."""
         return self.__uiclass
 
     @property
     def widget(self):
-        """Get device widget type"""
+        """Get device widget type."""
         return self.__widget
+
+    @property
+    def command_def(self):
+        """Get device widget type."""
+        return self.__command_def
+
+    @property
+    def states_def(self):
+        """Get device widget type."""
+        return self.__states_def
 
     # def execute_action(self, action):
     #    """Exceute action."""
@@ -696,21 +721,20 @@ class Device:
 
 
 class Action:
-    """Represents an Tahoma Action."""
+    """Represents an TaHoma Action."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action."""
+        """Initialize the TaHoma Action."""
         self.__commands = []
 
         if isinstance(data, dict):
-            self.__device_url = data['deviceURL']
+            self.__device_url = data["deviceURL"]
 
-            for cmd in data['commands']:
-                if 'parameters' in cmd.keys():
-                    self.__commands.append(
-                        Command(cmd['name'], cmd['parameters']))
+            for cmd in data["commands"]:
+                if "parameters" in cmd.keys():
+                    self.__commands.append(Command(cmd["name"], cmd["parameters"]))
                 else:
-                    self.__commands.append(Command(cmd['name']))
+                    self.__commands.append(Command(cmd["name"]))
         elif isinstance(data, str):
             self.__device_url = data
         else:
@@ -742,42 +766,38 @@ class Action:
         for cmd in self.commands:
             commands.append(cmd.serialize())
 
-        out = {'commands': commands, 'deviceURL': self.__device_url}
+        out = {"commands": commands, "deviceURL": self.__device_url}
 
         return out
 
     def __str__(self):
         """Format to json."""
         return json.dumps(
-            self.serialize(),
-            indent=4,
-            sort_keys=True,
-            separators=(',', ': ')
+            self.serialize(), indent=4, sort_keys=True, separators=(",", ": ")
         )
 
     def __repr__(self):
         """Format to json."""
         return json.dumps(
-            self.serialize(),
-            indent=None,
-            sort_keys=True,
-            separators=(',', ': '))
+            self.serialize(), indent=None, sort_keys=True, separators=(",", ": ")
+        )
 
 
 class Command:
-    """Represents an Tahoma Command."""
+    """Represents an TaHoma Command."""
 
     def __init__(self, cmd_name, *args):
-        """Initalize the Tahoma Command."""
+        """Initialize the TaHoma Command."""
         self.__name = cmd_name
 
         if len(args):
             for arg in args[0]:
-                if (isinstance(arg, str) is False and
-                        isinstance(arg, int) is False and
-                        isinstance(arg, float) is False):
-                    raise ValueError(
-                        "Type '" + type(arg) + "' is not Int, bool or .")
+                if (
+                    isinstance(arg, str) is False
+                    and isinstance(arg, int) is False
+                    and isinstance(arg, float) is False
+                ):
+                    raise ValueError("Type '" + type(arg) + "' is not Int, bool or .")
 
             self.__args = args[0]
         else:
@@ -795,40 +815,36 @@ class Command:
 
     def serialize(self):
         """Serialize command."""
-        return {'name': self.__name, 'parameters': self.__args}
+        return {"name": self.__name, "parameters": self.__args}
 
     def __str__(self):
         """Format to json."""
         return json.dumps(
-            self.serialize(),
-            indent=4,
-            sort_keys=True,
-            separators=(',', ': '))
+            self.serialize(), indent=4, sort_keys=True, separators=(",", ": ")
+        )
 
     def __repr__(self):
         """Format to json."""
         return json.dumps(
-            self.serialize(),
-            indent=None,
-            sort_keys=True,
-            separators=(',', ': '))
+            self.serialize(), indent=None, sort_keys=True, separators=(",", ": ")
+        )
 
 
 class ActionGroup:
-    """Represents an Tahoma Action Group."""
+    """Represents an TaHoma Action Group."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Action Group."""
-        if hasattr(data, 'lastUpdateTime'):
-            self.__last_update = data['lastUpdateTime']
+        """Initialize the TaHoma Action Group."""
+        if hasattr(data, "lastUpdateTime"):
+            self.__last_update = data["lastUpdateTime"]
         else:
             self.__last_update = -1
-        self.__name = data['label']
-        self.__oid = data['oid']
+        self.__name = data["label"]
+        self.__oid = data["oid"]
 
         self.__actions = []
 
-        for cmd in data['actions']:
+        for cmd in data["actions"]:
             self.__actions.append(Action(cmd))
 
     @property
@@ -853,30 +869,30 @@ class ActionGroup:
 
 
 class Event:
-    """Represents an Tahoma Event."""
+    """Represents an TaHoma Event."""
 
     @staticmethod
     def factory(data):
-        """Tahoma Event factory."""
-        if data['name'] == "DeviceStateChangedEvent":
+        """TaHoma Event factory."""
+        if data["name"] == "DeviceStateChangedEvent":
             return DeviceStateChangedEvent(data)
-        elif data['name'] == "ExecutionStateChangedEvent":
+        elif data["name"] == "ExecutionStateChangedEvent":
             return ExecutionStateChangedEvent(data)
-        elif data['name'] == "CommandExecutionStateChangedEvent":
+        elif data["name"] == "CommandExecutionStateChangedEvent":
             return CommandExecutionStateChangedEvent(data)
         else:
-            print("Unknown event '" + data['name'] + "' occurred.")
+            print("Unknown event '" + data["name"] + "' occurred.")
             # raise ValueError("Unknown event '" + data['name'] + "' occurred.")
             return None
 
 
 class DeviceStateChangedEvent(Event):
-    """Represents an Tahoma DeviceStateChangedEvent."""
+    """Represents an TaHoma DeviceStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma DeviceStateChangedEvent."""
-        self.__device_url = data['deviceURL']
-        self.__states = data['deviceStates']
+        """Initialize the TaHoma DeviceStateChangedEvent."""
+        self.__device_url = data["deviceURL"]
+        self.__states = data["deviceStates"]
 
     @property
     def device_url(self):
@@ -890,20 +906,20 @@ class DeviceStateChangedEvent(Event):
 
 
 class CommandExecutionStateChangedEvent(Event):
-    """Represents an Tahoma CommandExecutionStateChangedEvent."""
+    """Represents an TaHoma CommandExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma CommandExecutionStateChangedEvent."""
-        self.__exec_id = data['execId']
-        self.__device_url = data['deviceURL']
+        """Initialize the TaHoma CommandExecutionStateChangedEvent."""
+        self.__exec_id = data["execId"]
+        self.__device_url = data["deviceURL"]
 
         try:
-            self.__state = EventState(int(data['newState']))
+            self.__state = EventState(int(data["newState"]))
         except ValueError:
             self.__state = EventState.Unknown
 
         if self.__state == EventState.Failed:
-            self.__failure_type = data['failureType']
+            self.__failure_type = data["failureType"]
         else:
             self.__failure_type = None
 
@@ -929,20 +945,20 @@ class CommandExecutionStateChangedEvent(Event):
 
 
 class ExecutionStateChangedEvent(Event):
-    """Represents an Tahoma ExecutionStateChangedEvent."""
+    """Represents an TaHoma ExecutionStateChangedEvent."""
 
     def __init__(self, data):
-        """Initalize the Tahoma ExecutionStateChangedEvent."""
-        self.__exec_id = data['execId']
+        """Initialize the TaHoma ExecutionStateChangedEvent."""
+        self.__exec_id = data["execId"]
 
         try:
-            self.__state = EventState(int(data['newState']))
+            self.__state = EventState(int(data["newState"]))
         except ValueError:
             self.__state = EventState.Unknown
 
         if self.__state == EventState.Failed:
-            self.__failure_type = data['failureType']
-            fail = data['failedCommands']['command']['deviceURL']
+            self.__failure_type = data["failureType"]
+            fail = data["failedCommands"]["command"]["deviceURL"]
             self.__failed_device_url = fail
         else:
             self.__failure_type = None
@@ -969,11 +985,11 @@ class ExecutionStateChangedEvent(Event):
         return self.__failed_device_url
 
 
-class EventState():
-    """Represents an Tahoma EventState."""
+class EventState:
+    """Represents an TaHoma EventState."""
 
     def __init__(self, state):
-        """Initalize the Tahoma EventState."""
+        """Initialize the TaHoma EventState."""
         if isinstance(state, int):
             if state is EventState.Unknown0:
                 self.__state = EventState.Unknown0
@@ -1006,8 +1022,7 @@ class EventState():
             else:
                 raise ValueError("Unknown state init '" + state + "'")
         else:
-            raise ValueError(
-                "EventState init can only be called with int or str.")
+            raise ValueError("EventState init can only be called with int or str.")
 
     @property
     def state(self):
@@ -1041,18 +1056,18 @@ class EventState():
 
 
 class Execution:
-    """Represents an Tahoma Execution."""
+    """Represents an TaHoma Execution."""
 
     def __init__(self, data):
-        """Initalize the Tahoma Execution."""
-        self.__execution_id = data['id']
-        self.__start_time = data['startTime']
-        self.__state = EventState(data['state'])
-        self.__name = data['actionGroup']['label']
+        """Initialize the TaHoma Execution."""
+        self.__execution_id = data["id"]
+        self.__start_time = data["startTime"]
+        self.__state = EventState(data["state"])
+        self.__name = data["actionGroup"]["label"]
 
         self.__actions = []
 
-        for cmd in data['actionGroup']['actions']:
+        for cmd in data["actionGroup"]["actions"]:
             self.__actions.append(Action(cmd))
 
     @property

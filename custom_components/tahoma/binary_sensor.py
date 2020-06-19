@@ -1,4 +1,4 @@
-"""Support for Tahoma binary sensors."""
+"""Support for TaHoma binary sensors."""
 from datetime import timedelta
 import logging
 
@@ -6,12 +6,12 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
 from .const import (
-    DOMAIN,
-    TAHOMA_TYPES,
-    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
-    CORE_SMOKE_STATE,
-    CORE_OCCUPANCY_STATE,
     CORE_CONTACT_STATE,
+    CORE_OCCUPANCY_STATE,
+    CORE_SMOKE_STATE,
+    DOMAIN,
+    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
+    TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
 
@@ -21,7 +21,7 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the Tahoma sensors from a config entry."""
+    """Set up the TaHoma sensors from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
 
@@ -36,7 +36,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
-    """Representation of a Tahoma Binary Sensor."""
+    """Representation of a TaHoma Binary Sensor."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the sensor."""

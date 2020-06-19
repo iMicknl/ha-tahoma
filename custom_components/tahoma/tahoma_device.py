@@ -1,25 +1,31 @@
-from homeassistant.helpers.entity import Entity
-from homeassistant.const import ATTR_BATTERY_LEVEL
+"""Parent class for every TaHoma devices."""
 
-from .tahoma_api import Action
+from homeassistant.const import ATTR_BATTERY_LEVEL
+from homeassistant.helpers.entity import Entity
 
 from .const import (
-    DOMAIN,
     ATTR_RSSI_LEVEL,
     CORE_RSSI_LEVEL_STATE,
-    CORE_STATUS_STATE,
     CORE_SENSOR_DEFECT_STATE,
+    CORE_STATUS_STATE,
+    DOMAIN,
 )
+from .tahoma_api import Action
 
 
 class TahomaDevice(Entity):
-    """Representation of a Tahoma device entity."""
+    """Representation of a TaHoma device entity."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize the device."""
         self.tahoma_device = tahoma_device
         self._name = self.tahoma_device.label
         self.controller = controller
+
+    async def async_added_to_hass(self):
+        """Entity created."""
+        await super().async_added_to_hass()
+        self.schedule_update_ha_state(True)
 
     @property
     def name(self):
@@ -89,8 +95,12 @@ class TahomaDevice(Entity):
             "manufacturer": "Somfy",
             "name": self.name,
             "model": self.tahoma_device.widget,
-            "sw_version": self.tahoma_device.type
+            "sw_version": self.tahoma_device.type,
         }
+
+    async def async_apply_action(self, cmd_name, *args):
+        """Apply Action to Device in async context."""
+        await self.hass.async_add_executor_job(self.apply_action, cmd_name, *args)
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
