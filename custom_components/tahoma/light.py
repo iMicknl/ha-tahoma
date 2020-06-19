@@ -50,7 +50,6 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Initialize a device."""
         super().__init__(tahoma_device, controller)
 
-        self._skip_update = False
         self._effect = None
         self._brightness = None
         self._state = None
@@ -90,34 +89,38 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         return supported_features
 
+    def _apply_action(self, cmd_name, *args):
+        """Apply an action and wait for it to complete."""
+        exec_id = self.apply_action(cmd_name, *args)
+        while exec_id in self.controller.get_current_executions():
+            continue
+
     def turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         self._state = True
-        self._skip_update = True
 
         _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
 
         if ATTR_RGB_COLOR in kwargs:
             self._rgb = [int(float(c)) for c in kwargs[ATTR_RGB_COLOR]]
             _LOGGER.warning(f"self._rgb: {self._rgb}")
-            self.apply_action("setRGB", *self._rgb)
+            self._apply_action("setRGB", *self._rgb)
 
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self.apply_action("setIntensity", self._brightness)
+            self._apply_action("setIntensity", self._brightness)
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
-            self.apply_action("wink", 100)
+            self._apply_action("wink", 100)
         else:
-            self.apply_action("on")
+            self._apply_action("on")
 
         self.async_write_ha_state()
 
     def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._state = False
-        self._skip_update = True
-        self.apply_action("off")
+        self._apply_action("off")
 
         self.async_write_ha_state()
 
@@ -136,10 +139,6 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         This is the only method that should fetch new data for Home Assistant.
         """
-        # Postpone the immediate state check for changes that take time.
-        if self._skip_update:
-            self._skip_update = False
-            return
 
         self.controller.get_states([self.tahoma_device])
 
