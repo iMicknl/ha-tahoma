@@ -69,9 +69,9 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 TAHOMA_HORIZONTAL_DEVICES = {
-    "PositionableHorizontalAwning": DEVICE_CLASS_AWNING,
-    "PositionableHorizontalAwningUno": DEVICE_CLASS_AWNING,
-    "UpDownHorizontalAwning": DEVICE_CLASS_AWNING
+    "PositionableHorizontalAwning",
+    "PositionableHorizontalAwningUno",
+    "UpDownHorizontalAwning",
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
