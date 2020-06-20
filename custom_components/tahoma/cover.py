@@ -325,14 +325,14 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
 
+        if "stopIdentify" in self.tahoma_device.command_definitions:
+            return self.apply_action("stopIdentify")
+            
         if "stop" in self.tahoma_device.command_definitions:
             return self.apply_action("stop")
 
         if "my" in self.tahoma_device.command_definitions:
             return self.apply_action("my")
-
-        if "stopIdentify" in self.tahoma_device.command_definitions:
-            return self.apply_action("stopIdentify")
 
     @property
     def supported_features(self):
