@@ -4,6 +4,7 @@ import logging
 
 from homeassistant.components.cover import (
     ATTR_POSITION,
+    ATTR_TILT_POSITION,
     DEVICE_CLASS_AWNING,
     DEVICE_CLASS_BLIND,
     DEVICE_CLASS_CURTAIN,
@@ -105,16 +106,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 CORE_DEPLOYMENT_STATE
             )
 
-        # Set position for covers with slats
-        if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
-            self._tilt_position = 100 - self.tahoma_device.active_states.get(
-                CORE_SLATS_ORIENTATION_STATE
-            )
-
         # Set position for gates
         if CORE_PEDESTRIAN_POSITION_STATE in self.tahoma_device.active_states:
             self._position = 100 - self.tahoma_device.active_states.get(
                 CORE_PEDESTRIAN_POSITION_STATE
+            )
+
+        # Set tilt position for slats
+        if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
+            self._tilt_position = 100 - self.tahoma_device.active_states.get(
+                CORE_SLATS_ORIENTATION_STATE
             )
 
         if getattr(self, "_position", False):
@@ -192,7 +193,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action(COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_POSITION, 0))
+        self.apply_action(COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0))
 
     @property
     def is_closed(self):
@@ -288,13 +289,26 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "up" in self.tahoma_device.command_definitions:
             return self.apply_action("up")
 
+    def open_cover_tilt(self, **kwargs):
+        """Open the cover tilt."""
+
+        if "openSlats" in self.tahoma_device.command_definitions:
+            return self.apply_action("openSlats")
+
     def close_cover(self, **kwargs):
         """Close the cover."""
+
         if "close" in self.tahoma_device.command_definitions:
             return self.apply_action("close")
 
         if "down" in self.tahoma_device.command_definitions:
             return self.apply_action("down")
+
+    def close_cover_tilt(self, **kwargs):
+        """Close the cover tilt."""
+
+        if "closeSlats" in self.tahoma_device.command_definitions:
+            return self.apply_action("closeSlats")
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
@@ -310,7 +324,15 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-        self.apply_action("stop")
+
+        if "stop" in self.tahoma_device.command_definitions:
+            return self.apply_action("stop")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
+
+        if "stopIdentify" in self.tahoma_device.command_definitions:
+            return self.apply_action("stopIdentify")
 
     @property
     def supported_features(self):
