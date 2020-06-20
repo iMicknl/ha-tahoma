@@ -193,7 +193,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action(COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0))
+        self.apply_action(
+            COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
+        )
 
     @property
     def is_closed(self):
@@ -327,7 +329,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if "stopIdentify" in self.tahoma_device.command_definitions:
             return self.apply_action("stopIdentify")
-            
+
         if "stop" in self.tahoma_device.command_definitions:
             return self.apply_action("stop")
 
