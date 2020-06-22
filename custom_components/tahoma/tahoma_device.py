@@ -78,12 +78,15 @@ class TahomaDevice(Entity):
                 CORE_RSSI_LEVEL_STATE
             ]
 
-        # TODO Parse 'lowBattery' for low battery warning. 'dead' for not available.
-        # "dead", "lowBattery", "maintenanceRequired", "noDefect"
-        if CORE_SENSOR_DEFECT_STATE in self.tahoma_device.active_states:
+        # TODO Parse "full", "low", "normal", "verylow" to percentage
+        if "core:BatteryState" in self.tahoma_device.active_states:
             attr[ATTR_BATTERY_LEVEL] = self.tahoma_device.active_states[
-                CORE_SENSOR_DEFECT_STATE
+                "core:BatteryState" 
             ]
+
+        for state_name, value in self.tahoma_device.active_states:
+            if "State" in state_name:
+                attr[state_name] = value
 
         return attr
 
