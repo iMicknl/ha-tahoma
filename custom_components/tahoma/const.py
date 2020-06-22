@@ -26,6 +26,7 @@ DOMAIN = "tahoma"
 
 DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_RAIN = "rain"
+DEVICE_CLASS_SIREN = "siren"
 DEVICE_CLASS_WATER = "water"
 
 # Used to map the Somfy uiClass to the Home Assistant platform

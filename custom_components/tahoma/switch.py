@@ -5,7 +5,7 @@ from typing import Optional
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DEVICE_CLASS_SIREN, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,14 +49,20 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def device_class(self):
         """Return the class of the device."""
 
+        if self.tahoma_device.uiclass == "Siren":
+            return DEVICE_CLASS_SIREN
+
         return DEVICE_CLASS_SWITCH
 
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.tahoma_device.uiclass == "Siren":
-            return "mdi:bell-ring"
+        if self.device_class() == DEVICE_CLASS_SIREN:
+            if self.is_on():
+                return "mdi:bell-ring"
+            else:
+                return "mdi:bell-off"
 
         return None
 

@@ -69,7 +69,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             return "mdi:weather-rainy"
 
         if self.tahoma_device.uiclass == "WaterDetectionSensor":
-            if self._state == STATE_ON:
+            if self.is_on():
                 return "mdi:water"
             else:
                 return "mdi:water-off"

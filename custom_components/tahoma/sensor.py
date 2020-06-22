@@ -20,6 +20,7 @@ from .const import (
     CORE_LUMINANCE_STATE,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_TEMPERATURE_STATE,
+    DEVICE_CLASS_CO2,
     DOMAIN,
     TAHOMA_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -89,7 +90,7 @@ class TahomaSensor(TahomaDevice, Entity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.tahoma_device.uiclass == "AirSensor":
+        if self.device_class == DEVICE_CLASS_CO2:
             return "mdi:periodic-table-co2"
 
         return None

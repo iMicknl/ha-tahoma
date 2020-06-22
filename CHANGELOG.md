@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support for RainSensor
+- Added support for WaterDetectionSensor
+- Added basic support for Siren as switch
+- Added support for MotionSensor
+- Added all available states to device state attributes
+
+### Changed
+
+- Change 'battery_level' attribute to an integer, estimated based on the battery state
+
 ## [1.4] - 22-06-2020
 
 ### Added
