@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Change 'battery_level' attribute to an integer, estimated based on the battery state
+- Changed CO2Sensor device class to co2 to show as co2 sensor in HomeKit  
 
 ## [1.4] - 22-06-2020
 
