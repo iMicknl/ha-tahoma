@@ -12,6 +12,8 @@ from .const import (
     CORE_RAIN_STATE,
     CORE_SMOKE_STATE,
     CORE_WATER_DETECTION_STATE,
+    DEVICE_CLASS_RAIN,
+    DEVICE_CLASS_WATER,
     DOMAIN,
     TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -65,10 +67,10 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.tahoma_device.uiclass == "RainSensor":
+        if self.device_class() == DEVICE_CLASS_RAIN:
             return "mdi:weather-rainy"
 
-        if self.tahoma_device.uiclass == "WaterDetectionSensor":
+        if self.device_class() == DEVICE_CLASS_WATER:
             if self.is_on():
                 return "mdi:water"
             else:
