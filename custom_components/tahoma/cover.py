@@ -44,7 +44,6 @@ from .const import (
     IO_PRIORITY_LOCK_LEVEL_STATE,
     IO_PRIORITY_LOCK_ORIGINATOR_STATE,
     TAHOMA_COVER_DEVICE_CLASSES,
-    TAHOMA_HORIZONTAL_DEVICES,
     TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
