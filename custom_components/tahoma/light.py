@@ -54,7 +54,7 @@ class TahomaLight(TahomaDevice, LightEntity):
         self._effect = None
         self._brightness = None
         self._state = None
-        self._rgb = []
+        self._hs_color = []
 
     @property
     def brightness(self) -> int:
@@ -69,8 +69,8 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def hs_color(self):
         """Return the hue and saturation color value [float, float]."""
-        if self.supported_features & SUPPORT_COLOR:
-            return color_util.color_RGB_to_hs(*self._rgb)
+        if self._hs_color:
+            return self._hs_color
         return None
 
     @property
@@ -103,10 +103,11 @@ class TahomaLight(TahomaDevice, LightEntity):
         _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
 
         if ATTR_HS_COLOR in kwargs:
-            rgb = color_util.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
-            self._rgb = [int(float(c)) for c in rgb]
-            _LOGGER.warning(f"self._rgb: {self._rgb}")
-            self._apply_action("setRGB", *self._rgb)
+            self._hs_color = kwargs[ATTR_HS_COLOR]
+            self._apply_action(
+                "setRGB",
+                *[int(float(c)) for c in color_util.color_hs_to_RGB(*self._hs_color)],
+            )
 
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
