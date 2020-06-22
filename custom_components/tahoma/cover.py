@@ -318,11 +318,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "stop" in self.tahoma_device.command_definitions:
             return self.apply_action("stop")
 
-        if "my" in self.tahoma_device.command_definitions:
-            return self.apply_action("my")
-
         if "stopIdentify" in self.tahoma_device.command_definitions:
             return self.apply_action("stopIdentify")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
@@ -345,7 +345,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "openSlats" in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_OPEN_TILT
 
-            if "stop" in self.tahoma_device.command_definitions:
+            if (
+                "stop" in self.tahoma_device.command_definitions
+                or "stopIdentify" in self.tahoma_device.command_definitions
+                or "my" in self.tahoma_device.command_definitions
+            ):
                 supported_features |= SUPPORT_STOP_TILT
 
         if "closeSlats" in self.tahoma_device.command_definitions:

@@ -19,12 +19,11 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 
-from .const import DOMAIN, TAHOMA_TYPES  # pylint:disable=unused-import
+from .const import DOMAIN
 from .tahoma_api import TahomaApi
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO adjust the data schema to the data that you need
 DATA_SCHEMA = vol.Schema(
     {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
 )
