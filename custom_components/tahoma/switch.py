@@ -1,5 +1,6 @@
 """Support for TaHoma switches."""
 import logging
+from typing import Optional
 
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON

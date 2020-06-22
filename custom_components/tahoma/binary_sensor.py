@@ -64,7 +64,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-  
+
         if self.tahoma_device.uiclass == "RainSensor":
             return "mdi:weather-rainy"
 
@@ -101,10 +101,10 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
                 self.tahoma_device.active_states.get(CORE_RAIN_STATE) == "detected"
             )
 
-
         if CORE_WATER_DETECTION_STATE in self.tahoma_device.active_states:
             self.current_value = (
-                self.tahoma_device.active_states.get(CORE_WATER_DETECTION_STATE) == "detected"
+                self.tahoma_device.active_states.get(CORE_WATER_DETECTION_STATE)
+                == "detected"
             )
 
         if self.current_value:
