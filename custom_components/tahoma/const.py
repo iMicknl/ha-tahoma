@@ -15,7 +15,6 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_WINDOW,
 )
 from homeassistant.const import (
-    DEVICE_CLASS_CO2,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -23,6 +22,9 @@ from homeassistant.const import (
 )
 
 DOMAIN = "tahoma"
+
+DEVICE_CLASS_CO2 = "co2"
+DEVICE_CLASS_RAIN = "rain"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
@@ -50,6 +52,7 @@ TAHOMA_TYPES = {
     "SwingingShutter": "cover",
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor",
+    "RainSensor": "sensor",
 }
 
 
@@ -76,6 +79,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "ContactSensor": DEVICE_CLASS_OPENING,
     "WindowHandle": DEVICE_CLASS_OPENING,
+    "RainSensor": DEVICE_CLASS_RAIN,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
