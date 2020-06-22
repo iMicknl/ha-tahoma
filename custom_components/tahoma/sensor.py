@@ -74,18 +74,10 @@ class TahomaSensor(TahomaDevice, Entity):
         if self.tahoma_device.uiclass == "LightSensor":
             return "lx"
 
-        if (
-            self.tahoma_device.uiclass == "ElectricitySensor"
-            and CORE_ELECTRIC_POWER_CONSUMPTION_STATE
-            in self.tahoma_device.active_states
-        ):
+        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
             return POWER_WATT
 
-        if (
-            self.tahoma_device.uiclass == "ElectricitySensor"
-            and CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE
-            in self.tahoma_device.active_states
-        ):
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
             return ENERGY_KILO_WATT_HOUR
 
         if self.tahoma_device.uiclass == "AirSensor":
