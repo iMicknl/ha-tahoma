@@ -1,6 +1,7 @@
 """Support for TaHoma binary sensors."""
 from datetime import timedelta
 import logging
+from typing import Optional
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
