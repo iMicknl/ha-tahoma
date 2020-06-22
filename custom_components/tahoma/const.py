@@ -68,11 +68,6 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "SwingingShutter": DEVICE_CLASS_SHUTTER,
 }
 
-TAHOMA_HORIZONTAL_DEVICES = {
-    "PositionableHorizontalAwning",
-    "PositionableHorizontalAwningUno",
-    "UpDownHorizontalAwning",
-}
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
@@ -112,12 +107,18 @@ CORE_CONTACT_STATE = "core:ContactState"
 CORE_OCCUPANCY_STATE = "core:OccupancyState"
 CORE_SMOKE_STATE = "core:SmokeState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
-CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
+CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
+
+# Light core states
+CORE_LUMINANCE_STATE = "core:LuminanceState"
+CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
+CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
+CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"

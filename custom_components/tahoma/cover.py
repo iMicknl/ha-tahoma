@@ -118,6 +118,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             self._position = 100 - self.tahoma_device.active_states.get(
                 CORE_TARGET_CLOSURE_STATE
             )
+            
             # Fix for unknown position after moving with remote control and closure states over 100
             if self._position < 0:
                 self._position = self._position + 50
@@ -130,7 +131,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if getattr(self, "_position", False):
             # HorizontalAwning devices need a reversed position that can not be obtained via the API
-            if self.tahoma_device.widget in TAHOMA_HORIZONTAL_DEVICES:
+            if "Horizontal" in self.tahoma_device.widget:
                 self._position = 100 - self._position
 
             # TODO Check if this offset is really necessary
@@ -189,7 +190,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if self.tahoma_device.widget in TAHOMA_HORIZONTAL_DEVICES:
+        if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
         if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:
@@ -328,11 +329,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "stop" in self.tahoma_device.command_definitions:
             return self.apply_action("stop")
 
-        if "my" in self.tahoma_device.command_definitions:
-            return self.apply_action("my")
-
         if "stopIdentify" in self.tahoma_device.command_definitions:
             return self.apply_action("stopIdentify")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
@@ -355,7 +356,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "openSlats" in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_OPEN_TILT
 
-            if "stop" in self.tahoma_device.command_definitions:
+            if (
+                "stop" in self.tahoma_device.command_definitions
+                or "stopIdentify" in self.tahoma_device.command_definitions
+                or "my" in self.tahoma_device.command_definitions
+            ):
                 supported_features |= SUPPORT_STOP_TILT
 
         if "closeSlats" in self.tahoma_device.command_definitions:
