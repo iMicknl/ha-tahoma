@@ -351,12 +351,6 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Return the current running hvac operation if supported."""
         return self._current_hvac_modes
 
-    def _apply_action(self, cmd_name, *args):
-        """Apply action to the climate device."""
-        exec_id = self.apply_action(cmd_name, *args)
-        while exec_id in self.controller.get_current_executions():
-            continue
-
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == self._hvac_mode:
@@ -364,16 +358,16 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if self._widget == W_ST:
             if hvac_mode == HVAC_MODE_AUTO:
                 self._stored_target_temp = self._target_temp
-                self._apply_action(COMMAND_EXIT_DEROGATION)
+                self.apply_action(COMMAND_EXIT_DEROGATION)
             elif hvac_mode == HVAC_MODE_HEAT:
                 self._target_temp = self._stored_target_temp
                 self._preset_mode = PRESET_NONE
-                self._apply_action(
+                self.apply_action(
                     COMMAND_SET_DEROGATION,
                     self._target_temp,
                     STATE_DEROGATION_FURTHER_NOTICE,
                 )
-            self._apply_action(COMMAND_REFRESH_STATE)
+            self.apply_action(COMMAND_REFRESH_STATE)
         if self._widget == W_AEH:
             self._hvac_mode = hvac_mode
             self._control_heating()
@@ -424,7 +418,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             return
         if self._widget == W_ST:
             if temperature < 15:
-                self._apply_action(
+                self.apply_action(
                     COMMAND_SET_DEROGATION,
                     STATE_PRESET_FREEZE,
                     STATE_DEROGATION_FURTHER_NOTICE,
@@ -432,13 +426,13 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
             if temperature > 26:
                 temperature = 26
             self._target_temp = temperature
-            self._apply_action(
+            self.apply_action(
                 COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
             )
-            self._apply_action(
+            self.apply_action(
                 COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
             )
-            self._apply_action(COMMAND_REFRESH_STATE)
+            self.apply_action(COMMAND_REFRESH_STATE)
         if self._widget == W_AEH:
             self._target_temp = temperature
             self._control_heating()
@@ -459,12 +453,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     def turn_off(self):
         """Turn the entity off."""
         if self._widget == W_AEH:
-            self._apply_action(COMMAND_OFF)
+            self.apply_action(COMMAND_OFF)
 
     def turn_on(self):
         """Turn the entity on."""
         if self._widget == W_AEH:
-            self._apply_action(
+            self.apply_action(
                 COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_COMFORT]
             )
 
@@ -497,22 +491,22 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if self._widget == W_ST:
             if preset_mode in [PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]:
                 self._stored_target_temp = self._target_temp
-                self._apply_action(
+                self.apply_action(
                     COMMAND_SET_DEROGATION,
                     ST_MAP_PRESET_REVERSE[preset_mode],
                     STATE_DEROGATION_FURTHER_NOTICE,
                 )
             elif preset_mode == PRESET_NONE:
                 self._target_temp = self._stored_target_temp
-                self._apply_action(
+                self.apply_action(
                     COMMAND_SET_DEROGATION,
                     self._target_temp,
                     STATE_DEROGATION_FURTHER_NOTICE,
                 )
-                self._apply_action(
+                self.apply_action(
                     COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, self._target_temp
                 )
-            self._apply_action(COMMAND_REFRESH_STATE)
+            self.apply_action(COMMAND_REFRESH_STATE)
         elif self._widget == W_AEH:
             if preset_mode == PRESET_NONE:
                 self._preset_mode = PRESET_NONE
