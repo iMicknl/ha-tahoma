@@ -8,6 +8,7 @@ from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 from .const import (
     CORE_CONTACT_STATE,
     CORE_OCCUPANCY_STATE,
+    CORE_RAIN_STATE,
     CORE_SMOKE_STATE,
     DOMAIN,
     TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
@@ -58,6 +59,15 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             or None
         )
 
+    @property
+    def icon(self) -> Optional[str]:
+        """Return the icon to use in the frontend, if any."""
+  
+        if self.tahoma_device.uiclass == "RainSensor":
+            return "mdi:weather-rainy"
+
+        return None
+
     def update(self):
         """Update the state."""
         self.controller.get_states([self.tahoma_device])
@@ -76,6 +86,11 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         if CORE_SMOKE_STATE in self.tahoma_device.active_states:
             self.current_value = (
                 self.tahoma_device.active_states.get(CORE_SMOKE_STATE) == "detected"
+            )
+
+        if CORE_RAIN_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_RAIN_STATE) == "detected"
             )
 
         if self.current_value:
