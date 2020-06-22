@@ -107,4 +107,6 @@ class TahomaDevice(Entity):
 
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
-        return self.controller.apply_actions("HomeAssistant", [action])
+        exec_id = self.controller.apply_actions("HomeAssistant", [action])
+        while exec_id in self.controller.get_current_executions():
+            continue
