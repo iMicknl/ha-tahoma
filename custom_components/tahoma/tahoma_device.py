@@ -91,6 +91,10 @@ class TahomaDevice(Entity):
                 battery_state = 10
 
             attr[ATTR_BATTERY_LEVEL] = battery_state
+        
+        if CORE_SENSOR_DEFECT_STATE in self.tahoma_device.active_states:
+            if self.tahoma_device.active_states.get(CORE_SENSOR_DEFECT_STATE) == "dead":
+                attr[ATTR_BATTERY_LEVEL] = 0
 
         for state_name, value in self.tahoma_device.active_states.items():
             if "State" in state_name:
