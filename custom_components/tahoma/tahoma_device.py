@@ -78,7 +78,6 @@ class TahomaDevice(Entity):
                 CORE_RSSI_LEVEL_STATE
             ]
 
-        # TODO Parse "full", "low", "normal", "verylow" to percentage
         if "core:BatteryState" in self.tahoma_device.active_states:
             battery_state = self.tahoma_device.active_states["core:BatteryState"]
 
