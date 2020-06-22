@@ -90,38 +90,32 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         return supported_features
 
-    def _apply_action(self, cmd_name, *args):
-        """Apply an action and wait for it to complete."""
-        exec_id = self.apply_action(cmd_name, *args)
-        while exec_id in self.controller.get_current_executions():
-            continue
-
     def turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         self._state = True
 
         if ATTR_HS_COLOR in kwargs:
             self._hs_color = kwargs[ATTR_HS_COLOR]
-            self._apply_action(
+            self.apply_action(
                 "setRGB",
                 *[int(float(c)) for c in color_util.color_hs_to_RGB(*self._hs_color)],
             )
 
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self._apply_action("setIntensity", self._brightness)
+            self.apply_action("setIntensity", self._brightness)
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
-            self._apply_action("wink", 100)
+            self.apply_action("wink", 100)
         else:
-            self._apply_action("on")
+            self.apply_action("on")
 
         self.async_write_ha_state()
 
     def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._state = False
-        self._apply_action("off")
+        self.apply_action("off")
 
         self.async_write_ha_state()
 
