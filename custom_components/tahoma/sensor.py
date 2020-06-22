@@ -6,6 +6,7 @@ from typing import Optional
 from homeassistant.const import (
     ATTR_BATTERY_LEVEL,
     CONCENTRATION_PARTS_PER_MILLION,
+    ENERGY_KILO_WATT_HOUR,
     POWER_WATT,
     TEMP_CELSIUS,
     UNIT_PERCENTAGE,
@@ -14,6 +15,7 @@ from homeassistant.helpers.entity import Entity
 
 from .const import (
     CORE_CO2_CONCENTRATION_STATE,
+    CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
     CORE_LUMINANCE_STATE,
     CORE_RELATIVE_HUMIDITY_STATE,
@@ -72,8 +74,19 @@ class TahomaSensor(TahomaDevice, Entity):
         if self.tahoma_device.uiclass == "LightSensor":
             return "lx"
 
-        if self.tahoma_device.uiclass == "ElectricitySensor":
+        if (
+            self.tahoma_device.uiclass == "ElectricitySensor"
+            and CORE_ELECTRIC_POWER_CONSUMPTION_STATE
+            in self.tahoma_device.active_states
+        ):
             return POWER_WATT
+
+        if (
+            self.tahoma_device.uiclass == "ElectricitySensor"
+            and CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE
+            in self.tahoma_device.active_states
+        ):
+            return ENERGY_KILO_WATT_HOUR
 
         if self.tahoma_device.uiclass == "AirSensor":
             return CONCENTRATION_PARTS_PER_MILLION
@@ -128,6 +141,18 @@ class TahomaSensor(TahomaDevice, Entity):
                         CORE_ELECTRIC_POWER_CONSUMPTION_STATE
                     )
                 )
+            )
+
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                float(
+                    "{:.2f}".format(
+                        self.tahoma_device.active_states.get(
+                            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE
+                        )
+                    )
+                )
+                / 1000
             )
 
         if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:

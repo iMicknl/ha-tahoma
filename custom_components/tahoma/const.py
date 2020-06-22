@@ -109,6 +109,7 @@ CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
+CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 
