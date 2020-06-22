@@ -11,6 +11,7 @@ from .const import (
     CORE_OCCUPANCY_STATE,
     CORE_RAIN_STATE,
     CORE_SMOKE_STATE,
+    CORE_WATER_DETECTION_STATE,
     DOMAIN,
     TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -67,6 +68,12 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         if self.tahoma_device.uiclass == "RainSensor":
             return "mdi:weather-rainy"
 
+        if self.tahoma_device.uiclass == "WaterDetectionSensor":
+            if self._state == STATE_ON:
+                return "mdi:water"
+            else:
+                return "mdi:water-off"
+
         return None
 
     def update(self):
@@ -92,6 +99,12 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         if CORE_RAIN_STATE in self.tahoma_device.active_states:
             self.current_value = (
                 self.tahoma_device.active_states.get(CORE_RAIN_STATE) == "detected"
+            )
+
+
+        if CORE_WATER_DETECTION_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_WATER_DETECTION_STATE) == "detected"
             )
 
         if self.current_value:

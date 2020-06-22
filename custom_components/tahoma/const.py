@@ -26,6 +26,7 @@ DOMAIN = "tahoma"
 
 DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_RAIN = "rain"
+DEVICE_CLASS_WATER = "water"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
@@ -39,6 +40,7 @@ TAHOMA_TYPES = {
     "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
+    "WaterDetectionSensor": "binary_sensor",  # Needs to be above HumiditySensor
     "HumiditySensor": "sensor",
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
@@ -83,6 +85,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "ContactSensor": DEVICE_CLASS_OPENING,
     "WindowHandle": DEVICE_CLASS_OPENING,
     "RainSensor": DEVICE_CLASS_RAIN,
+    "WaterDetectionSensor": DEVICE_CLASS_WATER,
 }
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
@@ -131,6 +134,7 @@ CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_VERSION_STATE = "core:VersionState"
+CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
 
 # IO Devices specific states
 IO_MAXIMUM_HEATING_LEVEL_STATE = "io:MaximumHeatingLevelState"
