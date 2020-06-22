@@ -39,6 +39,7 @@ from .const import (
     CORE_PEDESTRIAN_POSITION_STATE,
     CORE_PRIORITY_LOCK_TIMER_STATE,
     CORE_SLATS_ORIENTATION_STATE,
+    CORE_TARGET_CLOSURE_STATE,
     DOMAIN,
     IO_PRIORITY_LOCK_LEVEL_STATE,
     IO_PRIORITY_LOCK_ORIGINATOR_STATE,
@@ -112,6 +113,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 CORE_PEDESTRIAN_POSITION_STATE
             )
 
+        if CORE_TARGET_CLOSURE_STATE in self.tahoma_device.active_states:
+            self._position = 100 - self.tahoma_device.active_states.get(
+                CORE_TARGET_CLOSURE_STATE
+            )
+
         # Set tilt position for slats
         if CORE_SLATS_ORIENTATION_STATE in self.tahoma_device.active_states:
             self._tilt_position = 100 - self.tahoma_device.active_states.get(
@@ -119,8 +125,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
             )
 
         if getattr(self, "_position", False):
-            # PositionableHorizontalAwning (e.g. io:HorizontalAwningIOComponent uses a reversed position)
-            if self.tahoma_device.widget == "PositionableHorizontalAwning":
+            # HorizontalAwning devices need a reversed position that can not be obtained via the API
+            if "Horizontal" in self.tahoma_device.widget:
                 self._position = 100 - self._position
 
             # TODO Check if this offset is really necessary
@@ -178,8 +184,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
-        # PositionableHorizontalAwning (e.g. io:HorizontalAwningIOComponent uses a reversed position)
-        if self.tahoma_device.widget == "PositionableHorizontalAwning":
+        # HorizontalAwning devices need a reversed position that can not be obtained via the API
+        if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
         if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:

@@ -68,6 +68,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "SwingingShutter": DEVICE_CLASS_SHUTTER,
 }
 
+
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
@@ -97,6 +98,7 @@ ATTR_LOCK_ORIG = "lock_originator"
 CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CONTACT_STATE = "core:ContactState"
+CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_DEROGATED_TARGET_TEMPERATURE_STATE = "core:DerogatedTargetTemperatureState"
 CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
