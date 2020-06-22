@@ -64,14 +64,14 @@ class TahomaSensor(TahomaDevice, Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
 
-        if self.tahoma_device.uiclass == "TemperatureSensor":
+        if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
             # TODO Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin
             return TEMP_CELSIUS
 
-        if self.tahoma_device.uiclass == "HumiditySensor":
+        if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
             return UNIT_PERCENTAGE
 
-        if self.tahoma_device.uiclass == "LightSensor":
+        if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
             return "lx"
 
         if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
@@ -80,7 +80,7 @@ class TahomaSensor(TahomaDevice, Entity):
         if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
             return ENERGY_KILO_WATT_HOUR
 
-        if self.tahoma_device.uiclass == "AirSensor":
+        if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:
             return CONCENTRATION_PARTS_PER_MILLION
 
         return None
@@ -88,9 +88,6 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
-        if self.tahoma_device.uiclass == "AirSensor":
-            return "mdi:periodic-table-co2"
 
         return None
 
