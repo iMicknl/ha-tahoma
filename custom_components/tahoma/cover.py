@@ -44,7 +44,6 @@ from .const import (
     IO_PRIORITY_LOCK_LEVEL_STATE,
     IO_PRIORITY_LOCK_ORIGINATOR_STATE,
     TAHOMA_COVER_DEVICE_CLASSES,
-    TAHOMA_HORIZONTAL_DEVICES,
     TAHOMA_TYPES,
 )
 from .tahoma_device import TahomaDevice
@@ -127,7 +126,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if getattr(self, "_position", False):
             # HorizontalAwning devices need a reversed position that can not be obtained via the API
-            if self.tahoma_device.widget in TAHOMA_HORIZONTAL_DEVICES:
+            if "Horizontal" in self.tahoma_device.widget:
                 self._position = 100 - self._position
 
             # TODO Check if this offset is really necessary
@@ -186,7 +185,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if self.tahoma_device.widget in TAHOMA_HORIZONTAL_DEVICES:
+        if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
         if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:

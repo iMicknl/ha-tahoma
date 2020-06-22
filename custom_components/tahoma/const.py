@@ -69,12 +69,6 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 
-TAHOMA_HORIZONTAL_DEVICES = {
-    "PositionableHorizontalAwning": DEVICE_CLASS_AWNING,
-    "PositionableHorizontalAwningUno": DEVICE_CLASS_AWNING,
-    "UpDownHorizontalAwning": DEVICE_CLASS_AWNING,
-}
-
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
