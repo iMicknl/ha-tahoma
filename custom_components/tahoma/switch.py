@@ -31,19 +31,18 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the switch."""
         super().__init__(tahoma_device, controller)
-        self._state = STATE_OFF
-        self._skip_update = False
+
+        self._state = None
 
     def update(self):
         """Update method."""
-        # Postpone the immediate state check for changes that take time.
-        if self._skip_update:
-            self._skip_update = False
-            return
 
         self.controller.get_states([self.tahoma_device])
 
-        _LOGGER.debug("Update %s, state: %s", self._name, self._state)
+        if "core:OnOffState" in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get("core:OnOffState") == "on"
+            )
 
     @property
     def device_class(self):
@@ -51,23 +50,37 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
         return DEVICE_CLASS_SWITCH
 
+    @property
+    def icon(self) -> Optional[str]:
+        """Return the icon to use in the frontend, if any."""
+
+        if self.tahoma_device.uiclass == "Siren":
+            return "mdi:bell-ring"
+
+        return None
+
     def turn_on(self, **kwargs):
         """Send the on command."""
-        _LOGGER.debug("Turn on: %s", self._name)
+
+        if "on" in self.tahoma_device.command_definitions:
+            return self.apply_action("on")
+
+        if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
+            return self.apply_action("ringWithSingleSimpleSequence")
 
         self.apply_action("on")
-        self._skip_update = True
-        self._state = STATE_ON
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-        self.apply_action("off")
-        self._skip_update = True
-        self._state = STATE_OFF
+
+        if "off" in self.tahoma_device.command_definitions:
+            return self.apply_action("off")
 
     def toggle(self, **kwargs):
         """Click the switch."""
-        self.apply_action("cycle")
+
+        if "cycle" in self.tahoma_device.command_definitions:
+            return self.apply_action("cycle")
 
     @property
     def is_on(self):

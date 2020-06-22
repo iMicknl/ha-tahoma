@@ -57,6 +57,7 @@ TAHOMA_TYPES = {
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor",
     "RainSensor": "sensor",
+    "Siren": "switch",
 }
 
 
