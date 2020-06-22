@@ -102,8 +102,8 @@ class TahomaLight(TahomaDevice, LightEntity):
                 ],
             )
         if ATTR_BRIGHTNESS in kwargs:
-            brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self.apply_action("setIntensity", brightness)
+            self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
+            self.apply_action("setIntensity", self._brightness)
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
             self.apply_action("wink", 100)
