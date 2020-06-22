@@ -17,10 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for SwingingShutter devices
 - Added support for 'up' and 'down' commands for covers
 - Added tilt_position support for covers
+- Added support for 'setRGB' commands for lights
 
 ### Changed
 
 - Removed all hardcoded device strings from the cover component
+- Update state after a command has been succesfully executed
 
 ## [1.0.0] - 04-06-2020
 
