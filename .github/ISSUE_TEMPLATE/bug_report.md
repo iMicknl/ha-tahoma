@@ -30,6 +30,12 @@ If applicable, add screenshots to help explain your problem.
 **Device:** (if your problem is related to a specific device)
  - **Model**: [e.g. PositionableScreen, can be gathered from device list in HA]
  - **Type**: [e.g. `io:DimmableLightIOComponent`, can be gathered from device page in HA looking at Firmware] `/config/devices/dashboard`]
+ - **Device details**
+_Please follow the instructions here: https://github.com/totalimmersion/com.somfy.tahoma/files/2755935/Instructions.for.the.TaHoma.devices.pdf to gather more details of the device and post them below_
+
+```json
+[PASTE DEVICE DETAILS HERE]
+```
 
 **Additional context**
 Add any other context about the problem here.
