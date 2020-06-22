@@ -80,11 +80,20 @@ class TahomaDevice(Entity):
 
         # TODO Parse "full", "low", "normal", "verylow" to percentage
         if "core:BatteryState" in self.tahoma_device.active_states:
-            attr[ATTR_BATTERY_LEVEL] = self.tahoma_device.active_states[
-                "core:BatteryState" 
-            ]
+            battery_state = self.tahoma_device.active_states["core:BatteryState"]
 
-        for state_name, value in self.tahoma_device.active_states:
+            if battery_state == "full":
+                battery_state = 100
+            elif battery_state == "normal":
+                battery_state = 75
+            elif battery_state == "low":
+                battery_state = 25
+            elif battery_state == "verylow":
+                battery_state = 10
+
+            attr[ATTR_BATTERY_LEVEL] = battery_state
+
+        for state_name, value in self.tahoma_device.active_states.items():
             if "State" in state_name:
                 attr[state_name] = value
 
