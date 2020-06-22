@@ -145,8 +145,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
             # Derive timestamps from _lock_timer, only if not already set or something has changed
             if self._lock_timer > 0:
-                _LOGGER.debug("Update %s, lock_timer: %d",
-                              self._name, self._lock_timer)
+                _LOGGER.debug("Update %s, lock_timer: %d", self._name, self._lock_timer)
                 if self._lock_start_ts is None:
                     self._lock_start_ts = utcnow()
                 if self._lock_end_ts is None or old_lock_timer != self._lock_timer:
@@ -211,35 +210,30 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if "core:OpenClosedState" in self.tahoma_device.active_states:
             return (
-                self.tahoma_device.active_states.get(
-                    "core:OpenClosedState") == "closed"
+                self.tahoma_device.active_states.get("core:OpenClosedState") == "closed"
             )
 
         if "core:SlatsOpenClosedState" in self.tahoma_device.active_states:
             return (
-                self.tahoma_device.active_states.get(
-                    "core:SlatsOpenClosedState")
+                self.tahoma_device.active_states.get("core:SlatsOpenClosedState")
                 == "closed"
             )
 
         if "core:OpenClosedPartialState" in self.tahoma_device.active_states:
             return (
-                self.tahoma_device.active_states.get(
-                    "core:OpenClosedPartialState")
+                self.tahoma_device.active_states.get("core:OpenClosedPartialState")
                 == "closed"
             )
 
         if "core:OpenClosedPedestrianState" in self.tahoma_device.active_states:
             return (
-                self.tahoma_device.active_states.get(
-                    "core:OpenClosedPedestrianState")
+                self.tahoma_device.active_states.get("core:OpenClosedPedestrianState")
                 == "closed"
             )
 
         if "core:OpenClosedUnknownState" in self.tahoma_device.active_states:
             return (
-                self.tahoma_device.active_states.get(
-                    "core:OpenClosedUnknownState")
+                self.tahoma_device.active_states.get("core:OpenClosedUnknownState")
                 == "closed"
             )
 
