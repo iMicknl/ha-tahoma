@@ -100,8 +100,6 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Turn the light on."""
         self._state = True
 
-        _LOGGER.warning(f"light.turn_on kwargs: {kwargs}")
-
         if ATTR_HS_COLOR in kwargs:
             self._hs_color = kwargs[ATTR_HS_COLOR]
             self._apply_action(
@@ -144,8 +142,6 @@ class TahomaLight(TahomaDevice, LightEntity):
         """
 
         self.controller.get_states([self.tahoma_device])
-
-        _LOGGER.warning(f"light states:\n{self.tahoma_device.active_states}")
 
         if "core:LightIntensityState" in self.tahoma_device.active_states:
             self._brightness = self.tahoma_device.active_states.get(
