@@ -187,9 +187,12 @@ async def update_listener(hass, entry):
 class TahomaClimate(TahomaDevice, ClimateEntity):
     """Representation of a Tahoma thermostat."""
 
-    def __init__(self, tahoma_device, controller, sensor_id=None, preset_temp={}):
+    def __init__(self, tahoma_device, controller, sensor_id=None, preset_temp=None):
         """Initialize the sensor."""
         super().__init__(tahoma_device, controller)
+        if preset_temp is None:
+            preset_temp = {}
+        self._temperature_unit = TEMP_CELSIUS
         self._cold_tolerance = 0.3
         self._hot_tolerance = 0.3
         self._supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
@@ -399,7 +402,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
+        return self._temperature_unit
 
     @property
     def current_temperature(self) -> Optional[float]:
