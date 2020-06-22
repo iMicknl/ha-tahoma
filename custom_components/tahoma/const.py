@@ -94,7 +94,8 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "ElectricitySensor": DEVICE_CLASS_POWER,
-    "AirSensor": DEVICE_CLASS_CO2,
+    "CO2Sensor": DEVICE_CLASS_CO2,
+    "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
 }
 
 # TaHoma Attributes
