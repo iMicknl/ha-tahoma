@@ -15,6 +15,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_WINDOW,
 )
 from homeassistant.const import (
+    DEVICE_CLASS_CO2,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -83,7 +84,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "ElectricitySensor": DEVICE_CLASS_POWER,
-    "AirSensor": "carbon dioxide",
+    "AirSensor": DEVICE_CLASS_CO2,
 }
 
 # TaHoma Attributes
