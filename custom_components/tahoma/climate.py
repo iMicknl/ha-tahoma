@@ -287,7 +287,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
 
-        if state.state is None:
+        if state is None:
             return
 
         try:
