@@ -58,8 +58,8 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.device_class() == DEVICE_CLASS_SIREN:
-            if self.is_on():
+        if self.device_class == DEVICE_CLASS_SIREN:
+            if self.is_on:
                 return "mdi:bell-ring"
             else:
                 return "mdi:bell-off"
