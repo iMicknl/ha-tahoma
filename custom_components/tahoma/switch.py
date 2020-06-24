@@ -73,7 +73,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
             return self.apply_action("on")
 
         if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
-            return self.apply_action("ringWithSingleSimpleSequence")
+            return self.apply_action(
+                "ringWithSingleSimpleSequence", "defaultSoundPattern"
+            )
 
         self.apply_action("on")
 
