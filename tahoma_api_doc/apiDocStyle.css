@@ -1,0 +1,337 @@
+body {
+	margin: 0px;
+	padding: 4px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+}
+
+table.operations {
+	width: 100%;
+	border-spacing: 2px;
+	padding: 0px;
+	margin: 0px;
+	margin-top: 5px;
+	border-left: 5px #f29400 solid;
+}
+
+.t {
+	border-bottom: 5px #f29400 solid;
+}
+
+.subT {
+	border-bottom: 5px #c9d215 solid;
+}
+
+table.operation {
+	width: 100%;
+	border-spacing: 2px;
+	padding: 0px;
+	margin: 0px;
+	margin-top: 2px;
+	border-left: 5px #9d9ea0 solid;
+}
+
+table.section {
+	width: 100%;
+	border-spacing: 2px;
+	padding: 0px;
+	margin: 0px;
+	margin-top: 5px;
+	border-left: 5px #c9d215 solid;
+}
+
+div.avs, div.avs table,div.ats, div.ats table {
+	margin-top: 15px;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+h1,pre {
+	margin: 0px;
+}
+
+td {
+	padding: 2px 4px 2px 4px;
+}
+
+td.p {
+	white-space: nowrap;
+}
+
+td.pr {
+	text-align: right;
+	font-style: italic;
+	width: 110px;
+}
+
+.rel {
+	width: 425px;
+	font-weight: bold;
+}
+
+.m_get    .m {
+	color: white;
+	background-color: #0569b9;
+	text-align: center;
+}
+
+.m_post   .m {
+	color: white;
+	background-color: #14a639;
+	text-align: center;
+}
+
+.m_put    .m {
+	color: white;
+	background-color: #C5862B;
+	text-align: center;
+}
+
+.m_delete .m {
+	color: white;
+	background-color: #a3201c;
+	text-align: center;
+}
+
+.m_get    .p {
+	color: black;
+	background-color: #e7f0f7;
+	text-align: left;
+	border: 1px #dbeaf6 solid;
+}
+
+.m_post   .p {
+	color: black;
+	background-color: #e7f6eb;
+	text-align: left;
+	border: 1px #d3eedb solid;
+}
+
+.m_put    .p {
+	color: black;
+	background-color: #f0ede0;
+	text-align: left;
+	border: 1px #e1ded9 solid;
+}
+
+.m_delete .p {
+	color: black;
+	background-color: #f5e8e8;
+	text-align: left;
+	border: 1px #efd5d6 solid;
+}
+
+.m_get    .d {
+	color: black;
+	background-color: #ffffff;
+	text-align: left;
+	border: 1px #dbeaf6 solid;
+}
+
+.m_post   .d {
+	color: black;
+	background-color: #ffffff;
+	text-align: left;
+	border: 1px #d3eedb solid;
+}
+
+.m_put    .d {
+	color: black;
+	background-color: #ffffff;
+	text-align: left;
+	border: 1px #e3e3d9 solid;
+}
+
+.m_delete .d {
+	color: black;
+	background-color: #ffffff;
+	text-align: left;
+	border: 1px #efd5d6 solid;
+}
+
+.m {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	width: 52px;
+}
+
+pre.m_desc, pre.c_desc {
+	white-space: pre-wrap;
+	word-wrap:break-word;
+    margin-left: 10px;
+}
+
+th {
+	background-color: #9d9ea0;
+	border: dotted #c9d215 2px;
+	border-left: none;
+	border-right: none;
+}
+
+th.name, th.code, th.nameAV, th.eventLabel, th.fieldName {
+	border-top-left-radius: 2px;
+	border-left: dotted #c9d215 2px;
+}
+
+th.description, th.meaning, th.meaningAV, th.eventLabel, th.fieldDescription {
+	border-top-right-radius: 2px;
+	border-right: dotted #c9d215 2px;
+}
+
+table.request, table.response, table.HTTPStatus, table.allowedValues, table.events, table.roles {
+	width: 100%;
+}
+
+table.response, table.HTTPStatus, table.roles, h3.eventTitle, table.allowedValues, table.allowedTypes {
+	margin-top: 50px;
+}
+
+table.events {
+	margin-top: 20px;
+}
+
+table.request td, table.response td, table.HTTPStatus td, table.allowedValues td, table.allowedTypes td, table.events td, table.roles td {
+	border: dotted #f29400 2px;
+}
+
+caption {
+	text-align: left;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.ref {
+	padding: 0px;
+	width: 75%;
+}
+
+.allowedValues,.allowedTypes {
+	display: none;
+}
+
+span.more, span.moreDefClass, span.moreAVS, span.moreATS {
+	color: #367fa2;
+	text-decoration: underline;
+}
+
+span.list, span.expand {
+	color: #9d9ea0;
+	float: right;
+	text-decoration: underline;
+}
+
+span#listAll, span#expandAll, span#showHideDeprecated {
+	color: #9d9ea0;
+	text-decoration: underline;
+}
+
+span.list:hover, span.expand:hover, span#listAll:hover, span#expandAll:hover, span#showHideDeprecated, span.more:hover, span.moreDefClass:hover, .classRef:hover, .fs:hover, span.moreAVS:hover, span.moreATS:hover {
+	cursor: pointer;
+}
+
+.classRef:hover {
+	color: #8e5288;
+}
+
+.restricted {
+	margin-left: 10px;
+	color: red;
+	font-style: italic;
+}
+
+span.list:hover, span.expand:hover {
+	color: #6e6f70;
+}
+
+.fs:hover .rel.m_get {
+	color: #0569b9;
+}
+
+.fs:hover .rel.m_put {
+	color: #C5862B;
+}
+
+.fs:hover .rel.m_post {
+	color: #14a639;
+}
+
+.fs:hover .rel.m_delete {
+	color: #a3201c;
+}
+
+.c_det {
+	display: none;
+}
+
+.name {
+	width: 10%;
+}
+
+.type {
+	width: 7%;
+}
+
+.value {
+	width: 40%;
+}
+
+.description {
+	width: 43%;
+}
+
+.eventLabel, .fieldName, .roleLabel {
+	width: 15%;
+}
+
+.eventDescription, .fieldDescription, .roleDescription {
+	width: 85%;
+}
+
+.code, .codeAV {
+	width: 7%;
+}
+
+.message {
+	width: 13%;
+}
+
+.meaning {
+	width: 80%;
+}
+
+.nameAV {
+	width: 33%;
+}
+
+.meaningAV {
+	width: 60%;
+}
+
+.name, .type, .code, .message, .codeAV {
+	text-align: center;
+}
+
+.SC_OK {
+	color: #14a639;
+}
+
+.SC_CREATED {
+	color: #C5862B;
+}
+
+.SC_NOCONTENT {
+	color: #0569b9;
+}
+
+.deprecated {
+	color: red;
+	text-decoration: line-through;
+}
+
+a { font-weight: normal; text-decoration: none; }
+a:link	    { color:#888888; }
+a:visited   { color:#888888; }
+a:active    { color:#888888; }
+a:hover     { color:#BBBBBB; }
