@@ -299,6 +299,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
+        exec_queue = self.controller.get_current_executions()
+        self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
+        if self._exec_queue:
+            self.schedule_update_ha_state(True)
+            return
+
         self.controller.get_states([self.tahoma_device])
         self.update_temp(None)
         if self._widget == W_ST:

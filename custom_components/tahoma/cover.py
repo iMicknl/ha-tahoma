@@ -89,13 +89,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def update(self):
         """Update method."""
-        self.controller.get_states([self.tahoma_device])
-
         exec_queue = self.controller.get_current_executions()
-        for exec_id in self._exec_queue:
-            if exec_id in exec_queue:
-                self.schedule_update_ha_state(True)
-                return
+        self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
+        if self._exec_queue:
+            self.schedule_update_ha_state(True)
+            return
+
+        self.controller.get_states([self.tahoma_device])
 
         # Set current position.
         # Home Assistant: 0 is closed, 100 is fully open.

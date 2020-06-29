@@ -130,10 +130,13 @@ class TahomaLight(TahomaDevice, LightEntity):
         return self._effect
 
     def update(self):
-        """Fetch new state data for this light.
+        """Fetch new state data for this light."""
 
-        This is the only method that should fetch new data for Home Assistant.
-        """
+        exec_queue = self.controller.get_current_executions()
+        self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
+        if self._exec_queue:
+            self.schedule_update_ha_state(True)
+            return
 
         self.controller.get_states([self.tahoma_device])
 
