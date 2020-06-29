@@ -187,7 +187,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
         if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
-        self.apply_action(
+        self.async_apply_action(
             self.select_command(
                 [
                     COMMAND_SET_POSITION,
@@ -200,7 +200,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action(
+        self.async_apply_action(
             COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
         )
 
@@ -273,27 +273,27 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        self.apply_action(self.select_command(["open", "up"]))
+        self.async_apply_action(self.select_command(["open", "up"]))
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-        self.apply_action(self.select_command(["openSlats"]))
+        self.async_apply_action(self.select_command(["openSlats"]))
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        self.apply_action(self.select_command(["close", "down"]))
+        self.async_apply_action(self.select_command(["close", "down"]))
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-        self.apply_action(self.select_command(["closeSlats"]))
+        self.async_apply_action(self.select_command(["closeSlats"]))
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-        self.apply_action(self.select_command(["stop", "stopIdentify", "my"]))
+        self.async_apply_action(self.select_command(["stop", "stopIdentify", "my"]))
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-        self.apply_action(self.select_command(["stopIdentify", "stop", "my"]))
+        self.async_apply_action(self.select_command(["stopIdentify", "stop", "my"]))
 
     @property
     def supported_features(self):
