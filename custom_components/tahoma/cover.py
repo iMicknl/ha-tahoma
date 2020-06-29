@@ -91,6 +91,12 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Update method."""
         self.controller.get_states([self.tahoma_device])
 
+        exec_queue = self.controller.get_current_executions()
+        for exec_id in self._exec_queue:
+            if exec_id in exec_queue:
+                self.schedule_update_ha_state(True)
+                return
+
         # Set current position.
         # Home Assistant: 0 is closed, 100 is fully open.
         # core:ClosureState: 100 is closed, 0 is fully open.
@@ -187,7 +193,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
         if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
-        self.async_apply_action(
+        self.apply_action(
             self.select_command(
                 [
                     COMMAND_SET_POSITION,
@@ -200,7 +206,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.async_apply_action(
+        self.apply_action(
             COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
         )
 
@@ -273,27 +279,27 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        self.async_apply_action(self.select_command(["open", "up"]))
+        self.apply_action(self.select_command(["open", "up"]))
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-        self.async_apply_action(self.select_command(["openSlats"]))
+        self.apply_action(self.select_command(["openSlats"]))
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        self.async_apply_action(self.select_command(["close", "down"]))
+        self.apply_action(self.select_command(["close", "down"]))
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-        self.async_apply_action(self.select_command(["closeSlats"]))
+        self.apply_action(self.select_command(["closeSlats"]))
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-        self.async_apply_action(self.select_command(["stop", "stopIdentify", "my"]))
+        self.apply_action(self.select_command(["stop", "stopIdentify", "my"]))
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-        self.async_apply_action(self.select_command(["stopIdentify", "stop", "my"]))
+        self.apply_action(self.select_command(["stopIdentify", "stop", "my"]))
 
     @property
     def supported_features(self):

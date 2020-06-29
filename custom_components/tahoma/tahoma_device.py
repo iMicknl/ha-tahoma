@@ -21,6 +21,7 @@ class TahomaDevice(Entity):
         self.tahoma_device = tahoma_device
         self._name = self.tahoma_device.label
         self.controller = controller
+        self._exec_queue = []
 
     async def async_added_to_hass(self):
         """Entity created."""
@@ -141,5 +142,5 @@ class TahomaDevice(Entity):
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
-        while exec_id in self.controller.get_current_executions():
-            continue
+        self._exec_queue.append(exec_id)
+        return exec_id
