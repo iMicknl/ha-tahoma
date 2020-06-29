@@ -114,31 +114,13 @@ class TahomaDevice(Entity):
             "sw_version": self.tahoma_device.type,
         }
 
-    def select_command(self, commands):
-        """Select first existing command in a list of commands."""
-        return next(
-            (c for c in self.tahoma_device.command_definitions if c in commands), None
-        )
-
-    def select_state(self, active_states):
-        """Select first existing active state in a list of states."""
-        return next(
-            (
-                v
-                for k, v in self.tahoma_device.active_states.items()
-                if k in active_states
-            ),
-            None,
-        )
-
     async def async_apply_action(self, cmd_name, *args):
         """Apply Action to Device in async context."""
         await self.hass.async_add_executor_job(self.apply_action, cmd_name, *args)
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
-        if cmd_name is None:
-            raise NotImplementedError
+
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])

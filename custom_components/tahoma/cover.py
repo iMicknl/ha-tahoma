@@ -193,16 +193,15 @@ class TahomaCover(TahomaDevice, CoverEntity):
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
         if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
-        self.apply_action(
-            self.select_command(
-                [
-                    COMMAND_SET_POSITION,
-                    COMMAND_SET_CLOSURE,
-                    COMMAND_SET_PEDESTRIAN_POSITION,
-                ]
-            ),
-            position,
-        )
+
+        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_SET_POSITION, position)
+
+        if COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_SET_CLOSURE, position)
+
+        if COMMAND_SET_PEDESTRIAN_POSITION in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_SET_PEDESTRIAN_POSITION, position)
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
@@ -213,17 +212,35 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def is_closed(self):
         """Return if the cover is closed."""
-        state = self.select_state(
-            [
-                "core:OpenClosedState",
-                "core:SlatsOpenClosedState",
-                "core:OpenClosedPartialState",
-                "core:OpenClosedPedestrianState",
-                "core:OpenClosedUnknownState",
-            ]
-        )
-        if state is not None:
-            return state == "closed"
+
+        if "core:OpenClosedState" in self.tahoma_device.active_states:
+            return (
+                self.tahoma_device.active_states.get("core:OpenClosedState") == "closed"
+            )
+
+        if "core:SlatsOpenClosedState" in self.tahoma_device.active_states:
+            return (
+                self.tahoma_device.active_states.get("core:SlatsOpenClosedState")
+                == "closed"
+            )
+
+        if "core:OpenClosedPartialState" in self.tahoma_device.active_states:
+            return (
+                self.tahoma_device.active_states.get("core:OpenClosedPartialState")
+                == "closed"
+            )
+
+        if "core:OpenClosedPedestrianState" in self.tahoma_device.active_states:
+            return (
+                self.tahoma_device.active_states.get("core:OpenClosedPedestrianState")
+                == "closed"
+            )
+
+        if "core:OpenClosedUnknownState" in self.tahoma_device.active_states:
+            return (
+                self.tahoma_device.active_states.get("core:OpenClosedUnknownState")
+                == "closed"
+            )
 
         if getattr(self, "_position", None) is not None:
             return self._position == 0
@@ -279,27 +296,57 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        self.apply_action(self.select_command(["open", "up"]))
+
+        if "open" in self.tahoma_device.command_definitions:
+            return self.apply_action("open")
+
+        if "up" in self.tahoma_device.command_definitions:
+            return self.apply_action("up")
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-        self.apply_action(self.select_command(["openSlats"]))
+
+        if "openSlats" in self.tahoma_device.command_definitions:
+            return self.apply_action("openSlats")
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        self.apply_action(self.select_command(["close", "down"]))
+
+        if "close" in self.tahoma_device.command_definitions:
+            return self.apply_action("close")
+
+        if "down" in self.tahoma_device.command_definitions:
+            return self.apply_action("down")
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-        self.apply_action(self.select_command(["closeSlats"]))
+
+        if "closeSlats" in self.tahoma_device.command_definitions:
+            return self.apply_action("closeSlats")
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-        self.apply_action(self.select_command(["stop", "stopIdentify", "my"]))
+
+        if "stop" in self.tahoma_device.command_definitions:
+            return self.apply_action("stop")
+
+        if "stopIdentify" in self.tahoma_device.command_definitions:
+            return self.apply_action("stopIdentify")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-        self.apply_action(self.select_command(["stopIdentify", "stop", "my"]))
+
+        if "stopIdentify" in self.tahoma_device.command_definitions:
+            return self.apply_action("stopIdentify")
+
+        if "stop" in self.tahoma_device.command_definitions:
+            return self.apply_action("stop")
+
+        if "my" in self.tahoma_device.command_definitions:
+            return self.apply_action("my")
 
     @property
     def supported_features(self):
