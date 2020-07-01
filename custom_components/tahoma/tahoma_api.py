@@ -627,12 +627,7 @@ class Device:
                 for state in dataInput["states"]:
 
                     if state["name"] not in self.state_definitions:
-                        raise ValueError(
-                            "Active state '"
-                            + state["name"]
-                            + "' has not been defined: "
-                            + debug_output
-                        )
+                        self.state_definitions.append(state["name"])
 
                     if state["name"] in self.__active_states.keys():
                         raise ValueError(
