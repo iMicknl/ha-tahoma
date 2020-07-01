@@ -117,6 +117,8 @@ class TahomaApi:
                 + request.text
             )
         else:
+            if "Not authenticated" in request.text:
+                self.__logged_in = False
             self.send_request(method, url, headers, data, timeout, retries - 1)
 
     def get_user(self):
