@@ -89,9 +89,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def update(self):
         """Update method."""
-        exec_queue = self.controller.get_current_executions()
-        self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
-        if self._exec_queue:
+        if self.should_wait():
             self.schedule_update_ha_state(True)
             return
 

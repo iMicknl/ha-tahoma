@@ -114,6 +114,12 @@ class TahomaDevice(Entity):
             "sw_version": self.tahoma_device.type,
         }
 
+    def should_wait(self):
+        """Wait for actions to finish."""
+        exec_queue = self.controller.get_current_executions()
+        self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
+        return True if self._exec_queue else False
+
     async def async_apply_action(self, cmd_name, *args):
         """Apply Action to Device in async context."""
         await self.hass.async_add_executor_job(self.apply_action, cmd_name, *args)
