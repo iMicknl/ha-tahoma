@@ -6,6 +6,8 @@
 
 **Fixed bugs:**
 
+- Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
+- Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
 - Re-log in the API after a "error":"Not authenticated" [\#95](https://github.com/iMicknl/ha-tahoma/pull/95) ([vlebourl](https://github.com/vlebourl))
 
 **Merged pull requests:**
