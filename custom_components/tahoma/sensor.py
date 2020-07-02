@@ -105,6 +105,10 @@ class TahomaSensor(TahomaDevice, Entity):
 
     def update(self):
         """Update the state."""
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
+
         self.controller.get_states([self.tahoma_device])
 
         if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
