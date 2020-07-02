@@ -42,6 +42,10 @@ class TahomaLock(TahomaDevice, LockEntity):
 
     def update(self):
         """Update method."""
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
+
         self.controller.get_states([self.tahoma_device])
         self._battery_level = self.tahoma_device.active_states["core:BatteryState"]
         self._name = self.tahoma_device.active_states["core:NameState"]
