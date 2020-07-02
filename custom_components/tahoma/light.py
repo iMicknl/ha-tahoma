@@ -150,15 +150,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if CORE_RED_COLOR_INTENSITY_STATE in self.tahoma_device.active_states:
             self._hs_color = color_util.color_RGB_to_hs(
-                [
-                    self.tahoma_device.active_states.get(
-                        CORE_RED_COLOR_INTENSITY_STATE
-                    ),
-                    self.tahoma_device.active_states.get(
-                        CORE_GREEN_COLOR_INTENSITY_STATE
-                    ),
-                    self.tahoma_device.active_states.get(
-                        CORE_BLUE_COLOR_INTENSITY_STATE
-                    ),
-                ]
+                self.tahoma_device.active_states.get(CORE_RED_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
             )
