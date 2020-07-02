@@ -39,6 +39,61 @@ class TahomaApi:
         self.__setup = None
         self.login()
 
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        request = requests.get(
+            BASE_URL + "authenticated",
+            headers={"User-Agent": "mine", "Cookie": self.__cookie},
+            timeout=10,
+        )
+        if request.status_code == 200:
+            try:
+                result = request.json()
+            except ValueError as error:
+                raise Exception("Not a valid result, protocol error: " + str(error))
+            return result["authenticated"]
+        else:
+            raise Exception(
+                "Could not check authenticated: " + str(request.status_code)
+            )
+
+    def logout(self):
+        """Logout from TaHoma API."""
+        if not self.__logged_in:
+            return True
+        request = requests.post(
+            BASE_URL + "logout",
+            headers={"User-Agent": "mine", "Cookie": self.__cookie},
+            timeout=10,
+        )
+        try:
+            result = request.json()
+        except ValueError as error:
+            raise Exception(
+                "Not a valid result for logout, "
+                + "protocol error: "
+                + request.status_code
+                + " - "
+                + request.reason
+                + "("
+                + error
+                + ")"
+            )
+
+        if "error" in result.keys():
+            raise Exception("Could not logout: " + result["error"])
+
+        if request.status_code != 200:
+            raise Exception(
+                "Could not login, HTTP code: "
+                + str(request.status_code)
+                + " - "
+                + request.reason
+            )
+
+        self.__logged_in = False
+        return True
+
     def login(self):
         """Login to TaHoma API."""
         if self.__logged_in:
@@ -82,7 +137,7 @@ class TahomaApi:
             raise Exception("Could not login, no cookie set")
 
         self.__cookie = cookie
-        self.__logged_in = True
+        self.__logged_in = self.is_authenticated()
         return self.__logged_in
 
     def send_request(
@@ -98,8 +153,11 @@ class TahomaApi:
         :param retries: Maximum number of retries.
         :return:
         """
-        if not self.__logged_in:
-            self.login()
+        if not self.is_authenticated():
+            if not self.login():
+                raise Exception("Could not get authenticated")
+            headers["Cookie"] = self.__cookie
+            self.send_request(method, url, headers, data, timeout, retries)
 
         stack = pprint.pformat(traceback.extract_stack())
         if "asyncio" in stack:
