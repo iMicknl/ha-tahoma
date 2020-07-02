@@ -120,8 +120,12 @@ class TahomaDevice(Entity):
 
     def should_wait(self):
         """Wait for actions to finish."""
-        if not self.controller.is_authenticated():
-            _LOGGER.debug("Delayed update, not authenticated: " + self.name)
+        _LOGGER.debug(
+            "should_wait("
+            + self.name
+            + ") authenticated: "
+            + str(self.controller.is_authenticated())
+        )
         exec_queue = self.controller.get_current_executions()
         self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
         return True if self._exec_queue else False
@@ -132,10 +136,12 @@ class TahomaDevice(Entity):
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
-        if not self.controller.is_authenticated():
-            _LOGGER.debug(
-                "Delayed action, not authenticated: " + self.name + ", " + cmd_name
-            )
+        _LOGGER.debug(
+            "apply_action("
+            + self.name
+            + ") authenticated: "
+            + str(self.controller.is_authenticated())
+        )
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
