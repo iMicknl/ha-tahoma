@@ -1,13 +1,29 @@
 # Changelog
 
+## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
+
+[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)
+
+**Implemented enhancements:**
+
+- Remove exception raising in Device `__init__` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
+
+**Fixed bugs:**
+
+- custom\_components.tahoma.config\_flow - Unexpected exception - ValueError: No ui Class [\#99](https://github.com/iMicknl/ha-tahoma/issues/99)
+- Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
+- Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
+
+**Merged pull requests:**
+
+- Fix a test in api login. [\#100](https://github.com/iMicknl/ha-tahoma/pull/100) ([vlebourl](https://github.com/vlebourl))
+
 ## [1.5-alpha2](https://github.com/iMicknl/ha-tahoma/tree/1.5-alpha2) (2020-07-02)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha1...1.5-alpha2)
 
 **Fixed bugs:**
 
-- Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
-- Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
 - Re-log in the API after a "error":"Not authenticated" [\#95](https://github.com/iMicknl/ha-tahoma/pull/95) ([vlebourl](https://github.com/vlebourl))
 
 **Merged pull requests:**
