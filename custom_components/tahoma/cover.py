@@ -186,7 +186,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        _LOGGER.debug("set_cover_position("+self.name+")")
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
@@ -204,7 +203,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        _LOGGER.debug("set_cover_tilt_position("+self.name+")")
         self.apply_action(
             COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
         )
@@ -296,7 +294,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        _LOGGER.debug("open_cover("+self.name+")")
         if "open" in self.tahoma_device.command_definitions:
             return self.apply_action("open")
 
@@ -305,13 +302,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-        _LOGGER.debug("open_cover_tilt("+self.name+")")
         if "openSlats" in self.tahoma_device.command_definitions:
             return self.apply_action("openSlats")
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        _LOGGER.debug("close_cover("+self.name+")")
         if "close" in self.tahoma_device.command_definitions:
             return self.apply_action("close")
 
@@ -320,15 +315,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-        _LOGGER.debug("close_cover_tilt("+self.name+")")
-        
+
         if "closeSlats" in self.tahoma_device.command_definitions:
             return self.apply_action("closeSlats")
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-        _LOGGER.debug("stop_cover("+self.name+")")
-        
+
         if "stop" in self.tahoma_device.command_definitions:
             return self.apply_action("stop")
 
@@ -340,8 +333,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-        _LOGGER.debug("stop_cover_tilt("+self.name+")")
-        
+
         if "stopIdentify" in self.tahoma_device.command_definitions:
             return self.apply_action("stopIdentify")
 

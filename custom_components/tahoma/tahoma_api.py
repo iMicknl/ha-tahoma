@@ -153,7 +153,6 @@ class TahomaApi:
         :param retries: Maximum number of retries.
         :return:
         """
-        _LOGGER.debug("sending request")
         if not self.is_authenticated():
             if not self.login():
                 raise Exception("Could not get authenticated")
@@ -165,11 +164,7 @@ class TahomaApi:
             _LOGGER.warning("I/O stack trace:\n" + stack)
         request = method(url, headers=headers, data=data, timeout=timeout)
 
-        _LOGGER.debug("request sent")
-
         if request.status_code == 200:
-            _LOGGER.debug("request success")
-
             try:
                 result = request.json()
             except ValueError as error:
@@ -181,8 +176,6 @@ class TahomaApi:
                 + request.text
             )
         else:
-            _LOGGER.debug("request retry: " + request.text)
-
             self.send_request(method, url, headers, data, timeout, retries - 1)
 
     def get_user(self):
