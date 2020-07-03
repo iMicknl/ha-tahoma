@@ -590,7 +590,6 @@ class Device:
 
     def __init__(self, protocol, dataInput):
         """Initialize the TaHoma Device."""
-        debug_output = json.dumps(dataInput)
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
@@ -611,12 +610,7 @@ class Device:
             if "states" in definition.keys():
                 for state in definition["states"]:
                     if state["qualifiedName"] in self.__definitions["states"]:
-                        raise ValueError(
-                            "State '"
-                            + state["qualifiedName"]
-                            + "' double defined - "
-                            + debug_output
-                        )
+                        continue
                     self.__definitions["states"].append(state["qualifiedName"])
             self.__command_def = definition.get("commands")
             self.__states_def = definition.get("states")
