@@ -96,7 +96,7 @@ class TahomaApi:
 
     def login(self):
         """Login to TaHoma API."""
-        if self.__logged_in:
+        if self.is_authenticated():
             return
         login = {"userId": self.__username, "userPassword": self.__password}
         header = BASE_HEADERS.copy()
