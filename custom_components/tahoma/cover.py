@@ -294,6 +294,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
+
         if "open" in self.tahoma_device.command_definitions:
             return self.apply_action("open")
 
@@ -302,11 +303,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
+
         if "openSlats" in self.tahoma_device.command_definitions:
             return self.apply_action("openSlats")
 
     def close_cover(self, **kwargs):
         """Close the cover."""
+
         if "close" in self.tahoma_device.command_definitions:
             return self.apply_action("close")
 

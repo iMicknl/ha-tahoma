@@ -163,7 +163,6 @@ class TahomaApi:
         if "asyncio" in stack:
             _LOGGER.warning("I/O stack trace:\n" + stack)
         request = method(url, headers=headers, data=data, timeout=timeout)
-
         if request.status_code == 200:
             try:
                 result = request.json()

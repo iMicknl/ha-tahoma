@@ -1,7 +1,5 @@
 """Parent class for every TaHoma devices."""
 
-import logging
-
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 
@@ -13,8 +11,6 @@ from .const import (
     DOMAIN,
 )
 from .tahoma_api import Action
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class TahomaDevice(Entity):
@@ -130,6 +126,7 @@ class TahomaDevice(Entity):
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
+
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
