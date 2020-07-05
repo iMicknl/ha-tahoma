@@ -37,7 +37,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def update(self):
         """Update method."""
-        # Postpone the immediate state check for changes that take time.
+
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
@@ -80,8 +80,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
             return self.apply_action(
                 "ringWithSingleSimpleSequence", 120000, 75, 2, "memorizedVolume"
             )
-
-        self.apply_action("on")
 
     def turn_off(self, **kwargs):
         """Send the off command."""

@@ -65,23 +65,25 @@ class TahomaSensor(TahomaDevice, Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
 
-        if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
+        states = self.tahoma_device.active_states
+
+        if CORE_TEMPERATURE_STATE in states:
             # TODO Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin
             return TEMP_CELSIUS
 
-        if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
+        if CORE_RELATIVE_HUMIDITY_STATE in states:
             return UNIT_PERCENTAGE
 
-        if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
+        if CORE_LUMINANCE_STATE in states:
             return "lx"
 
-        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             return POWER_WATT
 
-        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             return ENERGY_KILO_WATT_HOUR
 
-        if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:
+        if CORE_CO2_CONCENTRATION_STATE in states:
             return CONCENTRATION_PARTS_PER_MILLION
 
         return None
@@ -112,26 +114,28 @@ class TahomaSensor(TahomaDevice, Entity):
 
         self.controller.get_states([self.tahoma_device])
 
-        if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
+        states = self.tahoma_device.active_states
+
+        if CORE_LUMINANCE_STATE in states:
             self.current_value = self.tahoma_device.active_states.get(
                 CORE_LUMINANCE_STATE
             )
 
-        if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
+        if CORE_RELATIVE_HUMIDITY_STATE in states:
             self.current_value = float(
                 "{:.2f}".format(
                     self.tahoma_device.active_states.get(CORE_RELATIVE_HUMIDITY_STATE)
                 )
             )
 
-        if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
+        if CORE_TEMPERATURE_STATE in states:
             self.current_value = float(
                 "{:.2f}".format(
                     self.tahoma_device.active_states.get(CORE_TEMPERATURE_STATE)
                 )
             )
 
-        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             self.current_value = float(
                 "{:.2f}".format(
                     self.tahoma_device.active_states.get(
@@ -140,7 +144,7 @@ class TahomaSensor(TahomaDevice, Entity):
                 )
             )
 
-        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             self.current_value = (
                 float(
                     "{:.2f}".format(
@@ -152,7 +156,7 @@ class TahomaSensor(TahomaDevice, Entity):
                 / 1000
             )
 
-        if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:
+        if CORE_CO2_CONCENTRATION_STATE in states:
             self.current_value = int(
                 self.tahoma_device.active_states.get(CORE_CO2_CONCENTRATION_STATE)
             )
