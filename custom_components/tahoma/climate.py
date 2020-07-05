@@ -287,7 +287,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if state is None:
             state = self.hass.states.get(self._temp_sensor_entity_id)
 
-        if state.state is None:
+        if state is None:
             return
 
         try:
@@ -299,6 +299,10 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
+
         self.controller.get_states([self.tahoma_device])
         self.update_temp(None)
         if self._widget == W_ST:

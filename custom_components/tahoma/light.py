@@ -130,10 +130,11 @@ class TahomaLight(TahomaDevice, LightEntity):
         return self._effect
 
     def update(self):
-        """Fetch new state data for this light.
+        """Fetch new state data for this light."""
 
-        This is the only method that should fetch new data for Home Assistant.
-        """
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
 
         self.controller.get_states([self.tahoma_device])
 
@@ -149,15 +150,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if CORE_RED_COLOR_INTENSITY_STATE in self.tahoma_device.active_states:
             self._hs_color = color_util.color_RGB_to_hs(
-                [
-                    self.tahoma_device.active_states.get(
-                        CORE_RED_COLOR_INTENSITY_STATE
-                    ),
-                    self.tahoma_device.active_states.get(
-                        CORE_GREEN_COLOR_INTENSITY_STATE
-                    ),
-                    self.tahoma_device.active_states.get(
-                        CORE_BLUE_COLOR_INTENSITY_STATE
-                    ),
-                ]
+                self.tahoma_device.active_states.get(CORE_RED_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
+                self.tahoma_device.active_states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
             )

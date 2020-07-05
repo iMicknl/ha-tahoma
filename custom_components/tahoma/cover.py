@@ -89,6 +89,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def update(self):
         """Update method."""
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
+
         self.controller.get_states([self.tahoma_device])
 
         # Set current position.

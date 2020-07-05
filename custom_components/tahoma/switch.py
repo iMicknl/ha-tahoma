@@ -37,7 +37,11 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def update(self):
         """Update method."""
-
+        # Postpone the immediate state check for changes that take time.
+        if self.should_wait():
+            self.schedule_update_ha_state(True)
+            return
+            
         self.controller.get_states([self.tahoma_device])
 
         if "core:OnOffState" in self.tahoma_device.active_states:

@@ -133,3 +133,5 @@ dmypy.json
 
 # HA Config directory for local testing
 /Config/
+
+**/.DS_Store

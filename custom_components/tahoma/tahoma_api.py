@@ -39,9 +39,64 @@ class TahomaApi:
         self.__setup = None
         self.login()
 
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        request = requests.get(
+            BASE_URL + "authenticated",
+            headers={"User-Agent": "mine", "Cookie": self.__cookie},
+            timeout=10,
+        )
+        if request.status_code == 200:
+            try:
+                result = request.json()
+            except ValueError as error:
+                raise Exception("Not a valid result, protocol error: " + str(error))
+            return result["authenticated"]
+        else:
+            raise Exception(
+                "Could not check authenticated: " + str(request.status_code)
+            )
+
+    def logout(self):
+        """Logout from TaHoma API."""
+        if not self.__logged_in:
+            return True
+        request = requests.post(
+            BASE_URL + "logout",
+            headers={"User-Agent": "mine", "Cookie": self.__cookie},
+            timeout=10,
+        )
+        try:
+            result = request.json()
+        except ValueError as error:
+            raise Exception(
+                "Not a valid result for logout, "
+                + "protocol error: "
+                + request.status_code
+                + " - "
+                + request.reason
+                + "("
+                + error
+                + ")"
+            )
+
+        if "error" in result.keys():
+            raise Exception("Could not logout: " + result["error"])
+
+        if request.status_code != 200:
+            raise Exception(
+                "Could not login, HTTP code: "
+                + str(request.status_code)
+                + " - "
+                + request.reason
+            )
+
+        self.__logged_in = False
+        return True
+
     def login(self):
         """Login to TaHoma API."""
-        if self.__logged_in:
+        if self.is_authenticated():
             return
         login = {"userId": self.__username, "userPassword": self.__password}
         header = BASE_HEADERS.copy()
@@ -82,7 +137,7 @@ class TahomaApi:
             raise Exception("Could not login, no cookie set")
 
         self.__cookie = cookie
-        self.__logged_in = True
+        self.__logged_in = self.is_authenticated()
         return self.__logged_in
 
     def send_request(
@@ -98,8 +153,11 @@ class TahomaApi:
         :param retries: Maximum number of retries.
         :return:
         """
-        if not self.__logged_in:
-            self.login()
+        if not self.is_authenticated():
+            if not self.login():
+                raise Exception("Could not get authenticated")
+            headers["Cookie"] = self.__cookie
+            self.send_request(method, url, headers, data, timeout, retries)
 
         stack = pprint.pformat(traceback.extract_stack())
         if "asyncio" in stack:
@@ -535,113 +593,33 @@ class Device:
         self.__protocol = protocol
         self.__raw_data = dataInput
         self.__active_states = {}
-
-        debug_output = json.dumps(dataInput)
-
-        if "label" not in dataInput.keys():
-            raise ValueError("No device name found: " + debug_output)
-
-        self.__label = dataInput["label"]
-
-        if "controllableName" not in dataInput.keys():
-            raise ValueError("No control label name found: " + debug_output)
-
-        self.__type = dataInput["controllableName"]
-
-        if "deviceURL" not in dataInput.keys():
-            raise ValueError("No control URL: " + debug_output)
-
-        self.__url = dataInput["deviceURL"]
-
-        if "uiClass" not in dataInput.keys():
-            raise ValueError("No ui Class: " + debug_output)
-
-        self.__uiclass = dataInput["uiClass"]
-
-        if "widget" not in dataInput.keys():
-            raise ValueError("No widget: " + debug_output)
-
-        self.__widget = dataInput["widget"]
-
+        self.__label = dataInput.get("label", "")
+        self.__type = dataInput.get("controllableName", "")
+        self.__url = dataInput.get("deviceURL", "")
+        self.__uiclass = dataInput.get("uiClass", "")
+        self.__widget = dataInput.get("widget", "")
         # Parse definitions
-
-        if "definition" not in dataInput.keys():
-            raise ValueError("No device definition found: " + debug_output)
-
         self.__definitions = {"commands": [], "states": []}
-
-        definition = dataInput["definition"]
-
-        if "commands" in definition.keys():
-            for command in definition["commands"]:
-                if command["commandName"] in self.__definitions["commands"]:
-                    raise ValueError(
-                        "Command '"
-                        + command["commandName"]
-                        + "' double defined - "
-                        + debug_output
-                    )
-
-                self.__definitions["commands"].append(command["commandName"])
-
-        if "states" in definition.keys():
-            for state in definition["states"]:
-                if state["qualifiedName"] in self.__definitions["states"]:
-                    raise ValueError(
-                        "State '"
-                        + state["qualifiedName"]
-                        + "' double defined - "
-                        + debug_output
-                    )
-
-                self.__definitions["states"].append(state["qualifiedName"])
-
-        self.__command_def = dataInput["definition"]["commands"]
-
-        self.__states_def = dataInput["definition"]["states"]
-
+        definition = dataInput.get("definition")
+        if definition:
+            if "commands" in definition.keys():
+                for command in definition["commands"]:
+                    if command["commandName"] in self.__definitions["commands"]:
+                        continue
+                    self.__definitions["commands"].append(command["commandName"])
+            if "states" in definition.keys():
+                for state in definition["states"]:
+                    if state["qualifiedName"] in self.__definitions["states"]:
+                        continue
+                    self.__definitions["states"].append(state["qualifiedName"])
+            self.__command_def = definition.get("commands")
+            self.__states_def = definition.get("states")
         # Parse active states
-
-        # calculate the amount of known active states
-        active_states_amount = 0
-        if "states" in dataInput.keys():
-            for state in dataInput["states"]:
-                active_states_amount += 1
-
-        # make sure there are not more active states than definitions
-        if active_states_amount > len(self.state_definitions):
-            raise ValueError(
-                "Mismatch of state definition and active states ("
-                + str(len(self.state_definitions))
-                + "/"
-                + str(active_states_amount)
-                + "): "
-                + debug_output
-            )
-
         if len(self.state_definitions) > 0:
-
             if "states" in dataInput.keys():
-                # raise ValueError("No active states given.")
-
                 for state in dataInput["states"]:
-
                     if state["name"] not in self.state_definitions:
-                        raise ValueError(
-                            "Active state '"
-                            + state["name"]
-                            + "' has not been defined: "
-                            + debug_output
-                        )
-
-                    if state["name"] in self.__active_states.keys():
-                        raise ValueError(
-                            "Active state '"
-                            + state["name"]
-                            + "' has been double defined: "
-                            + debug_output
-                        )
-
+                        self.state_definitions.append(state["name"])
                     self.__active_states[state["name"]] = state["value"]
 
     @property
