@@ -41,7 +41,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
-            
+
         self.controller.get_states([self.tahoma_device])
 
         if "core:OnOffState" in self.tahoma_device.active_states:
