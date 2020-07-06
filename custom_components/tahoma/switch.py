@@ -13,7 +13,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
     controller = data.get("controller")
 
@@ -37,7 +36,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def update(self):
         """Update method."""
-
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
@@ -52,7 +50,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def device_class(self):
         """Return the class of the device."""
-
         if self.tahoma_device.uiclass == "Siren":
             return DEVICE_CLASS_SIREN
 
@@ -61,7 +58,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
         if self.device_class == DEVICE_CLASS_SIREN:
             if self.is_on:
                 return "mdi:bell-ring"
@@ -72,7 +68,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_on(self, **kwargs):
         """Send the on command."""
-
         if "on" in self.tahoma_device.command_definitions:
             return self.apply_action("on")
 
@@ -84,13 +79,11 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-
         if "off" in self.tahoma_device.command_definitions:
             return self.apply_action("off")
 
     def toggle(self, **kwargs):
         """Click the switch."""
-
         if "cycle" in self.tahoma_device.command_definitions:
             return self.apply_action("cycle")
 
