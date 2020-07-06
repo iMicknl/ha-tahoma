@@ -614,7 +614,7 @@ class Device:
                     self.__definitions["states"].append(state["qualifiedName"])
             self.__command_def = definition.get("commands")
             self.__states_def = definition.get("states")
-        attributes = dataInput.get("attributes")
+        attributes = dataInput.get("attributes", {})
         self.__attributes = {attr["name"]: attr["value"] for attr in attributes}
         # Parse active states
         if len(self.state_definitions) > 0:

@@ -78,12 +78,11 @@ class TahomaSensor(TahomaDevice, Entity):
         states = self.tahoma_device.active_states
 
         if CORE_TEMPERATURE_STATE in states:
-            units = {
+            return {
                 "core:TemeratureInCelsius": TEMP_CELSIUS,
                 "core:TemeratureInKelvin": TEMP_KELVIN,
                 "core:TemeratureInFahrenheit": TEMP_FAHRENHEIT,
-            }
-            return units.get(
+            }.get(
                 self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE),
                 TEMP_CELSIUS,
             )
