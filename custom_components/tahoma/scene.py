@@ -14,10 +14,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     data = hass.data[DOMAIN][entry.entry_id]
     controller = data.get("controller")
 
-    entities = [
-        TahomaScene(scene, controller)
-        for scene in data.get("scenes")
-    ]
+    entities = [TahomaScene(scene, controller) for scene in data.get("scenes")]
 
     async_add_entities(entities)
 
