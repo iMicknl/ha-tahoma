@@ -82,7 +82,6 @@ TAHOMA_COVER_DEVICE_CLASSES = {
     "SwingingShutter": DEVICE_CLASS_SHUTTER,
 }
 
-
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "SmokeSensor": DEVICE_CLASS_SMOKE,
@@ -103,7 +102,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
-    "SunSensor": DEVICE_CLASS_SUN_ENERGY
+    "SunSensor": DEVICE_CLASS_SUN_ENERGY,
 }
 
 # TaHoma Attributes
