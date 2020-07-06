@@ -78,15 +78,18 @@ class TahomaSensor(TahomaDevice, Entity):
         states = self.tahoma_device.active_states
 
         if CORE_TEMPERATURE_STATE in states:
-            unit = self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE)
-            if unit:
-                return (
-                    TEMP_KELVIN
-                    if "Kelvin" in unit
-                    else TEMP_FAHRENHEIT
-                    if "Fahrenheit" in unit
-                    else TEMP_CELSIUS
-                )
+            measured_value = self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE)
+
+            if measured_value is not None:
+                if "Celsius" in measured_value:
+                    return TEMP_CELSIUS
+
+                if "Kelvin" in measured_value:
+                    return TEMP_KELVIN
+
+                if "Fahrenheit" in measured_value:
+                    return TEMP_FAHRENHEIT
+
             return TEMP_CELSIUS
 
         if CORE_RELATIVE_HUMIDITY_STATE in states:
