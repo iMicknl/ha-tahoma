@@ -80,7 +80,7 @@ class TahomaSensor(TahomaDevice, Entity):
         if CORE_TEMPERATURE_STATE in states:
             measured_value = self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE)
 
-            if measured_value is not None:
+            if measured_value:
                 if "Celsius" in measured_value:
                     return TEMP_CELSIUS
 
