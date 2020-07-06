@@ -5,7 +5,7 @@ from typing import Optional
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON
 
-from .const import DEVICE_CLASS_SIREN, DOMAIN, TAHOMA_TYPES
+from .const import CORE_ON_OFF_STATE, DEVICE_CLASS_SIREN, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,9 +44,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
         self.controller.get_states([self.tahoma_device])
 
-        if "core:OnOffState" in self.tahoma_device.active_states:
+        if CORE_ON_OFF_STATE in self.tahoma_device.active_states:
             self.current_value = (
-                self.tahoma_device.active_states.get("core:OnOffState") == "on"
+                self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == "on"
             )
 
     @property
