@@ -55,7 +55,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     @property
     def is_on(self):
         """Return the state of the sensor."""
-        return bool(self._state == STATE_ON)
+        return self._state == STATE_ON
 
     @property
     def device_class(self):

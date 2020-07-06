@@ -40,7 +40,7 @@ class TahomaDevice(Entity):
         states = self.tahoma_device.active_states
 
         if CORE_STATUS_STATE in states:
-            return bool(states.get(CORE_STATUS_STATE) == "available")
+            return states.get(CORE_STATUS_STATE) == "available"
 
         if CORE_SENSOR_DEFECT_STATE in states:
             return states.get(CORE_SENSOR_DEFECT_STATE) != "dead"
