@@ -79,6 +79,7 @@ class TahomaSensor(TahomaDevice, Entity):
 
         if CORE_TEMPERATURE_STATE in states:
             return {
+                "core:TemperatureInCelsius": TEMP_CELSIUS,
                 "core:TemperatureInCelcius": TEMP_CELSIUS,
                 "core:TemperatureInKelvin": TEMP_KELVIN,
                 "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
