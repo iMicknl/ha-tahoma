@@ -31,12 +31,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     data = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
     controller = data.get("controller")
 
-    for device in data.get("devices"):
-        if TAHOMA_TYPES[device.uiclass] == "binary_sensor":
-            entities.append(TahomaBinarySensor(device, controller))
+    entities = [
+        TahomaBinarySensor(device, controller)
+        for device in data.get("devices")
+        if TAHOMA_TYPES[device.uiclass] == "binary_sensor"
+    ]
 
     async_add_entities(entities)
 

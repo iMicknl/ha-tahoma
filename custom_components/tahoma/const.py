@@ -24,6 +24,7 @@ from homeassistant.const import (
 
 DOMAIN = "tahoma"
 
+DEVICE_CLASS_CO = "co"
 DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_RAIN = "rain"
 DEVICE_CLASS_SIREN = "siren"
@@ -99,6 +100,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "ElectricitySensor": DEVICE_CLASS_POWER,
+    "COSensor": DEVICE_CLASS_CO,
     "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
@@ -116,6 +118,7 @@ ATTR_LOCK_ORIG = "lock_originator"
 # TaHoma internal device states
 CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
 CORE_CLOSURE_STATE = "core:ClosureState"
+CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 CORE_CONTACT_STATE = "core:ContactState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"

@@ -14,6 +14,7 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 
 from .const import (
+    CORE_CO_CONCENTRATION_STATE,
     CORE_CO2_CONCENTRATION_STATE,
     CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
@@ -22,6 +23,7 @@ from .const import (
     CORE_SUN_ENERGY_STATE,
     CORE_TEMPERATURE_STATE,
     CORE_WINDSPEED_STATE,
+    DEVICE_CLASS_CO,
     DEVICE_CLASS_CO2,
     DEVICE_CLASS_SUN_ENERGY,
     DEVICE_CLASS_WIND_SPEED,
@@ -41,12 +43,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     data = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
     controller = data.get("controller")
 
-    for device in data.get("devices"):
-        if TAHOMA_TYPES[device.uiclass] == "sensor":
-            entities.append(TahomaSensor(device, controller))
+    entities = [
+        TahomaSensor(device, controller)
+        for device in data.get("devices")
+        if TAHOMA_TYPES[device.uiclass] == "sensor"
+    ]
 
     async_add_entities(entities)
 
@@ -87,7 +90,10 @@ class TahomaSensor(TahomaDevice, Entity):
         if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             return ENERGY_KILO_WATT_HOUR
 
-        if CORE_CO2_CONCENTRATION_STATE in states:
+        if (
+            CORE_CO_CONCENTRATION_STATE in states
+            or CORE_CO2_CONCENTRATION_STATE in states
+        ):
             return CONCENTRATION_PARTS_PER_MILLION
 
         return None
@@ -95,7 +101,10 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
+        
+        if self.device_class == DEVICE_CLASS_CO:
+            return "mdi:air-filter"
+        
         if self.device_class == DEVICE_CLASS_CO2:
             return "mdi:periodic-table-co2"
 
@@ -151,6 +160,9 @@ class TahomaSensor(TahomaDevice, Entity):
                 )
                 / 1000
             )
+
+        if CORE_CO_CONCENTRATION_STATE in states:
+            self.current_value = int(states.get(CORE_CO_CONCENTRATION_STATE))
 
         if CORE_CO2_CONCENTRATION_STATE in states:
             self.current_value = int(states.get(CORE_CO2_CONCENTRATION_STATE))
