@@ -21,7 +21,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         for device in data.get("devices")
         if TAHOMA_TYPES[device.uiclass] == "switch"
     ]
-    
+
     async_add_entities(entities)
 
 
@@ -90,4 +90,4 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return bool(self._state == STATE_ON)
+        return self._state == STATE_ON
