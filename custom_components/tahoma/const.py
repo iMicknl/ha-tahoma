@@ -26,6 +26,7 @@ DOMAIN = "tahoma"
 
 DEVICE_CLASS_CO = "co"
 DEVICE_CLASS_CO2 = "co2"
+DEVICE_CLASS_BUTTON = "button"
 DEVICE_CLASS_GAS = "gas"
 DEVICE_CLASS_RAIN = "rain"
 DEVICE_CLASS_SIREN = "siren"
@@ -45,10 +46,11 @@ TAHOMA_TYPES = {
     "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
-    "AirFlowSensor": "binary_sensor", # widgetName, uiClass is AirSensor (sensor)
+    "AirFlowSensor": "binary_sensor",  # widgetName, uiClass is AirSensor (sensor)
     "WaterDetectionSensor": "binary_sensor",  # widgetName, uiClass is HumiditySensor (sensor)
     "HumiditySensor": "sensor",
     "GarageDoor": "cover",
+    "CarButtonSensor": "binary_sensor",
     "ContactSensor": "binary_sensor",
     "RainSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
@@ -88,6 +90,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "AirFlowSensor": DEVICE_CLASS_GAS,
+    "CarButtonSensor": DEVICE_CLASS_BUTTON,
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "MotionSensor": DEVICE_CLASS_MOTION,
@@ -120,6 +123,7 @@ ATTR_LOCK_ORIG = "lock_originator"
 
 # TaHoma internal device states
 CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
+CORE_BUTTON_STATE = "core:ButtonState"
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"

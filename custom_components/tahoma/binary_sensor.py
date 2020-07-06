@@ -7,6 +7,7 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
 from .const import (
+    CORE_BUTTON_STATE,
     CORE_CONTACT_STATE,
     CORE_GAS_DETECTION_STATE,
     CORE_OCCUPANCY_STATE,
@@ -115,6 +116,9 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         if IO_VIBRATION_STATE in states:
             self.current_value = states.get(IO_VIBRATION_STATE) == "detected"
+
+        if CORE_BUTTON_STATE in states:
+            self.current_value = states.get(CORE_BUTTON_STATE) == "pressed"
 
         if self.current_value:
             self._state = STATE_ON
