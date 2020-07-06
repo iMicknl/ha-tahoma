@@ -147,7 +147,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if CORE_ON_OFF_STATE in states:
             self._state = states.get(CORE_ON_OFF_STATE) == "on"
-     
+
         if (
             CORE_RED_COLOR_INTENSITY_STATE in states
             and CORE_GREEN_COLOR_INTENSITY_STATE in states
