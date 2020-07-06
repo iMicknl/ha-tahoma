@@ -89,9 +89,6 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
 # TaHoma Attributes
 ATTR_MEM_POS = "memorized_position"
 ATTR_RSSI_LEVEL = "rssi_level"
-ATTR_LOCK_START_TS = "lock_start_ts"
-ATTR_LOCK_END_TS = "lock_end_ts"
-ATTR_LOCK_LEVEL = "lock_level"
 ATTR_LOCK_ORIG = "lock_originator"
 
 # TaHoma internal device states

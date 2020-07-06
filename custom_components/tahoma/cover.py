@@ -21,13 +21,9 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
-from homeassistant.util.dt import utcnow
 
 from .const import (
-    ATTR_LOCK_END_TS,
-    ATTR_LOCK_LEVEL,
     ATTR_LOCK_ORIG,
-    ATTR_LOCK_START_TS,
     ATTR_MEM_POS,
     COMMAND_SET_CLOSURE,
     COMMAND_SET_ORIENTATION,
@@ -41,7 +37,6 @@ from .const import (
     CORE_SLATS_ORIENTATION_STATE,
     CORE_TARGET_CLOSURE_STATE,
     DOMAIN,
-    IO_PRIORITY_LOCK_LEVEL_STATE,
     IO_PRIORITY_LOCK_ORIGINATOR_STATE,
     TAHOMA_COVER_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -77,15 +72,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         self._tilt_position = None
         self._position = None
 
-        self._icon = None
         self._lock_timer = 0  # Can be 0 and bigger
-        self._lock_start_ts = None
-        self._lock_end_ts = None
-
-        # Can be 'comfortLevel1', 'comfortLevel2', 'comfortLevel3',
-        # 'comfortLevel4', 'environmentProtection', 'humanProtection',
-        # 'userLevel1', 'userLevel2'
-        self._lock_level = None
 
         # Can be 'LSC', 'SAAC', 'SFC', 'UPS', 'externalGateway', 'localUser',
         # 'myself', 'rain', 'security', 'temperature', 'timer', 'user', 'wind'
@@ -144,29 +131,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def update_lock(self):
         states = self.tahoma_device.active_states
-        if CORE_PRIORITY_LOCK_TIMER_STATE in states:
-            old_lock_timer = self._lock_timer
-            self._lock_timer = states[CORE_PRIORITY_LOCK_TIMER_STATE]
-
-            # Derive timestamps from _lock_timer, only if not already set or something has changed
-            if self._lock_timer > 0:
-                _LOGGER.debug("Update %s, lock_timer: %d", self._name, self._lock_timer)
-                if self._lock_start_ts is None:
-                    self._lock_start_ts = utcnow()
-                if self._lock_end_ts is None or old_lock_timer != self._lock_timer:
-                    self._lock_end_ts = utcnow() + timedelta(seconds=self._lock_timer)
-            else:
-                self._lock_start_ts = None
-                self._lock_end_ts = None
-        else:
-            self._lock_timer = 0
-            self._lock_start_ts = None
-            self._lock_end_ts = None
-
-        # Set Lock Level
-        self._lock_level = states.get(IO_PRIORITY_LOCK_LEVEL_STATE)
-
-        # Set Lock Originator
+        self._lock_timer = states.get(CORE_PRIORITY_LOCK_TIMER_STATE, 0)
         self._lock_originator = states.get(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
 
     @property
@@ -255,12 +220,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
             attr[ATTR_MEM_POS] = self.tahoma_device.active_states[
                 CORE_MEMORIZED_1_POSITION_STATE
             ]
-        if self._lock_start_ts is not None:
-            attr[ATTR_LOCK_START_TS] = self._lock_start_ts.isoformat()
-        if self._lock_end_ts is not None:
-            attr[ATTR_LOCK_END_TS] = self._lock_end_ts.isoformat()
-        if self._lock_level is not None:
-            attr[ATTR_LOCK_LEVEL] = self._lock_level
         if self._lock_originator is not None:
             attr[ATTR_LOCK_ORIG] = self._lock_originator
 
@@ -269,13 +228,12 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
+        icon = None
         if self._lock_timer > 0:
+            icon = "mdi:lock-alert"
             if self._lock_originator == "wind":
-                return "mdi:weather-windy"
-            else:
-                return "mdi:lock-alert"
-
-        return self._icon
+                icon = "mdi:weather-windy"
+        return icon
 
     def open_cover(self, **kwargs):
         """Open the cover."""
