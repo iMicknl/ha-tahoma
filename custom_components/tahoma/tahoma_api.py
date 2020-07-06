@@ -616,7 +616,7 @@ class Device:
             self.__states_def = definition.get("states")
         self.__attributes = {}
         attributes = dataInput.get("attributes")
-self.__attributes = {attr["name"]: attr["value] for attr in attributes}
+        self.__attributes = {attr["name"]: attr["value"] for attr in attributes}
         # Parse active states
         if len(self.state_definitions) > 0:
             if "states" in dataInput.keys():
