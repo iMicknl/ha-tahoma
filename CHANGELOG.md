@@ -17,10 +17,6 @@
 
 - Add support for RainSensor \(io:SomfyRainIOSystemSensor\) [\#102](https://github.com/iMicknl/ha-tahoma/issues/102)
 
-**Merged pull requests:**
-
-- Update README.md [\#109](https://github.com/iMicknl/ha-tahoma/pull/109) ([vlebourl](https://github.com/vlebourl))
-
 ## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)
@@ -30,12 +26,8 @@
 - custom\_components.tahoma.config\_flow - Unexpected exception - ValueError: No ui Class [\#99](https://github.com/iMicknl/ha-tahoma/issues/99)
 - Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
 - Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
-- Remove exception raising in Device `__init__` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
+- Remove exception raising in Device `\_\_init\_\_` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
 - Fix a test in api login. [\#100](https://github.com/iMicknl/ha-tahoma/pull/100) ([vlebourl](https://github.com/vlebourl))
-
-**Merged pull requests:**
-
-- Update CHANGELOG.md [\#98](https://github.com/iMicknl/ha-tahoma/pull/98) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.5-alpha2](https://github.com/iMicknl/ha-tahoma/tree/1.5-alpha2) (2020-07-02)
 
@@ -70,11 +62,6 @@
 - fix api for missing states at login [\#94](https://github.com/iMicknl/ha-tahoma/pull/94) ([vlebourl](https://github.com/vlebourl))
 - \[fix\] fix AttributeError: 'NoneType' object has no attribute 'state' … [\#87](https://github.com/iMicknl/ha-tahoma/pull/87) ([vlebourl](https://github.com/vlebourl))
 
-**Merged pull requests:**
-
-- \[doc\] Add Tahoma API html doc [\#88](https://github.com/iMicknl/ha-tahoma/pull/88) ([vlebourl](https://github.com/vlebourl))
-- Update CHANGELOG.md [\#83](https://github.com/iMicknl/ha-tahoma/pull/83) ([vlebourl](https://github.com/vlebourl))
-
 ## [1.4](https://github.com/iMicknl/ha-tahoma/tree/1.4) (2020-06-22)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.4-alpha3...1.4)
@@ -96,10 +83,6 @@
 - Unable to change tilt position on io:BioclimaticPergolaIOComponent [\#74](https://github.com/iMicknl/ha-tahoma/issues/74)
 - Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
 - Bugfix for unable to change tilt position on io:BioclimaticPergolaIOComponent \#74 [\#77](https://github.com/iMicknl/ha-tahoma/pull/77) ([iMicknl](https://github.com/iMicknl))
-
-**Merged pull requests:**
-
-- Update bug\_report.md [\#79](https://github.com/iMicknl/ha-tahoma/pull/79) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.4-alpha3](https://github.com/iMicknl/ha-tahoma/tree/1.4-alpha3) (2020-06-18)
 
@@ -154,8 +137,6 @@
 
 **Merged pull requests:**
 
-- added isort pre-commit hook [\#69](https://github.com/iMicknl/ha-tahoma/pull/69) ([vlebourl](https://github.com/vlebourl))
-- add black check to ci cd [\#68](https://github.com/iMicknl/ha-tahoma/pull/68) ([vlebourl](https://github.com/vlebourl))
 - fixes get\_events [\#55](https://github.com/iMicknl/ha-tahoma/pull/55) ([vlebourl](https://github.com/vlebourl))
 - renamed tahoma or Tahoma to TaHoma. [\#46](https://github.com/iMicknl/ha-tahoma/pull/46) ([vlebourl](https://github.com/vlebourl))
 - Add french translation [\#45](https://github.com/iMicknl/ha-tahoma/pull/45) ([vlebourl](https://github.com/vlebourl))
@@ -205,6 +186,10 @@
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.1-alpha...1.1-alpha2)
 
+**Implemented enhancements:**
+
+- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
+
 ## [1.1-alpha](https://github.com/iMicknl/ha-tahoma/tree/1.1-alpha) (2020-06-04)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.0.0...1.1-alpha)
@@ -214,7 +199,6 @@
 - Add support for scenes [\#10](https://github.com/iMicknl/ha-tahoma/issues/10)
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
-- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
 
