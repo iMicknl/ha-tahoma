@@ -117,7 +117,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             self._position = 100 - self.tahoma_device.active_states.get(
                 CORE_TARGET_CLOSURE_STATE
             )
-            
+
             # Fix for unknown position after moving with remote control and closure states over 100
             if self._position < 0:
                 self._position = self._position + 50
