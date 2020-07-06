@@ -2,20 +2,11 @@
 
 ## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
 
-[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)### Adde
+[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)
 
-## [1.4] - 22-06-2020
 **Implemented enhancements:**
-- Added support for RainSensor
-- Added support for WaterDetectionSensor
-- Added basic support for Siren as switch
-- Added support for MotionSensor
-- Added all available states to device state attributes
 
 - Remove exception raising in Device `__init__` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
-- Changed 'battery_level' attribute to an integer, estimated based on the battery state
-- Changed CO2Sensor device class to co2 to show as co2 sensor in HomeKit  
-- Removed unique oid from scenes
 
 **Fixed bugs:**
 
