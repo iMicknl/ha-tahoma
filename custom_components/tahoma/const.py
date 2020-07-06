@@ -57,7 +57,7 @@ TAHOMA_TYPES = {
     "SwingingShutter": "cover",
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor",
-    "RainSensor": "sensor",
+    "RainSensor": "binary_sensor",
     "Siren": "switch",
 }
 
