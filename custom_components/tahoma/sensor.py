@@ -15,11 +15,18 @@ from homeassistant.helpers.entity import Entity
 
 from .const import (
     CORE_CO2_CONCENTRATION_STATE,
+    CORE_CO_CONCENTRATION_STATE,
     CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
     CORE_LUMINANCE_STATE,
     CORE_RELATIVE_HUMIDITY_STATE,
+    CORE_SUN_ENERGY_STATE,
     CORE_TEMPERATURE_STATE,
+    CORE_WINDSPEED_STATE,
+    DEVICE_CLASS_CO,
+    DEVICE_CLASS_CO2,
+    DEVICE_CLASS_SUN_ENERGY,
+    DEVICE_CLASS_WIND_SPEED,
     DOMAIN,
     TAHOMA_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -36,12 +43,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     data = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
     controller = data.get("controller")
 
-    for device in data.get("devices"):
-        if TAHOMA_TYPES[device.uiclass] == "sensor":
-            entities.append(TahomaSensor(device, controller))
+    entities = [
+        TahomaSensor(device, controller)
+        for device in data.get("devices")
+        if TAHOMA_TYPES[device.uiclass] == "sensor"
+    ]
 
     async_add_entities(entities)
 
@@ -64,23 +72,28 @@ class TahomaSensor(TahomaDevice, Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
 
-        if self.tahoma_device.uiclass == "TemperatureSensor":
+        states = self.tahoma_device.active_states
+
+        if CORE_TEMPERATURE_STATE in states:
             # TODO Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin
             return TEMP_CELSIUS
 
-        if self.tahoma_device.uiclass == "HumiditySensor":
+        if CORE_RELATIVE_HUMIDITY_STATE in states:
             return UNIT_PERCENTAGE
 
-        if self.tahoma_device.uiclass == "LightSensor":
+        if CORE_LUMINANCE_STATE in states:
             return "lx"
 
-        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             return POWER_WATT
 
-        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             return ENERGY_KILO_WATT_HOUR
 
-        if self.tahoma_device.uiclass == "AirSensor":
+        if (
+            CORE_CO_CONCENTRATION_STATE in states
+            or CORE_CO2_CONCENTRATION_STATE in states
+        ):
             return CONCENTRATION_PARTS_PER_MILLION
 
         return None
@@ -89,10 +102,14 @@ class TahomaSensor(TahomaDevice, Entity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.tahoma_device.uiclass == "AirSensor":
-            return "mdi:periodic-table-co2"
+        icons = {
+            DEVICE_CLASS_CO: "mdi:air-filter",
+            DEVICE_CLASS_CO2: "mdi:periodic-table-co2",
+            DEVICE_CLASS_WIND_SPEED: "mdi:weather-windy",
+            DEVICE_CLASS_SUN_ENERGY: "mdi:solar-power",
+        }
 
-        return None
+        return icons.get(self.device_class)
 
     @property
     def device_class(self) -> Optional[str]:
@@ -111,47 +128,46 @@ class TahomaSensor(TahomaDevice, Entity):
 
         self.controller.get_states([self.tahoma_device])
 
-        if CORE_LUMINANCE_STATE in self.tahoma_device.active_states:
-            self.current_value = self.tahoma_device.active_states.get(
-                CORE_LUMINANCE_STATE
-            )
+        states = self.tahoma_device.active_states
 
-        if CORE_RELATIVE_HUMIDITY_STATE in self.tahoma_device.active_states:
+        if CORE_LUMINANCE_STATE in states:
+            self.current_value = states.get(CORE_LUMINANCE_STATE)
+
+        if CORE_RELATIVE_HUMIDITY_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(CORE_RELATIVE_HUMIDITY_STATE)
-                )
+                "{:.2f}".format(states.get(CORE_RELATIVE_HUMIDITY_STATE))
             )
 
-        if CORE_TEMPERATURE_STATE in self.tahoma_device.active_states:
+        if CORE_TEMPERATURE_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(CORE_TEMPERATURE_STATE)
-                )
+                "{:.2f}".format(states.get(CORE_TEMPERATURE_STATE))
             )
 
-        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(
-                        CORE_ELECTRIC_POWER_CONSUMPTION_STATE
-                    )
-                )
+                "{:.2f}".format(states.get(CORE_ELECTRIC_POWER_CONSUMPTION_STATE))
             )
 
-        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in self.tahoma_device.active_states:
+        if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             self.current_value = (
                 float(
-                    "{:.2f}".format(
-                        self.tahoma_device.active_states.get(
-                            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE
-                        )
-                    )
+                    "{:.2f}".format(states.get(CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE))
                 )
                 / 1000
             )
 
-        if CORE_CO2_CONCENTRATION_STATE in self.tahoma_device.active_states:
-            self.current_value = int(
-                self.tahoma_device.active_states.get(CORE_CO2_CONCENTRATION_STATE)
+        if CORE_CO_CONCENTRATION_STATE in states:
+            self.current_value = int(states.get(CORE_CO_CONCENTRATION_STATE))
+
+        if CORE_CO2_CONCENTRATION_STATE in states:
+            self.current_value = int(states.get(CORE_CO2_CONCENTRATION_STATE))
+
+        if CORE_WINDSPEED_STATE in states:
+            self.current_value = float(
+                "{:.2f}".format(states.get(CORE_WINDSPEED_STATE))
+            )
+
+        if CORE_SUN_ENERGY_STATE in states:
+            self.current_value = float(
+                "{:.2f}".format(states.get(CORE_SUN_ENERGY_STATE))
             )

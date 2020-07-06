@@ -1,10 +1,11 @@
 """Support for TaHoma switches."""
 import logging
+from typing import Optional
 
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_OFF, STATE_ON
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import CORE_ON_OFF_STATE, DEVICE_CLASS_SIREN, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,47 +32,67 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize the switch."""
         super().__init__(tahoma_device, controller)
-        self._state = STATE_OFF
-        self._skip_update = False
+
+        self._state = None
 
     def update(self):
         """Update method."""
-        # Postpone the immediate state check for changes that take time.
+
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
 
-        if self._skip_update:
-            self._skip_update = False
-            return
-
         self.controller.get_states([self.tahoma_device])
 
-        _LOGGER.debug("Update %s, state: %s", self._name, self._state)
+        if CORE_ON_OFF_STATE in self.tahoma_device.active_states:
+            self.current_value = (
+                self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == "on"
+            )
 
     @property
     def device_class(self):
         """Return the class of the device."""
 
+        if self.tahoma_device.uiclass == "Siren":
+            return DEVICE_CLASS_SIREN
+
         return DEVICE_CLASS_SWITCH
+
+    @property
+    def icon(self) -> Optional[str]:
+        """Return the icon to use in the frontend, if any."""
+
+        if self.device_class == DEVICE_CLASS_SIREN:
+            if self.is_on:
+                return "mdi:bell-ring"
+            else:
+                return "mdi:bell-off"
+
+        return None
 
     def turn_on(self, **kwargs):
         """Send the on command."""
-        _LOGGER.debug("Turn on: %s", self._name)
 
-        self.apply_action("on")
-        self._skip_update = True
-        self._state = STATE_ON
+        if "on" in self.tahoma_device.command_definitions:
+            return self.apply_action("on")
+
+        if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
+            # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
+            return self.apply_action(
+                "ringWithSingleSimpleSequence", 120000, 75, 2, "memorizedVolume"
+            )
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-        self.apply_action("off")
-        self._skip_update = True
-        self._state = STATE_OFF
+
+        if "off" in self.tahoma_device.command_definitions:
+            return self.apply_action("off")
 
     def toggle(self, **kwargs):
         """Click the switch."""
-        self.apply_action("cycle")
+
+        if "cycle" in self.tahoma_device.command_definitions:
+            return self.apply_action("cycle")
 
     @property
     def is_on(self):
