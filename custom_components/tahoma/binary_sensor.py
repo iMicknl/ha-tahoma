@@ -8,10 +8,12 @@ from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
 from .const import (
     CORE_CONTACT_STATE,
+    CORE_GAS_DETECTION_STATE,
     CORE_OCCUPANCY_STATE,
     CORE_RAIN_STATE,
     CORE_SMOKE_STATE,
     CORE_WATER_DETECTION_STATE,
+    DEVICE_CLASS_GAS,
     DEVICE_CLASS_RAIN,
     DEVICE_CLASS_WATER,
     DOMAIN,
@@ -72,6 +74,9 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         if self.device_class == DEVICE_CLASS_RAIN:
             return "mdi:weather-rainy"
 
+        if self.device_class == DEVICE_CLASS_GAS:
+            return "mdi:waves"
+
         if self.device_class == DEVICE_CLASS_WATER:
             if self.is_on:
                 return "mdi:water"
@@ -104,6 +109,9 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         if CORE_WATER_DETECTION_STATE in states:
             self.current_value = states.get(CORE_WATER_DETECTION_STATE) == "detected"
+
+        if CORE_GAS_DETECTION_STATE in states:
+            self.current_value = states.get(CORE_GAS_DETECTION_STATE) == "detected"
 
         if IO_VIBRATION_STATE in states:
             self.current_value = states.get(IO_VIBRATION_STATE) == "detected"

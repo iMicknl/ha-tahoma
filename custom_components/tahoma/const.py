@@ -26,6 +26,7 @@ DOMAIN = "tahoma"
 
 DEVICE_CLASS_CO = "co"
 DEVICE_CLASS_CO2 = "co2"
+DEVICE_CLASS_GAS = "gas"
 DEVICE_CLASS_RAIN = "rain"
 DEVICE_CLASS_SIREN = "siren"
 DEVICE_CLASS_SUN_ENERGY = "sun_energy"
@@ -86,6 +87,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 
 # Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
+    "AirFlowSensor": DEVICE_CLASS_GAS,
     "SmokeSensor": DEVICE_CLASS_SMOKE,
     "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "MotionSensor": DEVICE_CLASS_MOTION,
@@ -126,6 +128,7 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_DEROGATED_TARGET_TEMPERATURE_STATE = "core:DerogatedTargetTemperatureState"
 CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
+CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
 CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
