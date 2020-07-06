@@ -72,19 +72,18 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.device_class == DEVICE_CLASS_RAIN:
-            return "mdi:weather-rainy"
-
-        if self.device_class == DEVICE_CLASS_GAS:
-            return "mdi:waves"
-
         if self.device_class == DEVICE_CLASS_WATER:
             if self.is_on:
                 return "mdi:water"
             else:
                 return "mdi:water-off"
 
-        return None
+        icons = {
+            DEVICE_CLASS_GAS: "mdi:waves",
+            DEVICE_CLASS_RAIN: "mdi:weather-rainy",
+        }
+
+        return icons.get(self.device_class)
 
     def update(self):
         """Update the state."""
