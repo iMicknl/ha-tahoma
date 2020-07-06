@@ -45,6 +45,7 @@ TAHOMA_TYPES = {
     "HumiditySensor": "sensor",
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
+    "RainSensor": "binary_sensor",
     "SmokeSensor": "binary_sensor",
     "OccupancySensor": "binary_sensor",
     "MotionSensor": "binary_sensor",
@@ -57,8 +58,8 @@ TAHOMA_TYPES = {
     "SwingingShutter": "cover",
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor",
-    "RainSensor": "binary_sensor",
     "Siren": "switch",
+    "WindSensor": "sensor",
 }
 
 
@@ -138,6 +139,7 @@ CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_VERSION_STATE = "core:VersionState"
 CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
+CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
 # IO Devices specific states
 IO_MAXIMUM_HEATING_LEVEL_STATE = "io:MaximumHeatingLevelState"

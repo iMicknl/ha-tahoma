@@ -20,6 +20,7 @@ from .const import (
     CORE_LUMINANCE_STATE,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_TEMPERATURE_STATE,
+    CORE_WINDSPEED_STATE,
     DEVICE_CLASS_CO2,
     DOMAIN,
     TAHOMA_SENSOR_DEVICE_CLASSES,
@@ -117,46 +118,35 @@ class TahomaSensor(TahomaDevice, Entity):
         states = self.tahoma_device.active_states
 
         if CORE_LUMINANCE_STATE in states:
-            self.current_value = self.tahoma_device.active_states.get(
-                CORE_LUMINANCE_STATE
-            )
+            self.current_value = states.get(CORE_LUMINANCE_STATE)
 
         if CORE_RELATIVE_HUMIDITY_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(CORE_RELATIVE_HUMIDITY_STATE)
-                )
+                "{:.2f}".format(states.get(CORE_RELATIVE_HUMIDITY_STATE))
             )
 
         if CORE_TEMPERATURE_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(CORE_TEMPERATURE_STATE)
-                )
+                "{:.2f}".format(states.get(CORE_TEMPERATURE_STATE))
             )
 
         if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(
-                    self.tahoma_device.active_states.get(
-                        CORE_ELECTRIC_POWER_CONSUMPTION_STATE
-                    )
-                )
+                "{:.2f}".format(states.get(CORE_ELECTRIC_POWER_CONSUMPTION_STATE))
             )
 
         if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             self.current_value = (
                 float(
-                    "{:.2f}".format(
-                        self.tahoma_device.active_states.get(
-                            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE
-                        )
-                    )
+                    "{:.2f}".format(states.get(CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE))
                 )
                 / 1000
             )
 
         if CORE_CO2_CONCENTRATION_STATE in states:
-            self.current_value = int(
-                self.tahoma_device.active_states.get(CORE_CO2_CONCENTRATION_STATE)
+            self.current_value = int(states.get(CORE_CO2_CONCENTRATION_STATE))
+
+        if CORE_WINDSPEED_STATE in states:
+            self.current_value = float(
+                "{:.2f}".format(states.get(CORE_WINDSPEED_STATE))
             )
