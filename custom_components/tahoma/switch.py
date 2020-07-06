@@ -77,6 +77,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
             return self.apply_action("on")
 
         if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
+            # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
             return self.apply_action(
                 "ringWithSingleSimpleSequence", 120000, 75, 2, "memorizedVolume"
             )
