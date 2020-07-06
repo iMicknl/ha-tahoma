@@ -149,7 +149,6 @@
 
 - Add better exception handling & retry logic for Tahoma API [\#4](https://github.com/iMicknl/ha-tahoma/issues/4)
 - Refactored requests to avoid being locked out of the api. [\#24](https://github.com/iMicknl/ha-tahoma/pull/24) ([vlebourl](https://github.com/vlebourl))
-- Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 
 **Fixed bugs:**
 
@@ -198,6 +197,7 @@
 
 - Add support for scenes [\#10](https://github.com/iMicknl/ha-tahoma/issues/10)
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
+- Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
