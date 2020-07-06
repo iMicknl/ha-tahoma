@@ -102,19 +102,14 @@ class TahomaSensor(TahomaDevice, Entity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
 
-        if self.device_class == DEVICE_CLASS_CO:
-            return "mdi:air-filter"
+        icons = {
+            DEVICE_CLASS_CO: "mdi:air-filter",
+            DEVICE_CLASS_CO2: "mdi:periodic-table-co2",
+            DEVICE_CLASS_WIND_SPEED: "mdi:weather-windy",
+            DEVICE_CLASS_SUN_ENERGY: "mdi:solar-power",
+        }
 
-        if self.device_class == DEVICE_CLASS_CO2:
-            return "mdi:periodic-table-co2"
-
-        if self.device_class == DEVICE_CLASS_WIND_SPEED:
-            return "mdi:weather-windy"
-
-        if self.device_class == DEVICE_CLASS_SUN_ENERGY:
-            return "mdi:solar-power"
-
-        return None
+        return icons.get(self.device_class)
 
     @property
     def device_class(self) -> Optional[str]:
