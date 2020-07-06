@@ -14,8 +14,8 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 
 from .const import (
-    CORE_CO_CONCENTRATION_STATE,
     CORE_CO2_CONCENTRATION_STATE,
+    CORE_CO_CONCENTRATION_STATE,
     CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
     CORE_LUMINANCE_STATE,
