@@ -86,7 +86,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 component = TAHOMA_TYPES[_device.uiclass]
                 hass.data[DOMAIN][entry.entry_id]["devices"].append(_device)
 
-        else:
+        elif _device.type not in [
+            "ogp:Bridge"
+        ]:  # Add here devices to hide from the debug log.
             _LOGGER.debug(
                 "Unsupported Tahoma device (%s). Create an issue on Github with the following information. \n\n %s \n %s \n %s",
                 _device.type,
