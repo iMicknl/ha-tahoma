@@ -9,6 +9,8 @@ from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
     POWER_WATT,
     TEMP_CELSIUS,
+    TEMP_FAHRENHEIT,
+    TEMP_KELVIN,
     UNIT_PERCENTAGE,
 )
 from homeassistant.helpers.entity import Entity
@@ -19,6 +21,7 @@ from .const import (
     CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
     CORE_LUMINANCE_STATE,
+    CORE_MEASURED_VALUE_TYPE,
     CORE_RELATIVE_HUMIDITY_STATE,
     CORE_SUN_ENERGY_STATE,
     CORE_TEMPERATURE_STATE,
@@ -75,7 +78,15 @@ class TahomaSensor(TahomaDevice, Entity):
         states = self.tahoma_device.active_states
 
         if CORE_TEMPERATURE_STATE in states:
-            # TODO Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin
+            unit = self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE)
+            if unit:
+                return (
+                    TEMP_KELVIN
+                    if "Kelvin" in unit
+                    else TEMP_FAHRENHEIT
+                    if "Fahrenheit" in unit
+                    else TEMP_CELSIUS
+                )
             return TEMP_CELSIUS
 
         if CORE_RELATIVE_HUMIDITY_STATE in states:

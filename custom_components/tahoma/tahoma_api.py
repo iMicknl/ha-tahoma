@@ -614,6 +614,11 @@ class Device:
                     self.__definitions["states"].append(state["qualifiedName"])
             self.__command_def = definition.get("commands")
             self.__states_def = definition.get("states")
+        self.__attributes = {}
+        attributes = dataInput.get("attributes")
+        if attributes:
+            for attr in attributes:
+                self.__attributes[attr["name"]] = attr["value"]
         # Parse active states
         if len(self.state_definitions) > 0:
             if "states" in dataInput.keys():
@@ -629,18 +634,23 @@ class Device:
 
     @property
     def command_definitions(self):
-        """List of command devinitions."""
-        return self.__definitions["commands"]
+        """List of command definitions."""
+        return self.__command_def
 
     @property
     def state_definitions(self):
-        """State of command devinition."""
-        return self.__definitions["states"]
+        """List of state definition."""
+        return self.__states_def
 
     @property
     def active_states(self):
         """Get active states."""
         return self.__active_states
+
+    @property
+    def attributes(self):
+        """Return entity attributes if any."""
+        return self.__attributes
 
     def set_active_state(self, name, value):
         """Set active state."""
