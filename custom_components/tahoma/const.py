@@ -28,6 +28,7 @@ DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_RAIN = "rain"
 DEVICE_CLASS_SIREN = "siren"
 DEVICE_CLASS_WATER = "water"
+DEVICE_CLASS_WIND_SPEED = "wind_speed"
 
 # Used to map the Somfy uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
@@ -99,6 +100,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "ElectricitySensor": DEVICE_CLASS_POWER,
     "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
+    "WindSensor": DEVICE_CLASS_WIND_SPEED,
 }
 
 # TaHoma Attributes

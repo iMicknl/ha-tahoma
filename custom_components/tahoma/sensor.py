@@ -22,6 +22,7 @@ from .const import (
     CORE_TEMPERATURE_STATE,
     CORE_WINDSPEED_STATE,
     DEVICE_CLASS_CO2,
+    DEVICE_CLASS_WIND_SPEED,
     DOMAIN,
     TAHOMA_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
@@ -95,6 +96,9 @@ class TahomaSensor(TahomaDevice, Entity):
 
         if self.device_class == DEVICE_CLASS_CO2:
             return "mdi:periodic-table-co2"
+
+        if self.device_class == DEVICE_CLASS_WIND_SPEED:
+            return "mdi:weather-windy"
 
         return None
 
