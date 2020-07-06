@@ -79,9 +79,9 @@ class TahomaSensor(TahomaDevice, Entity):
 
         if CORE_TEMPERATURE_STATE in states:
             return {
-                "core:TemeratureInCelsius": TEMP_CELSIUS,
-                "core:TemeratureInKelvin": TEMP_KELVIN,
-                "core:TemeratureInFahrenheit": TEMP_FAHRENHEIT,
+                "core:TemperatureInCelcius": TEMP_CELSIUS,
+                "core:TemperatureInKelvin": TEMP_KELVIN,
+                "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
             }.get(
                 self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE),
                 TEMP_CELSIUS,
