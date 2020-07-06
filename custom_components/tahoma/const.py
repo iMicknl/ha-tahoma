@@ -27,6 +27,7 @@ DOMAIN = "tahoma"
 DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_RAIN = "rain"
 DEVICE_CLASS_SIREN = "siren"
+DEVICE_CLASS_SUN_ENERGY = "sun_energy"
 DEVICE_CLASS_WATER = "water"
 DEVICE_CLASS_WIND_SPEED = "wind_speed"
 
@@ -61,6 +62,7 @@ TAHOMA_TYPES = {
     "AirSensor": "sensor",
     "Siren": "switch",
     "WindSensor": "sensor",
+    "SunSensor": "sensor",
 }
 
 
@@ -101,6 +103,7 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
+    "SunSensor": DEVICE_CLASS_SUN_ENERGY
 }
 
 # TaHoma Attributes
@@ -136,6 +139,7 @@ CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_SMOKE_STATE = "core:SmokeState"
 CORE_STATUS_STATE = "core:StatusState"
+CORE_SUN_ENERGY_STATE = "core:SunEnergyState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"

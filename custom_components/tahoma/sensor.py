@@ -19,9 +19,11 @@ from .const import (
     CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
     CORE_LUMINANCE_STATE,
     CORE_RELATIVE_HUMIDITY_STATE,
+    CORE_SUN_ENERGY_STATE,
     CORE_TEMPERATURE_STATE,
     CORE_WINDSPEED_STATE,
     DEVICE_CLASS_CO2,
+    DEVICE_CLASS_SUN_ENERGY,
     DEVICE_CLASS_WIND_SPEED,
     DOMAIN,
     TAHOMA_SENSOR_DEVICE_CLASSES,
@@ -100,6 +102,9 @@ class TahomaSensor(TahomaDevice, Entity):
         if self.device_class == DEVICE_CLASS_WIND_SPEED:
             return "mdi:weather-windy"
 
+        if self.device_class == DEVICE_CLASS_SUN_ENERGY:
+            return "mdi:solar-power"
+
         return None
 
     @property
@@ -153,4 +158,9 @@ class TahomaSensor(TahomaDevice, Entity):
         if CORE_WINDSPEED_STATE in states:
             self.current_value = float(
                 "{:.2f}".format(states.get(CORE_WINDSPEED_STATE))
+            )
+
+        if CORE_SUN_ENERGY_STATE in states:
+            self.current_value = float(
+                "{:.2f}".format(states.get(CORE_SUN_ENERGY_STATE))
             )
