@@ -149,6 +149,7 @@ IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 IO_TIMER_FOR_TRANSITORY_STATE_STATE = "io:TimerForTransitoryStateState"
+IO_VIBRATION_STATE = "io:VibrationDetectedState"
 
 # Somfy Thermostat specific states
 ST_DEROGATION_TYPE_STATE = "somfythermostat:DerogationTypeState"

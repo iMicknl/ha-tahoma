@@ -15,6 +15,7 @@ from .const import (
     DEVICE_CLASS_RAIN,
     DEVICE_CLASS_WATER,
     DOMAIN,
+    IO_VIBRATION_STATE,
     TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
 )
@@ -86,32 +87,25 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         self.controller.get_states([self.tahoma_device])
 
-        if CORE_CONTACT_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_CONTACT_STATE) == "open"
-            )
+        states = self.tahoma_device.active_states
 
-        if CORE_OCCUPANCY_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_OCCUPANCY_STATE)
-                == "personInside"
-            )
+        if CORE_CONTACT_STATE in states:
+            self.current_value = states.get(CORE_CONTACT_STATE) == "open"
 
-        if CORE_SMOKE_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_SMOKE_STATE) == "detected"
-            )
+        if CORE_OCCUPANCY_STATE in states:
+            self.current_value = states.get(CORE_OCCUPANCY_STATE) == "personInside"
 
-        if CORE_RAIN_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_RAIN_STATE) == "detected"
-            )
+        if CORE_SMOKE_STATE in states:
+            self.current_value = states.get(CORE_SMOKE_STATE) == "detected"
 
-        if CORE_WATER_DETECTION_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_WATER_DETECTION_STATE)
-                == "detected"
-            )
+        if CORE_RAIN_STATE in states:
+            self.current_value = states.get(CORE_RAIN_STATE) == "detected"
+
+        if CORE_WATER_DETECTION_STATE in states:
+            self.current_value = states.get(CORE_WATER_DETECTION_STATE) == "detected"
+
+        if IO_VIBRATION_STATE in states:
+            self.current_value = states.get(IO_VIBRATION_STATE) == "detected"
 
         if self.current_value:
             self._state = STATE_ON
