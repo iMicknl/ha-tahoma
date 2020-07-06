@@ -6,6 +6,10 @@
 
 **Implemented enhancements:**
 
+- Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin [\#111](https://github.com/iMicknl/ha-tahoma/issues/111)
+- Create registry with devices definition [\#107](https://github.com/iMicknl/ha-tahoma/issues/107)
+- Parse temperature unit for TemperatureSensor [\#116](https://github.com/iMicknl/ha-tahoma/pull/116) ([vlebourl](https://github.com/vlebourl))
+- Remove lock variables from Cover device state attributes [\#108](https://github.com/iMicknl/ha-tahoma/pull/108) ([tetienne](https://github.com/tetienne))
 - Split update cover method [\#106](https://github.com/iMicknl/ha-tahoma/pull/106) ([tetienne](https://github.com/tetienne))
 - Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
 
@@ -16,6 +20,10 @@
 **Closed issues:**
 
 - Add support for RainSensor \(io:SomfyRainIOSystemSensor\) [\#102](https://github.com/iMicknl/ha-tahoma/issues/102)
+
+**Merged pull requests:**
+
+- Hide opg device from log. [\#117](https://github.com/iMicknl/ha-tahoma/pull/117) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
 
@@ -148,7 +156,6 @@
 **Implemented enhancements:**
 
 - Add better exception handling & retry logic for Tahoma API [\#4](https://github.com/iMicknl/ha-tahoma/issues/4)
-- Refactored requests to avoid being locked out of the api. [\#24](https://github.com/iMicknl/ha-tahoma/pull/24) ([vlebourl](https://github.com/vlebourl))
 
 **Fixed bugs:**
 
@@ -185,10 +192,6 @@
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.1-alpha...1.1-alpha2)
 
-**Implemented enhancements:**
-
-- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
-
 ## [1.1-alpha](https://github.com/iMicknl/ha-tahoma/tree/1.1-alpha) (2020-06-04)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.0.0...1.1-alpha)
@@ -206,6 +209,8 @@
 
 **Implemented enhancements:**
 
+- Refactored requests to avoid being locked out of the api. [\#24](https://github.com/iMicknl/ha-tahoma/pull/24) ([vlebourl](https://github.com/vlebourl))
+- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
 - Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 - Apply fixes from tahoma\_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
 - Add binary sensor and remove parts from normal sensor [\#6](https://github.com/iMicknl/ha-tahoma/pull/6) ([iMicknl](https://github.com/iMicknl))
