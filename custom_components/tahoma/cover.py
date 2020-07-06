@@ -228,12 +228,12 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        icon = None
         if self._lock_timer > 0:
-            icon = "mdi:lock-alert"
             if self._lock_originator == "wind":
-                icon = "mdi:weather-windy"
-        return icon
+                return "mdi:weather-windy"
+            else:
+                return "mdi:lock-alert"
+        return None
 
     def open_cover(self, **kwargs):
         """Open the cover."""
