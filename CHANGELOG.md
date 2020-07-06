@@ -1,22 +1,41 @@
 # Changelog
 
-## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
+## [Unreleased](https://github.com/iMicknl/ha-tahoma/tree/HEAD)
 
-[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)
+[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5...HEAD)
 
 **Implemented enhancements:**
 
-- Remove exception raising in Device `__init__` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
+- Split update cover method [\#106](https://github.com/iMicknl/ha-tahoma/pull/106) ([tetienne](https://github.com/tetienne))
+- Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
+
+**Fixed bugs:**
+
+- Unable to change \(tilt\)position via automations [\#33](https://github.com/iMicknl/ha-tahoma/issues/33)
+
+**Closed issues:**
+
+- Add support for RainSensor \(io:SomfyRainIOSystemSensor\) [\#102](https://github.com/iMicknl/ha-tahoma/issues/102)
+
+**Merged pull requests:**
+
+- Update README.md [\#109](https://github.com/iMicknl/ha-tahoma/pull/109) ([vlebourl](https://github.com/vlebourl))
+
+## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
+
+[Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.5-alpha2...1.5)
 
 **Fixed bugs:**
 
 - custom\_components.tahoma.config\_flow - Unexpected exception - ValueError: No ui Class [\#99](https://github.com/iMicknl/ha-tahoma/issues/99)
 - Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
 - Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
+- Remove exception raising in Device `__init__` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
+- Fix a test in api login. [\#100](https://github.com/iMicknl/ha-tahoma/pull/100) ([vlebourl](https://github.com/vlebourl))
 
 **Merged pull requests:**
 
-- Fix a test in api login. [\#100](https://github.com/iMicknl/ha-tahoma/pull/100) ([vlebourl](https://github.com/vlebourl))
+- Update CHANGELOG.md [\#98](https://github.com/iMicknl/ha-tahoma/pull/98) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.5-alpha2](https://github.com/iMicknl/ha-tahoma/tree/1.5-alpha2) (2020-07-02)
 
@@ -24,11 +43,8 @@
 
 **Fixed bugs:**
 
-- Re-log in the API after a "error":"Not authenticated" [\#95](https://github.com/iMicknl/ha-tahoma/pull/95) ([vlebourl](https://github.com/vlebourl))
-
-**Merged pull requests:**
-
 - \[fix\] color\_RGB\_to\_hs is missing parameters [\#97](https://github.com/iMicknl/ha-tahoma/pull/97) ([vlebourl](https://github.com/vlebourl))
+- Re-log in the API after a "error":"Not authenticated" [\#95](https://github.com/iMicknl/ha-tahoma/pull/95) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.5-alpha1](https://github.com/iMicknl/ha-tahoma/tree/1.5-alpha1) (2020-07-02)
 
@@ -152,6 +168,7 @@
 
 - Add better exception handling & retry logic for Tahoma API [\#4](https://github.com/iMicknl/ha-tahoma/issues/4)
 - Refactored requests to avoid being locked out of the api. [\#24](https://github.com/iMicknl/ha-tahoma/pull/24) ([vlebourl](https://github.com/vlebourl))
+- Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 
 **Fixed bugs:**
 
@@ -188,10 +205,6 @@
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.1-alpha...1.1-alpha2)
 
-**Implemented enhancements:**
-
-- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
-
 ## [1.1-alpha](https://github.com/iMicknl/ha-tahoma/tree/1.1-alpha) (2020-06-04)
 
 [Full Changelog](https://github.com/iMicknl/ha-tahoma/compare/1.0.0...1.1-alpha)
@@ -200,8 +213,8 @@
 
 - Add support for scenes [\#10](https://github.com/iMicknl/ha-tahoma/issues/10)
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
-- Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
+- Refactor cover platform [\#13](https://github.com/iMicknl/ha-tahoma/pull/13) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
 
