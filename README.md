@@ -4,7 +4,7 @@
 
 > The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
 
-This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant and the goal is to get those changes merged in core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test [all changes](./CHANGELOG.md).
+This component builds upon the work of @philklei and is an updated version of his [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of merging into core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test [all changes](./CHANGELOG.md).
 
 ## Installation
 
@@ -28,44 +28,36 @@ If your device is not supported, it will show the following message in the debug
 
 `DEBUG (MainThread) [custom_components.tahoma] Unsupported Tahoma device (internal:TSKAlarmComponent).`
 
-| Somfy uiClass     | Home Assistant platform |
-| ----------------- | ----------------------- |
-| HeatingSystem     | climate                 |
-| Awning            | cover                   |
-| Curtain           | cover                   |
-| ExteriorScreen    | cover                   |
-| Gate              | cover                   |
-| GarageDoor        | cover                   |
-| Pergola           | cover                   |
-| RollerShutter     | cover                   |
-| SwingingShutter   | cover                   |
-| Window            | cover                   |
-| AirSensor         | sensor                  |
-| ElectricitySensor | sensor                  |
-| HumiditySensor    | sensor                  |
-| LightSensor       | sensor                  |
-| TemperatureSensor | sensor                  |
-| DoorLock          | lock                    |
-| OnOff             | switch                  |
-| ContactSensor     | binary_sensor           |
-| OccupancySensor   | binary_sensor           |
-| SmokeSensor       | binary_sensor           |
-| WindowHandle      | binary_sensor           |
-| Light             | light                   |
-
-## Not supported (yet)
-
-| Somfy uiClass         |
-| --------------------- |
-| RemoteController      |
-| Alarm                 |
-| EvoHome               |
-| HitachiHeatingSystem  |
-| ExteriorHeatingSystem |
-| Fan                   |
-| Siren                 |
-| MusicPlayer           |
-| VentilationSystem     |
+| Somfy uiClass        | Home Assistant platform |
+| -------------------- | ----------------------- |
+| HeatingSystem        | climate                 |
+| Awning               | cover                   |
+| Curtain              | cover                   |
+| ExteriorScreen       | cover                   |
+| Gate                 | cover                   |
+| GarageDoor           | cover                   |
+| Pergola              | cover                   |
+| RollerShutter        | cover                   |
+| SwingingShutter      | cover                   |
+| Window               | cover                   |
+| AirSensor            | sensor                  |
+| ElectricitySensor    | sensor                  |
+| HumiditySensor       | sensor                  |
+| LightSensor          | sensor                  |
+| SunSensor            | sensor                  |
+| TemperatureSensor    | sensor                  |
+| WindSensor           | sensor                  |
+| DoorLock             | lock                    |
+| OnOff                | switch                  |
+| Siren                | switch                  |
+| ContactSensor        | binary_sensor           |
+| MotionSensor         | binary_sensor           |
+| OccupancySensor      | binary_sensor           |
+| RainSensor           | binary_sensor           |
+| SmokeSensor          | binary_sensor           |
+| WindowHandle         | binary_sensor           |
+| WaterDetectionSensor | binary_sensor           |
+| Light                | light                   |
 
 ## Advanced
 

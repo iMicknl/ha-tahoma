@@ -1,15 +1,24 @@
 """Support for TaHoma binary sensors."""
 from datetime import timedelta
 import logging
+from typing import Optional
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
 from .const import (
+    CORE_BUTTON_STATE,
     CORE_CONTACT_STATE,
+    CORE_GAS_DETECTION_STATE,
     CORE_OCCUPANCY_STATE,
+    CORE_RAIN_STATE,
     CORE_SMOKE_STATE,
+    CORE_WATER_DETECTION_STATE,
+    DEVICE_CLASS_GAS,
+    DEVICE_CLASS_RAIN,
+    DEVICE_CLASS_WATER,
     DOMAIN,
+    IO_VIBRATION_STATE,
     TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
     TAHOMA_TYPES,
 )
@@ -25,12 +34,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     data = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
     controller = data.get("controller")
 
-    for device in data.get("devices"):
-        if TAHOMA_TYPES[device.uiclass] == "binary_sensor":
-            entities.append(TahomaBinarySensor(device, controller))
+    entities = [
+        TahomaBinarySensor(device, controller)
+        for device in data.get("devices")
+        if TAHOMA_TYPES[device.uiclass] == "binary_sensor"
+    ]
 
     async_add_entities(entities)
 
@@ -58,6 +68,23 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             or None
         )
 
+    @property
+    def icon(self) -> Optional[str]:
+        """Return the icon to use in the frontend, if any."""
+
+        if self.device_class == DEVICE_CLASS_WATER:
+            if self.is_on:
+                return "mdi:water"
+            else:
+                return "mdi:water-off"
+
+        icons = {
+            DEVICE_CLASS_GAS: "mdi:waves",
+            DEVICE_CLASS_RAIN: "mdi:weather-rainy",
+        }
+
+        return icons.get(self.device_class)
+
     def update(self):
         """Update the state."""
         if self.should_wait():
@@ -66,21 +93,31 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         self.controller.get_states([self.tahoma_device])
 
-        if CORE_CONTACT_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_CONTACT_STATE) == "open"
-            )
+        states = self.tahoma_device.active_states
 
-        if CORE_OCCUPANCY_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_OCCUPANCY_STATE)
-                == "personInside"
-            )
+        if CORE_CONTACT_STATE in states:
+            self.current_value = states.get(CORE_CONTACT_STATE) == "open"
 
-        if CORE_SMOKE_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_SMOKE_STATE) == "detected"
-            )
+        if CORE_OCCUPANCY_STATE in states:
+            self.current_value = states.get(CORE_OCCUPANCY_STATE) == "personInside"
+
+        if CORE_SMOKE_STATE in states:
+            self.current_value = states.get(CORE_SMOKE_STATE) == "detected"
+
+        if CORE_RAIN_STATE in states:
+            self.current_value = states.get(CORE_RAIN_STATE) == "detected"
+
+        if CORE_WATER_DETECTION_STATE in states:
+            self.current_value = states.get(CORE_WATER_DETECTION_STATE) == "detected"
+
+        if CORE_GAS_DETECTION_STATE in states:
+            self.current_value = states.get(CORE_GAS_DETECTION_STATE) == "detected"
+
+        if IO_VIBRATION_STATE in states:
+            self.current_value = states.get(IO_VIBRATION_STATE) == "detected"
+
+        if CORE_BUTTON_STATE in states:
+            self.current_value = states.get(CORE_BUTTON_STATE) == "pressed"
 
         if self.current_value:
             self._state = STATE_ON
