@@ -44,7 +44,8 @@ TAHOMA_TYPES = {
     "LightSensor": "sensor",
     "DoorLock": "lock",
     "OnOff": "switch",
-    "WaterDetectionSensor": "binary_sensor",  # Needs to be above HumiditySensor
+    "AirFlowSensor": "binary_sensor", # widgetName, uiClass is AirSensor (sensor)
+    "WaterDetectionSensor": "binary_sensor",  # widgetName, uiClass is HumiditySensor (sensor)
     "HumiditySensor": "sensor",
     "GarageDoor": "cover",
     "ContactSensor": "binary_sensor",
