@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
-from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.const import STATE_ON
 
 from .const import COMMAND_OFF, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
@@ -15,15 +15,14 @@ DEVICE_CLASS_SIREN = "siren"
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
-
-    entities = []
     controller = data.get("controller")
 
-    for device in data.get("devices"):
-        if TAHOMA_TYPES[device.uiclass] == "switch":
-            entities.append(TahomaSwitch(device, controller))
+    entities = [
+        TahomaSwitch(device, controller)
+        for device in data.get("devices")
+        if TAHOMA_TYPES[device.uiclass] == "switch"
+    ]
 
     async_add_entities(entities)
 
@@ -39,7 +38,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def update(self):
         """Update method."""
-
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
@@ -54,7 +52,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def device_class(self):
         """Return the class of the device."""
-
         if self.tahoma_device.uiclass == "Siren":
             return DEVICE_CLASS_SIREN
 
@@ -63,7 +60,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
         if self.device_class == DEVICE_CLASS_SIREN:
             if self.is_on:
                 return "mdi:bell-ring"
@@ -74,7 +70,6 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_on(self, **kwargs):
         """Send the on command."""
-
         if "on" in self.tahoma_device.command_definitions:
             return self.apply_action("on")
 
@@ -86,17 +81,15 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-
         if COMMAND_OFF in self.tahoma_device.command_definitions:
             return self.apply_action(COMMAND_OFF)
 
     def toggle(self, **kwargs):
         """Click the switch."""
-
         if "cycle" in self.tahoma_device.command_definitions:
             return self.apply_action("cycle")
 
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return bool(self._state == STATE_ON)
+        return self._state == STATE_ON
