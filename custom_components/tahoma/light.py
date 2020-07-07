@@ -14,18 +14,16 @@ from homeassistant.components.light import (
 from homeassistant.const import STATE_OFF, STATE_ON
 import homeassistant.util.color as color_util
 
-from .const import (
-    CORE_BLUE_COLOR_INTENSITY_STATE,
-    CORE_GREEN_COLOR_INTENSITY_STATE,
-    CORE_RED_COLOR_INTENSITY_STATE,
-    DOMAIN,
-    TAHOMA_TYPES,
-)
+from .const import COMMAND_OFF, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=30)
+
+CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
+CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
+CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -115,7 +113,7 @@ class TahomaLight(TahomaDevice, LightEntity):
     def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
         self._state = False
-        self.apply_action("off")
+        self.apply_action(COMMAND_OFF)
 
         self.async_write_ha_state()
 

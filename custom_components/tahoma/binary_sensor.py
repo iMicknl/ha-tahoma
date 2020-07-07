@@ -3,30 +3,49 @@ from datetime import timedelta
 import logging
 from typing import Optional
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_MOTION,
+    DEVICE_CLASS_OCCUPANCY,
+    DEVICE_CLASS_OPENING,
+    DEVICE_CLASS_SMOKE,
+    BinarySensorEntity,
+)
 from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
 
-from .const import (
-    CORE_BUTTON_STATE,
-    CORE_CONTACT_STATE,
-    CORE_GAS_DETECTION_STATE,
-    CORE_OCCUPANCY_STATE,
-    CORE_RAIN_STATE,
-    CORE_SMOKE_STATE,
-    CORE_WATER_DETECTION_STATE,
-    DEVICE_CLASS_GAS,
-    DEVICE_CLASS_RAIN,
-    DEVICE_CLASS_WATER,
-    DOMAIN,
-    IO_VIBRATION_STATE,
-    TAHOMA_BINARY_SENSOR_DEVICE_CLASSES,
-    TAHOMA_TYPES,
-)
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
+
+CORE_BUTTON_STATE = "core:ButtonState"
+CORE_CONTACT_STATE = "core:ContactState"
+CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
+CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_RAIN_STATE = "core:RainState"
+CORE_SMOKE_STATE = "core:SmokeState"
+CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
+
+DEVICE_CLASS_BUTTON = "button"
+DEVICE_CLASS_GAS = "gas"
+DEVICE_CLASS_RAIN = "rain"
+DEVICE_CLASS_WATER = "water"
+
+IO_VIBRATION_STATE = "io:VibrationDetectedState"
+
+# Used to map the Somfy widget or uiClass to the Home Assistant device classes
+TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
+    "AirFlowSensor": DEVICE_CLASS_GAS,
+    "CarButtonSensor": DEVICE_CLASS_BUTTON,
+    "SmokeSensor": DEVICE_CLASS_SMOKE,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
+    "MotionSensor": DEVICE_CLASS_MOTION,
+    "ContactSensor": DEVICE_CLASS_OPENING,
+    "WindowHandle": DEVICE_CLASS_OPENING,
+    "RainSensor": DEVICE_CLASS_RAIN,
+    "WaterDetectionSensor": DEVICE_CLASS_WATER,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):

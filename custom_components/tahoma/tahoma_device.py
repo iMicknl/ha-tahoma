@@ -3,14 +3,14 @@
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 
-from .const import (
-    ATTR_RSSI_LEVEL,
-    CORE_RSSI_LEVEL_STATE,
-    CORE_SENSOR_DEFECT_STATE,
-    CORE_STATUS_STATE,
-    DOMAIN,
-)
+from .const import DOMAIN
 from .tahoma_api import Action
+
+ATTR_RSSI_LEVEL = "rssi_level"
+
+CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
+CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
+CORE_STATUS_STATE = "core:StatusState"
 
 
 class TahomaDevice(Entity):

@@ -9,6 +9,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_BLIND,
     DEVICE_CLASS_CURTAIN,
     DEVICE_CLASS_GARAGE,
+    DEVICE_CLASS_GATE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
     SUPPORT_CLOSE,
@@ -22,28 +23,43 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from .const import (
-    ATTR_LOCK_ORIG,
-    ATTR_MEM_POS,
-    COMMAND_SET_CLOSURE,
-    COMMAND_SET_ORIENTATION,
-    COMMAND_SET_PEDESTRIAN_POSITION,
-    COMMAND_SET_POSITION,
-    CORE_CLOSURE_STATE,
-    CORE_DEPLOYMENT_STATE,
-    CORE_MEMORIZED_1_POSITION_STATE,
-    CORE_PEDESTRIAN_POSITION_STATE,
-    CORE_PRIORITY_LOCK_TIMER_STATE,
-    CORE_SLATS_ORIENTATION_STATE,
-    CORE_TARGET_CLOSURE_STATE,
-    DOMAIN,
-    IO_PRIORITY_LOCK_ORIGINATOR_STATE,
-    TAHOMA_COVER_DEVICE_CLASSES,
-    TAHOMA_TYPES,
-)
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
+
+ATTR_LOCK_ORIG = "lock_originator"
+ATTR_MEM_POS = "memorized_position"
+
+COMMAND_SET_CLOSURE = "setClosure"
+COMMAND_SET_ORIENTATION = "setOrientation"
+COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
+COMMAND_SET_POSITION = "setPosition"
+
+CORE_CLOSURE_STATE = "core:ClosureState"
+CORE_DEPLOYMENT_STATE = "core:DeploymentState"
+CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
+CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
+CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
+CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
+CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
+
+IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
+
+TAHOMA_COVER_DEVICE_CLASSES = {
+    "Awning": DEVICE_CLASS_AWNING,
+    "ExteriorScreen": DEVICE_CLASS_BLIND,
+    "Pergola": DEVICE_CLASS_AWNING,
+    "RollerShutter": DEVICE_CLASS_SHUTTER,
+    "Window": DEVICE_CLASS_WINDOW,
+    "Blind": DEVICE_CLASS_BLIND,
+    "GarageDoor": DEVICE_CLASS_GARAGE,
+    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
+    "Gate": DEVICE_CLASS_GATE,
+    "Curtain": DEVICE_CLASS_CURTAIN,
+    "SwingingShutter": DEVICE_CLASS_SHUTTER,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -91,7 +107,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         self.update_lock()
 
     def update_position(self):
-
+        """Update position."""
         # Home Assistant: 0 is closed, 100 is fully open.
         # core:ClosureState: 100 is closed, 0 is fully open.
 
@@ -124,12 +140,14 @@ class TahomaCover(TahomaDevice, CoverEntity):
                 self._position = 100
 
     def update_tilt_position(self):
+        """Update tilt position."""
         states = self.tahoma_device.active_states
         # Set tilt position for slats
         if CORE_SLATS_ORIENTATION_STATE in states:
             self._tilt_position = 100 - states.get(CORE_SLATS_ORIENTATION_STATE)
 
     def update_lock(self):
+        """Update lock."""
         states = self.tahoma_device.active_states
         self._lock_timer = states.get(CORE_PRIORITY_LOCK_TIMER_STATE, 0)
         self._lock_originator = states.get(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
