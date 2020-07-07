@@ -1,5 +1,4 @@
 """Support for TaHoma cover - shutters etc."""
-from datetime import timedelta
 import logging
 
 from homeassistant.components.cover import (

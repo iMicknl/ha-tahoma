@@ -10,7 +10,7 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_SMOKE,
     BinarySensorEntity,
 )
-from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_OFF, STATE_ON
+from homeassistant.const import STATE_OFF, STATE_ON
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
@@ -34,7 +34,6 @@ DEVICE_CLASS_WATER = "water"
 
 IO_VIBRATION_STATE = "io:VibrationDetectedState"
 
-# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "AirFlowSensor": DEVICE_CLASS_GAS,
     "CarButtonSensor": DEVICE_CLASS_BUTTON,

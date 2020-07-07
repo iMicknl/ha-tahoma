@@ -11,7 +11,6 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     LightEntity,
 )
-from homeassistant.const import STATE_OFF, STATE_ON
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES

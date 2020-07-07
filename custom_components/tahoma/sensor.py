@@ -4,7 +4,6 @@ import logging
 from typing import Optional
 
 from homeassistant.const import (
-    ATTR_BATTERY_LEVEL,
     CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
@@ -42,7 +41,6 @@ DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_SUN_ENERGY = "sun_energy"
 DEVICE_CLASS_WIND_SPEED = "wind_speed"
 
-# Used to map the Somfy widget or uiClass to the Home Assistant device classes
 TAHOMA_SENSOR_DEVICE_CLASSES = {
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
