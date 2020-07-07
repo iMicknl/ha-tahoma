@@ -11,14 +11,10 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma scenes from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
-
-    entities = []
     controller = data.get("controller")
 
-    for scene in data.get("scenes"):
-        entities.append(TahomaScene(scene, controller))
+    entities = [TahomaScene(scene, controller) for scene in data.get("scenes")]
 
     async_add_entities(entities)
 
