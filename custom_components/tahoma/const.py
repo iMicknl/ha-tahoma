@@ -42,5 +42,3 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
-
-ICON_WEATHER_WINDY = "mdi:weather-windy"
