@@ -11,16 +11,11 @@
 **Implemented enhancements:**
 
 - Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin [\#111](https://github.com/iMicknl/ha-tahoma/issues/111)
-- Create registry with devices definition [\#107](https://github.com/iMicknl/ha-tahoma/issues/107)
 - Hide opg device from log. [\#117](https://github.com/iMicknl/ha-tahoma/pull/117) ([vlebourl](https://github.com/vlebourl))
 - Parse temperature unit for TemperatureSensor [\#116](https://github.com/iMicknl/ha-tahoma/pull/116) ([vlebourl](https://github.com/vlebourl))
 - Remove lock variables from Cover device state attributes [\#108](https://github.com/iMicknl/ha-tahoma/pull/108) ([tetienne](https://github.com/tetienne))
 - Split update cover method [\#106](https://github.com/iMicknl/ha-tahoma/pull/106) ([tetienne](https://github.com/tetienne))
 - Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
-
-**Fixed bugs:**
-
-- Unable to change \(tilt\)position via automations [\#33](https://github.com/iMicknl/ha-tahoma/issues/33)
 
 **Closed issues:**
 
@@ -75,7 +70,6 @@
 **Fixed bugs:**
 
 - fix api for missing states at login [\#94](https://github.com/iMicknl/ha-tahoma/pull/94) ([vlebourl](https://github.com/vlebourl))
-- \[fix\] fix AttributeError: 'NoneType' object has no attribute 'state' … [\#87](https://github.com/iMicknl/ha-tahoma/pull/87) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.4](https://github.com/iMicknl/ha-tahoma/tree/1.4) (2020-06-22)
 
@@ -96,6 +90,7 @@
 **Fixed bugs:**
 
 - Unable to change tilt position on io:BioclimaticPergolaIOComponent [\#74](https://github.com/iMicknl/ha-tahoma/issues/74)
+- \[fix\] fix AttributeError: 'NoneType' object has no attribute 'state' … [\#87](https://github.com/iMicknl/ha-tahoma/pull/87) ([vlebourl](https://github.com/vlebourl))
 - Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
 - Bugfix for unable to change tilt position on io:BioclimaticPergolaIOComponent \#74 [\#77](https://github.com/iMicknl/ha-tahoma/pull/77) ([iMicknl](https://github.com/iMicknl))
 
