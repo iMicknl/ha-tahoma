@@ -11,7 +11,6 @@ from .tahoma_device import TahomaDevice
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
-TAHOMA_STATE_LOCKED = "locked"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -51,7 +50,7 @@ class TahomaLock(TahomaDevice, LockEntity):
         self._name = self.tahoma_device.active_states["core:NameState"]
         if (
             self.tahoma_device.active_states.get("core:LockedUnlockedState")
-            == TAHOMA_STATE_LOCKED
+            == STATE_LOCKED
         ):
             self._lock_status = STATE_LOCKED
         else:

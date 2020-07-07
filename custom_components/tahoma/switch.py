@@ -3,12 +3,14 @@ import logging
 from typing import Optional
 
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
-from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.const import STATE_ON
 
-from .const import CORE_ON_OFF_STATE, DEVICE_CLASS_SIREN, DOMAIN, TAHOMA_TYPES
+from .const import COMMAND_OFF, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
+
+DEVICE_CLASS_SIREN = "siren"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -79,8 +81,8 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-        if "off" in self.tahoma_device.command_definitions:
-            return self.apply_action("off")
+        if COMMAND_OFF in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_OFF)
 
     def toggle(self, **kwargs):
         """Click the switch."""
