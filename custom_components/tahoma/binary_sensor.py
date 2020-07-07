@@ -31,9 +31,7 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
-
     controller = data.get("controller")
 
     entities = [
@@ -57,7 +55,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     @property
     def is_on(self):
         """Return the state of the sensor."""
-        return bool(self._state == STATE_ON)
+        return self._state == STATE_ON
 
     @property
     def device_class(self):
@@ -71,7 +69,6 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
         if self.device_class == DEVICE_CLASS_WATER:
             if self.is_on:
                 return "mdi:water"

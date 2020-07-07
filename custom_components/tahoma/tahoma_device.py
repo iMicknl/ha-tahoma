@@ -5,6 +5,7 @@ from homeassistant.helpers.entity import Entity
 
 from .const import (
     ATTR_RSSI_LEVEL,
+    CORE_BATTERY_STATE,
     CORE_RSSI_LEVEL_STATE,
     CORE_SENSOR_DEFECT_STATE,
     CORE_STATUS_STATE,
@@ -36,16 +37,13 @@ class TahomaDevice(Entity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
+        states = self.tahoma_device.active_states
 
-        if CORE_STATUS_STATE in self.tahoma_device.active_states:
-            return bool(
-                self.tahoma_device.active_states.get(CORE_STATUS_STATE) == "available"
-            )
+        if CORE_STATUS_STATE in states:
+            return states.get(CORE_STATUS_STATE) == "available"
 
-        if CORE_SENSOR_DEFECT_STATE in self.tahoma_device.active_states:
-            return (
-                self.tahoma_device.active_states.get(CORE_SENSOR_DEFECT_STATE) != "dead"
-            )
+        if CORE_SENSOR_DEFECT_STATE in states:
+            return states.get(CORE_SENSOR_DEFECT_STATE) != "dead"
 
         # A RTS power socket doesn't have a feedback channel,
         # so we must assume the socket is available.
@@ -67,20 +65,19 @@ class TahomaDevice(Entity):
     @property
     def device_state_attributes(self):
         """Return the state attributes of the device."""
-
         attr = {
             "uiclass": self.tahoma_device.uiclass,
             "widget": self.tahoma_device.widget,
             "type": self.tahoma_device.type,
         }
 
-        if CORE_RSSI_LEVEL_STATE in self.tahoma_device.active_states:
-            attr[ATTR_RSSI_LEVEL] = self.tahoma_device.active_states[
-                CORE_RSSI_LEVEL_STATE
-            ]
+        states = self.tahoma_device.active_states
 
-        if "core:BatteryState" in self.tahoma_device.active_states:
-            battery_state = self.tahoma_device.active_states["core:BatteryState"]
+        if CORE_RSSI_LEVEL_STATE in states:
+            attr[ATTR_RSSI_LEVEL] = states.get(CORE_RSSI_LEVEL_STATE)
+
+        if CORE_BATTERY_STATE in states:
+            battery_state = states.get(CORE_BATTERY_STATE)
 
             if battery_state == "full":
                 battery_state = 100
@@ -93,11 +90,11 @@ class TahomaDevice(Entity):
 
             attr[ATTR_BATTERY_LEVEL] = battery_state
 
-        if CORE_SENSOR_DEFECT_STATE in self.tahoma_device.active_states:
-            if self.tahoma_device.active_states.get(CORE_SENSOR_DEFECT_STATE) == "dead":
+        if CORE_SENSOR_DEFECT_STATE in states:
+            if states.get(CORE_SENSOR_DEFECT_STATE) == "dead":
                 attr[ATTR_BATTERY_LEVEL] = 0
 
-        for state_name, value in self.tahoma_device.active_states.items():
+        for state_name, value in states.items():
             if "State" in state_name:
                 attr[state_name] = value
 
@@ -126,7 +123,6 @@ class TahomaDevice(Entity):
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
-
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])

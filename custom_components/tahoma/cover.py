@@ -50,7 +50,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma covers from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
-
     controller = data.get("controller")
 
     entities = [

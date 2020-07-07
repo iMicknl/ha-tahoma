@@ -43,9 +43,7 @@ SCAN_INTERVAL = timedelta(seconds=60)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
-
     controller = data.get("controller")
 
     entities = [
@@ -74,7 +72,6 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-
         states = self.tahoma_device.active_states
 
         if CORE_TEMPERATURE_STATE in states:
@@ -111,7 +108,6 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
-
         icons = {
             DEVICE_CLASS_CO: "mdi:air-filter",
             DEVICE_CLASS_CO2: "mdi:periodic-table-co2",
