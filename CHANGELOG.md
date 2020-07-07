@@ -24,7 +24,13 @@
 
 **Closed issues:**
 
+- Remove YAML config schema [\#113](https://github.com/iMicknl/ha-tahoma/issues/113)
 - Add support for RainSensor \(io:SomfyRainIOSystemSensor\) [\#102](https://github.com/iMicknl/ha-tahoma/issues/102)
+
+**Merged pull requests:**
+
+- Fixed a typo. [\#124](https://github.com/iMicknl/ha-tahoma/pull/124) ([vlebourl](https://github.com/vlebourl))
+- Add an auto changelog issue [\#123](https://github.com/iMicknl/ha-tahoma/pull/123) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
 
@@ -208,7 +214,6 @@
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
 - Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
-- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
 
@@ -216,6 +221,7 @@
 
 **Implemented enhancements:**
 
+- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 - Apply fixes from tahoma\_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
 - Add binary sensor and remove parts from normal sensor [\#6](https://github.com/iMicknl/ha-tahoma/pull/6) ([iMicknl](https://github.com/iMicknl))
 
