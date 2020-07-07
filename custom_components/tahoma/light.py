@@ -109,7 +109,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
-            self.apply_action(COMMAND_WINK, 100)
+            self.apply_action(self._effect, 100)
 
         else:
             self.apply_action(COMMAND_ON)
