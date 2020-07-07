@@ -20,22 +20,6 @@ from .tahoma_api import TahomaApi
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO Deprecate EXCLUDE for the native method of disabling entities
-CONFIG_SCHEMA = vol.Schema(
-    {
-        DOMAIN: vol.Schema(
-            {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_PASSWORD): cv.string,
-                vol.Optional(CONF_EXCLUDE, default=[]): vol.All(
-                    cv.ensure_list, [cv.string]
-                ),
-            }
-        )
-    },
-    extra=vol.ALLOW_EXTRA,
-)
-
 PLATFORMS = [
     "binary_sensor",
     "climate",
