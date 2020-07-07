@@ -144,7 +144,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         self._state = states.get(CORE_ON_OFF_STATE) == "on"
         self._brightness = states.get(CORE_LIGHT_INTENSITY_STATE)
-        
+
         self._hs_color = color_util.color_RGB_to_hs(
             states.get(CORE_RED_COLOR_INTENSITY_STATE),
             states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
