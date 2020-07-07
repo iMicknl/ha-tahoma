@@ -4,16 +4,10 @@ import json
 import logging
 
 from requests.exceptions import RequestException
-import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import (
-    config_validation as cv,
-    device_registry as dr,
-    discovery,
-)
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_api import TahomaApi
