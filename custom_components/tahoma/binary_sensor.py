@@ -101,7 +101,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             if self.is_on:
                 return ICON_WATER
             else:
-                return ICON_WATER
+                return ICON_WATER_OFF
 
         icons = {
             DEVICE_CLASS_GAS: ICON_WAVES,
