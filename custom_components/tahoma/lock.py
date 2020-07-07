@@ -19,6 +19,7 @@ CORE_LOCKED_UNLOCKED_STATE = "core:LockedUnlockedState"
 
 TAHOMA_STATE_LOCKED = "locked"
 
+
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma locks from a config entry."""
 
