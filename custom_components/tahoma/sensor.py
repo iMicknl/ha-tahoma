@@ -18,7 +18,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, ICON_WEATHER_WINDY, TAHOMA_TYPES
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,6 +48,7 @@ DEVICE_CLASS_WIND_SPEED = "wind_speed"
 ICON_AIR_FILTER = "mdi:air-filter"
 ICON_PERIODIC_TABLE_CO2 = "mdi:periodic-table-co2"
 ICON_SOLAR_POWER = "mdi:solar-power"
+ICON_WEATHER_WINDY = "mdi:weather-windy"
 
 UNIT_LX = "lx"
 
