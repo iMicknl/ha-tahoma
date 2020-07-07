@@ -19,8 +19,8 @@ jobs:
 
       - name: Commit files
         env:
-          CI_USER: iMicknl
-          CI_EMAIL: mick@imick.nl
+          CI_USER: ${{ secrets.YOUR_GITHUB_USER }}
+          CI_EMAIL: ${{ secrets.YOUR_GITHUB_EMAIL }}
         run: |
           git checkout update-changelog
           git merge master
