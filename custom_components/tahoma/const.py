@@ -38,8 +38,9 @@ TAHOMA_TYPES = {
     "SunSensor": "sensor",
 }
 
-# TaHoma internal device states
 CORE_ON_OFF_STATE = "core:OnOffState"
 
-# Commands
 COMMAND_OFF = "off"
+COMMAND_ON = "on"
+
+ICON_WEATHER_WINDY = "mdi:weather-windy"

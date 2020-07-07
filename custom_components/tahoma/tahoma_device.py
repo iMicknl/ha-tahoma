@@ -8,10 +8,18 @@ from .tahoma_api import Action
 
 ATTR_RSSI_LEVEL = "rssi_level"
 
+CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
+
+STATE_AVAILABLE = "available"
+STATE_BATTERY_FULL = "full"
+STATE_BATTERY_NORMAL = "normal"
+STATE_BATTERY_LOW = "low"
+STATE_BATTERY_VERY_LOW = "verylow"
+STATE_DEAD = "dead"
 
 
 class TahomaDevice(Entity):
@@ -40,10 +48,13 @@ class TahomaDevice(Entity):
         states = self.tahoma_device.active_states
 
         if CORE_STATUS_STATE in states:
-            return states.get(CORE_STATUS_STATE) == "available"
+            return states.get(CORE_STATUS_STATE) == STATE_AVAILABLE
 
         if CORE_SENSOR_DEFECT_STATE in states:
-            return states.get(CORE_SENSOR_DEFECT_STATE) != "dead"
+            return states.get(CORE_SENSOR_DEFECT_STATE) != STATE_DEAD
+
+        if CORE_AVAILABILITY_STATE in states:
+            return states.get(CORE_AVAILABILITY_STATE) == STATE_AVAILABLE
 
         # A RTS power socket doesn't have a feedback channel,
         # so we must assume the socket is available.
@@ -79,19 +90,19 @@ class TahomaDevice(Entity):
         if CORE_BATTERY_STATE in states:
             battery_state = states.get(CORE_BATTERY_STATE)
 
-            if battery_state == "full":
+            if battery_state == STATE_BATTERY_FULL:
                 battery_state = 100
-            elif battery_state == "normal":
+            elif battery_state == STATE_BATTERY_NORMAL:
                 battery_state = 75
-            elif battery_state == "low":
+            elif battery_state == STATE_BATTERY_LOW:
                 battery_state = 25
-            elif battery_state == "verylow":
+            elif battery_state == STATE_BATTERY_VERY_LOW:
                 battery_state = 10
 
             attr[ATTR_BATTERY_LEVEL] = battery_state
 
         if CORE_SENSOR_DEFECT_STATE in states:
-            if states.get(CORE_SENSOR_DEFECT_STATE) == "dead":
+            if states.get(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
                 attr[ATTR_BATTERY_LEVEL] = 0
 
         for state_name, value in states.items():

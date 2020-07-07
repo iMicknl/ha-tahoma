@@ -22,7 +22,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN, ICON_WEATHER_WINDY, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -30,20 +30,38 @@ _LOGGER = logging.getLogger(__name__)
 ATTR_LOCK_ORIG = "lock_originator"
 ATTR_MEM_POS = "memorized_position"
 
+COMMAND_CLOSE = "close"
+COMMAND_CLOSE_SLATS = "closeSlats"
+COMMAND_DOWN = "down"
+COMMAND_MY = "my"
+COMMAND_OPEN = "open"
+COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_ORIENTATION = "setOrientation"
 COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_STOP = "stop"
+COMMAND_STOP_IDENTIFY = "stopIdentify"
+COMMAND_UP = "up"
 
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
+CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
+CORE_OPEN_CLOSED_PEDESTRIAN_STATE = "core:OpenClosedPedestrianState"
+CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
+CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
+CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 
+ICON_LOCK_ALERT = "mdi:lock-alert"
+
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
+
+STATE_CLOSED = "closed"
 
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
@@ -191,20 +209,20 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return if the cover is closed."""
 
         states = self.tahoma_device.active_states
-        if "core:OpenClosedState" in states:
-            return states.get("core:OpenClosedState") == "closed"
+        if CORE_OPEN_CLOSED_STATE in states:
+            return states.get(CORE_OPEN_CLOSED_STATE) == STATE_CLOSED
 
-        if "core:SlatsOpenClosedState" in states:
-            return states.get("core:SlatsOpenClosedState") == "closed"
+        if CORE_SLATS_OPEN_CLOSED_STATE in states:
+            return states.get(CORE_SLATS_OPEN_CLOSED_STATE) == STATE_CLOSED
 
-        if "core:OpenClosedPartialState" in states:
-            return states.get("core:OpenClosedPartialState") == "closed"
+        if CORE_OPEN_CLOSED_PARTIAL_STATE in states:
+            return states.get(CORE_OPEN_CLOSED_PARTIAL_STATE) == STATE_CLOSED
 
-        if "core:OpenClosedPedestrianState" in states:
-            return states.get("core:OpenClosedPedestrianState") == "closed"
+        if CORE_OPEN_CLOSED_PEDESTRIAN_STATE in states:
+            return states.get(CORE_OPEN_CLOSED_PEDESTRIAN_STATE) == STATE_CLOSED
 
-        if "core:OpenClosedUnknownState" in states:
-            return states.get("core:OpenClosedUnknownState") == "closed"
+        if CORE_OPEN_CLOSED_UNKNOWN_STATE in states:
+            return states.get(CORE_OPEN_CLOSED_UNKNOWN_STATE) == STATE_CLOSED
 
         if self._position is not None:
             return self._position == 0
@@ -246,64 +264,64 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return the icon to use in the frontend, if any."""
         if self._lock_timer > 0:
             if self._lock_originator == "wind":
-                return "mdi:weather-windy"
+                return ICON_WEATHER_WINDY
             else:
-                return "mdi:lock-alert"
+                return ICON_LOCK_ALERT
         return None
 
     def open_cover(self, **kwargs):
         """Open the cover."""
 
-        if "open" in self.tahoma_device.command_definitions:
-            return self.apply_action("open")
+        if COMMAND_OPEN in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_OPEN)
 
-        if "up" in self.tahoma_device.command_definitions:
-            return self.apply_action("up")
+        if COMMAND_UP in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_UP)
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
 
-        if "openSlats" in self.tahoma_device.command_definitions:
-            return self.apply_action("openSlats")
+        if COMMAND_OPEN_SLATS in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_OPEN_SLATS)
 
     def close_cover(self, **kwargs):
         """Close the cover."""
 
-        if "close" in self.tahoma_device.command_definitions:
-            return self.apply_action("close")
+        if COMMAND_CLOSE in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_CLOSE)
 
-        if "down" in self.tahoma_device.command_definitions:
-            return self.apply_action("down")
+        if COMMAND_DOWN in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_DOWN)
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
 
-        if "closeSlats" in self.tahoma_device.command_definitions:
-            return self.apply_action("closeSlats")
+        if COMMAND_CLOSE_SLATS in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_CLOSE_SLATS)
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
 
-        if "stop" in self.tahoma_device.command_definitions:
-            return self.apply_action("stop")
+        if COMMAND_STOP in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_STOP)
 
-        if "stopIdentify" in self.tahoma_device.command_definitions:
-            return self.apply_action("stopIdentify")
+        if COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_STOP_IDENTIFY)
 
-        if "my" in self.tahoma_device.command_definitions:
-            return self.apply_action("my")
+        if COMMAND_MY in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_MY)
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
 
-        if "stopIdentify" in self.tahoma_device.command_definitions:
-            return self.apply_action("stopIdentify")
+        if COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_STOP_IDENTIFY)
 
-        if "stop" in self.tahoma_device.command_definitions:
-            return self.apply_action("stop")
+        if COMMAND_STOP in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_STOP)
 
-        if "my" in self.tahoma_device.command_definitions:
-            return self.apply_action("my")
+        if COMMAND_MY in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_MY)
 
     @property
     def supported_features(self):
@@ -311,17 +329,17 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         supported_features = 0
 
-        if "openSlats" in self.tahoma_device.command_definitions:
+        if COMMAND_OPEN_SLATS in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_OPEN_TILT
 
             if (
-                "stop" in self.tahoma_device.command_definitions
-                or "stopIdentify" in self.tahoma_device.command_definitions
-                or "my" in self.tahoma_device.command_definitions
+                COMMAND_STOP in self.tahoma_device.command_definitions
+                or COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions
+                or COMMAND_MY in self.tahoma_device.command_definitions
             ):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if "closeSlats" in self.tahoma_device.command_definitions:
+        if COMMAND_CLOSE_SLATS in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_CLOSE_TILT
 
         if COMMAND_SET_ORIENTATION in self.tahoma_device.command_definitions:
@@ -330,26 +348,26 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if (
             COMMAND_SET_POSITION in self.tahoma_device.command_definitions
             or COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions
-            or "setPedestrianPosition" in self.tahoma_device.command_definitions
+            or COMMAND_SET_PEDESTRIAN_POSITION in self.tahoma_device.command_definitions
         ):
             supported_features |= SUPPORT_SET_POSITION
 
         if (
-            "open" in self.tahoma_device.command_definitions
-            or "up" in self.tahoma_device.command_definitions
+            COMMAND_OPEN in self.tahoma_device.command_definitions
+            or COMMAND_UP in self.tahoma_device.command_definitions
         ):
             supported_features |= SUPPORT_OPEN
 
             if (
-                "stop" in self.tahoma_device.command_definitions
-                or "my" in self.tahoma_device.command_definitions
-                or "stopIdentify" in self.tahoma_device.command_definitions
+                COMMAND_STOP in self.tahoma_device.command_definitions
+                or COMMAND_MY in self.tahoma_device.command_definitions
+                or COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions
             ):
                 supported_features |= SUPPORT_STOP
 
         if (
-            "close" in self.tahoma_device.command_definitions
-            or "down" in self.tahoma_device.command_definitions
+            COMMAND_CLOSE in self.tahoma_device.command_definitions
+            or COMMAND_DOWN in self.tahoma_device.command_definitions
         ):
             supported_features |= SUPPORT_CLOSE
 

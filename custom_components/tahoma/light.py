@@ -11,14 +11,19 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     LightEntity,
 )
+from homeassistant.const import STATE_ON
 import homeassistant.util.color as color_util
 
-from .const import COMMAND_OFF, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
+from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=30)
+
+COMMAND_SET_INTENSITY = "setIntensity"
+COMMAND_WINK = "wink"
+COMMAND_SET_RGB = "setRGB"
 
 CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
 CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
@@ -76,13 +81,13 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if "setIntensity" in self.tahoma_device.command_definitions:
+        if COMMAND_SET_INTENSITY in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_BRIGHTNESS
 
-        if "wink" in self.tahoma_device.command_definitions:
+        if COMMAND_WINK in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_EFFECT
 
-        if "setRGB" in self.tahoma_device.command_definitions:
+        if COMMAND_SET_RGB in self.tahoma_device.command_definitions:
             supported_features |= SUPPORT_COLOR
 
         return supported_features
@@ -91,7 +96,7 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Turn the light on."""
         if ATTR_HS_COLOR in kwargs:
             self.apply_action(
-                "setRGB",
+                COMMAND_SET_RGB,
                 *[
                     int(float(c))
                     for c in color_util.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
@@ -100,14 +105,14 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self.apply_action("setIntensity", self._brightness)
+            self.apply_action(COMMAND_SET_INTENSITY, self._brightness)
 
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
-            self.apply_action("wink", 100)
+            self.apply_action(COMMAND_WINK, 100)
 
         else:
-            self.apply_action("on")
+            self.apply_action(COMMAND_ON)
 
         self.async_write_ha_state()
 
@@ -121,7 +126,7 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def effect_list(self) -> list:
         """Return the list of supported effects."""
-        return ["wink"]
+        return [COMMAND_WINK]
 
     @property
     def effect(self) -> str:
@@ -138,7 +143,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         states = self.tahoma_device.active_states
 
-        self._state = states.get(CORE_ON_OFF_STATE) == "on"
+        self._state = states.get(CORE_ON_OFF_STATE) == STATE_ON
         self._brightness = states.get(CORE_LIGHT_INTENSITY_STATE)
 
         self._hs_color = color_util.color_RGB_to_hs(

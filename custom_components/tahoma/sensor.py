@@ -18,7 +18,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN, ICON_WEATHER_WINDY, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,6 +33,10 @@ CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_SUN_ENERGY_STATE = "core:SunEnergyState"
+CORE_TEMPERATURE_IN_CELCIUS = "core:TemperatureInCelcius"
+CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
+CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
+CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
@@ -40,6 +44,12 @@ DEVICE_CLASS_CO = "co"
 DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_SUN_ENERGY = "sun_energy"
 DEVICE_CLASS_WIND_SPEED = "wind_speed"
+
+ICON_AIR_FILTER = "mdi:air-filter"
+ICON_PERIODIC_TABLE_CO2 = "mdi:periodic-table-co2"
+ICON_SOLAR_POWER = "mdi:solar-power"
+
+UNIT_LX = "lx"
 
 TAHOMA_SENSOR_DEVICE_CLASSES = {
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
@@ -89,10 +99,10 @@ class TahomaSensor(TahomaDevice, Entity):
 
         if CORE_TEMPERATURE_STATE in states:
             return {
-                "core:TemperatureInCelsius": TEMP_CELSIUS,
-                "core:TemperatureInCelcius": TEMP_CELSIUS,
-                "core:TemperatureInKelvin": TEMP_KELVIN,
-                "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
+                CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
+                CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
+                CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
+                CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
             }.get(
                 self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE),
                 TEMP_CELSIUS,
@@ -102,7 +112,7 @@ class TahomaSensor(TahomaDevice, Entity):
             return UNIT_PERCENTAGE
 
         if CORE_LUMINANCE_STATE in states:
-            return "lx"
+            return UNIT_LX
 
         if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             return POWER_WATT
@@ -122,10 +132,10 @@ class TahomaSensor(TahomaDevice, Entity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
         icons = {
-            DEVICE_CLASS_CO: "mdi:air-filter",
-            DEVICE_CLASS_CO2: "mdi:periodic-table-co2",
-            DEVICE_CLASS_WIND_SPEED: "mdi:weather-windy",
-            DEVICE_CLASS_SUN_ENERGY: "mdi:solar-power",
+            DEVICE_CLASS_CO: ICON_AIR_FILTER,
+            DEVICE_CLASS_CO2: ICON_PERIODIC_TABLE_CO2,
+            DEVICE_CLASS_WIND_SPEED: ICON_WEATHER_WINDY,
+            DEVICE_CLASS_SUN_ENERGY: ICON_SOLAR_POWER,
         }
 
         return icons.get(self.device_class)
