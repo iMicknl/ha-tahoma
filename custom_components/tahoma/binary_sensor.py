@@ -35,7 +35,7 @@ DEVICE_CLASS_WATER = "water"
 ICON_WATER = "mdi:water"
 ICON_WATER_OFF = "mdi:water-off"
 ICON_WAVES = "mdi:waves"
-ICON_WEATHER_OFF = "mdi:weather-rainy"
+ICON_WEATHER_RAINY = "mdi:weather-rainy"
 
 IO_VIBRATION_STATE = "io:VibrationDetectedState"
 
@@ -105,7 +105,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         icons = {
             DEVICE_CLASS_GAS: ICON_WAVES,
-            DEVICE_CLASS_RAIN: ICON_WATER_OFF,
+            DEVICE_CLASS_RAIN: ICON_WEATHER_RAINY,
         }
 
         return icons.get(self.device_class)
