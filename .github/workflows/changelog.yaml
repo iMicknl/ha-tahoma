@@ -23,7 +23,7 @@ jobs:
           CI_EMAIL: ${{ secrets.YOUR_GITHUB_EMAIL }}
         run: |
           git checkout update-changelog
-          git merge master
+          git merge origin/master
           git config --local user.email "$CI_EMAIL"
           git config --local user.name "$CI_USER"
           git add CHANGELOG.md && git commit -m 'Updated CHANGELOG.md' && echo ::set-env name=push::1 || echo "No changes to CHANGELOG.md"
