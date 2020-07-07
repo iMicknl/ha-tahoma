@@ -16,6 +16,7 @@
 - Parse temperature unit for TemperatureSensor [\#116](https://github.com/iMicknl/ha-tahoma/pull/116) ([vlebourl](https://github.com/vlebourl))
 - Remove lock variables from Cover device state attributes [\#108](https://github.com/iMicknl/ha-tahoma/pull/108) ([tetienne](https://github.com/tetienne))
 - Split update cover method [\#106](https://github.com/iMicknl/ha-tahoma/pull/106) ([tetienne](https://github.com/tetienne))
+- Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
 
 **Closed issues:**
 
@@ -84,7 +85,6 @@
 - Add support for IO RGB Light \(io:DimmableRGBLightIOComponent\) [\#73](https://github.com/iMicknl/ha-tahoma/issues/73)
 - Change Unsupported Tahoma device logging from `warning` to `debug` [\#32](https://github.com/iMicknl/ha-tahoma/issues/32)
 - Adjust code style according to home-assistant/core [\#20](https://github.com/iMicknl/ha-tahoma/issues/20)
-- Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
 - \[feat\] Support io:TotalElectricalEnergyConsumptionIOSystemSensor [\#81](https://github.com/iMicknl/ha-tahoma/pull/81) ([vlebourl](https://github.com/vlebourl))
 - Update cover & changelog [\#78](https://github.com/iMicknl/ha-tahoma/pull/78) ([iMicknl](https://github.com/iMicknl))
 - Wait for apply\_action to finish before returning. [\#76](https://github.com/iMicknl/ha-tahoma/pull/76) ([vlebourl](https://github.com/vlebourl))
@@ -95,6 +95,7 @@
 
 - Unable to change tilt position on io:BioclimaticPergolaIOComponent [\#74](https://github.com/iMicknl/ha-tahoma/issues/74)
 - Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
+- Bugfix for unable to change tilt position on io:BioclimaticPergolaIOComponent \#74 [\#77](https://github.com/iMicknl/ha-tahoma/pull/77) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.4-alpha3](https://github.com/iMicknl/ha-tahoma/tree/1.4-alpha3) (2020-06-18)
 
@@ -211,6 +212,7 @@
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
 - Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
+- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
 
@@ -218,7 +220,6 @@
 
 **Implemented enhancements:**
 
-- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 - Apply fixes from tahoma\_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
 - Add binary sensor and remove parts from normal sensor [\#6](https://github.com/iMicknl/ha-tahoma/pull/6) ([iMicknl](https://github.com/iMicknl))
 
