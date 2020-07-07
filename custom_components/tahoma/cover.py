@@ -22,7 +22,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from .const import DOMAIN, ICON_WEATHER_WINDY, TAHOMA_TYPES
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -58,6 +58,7 @@ CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 
 ICON_LOCK_ALERT = "mdi:lock-alert"
+ICON_WEATHER_WINDY = "mdi:weather-windy"
 
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
