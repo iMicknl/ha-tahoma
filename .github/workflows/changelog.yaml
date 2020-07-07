@@ -22,7 +22,7 @@ jobs:
           CI_USER: ${{ secrets.YOUR_GITHUB_USER }}
           CI_EMAIL: ${{ secrets.YOUR_GITHUB_EMAIL }}
         run: |
-          git checkout -b changelog
+          git checkout -B changelog
           git merge origin/master
           git config --local user.email "$CI_EMAIL"
           git config --local user.name "$CI_USER"
