@@ -17,6 +17,7 @@ COMMAND_UNLOCK = "unlock"
 
 CORE_LOCKED_UNLOCKED_STATE = "core:LockedUnlockedState"
 
+TAHOMA_STATE_LOCKED = "locked"
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma locks from a config entry."""
@@ -50,7 +51,7 @@ class TahomaLock(TahomaDevice, LockEntity):
         self.controller.get_states([self.tahoma_device])
         if (
             self.tahoma_device.active_states.get(CORE_LOCKED_UNLOCKED_STATE)
-            == STATE_LOCKED
+            == TAHOMA_STATE_LOCKED
         ):
             self._lock_status = STATE_LOCKED
         else:
