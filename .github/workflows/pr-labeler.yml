@@ -8,11 +8,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: TimonVS/pr-labeler-action@v3
-        with:
-          feature: ['feature/*', 'feat/*']
-          enhancement: enhancement/*
-          fix: fix/*
-          chore: chore/*
-          fixed-branch: fixed-branch-name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

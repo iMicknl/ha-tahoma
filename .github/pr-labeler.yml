@@ -1,0 +1,5 @@
+feature: ['feature/*', 'feat/*']
+enhancement: enhancement/*
+fix: fix/*
+chore: chore/*
+fixed-branch: fixed-branch-name
