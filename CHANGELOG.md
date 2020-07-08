@@ -11,20 +11,25 @@
 **Implemented enhancements:**
 
 - Retrieve core:MeasuredValueType to understand if it is Celsius or Kelvin [\#111](https://github.com/iMicknl/ha-tahoma/issues/111)
-- Create registry with devices definition [\#107](https://github.com/iMicknl/ha-tahoma/issues/107)
+- Move constants outside of const.py [\#125](https://github.com/iMicknl/ha-tahoma/pull/125) ([vlebourl](https://github.com/vlebourl))
 - Hide opg device from log. [\#117](https://github.com/iMicknl/ha-tahoma/pull/117) ([vlebourl](https://github.com/vlebourl))
 - Parse temperature unit for TemperatureSensor [\#116](https://github.com/iMicknl/ha-tahoma/pull/116) ([vlebourl](https://github.com/vlebourl))
 - Remove lock variables from Cover device state attributes [\#108](https://github.com/iMicknl/ha-tahoma/pull/108) ([tetienne](https://github.com/tetienne))
 - Split update cover method [\#106](https://github.com/iMicknl/ha-tahoma/pull/106) ([tetienne](https://github.com/tetienne))
 - Add support for more sensors & basic Siren \(switch\) support [\#84](https://github.com/iMicknl/ha-tahoma/pull/84) ([iMicknl](https://github.com/iMicknl))
 
-**Fixed bugs:**
-
-- Unable to change \(tilt\)position via automations [\#33](https://github.com/iMicknl/ha-tahoma/issues/33)
-
 **Closed issues:**
 
+- Remove YAML config schema [\#113](https://github.com/iMicknl/ha-tahoma/issues/113)
 - Add support for RainSensor \(io:SomfyRainIOSystemSensor\) [\#102](https://github.com/iMicknl/ha-tahoma/issues/102)
+
+**Merged pull requests:**
+
+- Create CODEOWNERS [\#129](https://github.com/iMicknl/ha-tahoma/pull/129) ([tetienne](https://github.com/tetienne))
+- Remove all self.\_\* variables in cover module [\#128](https://github.com/iMicknl/ha-tahoma/pull/128) ([tetienne](https://github.com/tetienne))
+- Fixed a typo. [\#124](https://github.com/iMicknl/ha-tahoma/pull/124) ([vlebourl](https://github.com/vlebourl))
+- Add an auto changelog issue [\#123](https://github.com/iMicknl/ha-tahoma/pull/123) ([vlebourl](https://github.com/vlebourl))
+- Code readability improvements [\#121](https://github.com/iMicknl/ha-tahoma/pull/121) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.5](https://github.com/iMicknl/ha-tahoma/tree/1.5) (2020-07-03)
 
@@ -70,6 +75,7 @@
 
 - fix api for missing states at login [\#94](https://github.com/iMicknl/ha-tahoma/pull/94) ([vlebourl](https://github.com/vlebourl))
 - \[fix\] fix AttributeError: 'NoneType' object has no attribute 'state' … [\#87](https://github.com/iMicknl/ha-tahoma/pull/87) ([vlebourl](https://github.com/vlebourl))
+- Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.4](https://github.com/iMicknl/ha-tahoma/tree/1.4) (2020-06-22)
 
@@ -90,7 +96,6 @@
 **Fixed bugs:**
 
 - Unable to change tilt position on io:BioclimaticPergolaIOComponent [\#74](https://github.com/iMicknl/ha-tahoma/issues/74)
-- Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
 - Bugfix for unable to change tilt position on io:BioclimaticPergolaIOComponent \#74 [\#77](https://github.com/iMicknl/ha-tahoma/pull/77) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.4-alpha3](https://github.com/iMicknl/ha-tahoma/tree/1.4-alpha3) (2020-06-18)
@@ -208,7 +213,6 @@
 - Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
 - Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
-- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.0.0](https://github.com/iMicknl/ha-tahoma/tree/1.0.0) (2020-06-04)
 
@@ -216,6 +220,7 @@
 
 **Implemented enhancements:**
 
+- Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
 - Apply fixes from tahoma\_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
 - Add binary sensor and remove parts from normal sensor [\#6](https://github.com/iMicknl/ha-tahoma/pull/6) ([iMicknl](https://github.com/iMicknl))
 
