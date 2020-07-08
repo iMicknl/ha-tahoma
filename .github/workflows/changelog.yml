@@ -52,10 +52,6 @@ jobs:
               "prefix": "🐛 **Bug Fixes**",
               "labels": ["bug"]
             },
-            "dependency": {
-              "prefix": "📈 **Dependency updates**",
-              "labels": ["dependency-update", "scala-steward"]
-            }
           }'
       - name: Create Changelog Pull Request
         uses: peter-evans/create-pull-request@v2
