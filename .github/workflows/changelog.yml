@@ -41,8 +41,12 @@ jobs:
               "labels": ["breaking"]
             },
             "enhancement": {
-              "prefix": "🚀 **Features**",
+              "prefix": "✨ **Enhancement**",
               "labels": ["enhancement"]
+            },
+            "feature": {
+              "prefix": "🚀 **Features**",
+              "labels": ["feature"]
             },
             "documentation": {
               "prefix": "📘 **Documentation**",
@@ -57,7 +61,7 @@ jobs:
         uses: peter-evans/create-pull-request@v2
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          commit-message: Update CHANGELOG.md [ci skip]
+          commit-message: Update CHANGELOG.md
           title: 'Update CHANGELOG.md'
           labels: auto-changelog
           branch: auto-update-changelog
