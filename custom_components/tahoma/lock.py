@@ -69,7 +69,7 @@ class TahomaLock(TahomaDevice, LockEntity):
     @property
     def name(self):
         """Return the name of the lock."""
-        return self._name
+        return self.tahoma_device.active_states["core:NameState"]
 
     @property
     def is_locked(self):
