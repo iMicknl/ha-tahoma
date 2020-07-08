@@ -1,38 +1,68 @@
-name: Changelog
+name: Update changelog
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - '*'
 
 jobs:
-  generate_changelog:
+  changelog:
     runs-on: ubuntu-latest
-    name: Generate changelog for master branch
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
-
-      - name: Generate changelog
-        uses: charmixer/auto-changelog-action@v1
+      - name: Checkout project
+        uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit files
+          ref: master
+          fetch-depth: 0
+      - name: Fetch tags
+        run: git fetch --tags
+      - name: Setup ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+      - name: Install github-changelog-generator
+        run: gem install github_changelog_generator -v 1.15.0
+      - name: Generate changelog
         env:
-          CI_USER: ${{ secrets.YOUR_GITHUB_USER }}
-          CI_EMAIL: ${{ secrets.YOUR_GITHUB_EMAIL }}
+          repo: ${{ github.repository }}
         run: |
-          git checkout -B changelog
-          git pull origin changelog
-          git merge origin/master
-          git config --local user.email "$CI_EMAIL"
-          git config --local user.name "$CI_USER"
-          git add CHANGELOG.md && git commit -m 'Updated CHANGELOG.md' && echo ::set-env name=push::1 || echo "No changes to CHANGELOG.md"
-
-      - name: Push changes
-        if: env.push == 1
-        env:
-          CI_USER: ${{ secrets.YOUR_GITHUB_USER }}
-          CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git push "https://$CI_USER:$CI_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:changelog
+          github_changelog_generator \
+            --user ${repo%/*} \
+            --project ${repo#*/} \
+            --token $GITHUB_TOKEN \
+            --exclude-labels "duplicate,question,invalid,wontfix,auto-update,auto-changelog,auto-documentation,Meta: Exclude From Changelog" \
+            --max-issues 1000 \
+            --configure-sections \
+          '{
+            "breaking": {
+              "prefix": "⚠️ **Breaking changes**",
+              "labels": ["breaking"]
+            },
+            "enhancement": {
+              "prefix": "🚀 **Features**",
+              "labels": ["enhancement"]
+            },
+            "documentation": {
+              "prefix": "📘 **Documentation**",
+              "labels": ["documentation"]
+            },
+            "bug": {
+              "prefix": "🐛 **Bug Fixes**",
+              "labels": ["bug"]
+            },
+            "dependency": {
+              "prefix": "📈 **Dependency updates**",
+              "labels": ["dependency-update", "scala-steward"]
+            }
+          }'
+      - name: Create Changelog Pull Request
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          commit-message: Update CHANGELOG.md [ci skip]
+          title: 'Update CHANGELOG.md'
+          labels: auto-changelog
+          branch: auto-update-changelog
+          body: Update CHANGELOG.md with information from latest release
