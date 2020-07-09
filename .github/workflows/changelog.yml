@@ -55,7 +55,7 @@ jobs:
             "bug": {
               "prefix": "🐛 **Bug Fixes**",
               "labels": ["bug"]
-            },
+            }
           }'
       - name: Create Changelog Pull Request
         uses: peter-evans/create-pull-request@v2
