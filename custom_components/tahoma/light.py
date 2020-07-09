@@ -152,4 +152,6 @@ class TahomaLight(TahomaDevice, LightEntity):
             states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
             states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
         ]
-        self._hs_color = None if r is None else color_util.color_RGB_to_hs(r, g, b)
+        self._hs_color = (
+            None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
+        )
