@@ -632,12 +632,12 @@ class Device:
     @property
     def command_definitions(self):
         """List of command definitions."""
-        return self.__command_def
+        return self.__definitions["commands"]
 
     @property
     def state_definitions(self):
         """List of state definition."""
-        return self.__states_def
+        return self.__definitions["states"]
 
     @property
     def active_states(self):
