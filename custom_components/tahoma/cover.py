@@ -226,9 +226,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
             attr[ATTR_MEM_POS] = self.tahoma_device.active_states[
                 CORE_MEMORIZED_1_POSITION_STATE
             ]
-        if self._lock_originator is not None:
-            attr[ATTR_LOCK_ORIG] = self._lock_originator
 
+        if IO_PRIORITY_LOCK_ORIGINATOR_STATE in self.tahoma_device.active_states:
+            attr[ATTR_LOCK_ORIG] = self.tahoma_device.active_states[
+                IO_PRIORITY_LOCK_ORIGINATOR_STATE
+            ]
         return attr
 
     @property
