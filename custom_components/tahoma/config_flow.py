@@ -11,12 +11,7 @@ from homeassistant.components.climate.const import (
     PRESET_COMFORT,
     PRESET_ECO,
 )
-from homeassistant.const import (
-    CONF_ENTITY_ID,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    DEVICE_CLASS_TEMPERATURE,
-)
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, DEVICE_CLASS_TEMPERATURE
 from homeassistant.core import callback
 
 from .const import DOMAIN

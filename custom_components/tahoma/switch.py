@@ -5,10 +5,14 @@ from typing import Optional
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.const import STATE_ON
 
-from .const import COMMAND_OFF, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
+from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
+
+COMMAND_CYCLE = "cycle"
+COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
+COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
 
 DEVICE_CLASS_SIREN = "siren"
 
@@ -46,7 +50,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
         if CORE_ON_OFF_STATE in self.tahoma_device.active_states:
             self.current_value = (
-                self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == "on"
+                self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == STATE_ON
             )
 
     @property
@@ -70,13 +74,17 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_on(self, **kwargs):
         """Send the on command."""
-        if "on" in self.tahoma_device.command_definitions:
-            return self.apply_action("on")
+        if COMMAND_ON in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_ON)
 
         if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
             # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
             return self.apply_action(
-                "ringWithSingleSimpleSequence", 120000, 75, 2, "memorizedVolume"
+                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
+                120000,
+                75,
+                2,
+                COMMAND_MEMORIZED_VOLUME,
             )
 
     def turn_off(self, **kwargs):
@@ -87,7 +95,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def toggle(self, **kwargs):
         """Click the switch."""
         if "cycle" in self.tahoma_device.command_definitions:
-            return self.apply_action("cycle")
+            return self.apply_action(COMMAND_CYCLE)
 
     @property
     def is_on(self):
