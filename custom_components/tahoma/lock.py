@@ -72,11 +72,6 @@ class TahomaLock(TahomaDevice, LockEntity):
         return self._name
 
     @property
-    def available(self):
-        """Return True if the lock is available."""
-        return self._available
-
-    @property
     def is_locked(self):
         """Return True if the lock is locked."""
         return self._lock_status == STATE_LOCKED
