@@ -98,81 +98,48 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaCover(TahomaDevice, CoverEntity):
     """Representation a TaHoma Cover."""
 
-    def __init__(self, tahoma_device, controller):
-        """Initialize the device."""
-        super().__init__(tahoma_device, controller)
-
-        self._tilt_position = None
-        self._position = None
-
-        self._lock_timer = 0  # Can be 0 and bigger
-
-        # Can be 'LSC', 'SAAC', 'SFC', 'UPS', 'externalGateway', 'localUser',
-        # 'myself', 'rain', 'security', 'temperature', 'timer', 'user', 'wind'
-        self._lock_originator = None
-
     def update(self):
         """Update method."""
         if self.should_wait():
             self.schedule_update_ha_state(True)
             return
-
         self.controller.get_states([self.tahoma_device])
-
-        self.update_position()
-        self.update_tilt_position()
-        self.update_lock()
-
-    def update_position(self):
-        """Update position."""
-        # Home Assistant: 0 is closed, 100 is fully open.
-        # core:ClosureState: 100 is closed, 0 is fully open.
-
-        states = self.tahoma_device.active_states
-
-        # Set position for vertical covers
-        if CORE_CLOSURE_STATE in states:
-            self._position = 100 - states.get(CORE_CLOSURE_STATE)
-
-        # Set position for horizontal covers
-        if CORE_DEPLOYMENT_STATE in states:
-            self._position = 100 - states.get(CORE_DEPLOYMENT_STATE)
-
-        # Set position for gates
-        if CORE_PEDESTRIAN_POSITION_STATE in states:
-            self._position = 100 - states.get(CORE_PEDESTRIAN_POSITION_STATE)
-
-        if CORE_TARGET_CLOSURE_STATE in states:
-            self._position = 100 - states.get(CORE_TARGET_CLOSURE_STATE)
-
-        if self._position is not None:
-            # HorizontalAwning devices need a reversed position that can not be obtained via the API
-            if "Horizontal" in self.tahoma_device.widget:
-                self._position = 100 - self._position
-
-            # TODO Check if this offset is really necessary
-            if self._position <= 5:
-                self._position = 0
-            if self._position >= 95:
-                self._position = 100
-
-    def update_tilt_position(self):
-        """Update tilt position."""
-        states = self.tahoma_device.active_states
-        # Set tilt position for slats
-        if CORE_SLATS_ORIENTATION_STATE in states:
-            self._tilt_position = 100 - states.get(CORE_SLATS_ORIENTATION_STATE)
-
-    def update_lock(self):
-        """Update lock."""
-        states = self.tahoma_device.active_states
-        self._lock_timer = states.get(CORE_PRIORITY_LOCK_TIMER_STATE, 0)
-        self._lock_originator = states.get(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
 
     @property
     def current_cover_position(self):
         """Return current position of cover."""
-        return self._position
+
+        states = self.tahoma_device.active_states
+
+        position = None
+
+        # Set position for vertical covers
+        if CORE_CLOSURE_STATE in states:
+            position = 100 - states.get(CORE_CLOSURE_STATE)
+
+        # Set position for horizontal covers
+        if CORE_DEPLOYMENT_STATE in states:
+            position = 100 - states.get(CORE_DEPLOYMENT_STATE)
+
+        # Set position for gates
+        if CORE_PEDESTRIAN_POSITION_STATE in states:
+            position = 100 - states.get(CORE_PEDESTRIAN_POSITION_STATE)
+
+        if CORE_TARGET_CLOSURE_STATE in states:
+            position = 100 - states.get(CORE_TARGET_CLOSURE_STATE)
+
+        if position is not None:
+            # HorizontalAwning devices need a reversed position that can not be obtained via the API
+            if "Horizontal" in self.tahoma_device.widget:
+                position = 100 - position
+
+            # TODO Check if this offset is really necessary
+            if position <= 5:
+                position = 0
+            if position >= 95:
+                position = 100
+
+        return position
 
     @property
     def current_cover_tilt_position(self):
@@ -180,7 +147,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        return self._tilt_position
+        states = self.tahoma_device.active_states
+        position = None
+        if CORE_SLATS_ORIENTATION_STATE in states:
+            position = 100 - states.get(CORE_SLATS_ORIENTATION_STATE)
+        return position
 
     def set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
@@ -225,11 +196,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if CORE_OPEN_CLOSED_UNKNOWN_STATE in states:
             return states.get(CORE_OPEN_CLOSED_UNKNOWN_STATE) == STATE_CLOSED
 
-        if self._position is not None:
-            return self._position == 0
+        if self.current_cover_position is not None:
+            return self.current_cover_position == 0
 
-        if self._tilt_position is not None:
-            return self._tilt_position == 0
+        if self.current_cover_tilt_position is not None:
+            return self.current_cover_tilt_position == 0
 
         return None
 
@@ -263,8 +234,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        if self._lock_timer > 0:
-            if self._lock_originator == "wind":
+        states = self.tahoma_device.active_states
+        if states.get(CORE_PRIORITY_LOCK_TIMER_STATE, 0) > 0:
+            if states.get(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
                 return ICON_WEATHER_WINDY
             else:
                 return ICON_LOCK_ALERT
