@@ -16,6 +16,9 @@ COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
 
 DEVICE_CLASS_SIREN = "siren"
 
+ICON_BELL_RING = "mdi:bell-ring"
+ICON_BELL_OFF = "mdi:bell-off"
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
@@ -66,9 +69,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
         """Return the icon to use in the frontend, if any."""
         if self.device_class == DEVICE_CLASS_SIREN:
             if self.is_on:
-                return "mdi:bell-ring"
+                return ICON_BELL_RING
             else:
-                return "mdi:bell-off"
+                return ICON_BELL_OFF
 
         return None
 
