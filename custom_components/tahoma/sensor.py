@@ -164,26 +164,19 @@ class TahomaSensor(TahomaDevice, Entity):
             self.current_value = states.get(CORE_LUMINANCE_STATE)
 
         if CORE_RELATIVE_HUMIDITY_STATE in states:
-            self.current_value = float(
-                "{:.2f}".format(states.get(CORE_RELATIVE_HUMIDITY_STATE))
-            )
+            self.current_value = float(states.get(CORE_RELATIVE_HUMIDITY_STATE))
 
         if CORE_TEMPERATURE_STATE in states:
-            self.current_value = float(
-                "{:.2f}".format(states.get(CORE_TEMPERATURE_STATE))
-            )
+            self.current_value = float(states.get(CORE_TEMPERATURE_STATE))
 
         if CORE_ELECTRIC_POWER_CONSUMPTION_STATE in states:
             self.current_value = float(
-                "{:.2f}".format(states.get(CORE_ELECTRIC_POWER_CONSUMPTION_STATE))
+                states.get(CORE_ELECTRIC_POWER_CONSUMPTION_STATE)
             )
 
         if CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE in states:
             self.current_value = (
-                float(
-                    "{:.2f}".format(states.get(CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE))
-                )
-                / 1000
+                float(states.get(CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE)) / 1000
             )
 
         if CORE_CO_CONCENTRATION_STATE in states:
