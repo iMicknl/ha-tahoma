@@ -75,10 +75,7 @@ class TahomaDevice(Entity):
     @property
     def assumed_state(self):
         """Return True if unable to access real state of the entity."""
-        if self.tahoma_device.type.startswith("rts"):
-            return True
-
-        return False
+        return self.tahoma_device.type.startswith("rts")
 
     @property
     def device_state_attributes(self):
@@ -133,7 +130,7 @@ class TahomaDevice(Entity):
         """Wait for actions to finish."""
         exec_queue = self.controller.get_current_executions()
         self._exec_queue = [e for e in self._exec_queue if e in exec_queue]
-        return True if self._exec_queue else False
+        return not self._exec_queue
 
     async def async_apply_action(self, cmd_name, *args):
         """Apply Action to Device in async context."""
