@@ -296,11 +296,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
 
     def update(self):
         """Update the state."""
-        if self.should_wait():
-            self.schedule_update_ha_state(True)
-            return
-
-        self.controller.get_states([self.tahoma_device])
+        super().update()
         self.update_temp(None)
         if self._widget == ST:
             self._hvac_mode = MAP_HVAC_MODE[

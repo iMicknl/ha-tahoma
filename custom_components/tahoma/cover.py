@@ -98,13 +98,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaCover(TahomaDevice, CoverEntity):
     """Representation a TaHoma Cover."""
 
-    def update(self):
-        """Update method."""
-        if self.should_wait():
-            self.schedule_update_ha_state(True)
-            return
-        self.controller.get_states([self.tahoma_device])
-
     @property
     def current_cover_position(self):
         """Return current position of cover."""
