@@ -3,7 +3,7 @@ from datetime import timedelta
 import logging
 
 from homeassistant.components.lock import LockEntity
-from homeassistant.const import ATTR_BATTERY_LEVEL, STATE_LOCKED, STATE_UNLOCKED
+from homeassistant.const import STATE_LOCKED
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
@@ -36,11 +36,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaLock(TahomaDevice, LockEntity):
     """Representation a TaHoma lock."""
 
-    def __init__(self, tahoma_device, controller):
-        """Initialize the device."""
-        super().__init__(tahoma_device, controller)
-        self._lock_status = None
-
     def unlock(self, **kwargs):
         """Unlock method."""
         self.apply_action(COMMAND_UNLOCK)
@@ -50,14 +45,9 @@ class TahomaLock(TahomaDevice, LockEntity):
         self.apply_action(COMMAND_LOCK)
 
     @property
-    def name(self):
-        """Return the name of the lock."""
-        return self.tahoma_device.active_states["core:NameState"]
-
-    @property
     def is_locked(self):
         """Return True if the lock is locked."""
         return (
-            self.tahoma_device.active_states.get("core:LockedUnlockedState")
+            self.tahoma_device.active_states.get(CORE_LOCKED_UNLOCKED_STATE)
             == STATE_LOCKED
         )
