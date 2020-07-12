@@ -19,10 +19,11 @@ from homeassistant.components.cover import (
     SUPPORT_SET_TILT_POSITION,
     SUPPORT_STOP,
     SUPPORT_STOP_TILT,
-    CoverEntity,
+    CoverDevice,
 )
 
 from .const import DOMAIN, TAHOMA_TYPES
+from .switch import COMMAND_CYCLE
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
 
-class TahomaCover(TahomaDevice, CoverEntity):
+class TahomaCover(TahomaDevice, CoverDevice):
     """Representation a TaHoma Cover."""
 
     @property
@@ -254,3 +255,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features
+
+    def toggle(self):
+        """Toggle the entity."""
+        if COMMAND_CYCLE in self.tahoma_device.command_definitions:
+            return self.apply_action(COMMAND_CYCLE)
+        else:
+            super().toggle()
