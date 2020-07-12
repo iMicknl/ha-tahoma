@@ -52,29 +52,32 @@ class TahomaLight(TahomaDevice, LightEntity):
     def __init__(self, tahoma_device, controller):
         """Initialize a device."""
         super().__init__(tahoma_device, controller)
-
         self._effect = None
-        self._brightness = None
-        self._state = None
-        self._hs_color = []
 
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        return int(self._brightness * (255 / 100))
+        states = self.tahoma_device.active_states
+        brightness = states.get(CORE_LIGHT_INTENSITY_STATE)
+        return int(brightness * 255 / 100)
 
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        return self._state
+        states = self.tahoma_device.active_states
+        return states.get(CORE_ON_OFF_STATE) == STATE_ON
 
     @property
     def hs_color(self):
         """Return the hue and saturation color value [float, float]."""
-        if self._hs_color:
-            return self._hs_color
+        states = self.tahoma_device.active_states
 
-        return None
+        [r, g, b] = [
+            states.get(CORE_RED_COLOR_INTENSITY_STATE),
+            states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
+            states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
+        ]
+        return None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
 
     @property
     def supported_features(self) -> int:
@@ -104,8 +107,8 @@ class TahomaLight(TahomaDevice, LightEntity):
             )
 
         if ATTR_BRIGHTNESS in kwargs:
-            self._brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self.apply_action(COMMAND_SET_INTENSITY, self._brightness)
+            brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
+            self.apply_action(COMMAND_SET_INTENSITY, brightness)
 
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
@@ -118,10 +121,7 @@ class TahomaLight(TahomaDevice, LightEntity):
 
     def turn_off(self, **kwargs) -> None:
         """Turn the light off."""
-        self._state = False
         self.apply_action(COMMAND_OFF)
-
-        self.async_write_ha_state()
 
     @property
     def effect_list(self) -> list:
@@ -132,26 +132,3 @@ class TahomaLight(TahomaDevice, LightEntity):
     def effect(self) -> str:
         """Return the current effect."""
         return self._effect
-
-    def update(self):
-        """Fetch new state data for this light."""
-        if self.should_wait():
-            self.schedule_update_ha_state(True)
-            return
-
-        self.controller.get_states([self.tahoma_device])
-
-        states = self.tahoma_device.active_states
-
-        self._state = states.get(CORE_ON_OFF_STATE) == STATE_ON
-
-        self._brightness = states.get(CORE_LIGHT_INTENSITY_STATE)
-
-        [r, g, b] = [
-            states.get(CORE_RED_COLOR_INTENSITY_STATE),
-            states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
-            states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
-        ]
-        self._hs_color = (
-            None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
-        )
