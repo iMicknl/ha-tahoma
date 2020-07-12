@@ -189,20 +189,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         super().__init__(tahoma_device, controller)
         if preset_temp is None:
             preset_temp = {}
-        self._temperature_unit = TEMP_CELSIUS
-        self._cold_tolerance = 0.3
-        self._hot_tolerance = 0.3
-        self._supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-        self._uiclass = tahoma_device.uiclass
-        self._unique_id = tahoma_device.url
-        self._widget = tahoma_device.widget
         self._temp_sensor_entity_id = sensor_id
         self._current_temperature = 0
-        self._current_hvac_modes = CURRENT_HVAC_IDLE
         self._target_temp = None
         self._saved_target_temp = self._target_temp
         self._preset_temperatures = preset_temp
-        if self._widget == ST:
+        if tahoma_device.widget == ST:
             self._hvac_modes = [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
             self._hvac_mode = MAP_HVAC_MODE[
                 self.tahoma_device.active_states[ST_DEROGATION_TYPE_STATE]
@@ -226,7 +218,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                     CORE_DEROGATED_TARGET_TEMPERATURE_STATE
                 ]
             )
-        elif self._widget == AEH:
+        elif tahoma_device.widget == AEH:
             self._hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_OFF]
             self._hvac_mode = MAP_HVAC_MODE[
                 self.tahoma_device.active_states[CORE_ON_OFF_STATE]
@@ -265,13 +257,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         self, entity_id: str, old_state: State, new_state: State
     ) -> None:
         """Handle temperature changes."""
-        if new_state is None:
-            return
-        if old_state == new_state:
+        if new_state is None or old_state == new_state:
             return
 
         self.update_temp(new_state)
-        if self._widget == AEH:
+        if self.tahoma_device.widget == AEH:
             await self.hass.async_add_executor_job(self._control_heating)
         self.schedule_update_ha_state()
 
@@ -298,7 +288,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         """Update the state."""
         super().update()
         self.update_temp(None)
-        if self._widget == ST:
+        if self.tahoma_device.widget == ST:
             self._hvac_mode = MAP_HVAC_MODE[
                 self.tahoma_device.active_states[ST_DEROGATION_TYPE_STATE]
             ]
@@ -314,27 +304,11 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 if self._hvac_mode == HVAC_MODE_AUTO
                 else self.tahoma_device.active_states[ST_DEROGATION_HEATING_MODE_STATE]
             ]
-        self._current_hvac_modes = (
-            CURRENT_HVAC_OFF
-            if self._hvac_mode == HVAC_MODE_OFF
-            else CURRENT_HVAC_IDLE
-            if self._current_temperature == 0
-            or self._current_temperature > self._target_temp
-            else CURRENT_HVAC_HEAT
-        )
-
-    @property
-    def available(self) -> bool:
-        """If the device hasn't been able to connect, mark as unavailable."""
-        return (
-            bool(self._current_temperature != 0)
-            and self.hass.states.get(self._temp_sensor_entity_id) is not None
-        )
 
     @property
     def widget(self) -> str:
         """Return the widget attached to this device."""
-        return self._widget
+        return self.tahoma_device.widget
 
     @property
     def hvac_mode(self) -> str:
@@ -349,13 +323,20 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @property
     def hvac_action(self) -> Optional[str]:
         """Return the current running hvac operation if supported."""
-        return self._current_hvac_modes
+        return (
+            CURRENT_HVAC_OFF
+            if self._hvac_mode == HVAC_MODE_OFF
+            else CURRENT_HVAC_IDLE
+            if self.current_temperature == 0
+            or self.current_temperature > self._target_temp
+            else CURRENT_HVAC_HEAT
+        )
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == self._hvac_mode:
             return
-        if self._widget == ST:
+        if self.tahoma_device.widget == ST:
             if hvac_mode == HVAC_MODE_AUTO:
                 self._stored_target_temp = self._target_temp
                 self.apply_action(COMMAND_EXIT_DEROGATION)
@@ -368,7 +349,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                     STATE_DEROGATION_FURTHER_NOTICE,
                 )
             self.apply_action(COMMAND_REFRESH_STATE)
-        if self._widget == AEH:
+        if self.tahoma_device.widget == AEH:
             self._hvac_mode = hvac_mode
             self._control_heating()
             return
@@ -376,7 +357,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return self._supported_features
+        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
 
     @property
     def temperature_sensor(self) -> str:
@@ -399,7 +380,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        return self._temperature_unit
+        return TEMP_CELSIUS
 
     @property
     def current_temperature(self) -> Optional[float]:
@@ -416,7 +397,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is None:
             return
-        if self._widget == ST:
+        if self.tahoma_device.widget == ST:
             if temperature < 15:
                 self.apply_action(
                     COMMAND_SET_DEROGATION,
@@ -433,31 +414,30 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                 COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
             )
             self.apply_action(COMMAND_REFRESH_STATE)
-        if self._widget == AEH:
+        if self.tahoma_device.widget == AEH:
             self._target_temp = temperature
             self._control_heating()
 
     def _control_heating(self) -> None:
         """Control whether heater should be turned on or off."""
-        if self._current_temperature == 0 or self._hvac_mode == HVAC_MODE_OFF:
+        if self.current_temperature == 0 or self._hvac_mode == HVAC_MODE_OFF:
             self.turn_off()
             return
 
-        too_cold = self._target_temp - self._current_temperature >= self._cold_tolerance
-        too_hot = self._current_temperature - self._target_temp >= self._hot_tolerance
-        if too_hot:
+        if self.current_temperature - self._target_temp >= 0.3:
             self.turn_off()
-        if too_cold:
+
+        if self._target_temp - self.current_temperature >= 0.3:
             self.turn_on()
 
     def turn_off(self):
         """Turn the entity off."""
-        if self._widget == AEH:
+        if self.tahoma_device.widget == AEH:
             self.apply_action(COMMAND_OFF)
 
     def turn_on(self):
         """Turn the entity on."""
-        if self._widget == AEH:
+        if self.tahoma_device.widget == AEH:
             self.apply_action(
                 COMMAND_SET_HEATING_LEVEL, AEH_MAP_PRESET_REVERSE[PRESET_COMFORT]
             )
@@ -488,7 +468,7 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
         if self._preset_mode == preset_mode:
             return
         self._preset_mode = preset_mode
-        if self._widget == ST:
+        if self.tahoma_device.widget == ST:
             if preset_mode in [PRESET_FREEZE, PRESET_SLEEP, PRESET_AWAY, PRESET_HOME]:
                 self._stored_target_temp = self._target_temp
                 self.apply_action(
@@ -507,13 +487,12 @@ class TahomaClimate(TahomaDevice, ClimateEntity):
                     COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, self._target_temp
                 )
             self.apply_action(COMMAND_REFRESH_STATE)
-        elif self._widget == AEH:
+        elif self.tahoma_device.widget == AEH:
             if preset_mode == PRESET_NONE:
-                self._preset_mode = PRESET_NONE
                 self._target_temp = self._saved_target_temp
             else:
                 if self._preset_mode == PRESET_NONE:
                     self._saved_target_temp = self._target_temp
-                self._preset_mode = preset_mode
                 self._target_temp = self._preset_temperatures[preset_mode]
+            self._preset_mode = preset_mode
             self._control_heating()
