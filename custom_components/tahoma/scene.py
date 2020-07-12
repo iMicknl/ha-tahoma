@@ -26,7 +26,6 @@ class TahomaScene(Scene):
         """Initialize the scene."""
         self.tahoma_scene = tahoma_scene
         self.controller = controller
-        self._name = self.tahoma_scene.name
 
     def activate(self, **kwargs: Any) -> None:
         """Activate the scene."""
@@ -40,4 +39,4 @@ class TahomaScene(Scene):
     @property
     def name(self):
         """Return the name of the scene."""
-        return self._name
+        return self.tahoma_scene.name
