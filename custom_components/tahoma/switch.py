@@ -37,25 +37,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaSwitch(TahomaDevice, SwitchEntity):
     """Representation a TaHoma Switch."""
 
-    def __init__(self, tahoma_device, controller):
-        """Initialize the switch."""
-        super().__init__(tahoma_device, controller)
-
-        self._state = None
-
-    def update(self):
-        """Update method."""
-        if self.should_wait():
-            self.schedule_update_ha_state(True)
-            return
-
-        self.controller.get_states([self.tahoma_device])
-
-        if CORE_ON_OFF_STATE in self.tahoma_device.active_states:
-            self.current_value = (
-                self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == STATE_ON
-            )
-
     @property
     def device_class(self):
         """Return the class of the device."""
@@ -103,4 +84,4 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return self._state == STATE_ON
+        return self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == STATE_ON

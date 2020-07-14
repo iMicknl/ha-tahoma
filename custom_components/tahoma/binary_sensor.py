@@ -74,16 +74,22 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     """Representation of a TaHoma Binary Sensor."""
 
-    def __init__(self, tahoma_device, controller):
-        """Initialize the sensor."""
-        super().__init__(tahoma_device, controller)
-
-        self._state = None
-
     @property
     def is_on(self):
         """Return the state of the sensor."""
-        return self._state == STATE_ON
+
+        states = self.tahoma_device.active_states
+
+        return (
+            states.get(CORE_CONTACT_STATE) == "open"
+            or states.get(CORE_OCCUPANCY_STATE) == "personInside"
+            or states.get(CORE_SMOKE_STATE) == "detected"
+            or states.get(CORE_RAIN_STATE) == "detected"
+            or states.get(CORE_WATER_DETECTION_STATE) == "detected"
+            or states.get(CORE_GAS_DETECTION_STATE) == "detected"
+            or states.get(IO_VIBRATION_STATE) == "detected"
+            or states.get(CORE_BUTTON_STATE) == "pressed"
+        )
 
     @property
     def device_class(self):
@@ -109,44 +115,3 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         }
 
         return icons.get(self.device_class)
-
-    def update(self):
-        """Update the state."""
-        if self.should_wait():
-            self.schedule_update_ha_state(True)
-            return
-
-        self.controller.get_states([self.tahoma_device])
-
-        states = self.tahoma_device.active_states
-
-        if CORE_CONTACT_STATE in states:
-            self.current_value = states.get(CORE_CONTACT_STATE) == STATE_OPEN
-
-        if CORE_OCCUPANCY_STATE in states:
-            self.current_value = states.get(CORE_OCCUPANCY_STATE) == STATE_PERSON_INSIDE
-
-        if CORE_SMOKE_STATE in states:
-            self.current_value = states.get(CORE_SMOKE_STATE) == STATE_DETECTED
-
-        if CORE_RAIN_STATE in states:
-            self.current_value = states.get(CORE_RAIN_STATE) == STATE_DETECTED
-
-        if CORE_WATER_DETECTION_STATE in states:
-            self.current_value = (
-                states.get(CORE_WATER_DETECTION_STATE) == STATE_DETECTED
-            )
-
-        if CORE_GAS_DETECTION_STATE in states:
-            self.current_value = states.get(CORE_GAS_DETECTION_STATE) == STATE_DETECTED
-
-        if IO_VIBRATION_STATE in states:
-            self.current_value = states.get(IO_VIBRATION_STATE) == STATE_DETECTED
-
-        if CORE_BUTTON_STATE in states:
-            self.current_value = states.get(CORE_BUTTON_STATE) == STATE_PRESSED
-
-        if self.current_value:
-            self._state = STATE_ON
-        else:
-            self._state = STATE_OFF
