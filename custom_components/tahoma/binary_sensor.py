@@ -78,18 +78,18 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     def is_on(self):
         """Return the state of the sensor."""
 
-        states = self.tahoma_device.active_states
-
-        return (
-            states.get(CORE_CONTACT_STATE) == "open"
-            or states.get(CORE_OCCUPANCY_STATE) == "personInside"
-            or states.get(CORE_SMOKE_STATE) == "detected"
-            or states.get(CORE_RAIN_STATE) == "detected"
-            or states.get(CORE_WATER_DETECTION_STATE) == "detected"
-            or states.get(CORE_GAS_DETECTION_STATE) == "detected"
-            or states.get(IO_VIBRATION_STATE) == "detected"
-            or states.get(CORE_BUTTON_STATE) == "pressed"
-        )
+        return self.select_state(
+            [
+                CORE_CONTACT_STATE,
+                CORE_OCCUPANCY_STATE,
+                CORE_SMOKE_STATE,
+                CORE_RAIN_STATE,
+                CORE_WATER_DETECTION_STATE,
+                CORE_GAS_DETECTION_STATE,
+                IO_VIBRATION_STATE,
+                CORE_BUTTON_STATE,
+            ]
+        ) in [STATE_OPEN, STATE_PERSON_INSIDE, STATE_DETECTED, STATE_PRESSED]
 
     @property
     def device_class(self):
@@ -109,9 +109,6 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             else:
                 return ICON_WATER_OFF
 
-        icons = {
-            DEVICE_CLASS_GAS: ICON_WAVES,
-            DEVICE_CLASS_RAIN: ICON_WEATHER_RAINY,
-        }
+        icons = {DEVICE_CLASS_GAS: ICON_WAVES, DEVICE_CLASS_RAIN: ICON_WEATHER_RAINY}
 
         return icons.get(self.device_class)
