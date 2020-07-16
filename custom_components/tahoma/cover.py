@@ -109,10 +109,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_TARGET_CLOSURE_STATE,
         )
 
-        if "Horizontal" in self.tahoma_device.widget:
-            return position
-        else:
-            return 100 - position
+        return position if "Horizontal" in self.tahoma_device.widget else 100 - position
 
     @property
     def current_cover_tilt_position(self):

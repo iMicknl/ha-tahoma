@@ -165,7 +165,7 @@ class TahomaDevice(Entity):
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
         if cmd_name is None:
-            raise NotImplementedError
+            raise ValueError(f"Command {cmd_name} does not exist for {self.name}")
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
