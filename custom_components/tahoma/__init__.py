@@ -59,10 +59,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     for device in devices:
         _device = controller.get_device(device)
 
-        if (
-            _device.uiclass in TAHOMA_TYPES
-            and TAHOMA_TYPES[_device.uiclass] is not None
-        ):
+        if _device.uiclass in TAHOMA_TYPES and TAHOMA_TYPES[_device.uiclass]:
             if TAHOMA_TYPES[_device.uiclass] in PLATFORMS:
                 component = TAHOMA_TYPES[_device.uiclass]
                 hass.data[DOMAIN][entry.entry_id]["devices"].append(_device)
