@@ -57,26 +57,20 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        states = self.tahoma_device.active_states
-        brightness = states.get(CORE_LIGHT_INTENSITY_STATE)
+        brightness = self.select_state(CORE_LIGHT_INTENSITY_STATE)
         return int(brightness * 255 / 100)
 
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        states = self.tahoma_device.active_states
-        return states.get(CORE_ON_OFF_STATE) == STATE_ON
+        return self.select_state(CORE_ON_OFF_STATE) == STATE_ON
 
     @property
     def hs_color(self):
         """Return the hue and saturation color value [float, float]."""
-        states = self.tahoma_device.active_states
-
-        [r, g, b] = [
-            states.get(CORE_RED_COLOR_INTENSITY_STATE),
-            states.get(CORE_GREEN_COLOR_INTENSITY_STATE),
-            states.get(CORE_BLUE_COLOR_INTENSITY_STATE),
-        ]
+        r = self.select_state(CORE_RED_COLOR_INTENSITY_STATE)
+        g = self.select_state(CORE_GREEN_COLOR_INTENSITY_STATE)
+        b = self.select_state(CORE_BLUE_COLOR_INTENSITY_STATE)
         return None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
 
     @property
@@ -84,13 +78,13 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if COMMAND_SET_INTENSITY in self.tahoma_device.command_definitions:
+        if self.has_state(COMMAND_SET_INTENSITY):
             supported_features |= SUPPORT_BRIGHTNESS
 
-        if COMMAND_WINK in self.tahoma_device.command_definitions:
+        if self.has_state(COMMAND_WINK):
             supported_features |= SUPPORT_EFFECT
 
-        if COMMAND_SET_RGB in self.tahoma_device.command_definitions:
+        if self.has_state(COMMAND_SET_RGB):
             supported_features |= SUPPORT_COLOR
 
         return supported_features
@@ -126,7 +120,7 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def effect_list(self) -> list:
         """Return the list of supported effects."""
-        return [COMMAND_WINK]
+        return [COMMAND_WINK] if self.has_state(COMMAND_WINK) else None
 
     @property
     def effect(self) -> str:

@@ -59,11 +59,14 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     def turn_on(self, **kwargs):
         """Send the on command."""
         if COMMAND_ON in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_ON)
+            self.apply_action(COMMAND_ON)
 
-        if "ringWithSingleSimpleSequence" in self.tahoma_device.command_definitions:
+        elif (
+            COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE
+            in self.tahoma_device.command_definitions
+        ):
             # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
-            return self.apply_action(
+            self.apply_action(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 120000,
                 75,
@@ -73,15 +76,13 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
     def turn_off(self, **kwargs):
         """Send the off command."""
-        if COMMAND_OFF in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_OFF)
+        self.apply_action(self.select_command(COMMAND_OFF))
 
     def toggle(self, **kwargs):
         """Click the switch."""
-        if "cycle" in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_CYCLE)
+        self.apply_action(self.select_command(COMMAND_CYCLE))
 
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return self.tahoma_device.active_states.get(CORE_ON_OFF_STATE) == STATE_ON
+        return self.select_state(CORE_ON_OFF_STATE) == STATE_ON

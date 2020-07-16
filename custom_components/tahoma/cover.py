@@ -102,37 +102,14 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def current_cover_position(self):
         """Return current position of cover."""
 
-        states = self.tahoma_device.active_states
+        position = self.select_state(
+            CORE_CLOSURE_STATE,
+            CORE_DEPLOYMENT_STATE,
+            CORE_PEDESTRIAN_POSITION_STATE,
+            CORE_TARGET_CLOSURE_STATE,
+        )
 
-        position = None
-
-        # Set position for vertical covers
-        if CORE_CLOSURE_STATE in states:
-            position = 100 - states.get(CORE_CLOSURE_STATE)
-
-        # Set position for horizontal covers
-        if CORE_DEPLOYMENT_STATE in states:
-            position = 100 - states.get(CORE_DEPLOYMENT_STATE)
-
-        # Set position for gates
-        if CORE_PEDESTRIAN_POSITION_STATE in states:
-            position = 100 - states.get(CORE_PEDESTRIAN_POSITION_STATE)
-
-        if CORE_TARGET_CLOSURE_STATE in states:
-            position = 100 - states.get(CORE_TARGET_CLOSURE_STATE)
-
-        if position is not None:
-            # HorizontalAwning devices need a reversed position that can not be obtained via the API
-            if "Horizontal" in self.tahoma_device.widget:
-                position = 100 - position
-
-            # TODO Check if this offset is really necessary
-            if position <= 5:
-                position = 0
-            if position >= 95:
-                position = 100
-
-        return position
+        return position if "Horizontal" in self.tahoma_device.widget else 100 - position
 
     @property
     def current_cover_tilt_position(self):
@@ -140,11 +117,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        states = self.tahoma_device.active_states
-        position = None
-        if CORE_SLATS_ORIENTATION_STATE in states:
-            position = 100 - states.get(CORE_SLATS_ORIENTATION_STATE)
-        return position
+        position = self.select_state(CORE_SLATS_ORIENTATION_STATE)
+        return 100 - position if position else None
 
     def set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
@@ -154,14 +128,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "Horizontal" in self.tahoma_device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
-        if COMMAND_SET_POSITION in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_SET_POSITION, position)
-
-        if COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_SET_CLOSURE, position)
-
-        if COMMAND_SET_PEDESTRIAN_POSITION in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_SET_PEDESTRIAN_POSITION, position)
+        command = self.select_command(
+            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
+        )
+        self.apply_action(command, position)
 
     def set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
@@ -173,21 +143,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
-        states = self.tahoma_device.active_states
-        if CORE_OPEN_CLOSED_STATE in states:
-            return states.get(CORE_OPEN_CLOSED_STATE) == STATE_CLOSED
+        state = self.select_state(
+            CORE_OPEN_CLOSED_STATE,
+            CORE_SLATS_OPEN_CLOSED_STATE,
+            CORE_OPEN_CLOSED_PARTIAL_STATE,
+            CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
+            CORE_OPEN_CLOSED_UNKNOWN_STATE,
+        )
 
-        if CORE_SLATS_OPEN_CLOSED_STATE in states:
-            return states.get(CORE_SLATS_OPEN_CLOSED_STATE) == STATE_CLOSED
-
-        if CORE_OPEN_CLOSED_PARTIAL_STATE in states:
-            return states.get(CORE_OPEN_CLOSED_PARTIAL_STATE) == STATE_CLOSED
-
-        if CORE_OPEN_CLOSED_PEDESTRIAN_STATE in states:
-            return states.get(CORE_OPEN_CLOSED_PEDESTRIAN_STATE) == STATE_CLOSED
-
-        if CORE_OPEN_CLOSED_UNKNOWN_STATE in states:
-            return states.get(CORE_OPEN_CLOSED_UNKNOWN_STATE) == STATE_CLOSED
+        if state is not None:
+            return state == "closed"
 
         if self.current_cover_position is not None:
             return self.current_cover_position == 0
@@ -211,19 +176,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return the device state attributes."""
         attr = {}
         super_attr = super().device_state_attributes
-
         if super_attr is not None:
             attr.update(super_attr)
-
-        if CORE_MEMORIZED_1_POSITION_STATE in self.tahoma_device.active_states:
-            attr[ATTR_MEM_POS] = self.tahoma_device.active_states[
-                CORE_MEMORIZED_1_POSITION_STATE
-            ]
-
-        if IO_PRIORITY_LOCK_ORIGINATOR_STATE in self.tahoma_device.active_states:
-            attr[ATTR_LOCK_ORIG] = self.tahoma_device.active_states[
-                IO_PRIORITY_LOCK_ORIGINATOR_STATE
-            ]
+        attr[ATTR_MEM_POS] = self.select_state(CORE_MEMORIZED_1_POSITION_STATE)
+        attr[ATTR_LOCK_ORIG] = self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
         return attr
 
     @property
@@ -239,57 +195,31 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-
-        if COMMAND_OPEN in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_OPEN)
-
-        if COMMAND_UP in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_UP)
+        self.apply_action(self.select_command(COMMAND_OPEN, COMMAND_UP))
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-
-        if COMMAND_OPEN_SLATS in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_OPEN_SLATS)
+        self.apply_action(self.select_command(COMMAND_OPEN_SLATS))
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-
-        if COMMAND_CLOSE in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_CLOSE)
-
-        if COMMAND_DOWN in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_DOWN)
+        self.apply_action(self.select_command(COMMAND_CLOSE, COMMAND_DOWN))
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-
-        if COMMAND_CLOSE_SLATS in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_CLOSE_SLATS)
+        self.apply_action(self.select_command(COMMAND_CLOSE_SLATS))
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
-
-        if COMMAND_STOP in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_STOP)
-
-        if COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_STOP_IDENTIFY)
-
-        if COMMAND_MY in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_MY)
+        self.apply_action(
+            self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
+        )
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
-
-        if COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_STOP_IDENTIFY)
-
-        if COMMAND_STOP in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_STOP)
-
-        if COMMAND_MY in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_MY)
+        self.apply_action(
+            self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
+        )
 
     @property
     def supported_features(self):
@@ -297,46 +227,30 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         supported_features = 0
 
-        if COMMAND_OPEN_SLATS in self.tahoma_device.command_definitions:
+        if self.has_command(COMMAND_OPEN_SLATS):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if (
-                COMMAND_STOP in self.tahoma_device.command_definitions
-                or COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions
-                or COMMAND_MY in self.tahoma_device.command_definitions
-            ):
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if COMMAND_CLOSE_SLATS in self.tahoma_device.command_definitions:
+        if self.has_command(COMMAND_CLOSE_SLATS):
             supported_features |= SUPPORT_CLOSE_TILT
 
-        if COMMAND_SET_ORIENTATION in self.tahoma_device.command_definitions:
+        if self.has_command(COMMAND_SET_ORIENTATION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if (
-            COMMAND_SET_POSITION in self.tahoma_device.command_definitions
-            or COMMAND_SET_CLOSURE in self.tahoma_device.command_definitions
-            or COMMAND_SET_PEDESTRIAN_POSITION in self.tahoma_device.command_definitions
+        if self.has_command(
+            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         ):
             supported_features |= SUPPORT_SET_POSITION
 
-        if (
-            COMMAND_OPEN in self.tahoma_device.command_definitions
-            or COMMAND_UP in self.tahoma_device.command_definitions
-        ):
+        if self.has_command(COMMAND_OPEN, COMMAND_UP):
             supported_features |= SUPPORT_OPEN
 
-            if (
-                COMMAND_STOP in self.tahoma_device.command_definitions
-                or COMMAND_MY in self.tahoma_device.command_definitions
-                or COMMAND_STOP_IDENTIFY in self.tahoma_device.command_definitions
-            ):
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
                 supported_features |= SUPPORT_STOP
 
-        if (
-            COMMAND_CLOSE in self.tahoma_device.command_definitions
-            or COMMAND_DOWN in self.tahoma_device.command_definitions
-        ):
+        if self.has_command(COMMAND_CLOSE, COMMAND_DOWN):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features

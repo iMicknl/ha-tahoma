@@ -47,7 +47,4 @@ class TahomaLock(TahomaDevice, LockEntity):
     @property
     def is_locked(self):
         """Return True if the lock is locked."""
-        return (
-            self.tahoma_device.active_states.get(CORE_LOCKED_UNLOCKED_STATE)
-            == STATE_LOCKED
-        )
+        return self.select_state(CORE_LOCKED_UNLOCKED_STATE) == STATE_LOCKED

@@ -126,6 +126,32 @@ class TahomaDevice(Entity):
             "sw_version": self.tahoma_device.type,
         }
 
+    def select_command(self, *commands):
+        """Select first existing command in a list of commands."""
+        return next(
+            (c for c in self.tahoma_device.command_definitions if c in list(commands)),
+            None,
+        )
+
+    def has_command(self, *commands):
+        """Return True if a command exists in a list of commands."""
+        return self.select_command(*commands) is not None
+
+    def select_state(self, *states):
+        """Select first existing active state in a list of states."""
+        return next(
+            (
+                v
+                for k, v in self.tahoma_device.active_states.items()
+                if k in list(states)
+            ),
+            None,
+        )
+
+    def has_state(self, *states):
+        """Return True if a state exists in self."""
+        return self.select_state(*states)
+
     def should_wait(self):
         """Wait for actions to finish."""
         exec_queue = self.controller.get_current_executions()
@@ -138,6 +164,8 @@ class TahomaDevice(Entity):
 
     def apply_action(self, cmd_name, *args):
         """Apply Action to Device."""
+        if cmd_name is None:
+            raise ValueError(f"Command {cmd_name} does not exist for {self.name}")
         action = Action(self.tahoma_device.url)
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
