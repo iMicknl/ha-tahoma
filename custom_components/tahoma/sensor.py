@@ -87,51 +87,46 @@ class TahomaSensor(TahomaDevice, Entity):
         """Return the name of the sensor."""
 
         return self.select_state(
-            [
-                CORE_LUMINANCE_STATE,
-                CORE_RELATIVE_HUMIDITY_STATE,
-                CORE_TEMPERATURE_STATE,
-                CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-                CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-                CORE_CO_CONCENTRATION_STATE,
-                CORE_CO2_CONCENTRATION_STATE,
-                CORE_WINDSPEED_STATE,
-                CORE_SUN_ENERGY_STATE,
-            ]
+            CORE_LUMINANCE_STATE,
+            CORE_RELATIVE_HUMIDITY_STATE,
+            CORE_TEMPERATURE_STATE,
+            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
+            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
+            CORE_CO_CONCENTRATION_STATE,
+            CORE_CO2_CONCENTRATION_STATE,
+            CORE_WINDSPEED_STATE,
+            CORE_SUN_ENERGY_STATE,
         )
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
+        TEMPERATURE_UNIT = {
+            CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
+            CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
+            CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
+            CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
+        }.get(
+            self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE), TEMP_CELSIUS,
+        )
+        state = self.select_state(
+            CORE_TEMPERATURE_STATE,
+            CORE_RELATIVE_HUMIDITY_STATE,
+            CORE_LUMINANCE_STATE,
+            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
+            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
+            CORE_CO_CONCENTRATION_STATE,
+            CORE_CO2_CONCENTRATION_STATE,
+        )
         return {
-            CORE_TEMPERATURE_STATE: {
-                CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
-                CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
-                CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
-                CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-            }.get(
-                self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE),
-                TEMP_CELSIUS,
-            ),
+            CORE_TEMPERATURE_STATE: TEMPERATURE_UNIT,
             CORE_RELATIVE_HUMIDITY_STATE: UNIT_PERCENTAGE,
             CORE_LUMINANCE_STATE: UNIT_LX,
             CORE_ELECTRIC_POWER_CONSUMPTION_STATE: POWER_WATT,
             CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE: ENERGY_WATT_HOUR,
             CORE_CO_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
             CORE_CO2_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
-        }.get(
-            self.select_state(
-                [
-                    CORE_TEMPERATURE_STATE,
-                    CORE_RELATIVE_HUMIDITY_STATE,
-                    CORE_LUMINANCE_STATE,
-                    CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-                    CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-                    CORE_CO_CONCENTRATION_STATE,
-                    CORE_CO2_CONCENTRATION_STATE,
-                ]
-            )
-        )
+        }.get(state)
 
     @property
     def icon(self) -> Optional[str]:

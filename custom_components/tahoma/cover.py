@@ -103,27 +103,16 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return current position of cover."""
 
         position = self.select_state(
-            [
-                CORE_CLOSURE_STATE,
-                CORE_DEPLOYMENT_STATE,
-                CORE_PEDESTRIAN_POSITION_STATE,
-                CORE_TARGET_CLOSURE_STATE,
-            ]
+            CORE_CLOSURE_STATE,
+            CORE_DEPLOYMENT_STATE,
+            CORE_PEDESTRIAN_POSITION_STATE,
+            CORE_TARGET_CLOSURE_STATE,
         )
 
-        if position is not None:
-            position = 100 - position
-            # HorizontalAwning devices need a reversed position that can not be obtained via the API
-            if "Horizontal" in self.tahoma_device.widget:
-                position = 100 - position
-
-            # TODO Check if this offset is really necessary
-            if position <= 5:
-                position = 0
-            if position >= 95:
-                position = 100
-
-        return position
+        if "Horizontal" in self.tahoma_device.widget:
+            return position
+        else:
+            return 100 - position
 
     @property
     def current_cover_tilt_position(self):
@@ -131,7 +120,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = self.select_state([CORE_SLATS_ORIENTATION_STATE])
+        position = self.select_state(CORE_SLATS_ORIENTATION_STATE)
         return 100 - position if position else None
 
     def set_cover_position(self, **kwargs):
@@ -143,7 +132,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             position = kwargs.get(ATTR_POSITION, 0)
 
         command = self.select_command(
-            [COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION]
+            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         )
         self.apply_action(command, position)
 
@@ -158,13 +147,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return if the cover is closed."""
 
         state = self.select_state(
-            [
-                CORE_OPEN_CLOSED_STATE,
-                CORE_SLATS_OPEN_CLOSED_STATE,
-                CORE_OPEN_CLOSED_PARTIAL_STATE,
-                CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
-                CORE_OPEN_CLOSED_UNKNOWN_STATE,
-            ]
+            CORE_OPEN_CLOSED_STATE,
+            CORE_SLATS_OPEN_CLOSED_STATE,
+            CORE_OPEN_CLOSED_PARTIAL_STATE,
+            CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
+            CORE_OPEN_CLOSED_UNKNOWN_STATE,
         )
 
         if state is not None:
@@ -194,8 +181,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         super_attr = super().device_state_attributes
         if super_attr is not None:
             attr.update(super_attr)
-        attr[ATTR_MEM_POS] = self.select_state([CORE_MEMORIZED_1_POSITION_STATE])
-        attr[ATTR_LOCK_ORIG] = self.select_state([IO_PRIORITY_LOCK_ORIGINATOR_STATE])
+        attr[ATTR_MEM_POS] = self.select_state(CORE_MEMORIZED_1_POSITION_STATE)
+        attr[ATTR_LOCK_ORIG] = self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
         return attr
 
     @property
@@ -211,30 +198,30 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def open_cover(self, **kwargs):
         """Open the cover."""
-        self.apply_action(self.select_command([COMMAND_OPEN, COMMAND_UP]))
+        self.apply_action(self.select_command(COMMAND_OPEN, COMMAND_UP))
 
     def open_cover_tilt(self, **kwargs):
         """Open the cover tilt."""
-        self.apply_action(self.select_command([COMMAND_OPEN_SLATS]))
+        self.apply_action(self.select_command(COMMAND_OPEN_SLATS))
 
     def close_cover(self, **kwargs):
         """Close the cover."""
-        self.apply_action(self.select_command([COMMAND_CLOSE, COMMAND_DOWN]))
+        self.apply_action(self.select_command(COMMAND_CLOSE, COMMAND_DOWN))
 
     def close_cover_tilt(self, **kwargs):
         """Close the cover tilt."""
-        self.apply_action(self.select_command([COMMAND_CLOSE_SLATS]))
+        self.apply_action(self.select_command(COMMAND_CLOSE_SLATS))
 
     def stop_cover(self, **kwargs):
         """Stop the cover."""
         self.apply_action(
-            self.select_command([COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY])
+            self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
         )
 
     def stop_cover_tilt(self, **kwargs):
         """Stop the cover."""
         self.apply_action(
-            self.select_command([COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY])
+            self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
         )
 
     @property
@@ -243,30 +230,30 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         supported_features = 0
 
-        if self.select_command([COMMAND_OPEN_SLATS]):
+        if self.has_command(COMMAND_OPEN_SLATS):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if self.select_command([COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]):
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if self.select_command([COMMAND_CLOSE_SLATS]):
+        if self.has_command(COMMAND_CLOSE_SLATS):
             supported_features |= SUPPORT_CLOSE_TILT
 
-        if self.select_command([COMMAND_SET_ORIENTATION]):
+        if self.has_command(COMMAND_SET_ORIENTATION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.select_command(
-            [COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION]
+        if self.has_command(
+            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         ):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.select_command([COMMAND_OPEN, COMMAND_UP]):
+        if self.has_command(COMMAND_OPEN, COMMAND_UP):
             supported_features |= SUPPORT_OPEN
 
-            if self.select_command([COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]):
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
                 supported_features |= SUPPORT_STOP
 
-        if self.select_command([COMMAND_CLOSE, COMMAND_DOWN]):
+        if self.has_command(COMMAND_CLOSE, COMMAND_DOWN):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features

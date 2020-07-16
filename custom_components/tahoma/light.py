@@ -57,20 +57,20 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        brightness = self.select_state([CORE_LIGHT_INTENSITY_STATE])
+        brightness = self.select_state(CORE_LIGHT_INTENSITY_STATE)
         return int(brightness * 255 / 100)
 
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        return self.select_state([CORE_ON_OFF_STATE]) == STATE_ON
+        return self.select_state(CORE_ON_OFF_STATE) == STATE_ON
 
     @property
     def hs_color(self):
         """Return the hue and saturation color value [float, float]."""
-        r = self.select_state([CORE_RED_COLOR_INTENSITY_STATE])
-        g = self.select_state([CORE_GREEN_COLOR_INTENSITY_STATE])
-        b = self.select_state([CORE_BLUE_COLOR_INTENSITY_STATE])
+        r = self.select_state(CORE_RED_COLOR_INTENSITY_STATE)
+        g = self.select_state(CORE_GREEN_COLOR_INTENSITY_STATE)
+        b = self.select_state(CORE_BLUE_COLOR_INTENSITY_STATE)
         return None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
 
     @property
@@ -78,13 +78,13 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.select_state([COMMAND_SET_INTENSITY]):
+        if self.has_state(COMMAND_SET_INTENSITY):
             supported_features |= SUPPORT_BRIGHTNESS
 
-        if self.select_state([COMMAND_WINK]):
+        if self.has_state(COMMAND_WINK):
             supported_features |= SUPPORT_EFFECT
 
-        if self.select_state([COMMAND_SET_RGB]):
+        if self.has_state(COMMAND_SET_RGB):
             supported_features |= SUPPORT_COLOR
 
         return supported_features
@@ -120,7 +120,7 @@ class TahomaLight(TahomaDevice, LightEntity):
     @property
     def effect_list(self) -> list:
         """Return the list of supported effects."""
-        return [COMMAND_WINK] if self.select_state([COMMAND_WINK]) else None
+        return [COMMAND_WINK] if self.has_state(COMMAND_WINK) else None
 
     @property
     def effect(self) -> str:

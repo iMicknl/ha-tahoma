@@ -79,16 +79,14 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         """Return the state of the sensor."""
 
         return self.select_state(
-            [
-                CORE_CONTACT_STATE,
-                CORE_OCCUPANCY_STATE,
-                CORE_SMOKE_STATE,
-                CORE_RAIN_STATE,
-                CORE_WATER_DETECTION_STATE,
-                CORE_GAS_DETECTION_STATE,
-                IO_VIBRATION_STATE,
-                CORE_BUTTON_STATE,
-            ]
+            CORE_CONTACT_STATE,
+            CORE_OCCUPANCY_STATE,
+            CORE_SMOKE_STATE,
+            CORE_RAIN_STATE,
+            CORE_WATER_DETECTION_STATE,
+            CORE_GAS_DETECTION_STATE,
+            IO_VIBRATION_STATE,
+            CORE_BUTTON_STATE,
         ) in [STATE_OPEN, STATE_PERSON_INSIDE, STATE_DETECTED, STATE_PRESSED]
 
     @property
