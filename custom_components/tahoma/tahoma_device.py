@@ -119,7 +119,7 @@ class TahomaDevice(Entity):
     def device_info(self):
         """Return device registry information for this entity."""
         return {
-            "identifiers": {(DOMAIN, self.unique_id)},
+            "identifiers": {(DOMAIN, self.unique_id.split("#", 1)[0])},
             "manufacturer": "Somfy",
             "name": self.name,
             "model": self.tahoma_device.widget,
