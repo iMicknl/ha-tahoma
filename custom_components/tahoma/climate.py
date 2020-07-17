@@ -13,9 +13,9 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     PRESET_NONE,
 )
-from homeassistant.const import STATE_OFF, STATE_ON, TEMP_CELSIUS
+from homeassistant.const import TEMP_CELSIUS
 
-from .const import CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN, TAHOMA_TYPES
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,8 +74,6 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
         return self._hvac_mode
-        # modes = {STATE_ON: HVAC_MODE_HEAT, STATE_OFF: HVAC_MODE_OFF}
-        # return modes[self.select_state(CORE_ON_OFF_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -95,13 +93,6 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
         return self._preset_mode
-        # modes = {
-        #     PRESET_OFF: PRESET_NONE,
-        #     PRESET_FROST_PROTECTION: PRESET_FREEZE,
-        #     PRESET_ECO: PRESET_ECO,
-        #     PRESET_COMFORT: PRESET_COMFORT,
-        # }
-        # return modes[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
