@@ -23,6 +23,7 @@ from homeassistant.components.cover import (
 )
 
 from .const import DOMAIN, TAHOMA_TYPES
+from .switch import COMMAND_CYCLE
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -254,3 +255,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features
+
+    def toggle(self):
+        """Toggle the entity."""
+        if self.has_command(COMMAND_CYCLE):
+            self.apply_action(COMMAND_CYCLE)
+        else:
+            super().toggle()
