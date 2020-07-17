@@ -34,10 +34,10 @@ class TahomaDevice(Entity):
     def update(self):
         """Update method."""
         if self.should_wait():
-            self.schedule_update_ha_state(True)
+            self.hass.add_job(self.update)
             return
-
         self.controller.get_states([self.tahoma_device])
+        self.schedule_update_ha_state()
 
     async def async_added_to_hass(self):
         """Entity created."""
