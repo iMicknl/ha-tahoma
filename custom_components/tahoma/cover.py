@@ -19,7 +19,7 @@ from homeassistant.components.cover import (
     SUPPORT_SET_TILT_POSITION,
     SUPPORT_STOP,
     SUPPORT_STOP_TILT,
-    CoverDevice,
+    CoverEntity,
 )
 
 from .const import DOMAIN, TAHOMA_TYPES
@@ -96,7 +96,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
 
-class TahomaCover(TahomaDevice, CoverDevice):
+class TahomaCover(TahomaDevice, CoverEntity):
     """Representation a TaHoma Cover."""
 
     @property
@@ -258,7 +258,7 @@ class TahomaCover(TahomaDevice, CoverDevice):
 
     def toggle(self):
         """Toggle the entity."""
-        if COMMAND_CYCLE in self.tahoma_device.command_definitions:
-            return self.apply_action(COMMAND_CYCLE)
+        if self.has_command(COMMAND_CYCLE):
+            self.apply_action(COMMAND_CYCLE)
         else:
             super().toggle()
