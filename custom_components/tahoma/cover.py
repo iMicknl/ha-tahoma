@@ -109,8 +109,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
         )
-
-        return position if "Horizontal" in self.tahoma_device.widget else 100 - position
+        if position and "Horizontal" not in self.tahoma_device.widget:
+            position = 100 - position
+        return position
 
     @property
     def current_cover_tilt_position(self):
