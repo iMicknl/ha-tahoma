@@ -170,4 +170,3 @@ class TahomaDevice(Entity):
         action.add_command(cmd_name, *args)
         exec_id = self.controller.apply_actions("HomeAssistant", [action])
         self._exec_queue.append(exec_id)
-        return exec_id
