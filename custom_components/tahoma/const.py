@@ -31,6 +31,7 @@ TAHOMA_TYPES = {
     "Curtain": "cover",
     "Generic": "cover",
     "SwingingShutter": "cover",
+    "Screen": "cover",
     "ElectricitySensor": "sensor",
     "AirSensor": "sensor",
     "Siren": "switch",
