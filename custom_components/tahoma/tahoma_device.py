@@ -1,7 +1,9 @@
 """Parent class for every TaHoma devices."""
+from datetime import timedelta
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
+from homeassistant.util import Throttle
 
 from .const import DOMAIN
 from .tahoma_api import Action
@@ -34,10 +36,10 @@ class TahomaDevice(Entity):
     def update(self):
         """Update method."""
         if self.should_wait():
-            self.schedule_update_ha_state(True)
+            self.hass.add_job(self.update)
             return
-
         self.controller.get_states([self.tahoma_device])
+        self.schedule_update_ha_state()
 
     async def async_added_to_hass(self):
         """Entity created."""
@@ -152,6 +154,7 @@ class TahomaDevice(Entity):
         """Return True if a state exists in self."""
         return self.select_state(*states)
 
+    @Throttle(timedelta(seconds=1))
     def should_wait(self):
         """Wait for actions to finish."""
         exec_queue = self.controller.get_current_executions()
