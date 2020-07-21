@@ -26,7 +26,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         elif device.widget == ST:
             base_url = device.url.split("#", 1)[0]
             sensor = None
-            for k, v in hass.data["entity_registry"].entities.items():
+            entity_registry = await hass.helpers.entity_registry.async_get_registry()
+            for k, v in entity_registry.entities.items():
                 if v.unique_id == base_url + "#2":
                     sensor = k
                     break

@@ -24,6 +24,20 @@ PRESET_FREEZE = "Freeze"
 PRESET_FROST_PROTECTION = "frostprotection"
 PRESET_OFF = "off"
 
+MAP_PRESET_MODES = {
+    PRESET_OFF: PRESET_NONE,
+    PRESET_FROST_PROTECTION: PRESET_FREEZE,
+    PRESET_ECO: PRESET_ECO,
+    PRESET_COMFORT: PRESET_COMFORT,
+}
+MAP_REVERSE_PRESET_MODES = {
+    PRESET_NONE: PRESET_OFF,
+    PRESET_FREEZE: PRESET_FROST_PROTECTION,
+    PRESET_ECO: PRESET_ECO,
+    PRESET_COMFORT: PRESET_COMFORT,
+}
+MAP_HVAC_MODES = {HVAC_MODE_HEAT: PRESET_COMFORT, HVAC_MODE_OFF: PRESET_OFF}
+
 
 class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
@@ -51,13 +65,7 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        modes = {
-            PRESET_OFF: PRESET_NONE,
-            PRESET_FROST_PROTECTION: PRESET_FREEZE,
-            PRESET_ECO: PRESET_ECO,
-            PRESET_COMFORT: PRESET_COMFORT,
-        }
-        return modes[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
+        return MAP_PRESET_MODES[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -66,18 +74,13 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        modes = {HVAC_MODE_HEAT: PRESET_COMFORT, HVAC_MODE_OFF: PRESET_OFF}
-        self.apply_action(COMMAND_SET_HEATING_LEVEL, modes[hvac_mode])
+        self.apply_action(COMMAND_SET_HEATING_LEVEL, MAP_HVAC_MODES[hvac_mode])
 
     def set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        modes = {
-            PRESET_NONE: PRESET_OFF,
-            PRESET_FREEZE: PRESET_FROST_PROTECTION,
-            PRESET_ECO: PRESET_ECO,
-            PRESET_COMFORT: PRESET_COMFORT,
-        }
-        self.apply_action(COMMAND_SET_HEATING_LEVEL, modes[preset_mode])
+        self.apply_action(
+            COMMAND_SET_HEATING_LEVEL, MAP_REVERSE_PRESET_MODES[preset_mode]
+        )
 
     def turn_off(self) -> None:
         """Turn off the device."""

@@ -54,13 +54,19 @@ MAP_HVAC_MODES = {
     STATE_DEROGATION_NEXT_MODE: HVAC_MODE_HEAT,
     STATE_DEROGATION_FURTHER_NOTICE: HVAC_MODE_HEAT,
 }
-
 MAP_PRESET_MODES = {
     STATE_PRESET_AT_HOME: PRESET_HOME,
     STATE_PRESET_AWAY: PRESET_AWAY,
     STATE_PRESET_FREEZE: PRESET_FREEZE,
     STATE_PRESET_MANUAL: PRESET_NONE,
     STATE_PRESET_SLEEPING_MODE: PRESET_NIGHT,
+}
+MAP_REVERSE_PRESET_MODES = {
+    PRESET_HOME: STATE_PRESET_AT_HOME,
+    PRESET_AWAY: STATE_PRESET_AWAY,
+    PRESET_FREEZE: STATE_PRESET_FREEZE,
+    PRESET_NONE: STATE_PRESET_MANUAL,
+    PRESET_NIGHT: STATE_PRESET_SLEEPING_MODE,
 }
 PRESET_TEMPERATURES = {
     PRESET_HOME: "somfythermostat:AtHomeTargetTemperatureState",
@@ -191,6 +197,11 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         if temperature is None:
             return
 
+        if temperature < 15.0:
+            temperature = 15
+        elif temperature > 26.0:
+            temperature = 26
+
         self.apply_action(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
         )
@@ -214,18 +225,11 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         """Set new preset mode."""
         if self.preset_mode == preset_mode:
             return
-        modes = {
-            PRESET_HOME: STATE_PRESET_AT_HOME,
-            PRESET_AWAY: STATE_PRESET_AWAY,
-            PRESET_FREEZE: STATE_PRESET_FREEZE,
-            PRESET_NONE: STATE_PRESET_MANUAL,
-            PRESET_NIGHT: STATE_PRESET_SLEEPING_MODE,
-        }
         if preset_mode in [PRESET_FREEZE, PRESET_NIGHT, PRESET_AWAY, PRESET_HOME]:
             self._saved_target_temp = self.target_temperature
             self.apply_action(
                 COMMAND_SET_DEROGATION,
-                modes[preset_mode],
+                MAP_REVERSE_PRESET_MODES[preset_mode],
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
         elif preset_mode == PRESET_NONE:
