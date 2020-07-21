@@ -1,12 +1,13 @@
 """Support for TaHoma climate devices."""
 
 from .climate_aeh import AtlanticElectricalHeater
+from .climate_deh import DimmerExteriorHeating
 from .climate_st import SomfyThermostat
 from .const import DOMAIN, TAHOMA_TYPES
 
 AEH = "AtlanticElectricalHeater"
 ST = "SomfyThermostat"
-SUPPORTED_CLIMATE_DEVICES = [AEH, ST]
+DEH = "DimmerExteriorHeating"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -32,4 +33,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
                     sensor = k
                     break
             entities.append(SomfyThermostat(device, controller, sensor))
+        elif device.widget == DEH:
+            entities.append(DimmerExteriorHeating(device, controller))
     async_add_entities(entities)
