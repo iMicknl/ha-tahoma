@@ -9,6 +9,7 @@ TAHOMA_TYPES = {
     "Pergola": "cover",
     "RollerShutter": "cover",
     "Window": "cover",
+    "ExteriorHeatingSystem": "climate",
     "HeatingSystem": "climate",
     "TemperatureSensor": "sensor",
     "LightSensor": "sensor",
