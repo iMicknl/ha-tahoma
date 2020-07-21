@@ -1,5 +1,6 @@
 """Support for Atlantic Electrical Heater IO controller."""
-from typing import List, Optional
+import logging
+from typing import List
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
@@ -10,6 +11,8 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from .tahoma_device import TahomaDevice
+
+_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_LEVEL = "setLevel"
 
@@ -54,6 +57,9 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         level = kwargs.get(ATTR_TEMPERATURE)
         if level is None:
             return
+        _LOGGER.debug(
+            "set_temperature: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
+        )
         self.apply_action(COMMAND_SET_LEVEL, int(level))
 
     @property
@@ -73,6 +79,13 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         level = 0
         if hvac_mode == HVAC_MODE_HEAT:
             level = self._saved_level
+            _LOGGER.debug(
+                "set_hvac_mode: Setting HVAC_MODE_HEAT to level %s", str(level)
+            )
         else:
             self._saved_level = self.target_temperature
+            _LOGGER.debug("set_hvac_mode: Storing level to saved_level", str(level))
         self.apply_action(COMMAND_SET_LEVEL, int(level))
+        _LOGGER.debug(
+            "set_hvac_mode: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
+        )
