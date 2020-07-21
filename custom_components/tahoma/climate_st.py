@@ -83,11 +83,14 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         """Init method."""
         super().__init__(device, controller)
         self._temp_sensor_entity_id = sensor
-        self._saved_target_temp = (
-            self.select_state(PRESET_TEMPERATURES[self.preset_mode])
-            if self.hvac_mode == HVAC_MODE_AUTO
-            else self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
-        )
+        if self.hvac_mode == HVAC_MODE_AUTO:
+            self._saved_target_temp = self.select_state(
+                PRESET_TEMPERATURES[self.preset_mode]
+            )
+        else:
+            self._saved_target_temp = self.select_state(
+                CORE_DEROGATED_TARGET_TEMPERATURE_STATE
+            )
         self._current_temperature = None
 
     async def async_added_to_hass(self):
@@ -150,11 +153,9 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return MAP_PRESET_MODES[
-            self.select_state(ST_HEATING_MODE_STATE)
-            if self.hvac_mode == HVAC_MODE_AUTO
-            else self.select_state(ST_DEROGATION_HEATING_MODE_STATE)
-        ]
+        if self.hvac_mode == HVAC_MODE_AUTO:
+            return MAP_PRESET_MODES[self.select_state(ST_HEATING_MODE_STATE)]
+        return MAP_PRESET_MODES[self.select_state(ST_DEROGATION_HEATING_MODE_STATE)]
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -185,11 +186,9 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return (
-            self.select_state(PRESET_TEMPERATURES[self.preset_mode])
-            if self.hvac_mode == HVAC_MODE_AUTO
-            else self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
-        )
+        if self.hvac_mode == HVAC_MODE_AUTO:
+            return self.select_state(PRESET_TEMPERATURES[self.preset_mode])
+        return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
     def set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
