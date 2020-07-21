@@ -25,7 +25,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     def __init__(self, tahoma_device, controller):
         """Init method."""
         super().__init__(tahoma_device, controller)
-        self._saved_level = self.select_state(CORE_LEVEL_STATE)
+        self._saved_level = 100 - self.select_state(CORE_LEVEL_STATE)
 
     @property
     def supported_features(self) -> int:
@@ -50,7 +50,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(CORE_LEVEL_STATE)
+        return 100 - self.select_state(CORE_LEVEL_STATE)
 
     def set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
@@ -60,12 +60,12 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         _LOGGER.debug(
             "set_temperature: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
         )
-        self.apply_action(COMMAND_SET_LEVEL, int(level))
+        self.apply_action(COMMAND_SET_LEVEL, int(100 - level))
 
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if self.select_state(CORE_LEVEL_STATE) == 0:
+        if self.select_state(CORE_LEVEL_STATE) == 100:
             return HVAC_MODE_OFF
         return HVAC_MODE_HEAT
 
@@ -85,7 +85,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         else:
             self._saved_level = self.target_temperature
             _LOGGER.debug("set_hvac_mode: Storing level to saved_level", str(level))
-        self.apply_action(COMMAND_SET_LEVEL, int(level))
+        self.apply_action(COMMAND_SET_LEVEL, int(100 - level))
         _LOGGER.debug(
             "set_hvac_mode: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
         )
