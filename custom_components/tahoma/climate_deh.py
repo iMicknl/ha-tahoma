@@ -51,10 +51,10 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
 
     def set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
-        percentage = kwargs.get(ATTR_TEMPERATURE)
-        if percentage is None:
+        level = kwargs.get(ATTR_TEMPERATURE)
+        if level is None:
             return
-        self.apply_action(COMMAND_SET_LEVEL, percentage)
+        self.apply_action(COMMAND_SET_LEVEL, level)
 
     @property
     def hvac_mode(self) -> str:
