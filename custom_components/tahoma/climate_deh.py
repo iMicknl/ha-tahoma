@@ -7,7 +7,7 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_OFF,
     SUPPORT_TARGET_TEMPERATURE,
 )
-from homeassistant.const import ATTR_TEMPERATURE, UNIT_PERCENTAGE
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from .tahoma_device import TahomaDevice
 
@@ -32,7 +32,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        return UNIT_PERCENTAGE
+        return TEMP_CELSIUS
 
     @property
     def min_temp(self) -> float:
