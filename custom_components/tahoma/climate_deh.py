@@ -54,7 +54,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         level = kwargs.get(ATTR_TEMPERATURE)
         if level is None:
             return
-        self.apply_action(COMMAND_SET_LEVEL, level)
+        self.apply_action(COMMAND_SET_LEVEL, int(level))
 
     @property
     def hvac_mode(self) -> str:
@@ -75,4 +75,4 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
             level = self._saved_level
         else:
             self._saved_level = self.target_temperature
-        self.apply_action(COMMAND_SET_LEVEL, level)
+        self.apply_action(COMMAND_SET_LEVEL, int(level))
