@@ -14,6 +14,7 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
+COMMAND_GET_LEVEL = "getLevel"
 COMMAND_SET_LEVEL = "setLevel"
 
 CORE_LEVEL_STATE = "core:LevelState"
@@ -57,10 +58,8 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         level = kwargs.get(ATTR_TEMPERATURE)
         if level is None:
             return
-        _LOGGER.debug(
-            "set_temperature: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
-        )
-        self.apply_action(COMMAND_SET_LEVEL, int(100 - level))
+        self.apply_action(COMMAND_SET_LEVEL, 100 - int(level))
+        self.apply_action(COMMAND_GET_LEVEL)
 
     @property
     def hvac_mode(self) -> str:
@@ -79,13 +78,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         level = 0
         if hvac_mode == HVAC_MODE_HEAT:
             level = self._saved_level
-            _LOGGER.debug(
-                "set_hvac_mode: Setting HVAC_MODE_HEAT to level %s", str(level)
-            )
         else:
             self._saved_level = self.target_temperature
-            _LOGGER.debug("set_hvac_mode: Storing level to saved_level", str(level))
-        self.apply_action(COMMAND_SET_LEVEL, int(100 - level))
-        _LOGGER.debug(
-            "set_hvac_mode: Applying %s to level %s", COMMAND_SET_LEVEL, str(level)
-        )
+        self.apply_action(COMMAND_SET_LEVEL, 100 - int(level))
+        self.apply_action(COMMAND_GET_LEVEL)
