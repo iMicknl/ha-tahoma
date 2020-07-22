@@ -66,6 +66,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
             ATTR_MAX_TEMP: self.max_temp,
         }
 
+    @property
     def state_attributes(self) -> Dict[str, Any]:
         """Return the optional state attributes."""
         return {
