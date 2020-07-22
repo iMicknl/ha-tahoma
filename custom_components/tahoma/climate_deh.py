@@ -13,6 +13,7 @@ from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, UNIT_PERCENTAGE
+from homeassistant.helpers.typing import ServiceDataType
 
 from .tahoma_device import TahomaDevice
 
@@ -22,6 +23,18 @@ COMMAND_GET_LEVEL = "getLevel"
 COMMAND_SET_LEVEL = "setLevel"
 
 CORE_LEVEL_STATE = "core:LevelState"
+
+
+async def async_service_temperature_set(
+    entity: ClimateEntity, service: ServiceDataType
+) -> None:
+    """Handle set temperature service."""
+    kwargs = {}
+
+    for value, temp in service.data.items():
+        kwargs[value] = temp
+
+    await entity.async_set_temperature(**kwargs)
 
 
 class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
