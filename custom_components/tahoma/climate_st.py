@@ -196,10 +196,10 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         if temperature is None:
             return
 
-        if temperature < 15.0:
-            temperature = 15
-        elif temperature > 26.0:
-            temperature = 26
+        if temperature < self.min_temp():
+            temperature = self.min_temp()
+        elif temperature > self.max_temp():
+            temperature = self.max_temp()
 
         self.apply_action(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
