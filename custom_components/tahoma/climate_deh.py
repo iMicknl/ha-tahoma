@@ -1,19 +1,14 @@
 """Support for Atlantic Electrical Heater IO controller."""
 import logging
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    ATTR_CURRENT_TEMPERATURE,
-    ATTR_HVAC_MODES,
-    ATTR_MAX_TEMP,
-    ATTR_MIN_TEMP,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
     SUPPORT_TARGET_TEMPERATURE,
 )
-from homeassistant.const import ATTR_TEMPERATURE, UNIT_PERCENTAGE
-from homeassistant.helpers.typing import ServiceDataType
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from .tahoma_device import TahomaDevice
 
@@ -23,18 +18,6 @@ COMMAND_GET_LEVEL = "getLevel"
 COMMAND_SET_LEVEL = "setLevel"
 
 CORE_LEVEL_STATE = "core:LevelState"
-
-
-async def async_service_temperature_set(
-    entity: ClimateEntity, service: ServiceDataType
-) -> None:
-    """Handle set temperature service."""
-    kwargs = {}
-
-    for value, temp in service.data.items():
-        kwargs[value] = temp
-
-    await entity.async_set_temperature(**kwargs)
 
 
 class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
@@ -53,7 +36,7 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        return UNIT_PERCENTAGE
+        return TEMP_CELSIUS
 
     @property
     def min_temp(self) -> float:
@@ -69,23 +52,6 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     def target_temperature(self):
         """Return the temperature we try to reach."""
         return 100 - self.select_state(CORE_LEVEL_STATE)
-
-    @property
-    def capability_attributes(self) -> Optional[Dict[str, Any]]:
-        """Return the capability attributes."""
-        return {
-            ATTR_HVAC_MODES: self.hvac_modes,
-            ATTR_MIN_TEMP: self.min_temp,
-            ATTR_MAX_TEMP: self.max_temp,
-        }
-
-    @property
-    def state_attributes(self) -> Dict[str, Any]:
-        """Return the optional state attributes."""
-        return {
-            ATTR_CURRENT_TEMPERATURE: None,
-            ATTR_TEMPERATURE: self.target_temperature,
-        }
 
     def set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
