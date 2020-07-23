@@ -96,9 +96,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_WINDSPEED_STATE,
             CORE_SUN_ENERGY_STATE,
         )
-        if isinstance(float, state):
-            return round(state, 2)
-        return state
+        return round(state, 2)
 
     @property
     def unit_of_measurement(self):
