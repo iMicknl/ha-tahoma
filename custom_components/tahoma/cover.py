@@ -109,7 +109,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
         )
-        if position and "Horizontal" not in self.tahoma_device.widget:
+        if position is not None and "Horizontal" not in self.tahoma_device.widget:
             position = 100 - position
         return position
 
