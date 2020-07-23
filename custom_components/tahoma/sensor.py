@@ -85,8 +85,7 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def state(self):
         """Return the name of the sensor."""
-
-        return self.select_state(
+        state = self.select_state(
             CORE_LUMINANCE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
             CORE_TEMPERATURE_STATE,
@@ -97,6 +96,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_WINDSPEED_STATE,
             CORE_SUN_ENERGY_STATE,
         )
+        return round(state, 2)
 
     @property
     def unit_of_measurement(self):
