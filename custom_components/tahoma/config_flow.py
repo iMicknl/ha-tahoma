@@ -38,6 +38,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             try:
                 await client.login()
+                await client.close()
                 return self.async_create_entry(title=username, data=user_input)
 
             except TooManyRequestsException:
@@ -45,8 +46,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except BadCredentialsException:
                 errors["base"] = "invalid_auth"
             except Exception as exception:  # pylint: disable=broad-except
-                _LOGGER.exception(exception)
                 errors["base"] = "unknown"
+                _LOGGER.exception(exception)
+
+            await client.close()
 
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
