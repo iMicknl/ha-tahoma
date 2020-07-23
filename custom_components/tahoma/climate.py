@@ -1,9 +1,11 @@
 """Support for TaHoma climate devices."""
 
+from homeassistant.components.climate import DOMAIN as CLIMATE
+
 from .climate_aeh import AtlanticElectricalHeater
 from .climate_deh import DimmerExteriorHeating
 from .climate_st import SomfyThermostat
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 
 AEH = "AtlanticElectricalHeater"
 ST = "SomfyThermostat"
@@ -16,9 +18,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     data = hass.data[DOMAIN][entry.entry_id]
     controller = data.get("controller")
 
-    climate_devices = [
-        d for d in data.get("devices") if TAHOMA_TYPES[d.uiclass] == "climate"
-    ]
+    climate_devices = [device for device in data.get("entities").get(CLIMATE)]
 
     entities = []
     for device in climate_devices:

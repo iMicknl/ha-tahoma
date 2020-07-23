@@ -6,6 +6,7 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
     ATTR_HS_COLOR,
+    DOMAIN as LIGHT,
     SUPPORT_BRIGHTNESS,
     SUPPORT_COLOR,
     SUPPORT_EFFECT,
@@ -14,7 +15,7 @@ from homeassistant.components.light import (
 from homeassistant.const import STATE_ON
 import homeassistant.util.color as color_util
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
+from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,9 +39,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaLight(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "light"
+        TahomaLight(device, controller) for device in data.get("entities").get(LIGHT)
     ]
 
     async_add_entities(entities)
@@ -78,21 +77,21 @@ class TahomaLight(TahomaDevice, LightEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.has_state(COMMAND_SET_INTENSITY):
+        if self.has_command(COMMAND_SET_INTENSITY):
             supported_features |= SUPPORT_BRIGHTNESS
 
-        if self.has_state(COMMAND_WINK):
+        if self.has_command(COMMAND_WINK):
             supported_features |= SUPPORT_EFFECT
 
-        if self.has_state(COMMAND_SET_RGB):
+        if self.has_command(COMMAND_SET_RGB):
             supported_features |= SUPPORT_COLOR
 
         return supported_features
 
-    def turn_on(self, **kwargs) -> None:
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the light on."""
         if ATTR_HS_COLOR in kwargs:
-            self.apply_action(
+            await self.async_execute_command(
                 COMMAND_SET_RGB,
                 *[
                     int(float(c))
@@ -102,25 +101,25 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            self.apply_action(COMMAND_SET_INTENSITY, brightness)
+            await self.async_execute_command(COMMAND_SET_INTENSITY, brightness)
 
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
-            self.apply_action(self._effect, 100)
+            await self.async_execute_command(self._effect, 100)
 
         else:
-            self.apply_action(COMMAND_ON)
+            await self.async_execute_command(COMMAND_ON)
 
         self.async_write_ha_state()
 
-    def turn_off(self, **kwargs) -> None:
+    async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
-        self.apply_action(COMMAND_OFF)
+        await self.async_execute_command(COMMAND_OFF)
 
     @property
     def effect_list(self) -> list:
         """Return the list of supported effects."""
-        return [COMMAND_WINK] if self.has_state(COMMAND_WINK) else None
+        return [COMMAND_WINK] if self.has_command(COMMAND_WINK) else None
 
     @property
     def effect(self) -> str:

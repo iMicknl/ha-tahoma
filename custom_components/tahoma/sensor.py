@@ -9,6 +9,7 @@ from homeassistant.const import (
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
+    DOMAIN as SENSOR,
     ENERGY_WATT_HOUR,
     POWER_WATT,
     TEMP_CELSIUS,
@@ -18,7 +19,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -71,9 +72,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSensor(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "sensor"
+        TahomaSensor(device, controller) for device in data.get("devices").get(SENSOR)
     ]
 
     async_add_entities(entities)
@@ -106,9 +105,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
             CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
             CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-        }.get(
-            self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE), TEMP_CELSIUS,
-        )
+        }.get(self.device.attributes.get(CORE_MEASURED_VALUE_TYPE), TEMP_CELSIUS,)
         state = self.select_state(
             CORE_TEMPERATURE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
@@ -144,7 +141,7 @@ class TahomaSensor(TahomaDevice, Entity):
     def device_class(self) -> Optional[str]:
         """Return the device class of this entity if any."""
         return (
-            TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.widget)
-            or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
+            TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.widget)
+            or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
             or None
         )

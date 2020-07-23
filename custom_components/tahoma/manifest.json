@@ -3,6 +3,8 @@
   "name": "Somfy TaHoma",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
-  "requirements": [],
+  "requirements": [
+    "git+https://github.com/iMicknl/python-tahoma-api.git#tahoma_api==0.1.0"
+  ],
   "codeowners": ["@philklei", "@imicknl", "@vlebourl", "@tetienne"]
 }

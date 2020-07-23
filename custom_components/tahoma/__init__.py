@@ -1,29 +1,18 @@
 """The TaHoma integration."""
 import asyncio
-import json
+from collections import defaultdict
 import logging
 
-from requests.exceptions import RequestException
+from tahoma_api.client import TahomaClient
+from tahoma_api.exceptions import BadCredentialsException, TooManyRequestsException
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, TAHOMA_TYPES
-from .tahoma_api import TahomaApi
+from .const import DOMAIN, SUPPORTED_PLATFORMS, TAHOMA_TYPES
 
 _LOGGER = logging.getLogger(__name__)
-
-PLATFORMS = [
-    "binary_sensor",
-    "climate",
-    "cover",
-    "light",
-    "lock",
-    "scene",
-    "sensor",
-    "switch",
-]
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -33,66 +22,83 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up TaHoma from a config entry."""
-
     hass.data.setdefault(DOMAIN, {})
 
-    username = entry.data[CONF_USERNAME]
-    password = entry.data[CONF_PASSWORD]
+    username = entry.data.get(CONF_USERNAME)
+    password = entry.data.get(CONF_PASSWORD)
 
     try:
-        controller = await hass.async_add_executor_job(TahomaApi, username, password)
-        await hass.async_add_executor_job(controller.get_setup)
-        devices = await hass.async_add_executor_job(controller.get_devices)
-        scenes = await hass.async_add_executor_job(controller.get_action_groups)
-
-    # TODO Add better exception handling
-    except RequestException:
-        _LOGGER.exception("Error when getting devices from the TaHoma API")
+        client = TahomaClient(username, password)
+        await client.login()
+    except TooManyRequestsException as exception:
+        _LOGGER.exception(exception)
+        return False
+    except BadCredentialsException as exception:
+        _LOGGER.exception(exception)
+        return False
+    except Exception as exception:  # pylint: disable=broad-except
+        _LOGGER.exception(exception)
         return False
 
+    devices = await client.get_devices()
+    scenes = await client.get_scenarios()
+
     hass.data[DOMAIN][entry.entry_id] = {
-        "controller": controller,
-        "devices": [],
-        "scenes": [],
+        "controller": client,
+        "entities": defaultdict(list),
     }
 
+    hass.data[DOMAIN][entry.entry_id]["entities"]["scene"] = scenes
+
     for device in devices:
-        _device = controller.get_device(device)
-
-        if _device.uiclass in TAHOMA_TYPES:
-            if TAHOMA_TYPES[_device.uiclass] in PLATFORMS:
-                component = TAHOMA_TYPES[_device.uiclass]
-                hass.data[DOMAIN][entry.entry_id]["devices"].append(_device)
-
-        elif _device.type not in [
-            "ogp:Bridge"
-        ]:  # Add here devices to hide from the debug log.
-            _LOGGER.debug(
-                "Unsupported Tahoma device (%s). Create an issue on Github with the following information. \n\n %s \n %s \n %s",
-                _device.type,
-                _device.type + " - " + _device.uiclass + " - " + _device.widget,
-                json.dumps(_device.command_def) + ",",
-                json.dumps(_device.states_def),
+        if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
+            platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(
+                device.ui_class
             )
 
-    for component in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, component)
-        )
+            if platform in SUPPORTED_PLATFORMS:
+                hass.data[DOMAIN][entry.entry_id]["entities"][platform].append(device)
 
-    for scene in scenes:
-        hass.data[DOMAIN][entry.entry_id]["scenes"].append(scene)
+        elif device.controllable_name not in [
+            "ogp:Bridge",
+            "internal:PodV2Component",
+            "internal:TSKAlarmComponent",
+        ]:  # Add here devices to hide from the debug log.
+            _LOGGER.debug(
+                "Unsupported Tahoma device detected (%s - %s - %s).",
+                device.controllable_name,
+                device.ui_class,
+                device.widget,
+            )
+
+    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
+
+    for platform in entities_per_platform:
+        if len(entities_per_platform) > 0:
+            hass.async_create_task(
+                hass.config_entries.async_forward_entry_setup(entry, platform)
+            )
+
+    async def async_close_client(self, *_):
+        """Close HTTP client."""
+        await client.close()
+
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_close_client)
 
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
+
+    client = hass.data[DOMAIN][entry.entry_id].get("controller")
+    await client.close()
+
     unload_ok = all(
         await asyncio.gather(
             *[
                 hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
+                for component in SUPPORTED_PLATFORMS
             ]
         )
     )

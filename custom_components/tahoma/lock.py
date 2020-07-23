@@ -2,10 +2,10 @@
 from datetime import timedelta
 import logging
 
-from homeassistant.components.lock import LockEntity
+from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
 from homeassistant.const import STATE_LOCKED
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,9 +25,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaLock(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "lock"
+        TahomaLock(device, controller) for device in data.get("entities").get(LOCK)
     ]
 
     async_add_entities(entities)
@@ -36,13 +34,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class TahomaLock(TahomaDevice, LockEntity):
     """Representation a TaHoma lock."""
 
-    def unlock(self, **kwargs):
+    async def async_unlock(self, **_):
         """Unlock method."""
-        self.apply_action(COMMAND_UNLOCK)
+        await self.async_execute_command(COMMAND_UNLOCK)
 
-    def lock(self, **kwargs):
+    async def async_lock(self, **_):
         """Lock method."""
-        self.apply_action(COMMAND_LOCK)
+        await self.async_execute_command(COMMAND_LOCK)
 
     @property
     def is_locked(self):

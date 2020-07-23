@@ -2,7 +2,10 @@
 import logging
 from typing import Any
 
-from homeassistant.components.scene import Scene
+from tahoma_api.client import TahomaClient
+from tahoma_api.models import Scenario
+
+from homeassistant.components.scene import DOMAIN as SCENE, Scene
 
 from .const import DOMAIN
 
@@ -14,29 +17,30 @@ async def async_setup_entry(hass, entry, async_add_entities):
     data = hass.data[DOMAIN][entry.entry_id]
     controller = data.get("controller")
 
-    entities = [TahomaScene(scene, controller) for scene in data.get("scenes")]
-
+    entities = [
+        TahomaScene(scene, controller) for scene in data.get("entities").get(SCENE)
+    ]
     async_add_entities(entities)
 
 
 class TahomaScene(Scene):
     """Representation of a TaHoma scene entity."""
 
-    def __init__(self, tahoma_scene, controller):
+    def __init__(self, scenario: Scenario, client: TahomaClient):
         """Initialize the scene."""
-        self.tahoma_scene = tahoma_scene
-        self.controller = controller
+        self.scenario = scenario
+        self.client = client
 
-    def activate(self, **kwargs: Any) -> None:
+    async def async_activate(self, **_: Any) -> None:
         """Activate the scene."""
-        self.controller.launch_action_group(self.tahoma_scene.oid)
+        await self.client.execute_scenario(self.scenario.oid)
 
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        return self.tahoma_scene.oid
+        return self.scenario.oid
 
     @property
     def name(self):
         """Return the name of the scene."""
-        return self.tahoma_scene.name
+        return self.scenario.label
