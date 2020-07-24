@@ -26,8 +26,8 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
-CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
+CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
 CORE_GAS_CONSUMPTION_STATE = "core:GasConsumptionState"
@@ -40,6 +40,7 @@ CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
 CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
 CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
+CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
 DEVICE_CLASS_CO = "co"
@@ -84,7 +85,7 @@ class TahomaSensor(TahomaDevice, Entity):
 
     @property
     def state(self):
-        """Return the name of the sensor."""
+        """Return the value of the sensor."""
         state = self.select_state(
             CORE_CO2_CONCENTRATION_STATE,
             CORE_CO_CONCENTRATION_STATE,
@@ -95,6 +96,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_RELATIVE_HUMIDITY_STATE,
             CORE_SUN_ENERGY_STATE,
             CORE_TEMPERATURE_STATE,
+            CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
             CORE_WINDSPEED_STATE,
         )
         return round(state, 2)
