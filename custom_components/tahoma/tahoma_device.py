@@ -56,22 +56,7 @@ class TahomaDevice(Entity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        # TODO Figure out how this works for RTS devices
-        if self.device.available is not None:
-            return self.device.available
-
-        if self.has_state(CORE_STATUS_STATE):
-            return self.select_state(CORE_STATUS_STATE) == STATE_AVAILABLE
-
-        if self.has_state(CORE_SENSOR_DEFECT_STATE):
-            return self.select_state(CORE_SENSOR_DEFECT_STATE) != STATE_DEAD
-
-        if self.has_state(CORE_AVAILABILITY_STATE):
-            return self.select_state(CORE_AVAILABILITY_STATE) == STATE_AVAILABLE
-
-        # A RTS power socket doesn't have a feedback channel,
-        # so we must assume the socket is available.
-        return True
+        return self.device.available
 
     @property
     def unique_id(self) -> str:
