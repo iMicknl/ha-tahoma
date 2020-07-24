@@ -198,7 +198,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        if self.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0:
+        if (
+            self.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
+            and self.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
+        ):
             if self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
                 return ICON_WEATHER_WINDY
             else:
