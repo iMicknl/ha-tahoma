@@ -3,13 +3,13 @@ from datetime import timedelta
 import logging
 from typing import Optional
 
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
-    DOMAIN as SENSOR,
     ENERGY_WATT_HOUR,
     POWER_WATT,
     TEMP_CELSIUS,
