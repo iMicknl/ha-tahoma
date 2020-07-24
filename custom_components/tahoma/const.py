@@ -56,6 +56,7 @@ TAHOMA_TYPES = {
     "Siren": SWITCH,
     "WindSensor": SENSOR,
     "SunSensor": SENSOR,
+    "SwimmingPool": SWITCH,
 }
 
 CORE_ON_OFF_STATE = "core:OnOffState"
