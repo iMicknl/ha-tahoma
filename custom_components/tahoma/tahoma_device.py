@@ -81,7 +81,7 @@ class TahomaDevice(Entity):
     @property
     def assumed_state(self):
         """Return True if unable to access real state of the entity."""
-        return self.device.controllable_name.startswith("rts")
+        return self.device.states is not None and len(self.device.states) > 0
 
     @property
     def device_state_attributes(self):
