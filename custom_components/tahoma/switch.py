@@ -2,10 +2,14 @@
 import logging
 from typing import Optional
 
-from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
+from homeassistant.components.switch import (
+    DEVICE_CLASS_SWITCH,
+    DOMAIN as SWITCH,
+    SwitchEntity,
+)
 from homeassistant.const import STATE_ON
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN, TAHOMA_TYPES
+from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,9 +30,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSwitch(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "switch"
+        TahomaSwitch(device, controller) for device in data.get("entities").get(SWITCH)
     ]
 
     async_add_entities(entities)
@@ -40,7 +42,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def device_class(self):
         """Return the class of the device."""
-        if self.tahoma_device.uiclass == "Siren":
+        if self.device.ui_class == "Siren":
             return DEVICE_CLASS_SIREN
 
         return DEVICE_CLASS_SWITCH
@@ -56,17 +58,14 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
 
         return None
 
-    def turn_on(self, **kwargs):
+    async def async_turn_on(self, **_):
         """Send the on command."""
-        if COMMAND_ON in self.tahoma_device.command_definitions:
-            self.apply_action(COMMAND_ON)
+        if self.has_command(COMMAND_ON):
+            await self.async_execute_command(COMMAND_ON)
 
-        elif (
-            COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE
-            in self.tahoma_device.command_definitions
-        ):
+        elif self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
-            self.apply_action(
+            await self.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 120000,
                 75,
@@ -74,13 +73,15 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
                 COMMAND_MEMORIZED_VOLUME,
             )
 
-    def turn_off(self, **kwargs):
+    async def async_turn_off(self, **_):
         """Send the off command."""
-        self.apply_action(self.select_command(COMMAND_OFF))
+        if self.has_command(COMMAND_OFF):
+            await self.async_execute_command(COMMAND_OFF)
 
-    def toggle(self, **kwargs):
+    async def async_toggle(self, **_):
         """Click the switch."""
-        self.apply_action(self.select_command(COMMAND_CYCLE))
+        if self.has_command(COMMAND_CYCLE):
+            await self.async_execute_command(COMMAND_CYCLE)
 
     @property
     def is_on(self):

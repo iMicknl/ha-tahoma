@@ -1,8 +1,9 @@
 """Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
-from typing import Optional
+from typing import List, Optional
 
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
@@ -18,7 +19,7 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -71,9 +72,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSensor(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "sensor"
+        TahomaSensor(device, controller) for device in data.get("entities").get(SENSOR)
     ]
 
     async_add_entities(entities)
@@ -101,14 +100,17 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
+        attribute = [
+            attr.value
+            for attr in self.device.attributes
+            if attr.name == CORE_MEASURED_VALUE_TYPE
+        ]
         TEMPERATURE_UNIT = {
             CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
             CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
             CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
             CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-        }.get(
-            self.tahoma_device.attributes.get(CORE_MEASURED_VALUE_TYPE), TEMP_CELSIUS,
-        )
+        }.get(attribute[0], TEMP_CELSIUS,)
         state = self.select_state(
             CORE_TEMPERATURE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
@@ -144,7 +146,7 @@ class TahomaSensor(TahomaDevice, Entity):
     def device_class(self) -> Optional[str]:
         """Return the device class of this entity if any."""
         return (
-            TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.widget)
-            or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
+            TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.widget)
+            or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
             or None
         )

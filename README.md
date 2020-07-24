@@ -22,7 +22,7 @@ https://github.com/imicknl/ha-tahoma
 
 ## Supported devices
 
-This component doesn't have a hardcoded list of devices anymore, but relies on the `uiclass` of every Somfy device. This way more devices will be supported out of the box, based on their category and available states and commands.
+This component doesn't have a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This way more devices will be supported out of the box, based on their category and available states and commands.
 
 If your device is not supported, it will show the following message in the debug log. You can use this to create a new issue in the repository to see if the component can be added.
 

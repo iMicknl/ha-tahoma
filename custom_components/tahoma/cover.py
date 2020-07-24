@@ -11,6 +11,7 @@ from homeassistant.components.cover import (
     DEVICE_CLASS_GATE,
     DEVICE_CLASS_SHUTTER,
     DEVICE_CLASS_WINDOW,
+    DOMAIN as COVER,
     SUPPORT_CLOSE,
     SUPPORT_CLOSE_TILT,
     SUPPORT_OPEN,
@@ -22,7 +23,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 from .switch import COMMAND_CYCLE
 from .tahoma_device import TahomaDevice
 
@@ -88,9 +89,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaCover(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "cover"
+        TahomaCover(device, controller) for device in data.get("entities").get(COVER)
     ]
 
     async_add_entities(entities)
@@ -101,7 +100,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     @property
     def current_cover_position(self):
-        """Return current position of cover."""
+        """
+        Return current position of cover.
+
+        None is unknown, 0 is closed, 100 is fully open.
+        """
 
         position = self.select_state(
             CORE_CLOSURE_STATE,
@@ -109,8 +112,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
         )
-        if position is not None and "Horizontal" not in self.tahoma_device.widget:
+
+        if position is not None and "Horizontal" not in self.device.widget:
             position = 100 - position
+
         return position
 
     @property
@@ -120,24 +125,24 @@ class TahomaCover(TahomaDevice, CoverEntity):
         None is unknown, 0 is closed, 100 is fully open.
         """
         position = self.select_state(CORE_SLATS_ORIENTATION_STATE)
-        return 100 - position if position else None
+        return 100 - position if position is not None else None
 
-    def set_cover_position(self, **kwargs):
+    async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if "Horizontal" in self.tahoma_device.widget:
+        if "Horizontal" in self.device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
         command = self.select_command(
             COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         )
-        self.apply_action(command, position)
+        await self.async_execute_command(command, position)
 
-    def set_cover_tilt_position(self, **kwargs):
+    async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        self.apply_action(
+        await self.async_execute_command(
             COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
         )
 
@@ -168,8 +173,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def device_class(self):
         """Return the class of the device."""
         return (
-            TAHOMA_COVER_DEVICE_CLASSES.get(self.tahoma_device.widget)
-            or TAHOMA_COVER_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
+            TAHOMA_COVER_DEVICE_CLASSES.get(self.device.widget)
+            or TAHOMA_COVER_DEVICE_CLASSES.get(self.device.ui_class)
             or DEVICE_CLASS_BLIND
         )
 
@@ -178,55 +183,65 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return the device state attributes."""
         attr = {}
         super_attr = super().device_state_attributes
+
         if super_attr is not None:
             attr.update(super_attr)
-        attr[ATTR_MEM_POS] = self.select_state(CORE_MEMORIZED_1_POSITION_STATE)
-        attr[ATTR_LOCK_ORIG] = self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
+
+        if self.has_state(CORE_MEMORIZED_1_POSITION_STATE):
+            attr[ATTR_MEM_POS] = self.select_state(CORE_MEMORIZED_1_POSITION_STATE)
+
+        if self.has_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE):
+            attr[ATTR_LOCK_ORIG] = self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
+
         return attr
 
     @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
-        states = self.tahoma_device.active_states
-        if states.get(CORE_PRIORITY_LOCK_TIMER_STATE, 0) > 0:
-            if states.get(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
+        if (
+            self.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
+            and self.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
+        ):
+            if self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
                 return ICON_WEATHER_WINDY
             else:
                 return ICON_LOCK_ALERT
+
         return None
 
-    def open_cover(self, **kwargs):
+    async def async_open_cover(self, **_):
         """Open the cover."""
-        self.apply_action(self.select_command(COMMAND_OPEN, COMMAND_UP))
+        await self.async_execute_command(self.select_command(COMMAND_OPEN, COMMAND_UP))
 
-    def open_cover_tilt(self, **kwargs):
+    async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
-        self.apply_action(self.select_command(COMMAND_OPEN_SLATS))
+        await self.async_execute_command(self.select_command(COMMAND_OPEN_SLATS))
 
-    def close_cover(self, **kwargs):
+    async def async_close_cover(self, **_):
         """Close the cover."""
-        self.apply_action(self.select_command(COMMAND_CLOSE, COMMAND_DOWN))
+        await self.async_execute_command(
+            self.select_command(COMMAND_CLOSE, COMMAND_DOWN)
+        )
 
-    def close_cover_tilt(self, **kwargs):
+    async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
-        self.apply_action(self.select_command(COMMAND_CLOSE_SLATS))
+        await self.async_execute_command(self.select_command(COMMAND_CLOSE_SLATS))
 
-    def stop_cover(self, **kwargs):
+    async def async_stop_cover(self, **_):
         """Stop the cover."""
-        self.apply_action(
+        await self.async_execute_command(
             self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
         )
 
-    def stop_cover_tilt(self, **kwargs):
+    async def async_stop_cover_tilt(self, **_):
         """Stop the cover."""
-        self.apply_action(
+        await self.async_execute_command(
             self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
         )
 
     @property
     def supported_features(self):
         """Flag supported features."""
-
         supported_features = 0
 
         if self.has_command(COMMAND_OPEN_SLATS):
@@ -257,9 +272,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         return supported_features
 
-    def toggle(self):
+    async def async_toggle(self):
         """Toggle the entity."""
         if self.has_command(COMMAND_CYCLE):
-            self.apply_action(COMMAND_CYCLE)
+            await self.async_execute_command(COMMAND_CYCLE)
         else:
             super().toggle()

@@ -8,14 +8,12 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_OCCUPANCY,
     DEVICE_CLASS_OPENING,
     DEVICE_CLASS_SMOKE,
+    DOMAIN as BINARY_SENSOR,
     BinarySensorEntity,
 )
-from homeassistant.const import STATE_OFF, STATE_ON
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN
 from .tahoma_device import TahomaDevice
-
-_LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=120)
 
@@ -64,10 +62,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaBinarySensor(device, controller)
-        for device in data.get("devices")
-        if TAHOMA_TYPES[device.uiclass] == "binary_sensor"
+        for device in data.get("entities").get(BINARY_SENSOR)
     ]
-
     async_add_entities(entities)
 
 
@@ -93,8 +89,8 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     def device_class(self):
         """Return the class of the device."""
         return (
-            TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.widget)
-            or TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.tahoma_device.uiclass)
+            TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.widget)
+            or TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
             or None
         )
 
