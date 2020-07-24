@@ -25,7 +25,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.widget == AEH:
             entities.append(AtlanticElectricalHeater(device, controller))
         elif device.widget == ST:
-            base_url = device.url.split("#", 1)[0]
+            base_url = device.deviceurl.split("#", 1)[0]
             sensor = None
             entity_registry = await hass.helpers.entity_registry.async_get_registry()
             for k, v in entity_registry.entities.items():

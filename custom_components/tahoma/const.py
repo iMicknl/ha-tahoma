@@ -57,6 +57,7 @@ TAHOMA_TYPES = {
     "SmokeSensor": BINARY_SENSOR,
     "SunIntensitySensor": SENSOR,
     "SunSensor": SENSOR,
+    "SwimmingPool": SWITCH,
     "SwingingShutter": COVER,
     "TemperatureSensor": SENSOR,
     "ThermalEnergySensor": SENSOR,
