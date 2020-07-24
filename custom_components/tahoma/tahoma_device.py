@@ -113,9 +113,10 @@ class TahomaDevice(Entity):
             if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
                 attr[ATTR_BATTERY_LEVEL] = 0
 
-        for state in self.device.states:
-            if "State" in state.name:
-                attr[state.name] = state.value
+        if self.device.states:
+            for state in self.device.states:
+                if "State" in state.name:
+                    attr[state.name] = state.value
 
         return attr
 

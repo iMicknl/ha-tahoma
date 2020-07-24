@@ -1,7 +1,7 @@
 """Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
-from typing import Optional
+from typing import List, Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
@@ -72,7 +72,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSensor(device, controller) for device in data.get("devices").get(SENSOR)
+        TahomaSensor(device, controller) for device in data.get("entities").get(SENSOR)
     ]
 
     async_add_entities(entities)
@@ -100,12 +100,17 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
+        attribute = [
+            attr.value
+            for attr in self.device.attributes
+            if attr.name == CORE_MEASURED_VALUE_TYPE
+        ]
         TEMPERATURE_UNIT = {
             CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
             CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
             CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
             CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-        }.get(self.device.attributes.get(CORE_MEASURED_VALUE_TYPE), TEMP_CELSIUS,)
+        }.get(attribute[0], TEMP_CELSIUS,)
         state = self.select_state(
             CORE_TEMPERATURE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
