@@ -34,21 +34,23 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(username)
             self._abort_if_unique_id_configured()
 
-            async with TahomaClient(username, password) as client:
-                try:
-                    await client.login()
-                    return self.async_create_entry(title=username, data=user_input)
+            client = TahomaClient(username, password)
 
-                except TooManyRequestsException:
-                    errors["base"] = "too_many_requests"
-                except BadCredentialsException:
-                    errors["base"] = "invalid_auth"
-                except Exception as exception:  # pylint: disable=broad-except
-                    errors["base"] = "unknown"
-                    _LOGGER.exception(exception)
-
+            try:
+                await client.login()
                 await client.close()
+                return self.async_create_entry(title=username, data=user_input)
 
-            return self.async_show_form(
-                step_id="user", data_schema=DATA_SCHEMA, errors=errors
-            )
+            except TooManyRequestsException:
+                errors["base"] = "too_many_requests"
+            except BadCredentialsException:
+                errors["base"] = "invalid_auth"
+            except Exception as exception:  # pylint: disable=broad-except
+                errors["base"] = "unknown"
+                _LOGGER.exception(exception)
+
+            await client.close()
+
+        return self.async_show_form(
+            step_id="user", data_schema=DATA_SCHEMA, errors=errors
+        )
