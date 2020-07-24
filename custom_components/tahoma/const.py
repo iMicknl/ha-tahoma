@@ -23,6 +23,7 @@ SUPPORTED_PLATFORMS = [
 
 # Used to map the Somfy widget and uiClass to the Home Assistant platform
 TAHOMA_TYPES = {
+    "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
     "Light": LIGHT,
     "ExteriorScreen": COVER,
     "Pergola": COVER,
