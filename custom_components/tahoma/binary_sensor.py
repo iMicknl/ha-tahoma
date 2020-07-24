@@ -52,6 +52,7 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "WindowHandle": DEVICE_CLASS_OPENING,
     "RainSensor": DEVICE_CLASS_RAIN,
     "WaterDetectionSensor": DEVICE_CLASS_WATER,
+    "WaterSensor": DEVICE_CLASS_WATER,
 }
 
 
