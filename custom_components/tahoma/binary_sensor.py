@@ -46,15 +46,15 @@ STATE_PRESSED = "pressed"
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "AirFlowSensor": DEVICE_CLASS_GAS,
     "CarButtonSensor": DEVICE_CLASS_BUTTON,
-    "SmokeSensor": DEVICE_CLASS_SMOKE,
-    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
-    "MotionSensor": DEVICE_CLASS_MOTION,
     "ContactSensor": DEVICE_CLASS_OPENING,
-    "WindowHandle": DEVICE_CLASS_OPENING,
+    "MotionSensor": DEVICE_CLASS_MOTION,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
     "RainSensor": DEVICE_CLASS_RAIN,
+    "SirenStatus": DEVICE_CLASS_OPENING,
+    "SmokeSensor": DEVICE_CLASS_SMOKE,
     "WaterDetectionSensor": DEVICE_CLASS_WATER,
     "WaterSensor": DEVICE_CLASS_WATER,
-    "SirenStatus": DEVICE_CLASS_OPENING,
+    "WindowHandle": DEVICE_CLASS_OPENING,
 }
 
 

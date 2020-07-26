@@ -56,15 +56,15 @@ ICON_WEATHER_WINDY = "mdi:weather-windy"
 UNIT_LX = "lx"
 
 TAHOMA_SENSOR_DEVICE_CLASSES = {
-    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
+    "CO2Sensor": DEVICE_CLASS_CO2,
+    "COSensor": DEVICE_CLASS_CO,
+    "ElectricitySensor": DEVICE_CLASS_POWER,
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
-    "ElectricitySensor": DEVICE_CLASS_POWER,
-    "COSensor": DEVICE_CLASS_CO,
-    "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
-    "WindSensor": DEVICE_CLASS_WIND_SPEED,
     "SunSensor": DEVICE_CLASS_SUN_ENERGY,
+    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
+    "WindSensor": DEVICE_CLASS_WIND_SPEED,
 }
 
 
