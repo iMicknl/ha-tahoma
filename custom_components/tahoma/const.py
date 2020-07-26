@@ -54,6 +54,7 @@ TAHOMA_TYPES = {
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
+    "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
     "SmokeSensor": BINARY_SENSOR,
     "SunIntensitySensor": SENSOR,
     "SunSensor": SENSOR,
