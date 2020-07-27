@@ -19,6 +19,7 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
+CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
 CORE_CONTACT_STATE = "core:ContactState"
 CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
 CORE_OCCUPANCY_STATE = "core:OccupancyState"
@@ -79,14 +80,15 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         return self.select_state(
             CORE_ASSEMBLY_STATE,
-            CORE_CONTACT_STATE,
-            CORE_OCCUPANCY_STATE,
-            CORE_SMOKE_STATE,
-            CORE_RAIN_STATE,
-            CORE_WATER_DETECTION_STATE,
-            CORE_GAS_DETECTION_STATE,
-            IO_VIBRATION_STATE,
             CORE_BUTTON_STATE,
+            CORE_CONTACT_STATE,
+            CORE_GAS_DETECTION_STATE,
+            CORE_OCCUPANCY_STATE,
+            CORE_OPEN_CLOSED_TILT_STATE,
+            CORE_RAIN_STATE,
+            CORE_SMOKE_STATE,
+            CORE_WATER_DETECTION_STATE,
+            IO_VIBRATION_STATE,
         ) in [STATE_OPEN, STATE_PERSON_INSIDE, STATE_DETECTED, STATE_PRESSED]
 
     @property
