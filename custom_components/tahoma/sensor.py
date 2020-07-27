@@ -39,6 +39,8 @@ CORE_TEMPERATURE_IN_CELCIUS = "core:TemperatureInCelcius"
 CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
 CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
 CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
+CORE_LUMINANCE_IN_LUX = "core:LuminanceInLux"
+CORE_ELECTRIC_ENERGY_IN_WH = "core:ElectricalEnergyInWh"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
@@ -65,6 +67,15 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "SunSensor": DEVICE_CLASS_SUN_ENERGY,
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
+}
+
+UNITS = {
+    CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
+    CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
+    CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
+    CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
+    CORE_LUMINANCE_IN_LUX: UNIT_LX,
+    CORE_ELECTRIC_ENERGY_IN_WH: ENERGY_WATT_HOUR,
 }
 
 
@@ -104,35 +115,8 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-        attribute = [
-            attr.value
-            for attr in self.device.attributes
-            if attr.name == CORE_MEASURED_VALUE_TYPE
-        ]
-        TEMPERATURE_UNIT = {
-            CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
-            CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
-            CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
-            CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-        }.get(attribute[0], TEMP_CELSIUS,)
-        state = self.select_state(
-            CORE_CO2_CONCENTRATION_STATE,
-            CORE_CO_CONCENTRATION_STATE,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-            CORE_LUMINANCE_STATE,
-            CORE_RELATIVE_HUMIDITY_STATE,
-            CORE_TEMPERATURE_STATE,
-        )
-        return {
-            CORE_TEMPERATURE_STATE: TEMPERATURE_UNIT,
-            CORE_RELATIVE_HUMIDITY_STATE: UNIT_PERCENTAGE,
-            CORE_LUMINANCE_STATE: UNIT_LX,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE: POWER_WATT,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE: ENERGY_WATT_HOUR,
-            CORE_CO_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
-            CORE_CO2_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
-        }.get(state)
+        attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
+        return UNITS.get(attribute.value) if attribute else None
 
     @property
     def icon(self) -> Optional[str]:
