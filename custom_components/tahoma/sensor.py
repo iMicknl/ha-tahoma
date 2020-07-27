@@ -30,6 +30,7 @@ CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
+CORE_FOSSIL_ENERGY_CONSUMPTION_STATE = "core:FossilEnergyConsumptionState"
 CORE_GAS_CONSUMPTION_STATE = "core:GasConsumptionState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
@@ -41,6 +42,7 @@ CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
 CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
+CORE_WATER_CONSUMPTION_STATE = "core:WaterConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
 DEVICE_CLASS_CO = "co"
@@ -91,6 +93,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_CO_CONCENTRATION_STATE,
             CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
             CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
+            CORE_FOSSIL_ENERGY_CONSUMPTION_STATE,
             CORE_GAS_CONSUMPTION_STATE,
             CORE_LUMINANCE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
@@ -98,6 +101,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_TEMPERATURE_STATE,
             CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
             CORE_WINDSPEED_STATE,
+            CORE_WATER_CONSUMPTION_STATE,
         )
         return round(state, 2)
 
