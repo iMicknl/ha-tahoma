@@ -22,8 +22,11 @@ CORE_BUTTON_STATE = "core:ButtonState"
 CORE_CONTACT_STATE = "core:ContactState"
 CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
 CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_OPENING_STATE = "core:OpeningState"
+CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
 CORE_RAIN_STATE = "core:RainState"
 CORE_SMOKE_STATE = "core:SmokeState"
+CORE_VIBRATION_STATE = "core:VibrationState"
 CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
 
 DEVICE_CLASS_BUTTON = "button"
@@ -36,7 +39,7 @@ ICON_WATER_OFF = "mdi:water-off"
 ICON_WAVES = "mdi:waves"
 ICON_WEATHER_RAINY = "mdi:weather-rainy"
 
-IO_VIBRATION_STATE = "io:VibrationDetectedState"
+IO_VIBRATION_DETECTED_STATE = "io:VibrationDetectedState"
 
 STATE_OPEN = "open"
 STATE_PERSON_INSIDE = "personInside"
@@ -79,14 +82,17 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
 
         return self.select_state(
             CORE_ASSEMBLY_STATE,
-            CORE_CONTACT_STATE,
-            CORE_OCCUPANCY_STATE,
-            CORE_SMOKE_STATE,
-            CORE_RAIN_STATE,
-            CORE_WATER_DETECTION_STATE,
-            CORE_GAS_DETECTION_STATE,
-            IO_VIBRATION_STATE,
             CORE_BUTTON_STATE,
+            CORE_CONTACT_STATE,
+            CORE_GAS_DETECTION_STATE,
+            CORE_OCCUPANCY_STATE,
+            CORE_OPENING_STATE,
+            CORE_OPEN_CLOSED_TILT_STATE,
+            CORE_RAIN_STATE,
+            CORE_SMOKE_STATE,
+            CORE_VIBRATION_STATE,
+            CORE_WATER_DETECTION_STATE,
+            IO_VIBRATION_DETECTED_STATE,
         ) in [STATE_OPEN, STATE_PERSON_INSIDE, STATE_DETECTED, STATE_PRESSED]
 
     @property
