@@ -17,7 +17,6 @@ from .tahoma_device import TahomaDevice
 
 SCAN_INTERVAL = timedelta(seconds=120)
 
-CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
 CORE_CONTACT_STATE = "core:ContactState"
 CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
@@ -46,15 +45,13 @@ STATE_PRESSED = "pressed"
 TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
     "AirFlowSensor": DEVICE_CLASS_GAS,
     "CarButtonSensor": DEVICE_CLASS_BUTTON,
-    "ContactSensor": DEVICE_CLASS_OPENING,
-    "MotionSensor": DEVICE_CLASS_MOTION,
-    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
-    "RainSensor": DEVICE_CLASS_RAIN,
-    "SirenStatus": DEVICE_CLASS_OPENING,
     "SmokeSensor": DEVICE_CLASS_SMOKE,
-    "WaterDetectionSensor": DEVICE_CLASS_WATER,
-    "WaterSensor": DEVICE_CLASS_WATER,
+    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
+    "MotionSensor": DEVICE_CLASS_MOTION,
+    "ContactSensor": DEVICE_CLASS_OPENING,
     "WindowHandle": DEVICE_CLASS_OPENING,
+    "RainSensor": DEVICE_CLASS_RAIN,
+    "WaterDetectionSensor": DEVICE_CLASS_WATER,
 }
 
 
@@ -78,7 +75,6 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         """Return the state of the sensor."""
 
         return self.select_state(
-            CORE_ASSEMBLY_STATE,
             CORE_CONTACT_STATE,
             CORE_OCCUPANCY_STATE,
             CORE_SMOKE_STATE,

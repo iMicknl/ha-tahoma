@@ -26,11 +26,10 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
-CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
+CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
-CORE_GAS_CONSUMPTION_STATE = "core:GasConsumptionState"
 CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
@@ -40,7 +39,6 @@ CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
 CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
 CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
-CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
 DEVICE_CLASS_CO = "co"
@@ -56,15 +54,15 @@ ICON_WEATHER_WINDY = "mdi:weather-windy"
 UNIT_LX = "lx"
 
 TAHOMA_SENSOR_DEVICE_CLASSES = {
-    "CO2Sensor": DEVICE_CLASS_CO2,
-    "COSensor": DEVICE_CLASS_CO,
-    "ElectricitySensor": DEVICE_CLASS_POWER,
+    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
     "LightSensor": DEVICE_CLASS_ILLUMINANCE,
+    "ElectricitySensor": DEVICE_CLASS_POWER,
+    "COSensor": DEVICE_CLASS_CO,
+    "CO2Sensor": DEVICE_CLASS_CO2,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
-    "SunSensor": DEVICE_CLASS_SUN_ENERGY,
-    "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
+    "SunSensor": DEVICE_CLASS_SUN_ENERGY,
 }
 
 
@@ -85,19 +83,17 @@ class TahomaSensor(TahomaDevice, Entity):
 
     @property
     def state(self):
-        """Return the value of the sensor."""
+        """Return the name of the sensor."""
         state = self.select_state(
-            CORE_CO2_CONCENTRATION_STATE,
-            CORE_CO_CONCENTRATION_STATE,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-            CORE_GAS_CONSUMPTION_STATE,
             CORE_LUMINANCE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
-            CORE_SUN_ENERGY_STATE,
             CORE_TEMPERATURE_STATE,
-            CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
+            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
+            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
+            CORE_CO_CONCENTRATION_STATE,
+            CORE_CO2_CONCENTRATION_STATE,
             CORE_WINDSPEED_STATE,
+            CORE_SUN_ENERGY_STATE,
         )
         return round(state, 2)
 
@@ -116,13 +112,13 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
         }.get(attribute[0], TEMP_CELSIUS,)
         state = self.select_state(
-            CORE_CO2_CONCENTRATION_STATE,
-            CORE_CO_CONCENTRATION_STATE,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-            CORE_LUMINANCE_STATE,
-            CORE_RELATIVE_HUMIDITY_STATE,
             CORE_TEMPERATURE_STATE,
+            CORE_RELATIVE_HUMIDITY_STATE,
+            CORE_LUMINANCE_STATE,
+            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
+            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
+            CORE_CO_CONCENTRATION_STATE,
+            CORE_CO2_CONCENTRATION_STATE,
         )
         return {
             CORE_TEMPERATURE_STATE: TEMPERATURE_UNIT,
