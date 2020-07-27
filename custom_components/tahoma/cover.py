@@ -113,7 +113,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
-        if position < 0 or position > 100:
+        if position is not None and position < 0 or position > 100:
             return None
 
         if position is not None and "Horizontal" not in self.device.widget:
