@@ -13,6 +13,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
+    UNIT_PERCENTAGE,
     VOLUME_CUBIC_METERS,
 )
 from homeassistant.helpers.entity import Entity
@@ -40,6 +41,7 @@ CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_LUMINANCE_IN_LUX = "core:LuminanceInLux"
 CORE_ELECTRIC_ENERGY_IN_WH = "core:ElectricalEnergyInWh"
 CORE_VOLUME_IN_CUBIC_METER = "core:VolumeInCubicMeter"
+CORE_RELATIVE_VALUE_IN_PERCENTAGE = "core:RelativeValueInPercentage"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
@@ -76,6 +78,7 @@ UNITS = {
     CORE_LUMINANCE_IN_LUX: UNIT_LX,
     CORE_ELECTRIC_ENERGY_IN_WH: ENERGY_WATT_HOUR,
     CORE_VOLUME_IN_CUBIC_METER: VOLUME_CUBIC_METERS,
+    CORE_RELATIVE_VALUE_IN_PERCENTAGE: UNIT_PERCENTAGE,
 }
 
 
@@ -85,7 +88,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSensor(device, controller) for device in data.get("entities").get(SENSOR)
+        TahomaSensor(device, controller)
+        for device in data.get("entities").get(SENSOR)
+        if device.states
     ]
 
     async_add_entities(entities)
@@ -110,7 +115,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
             CORE_WINDSPEED_STATE,
         )
-        return round(state, 2) if state else None
+        return round(state, 2)
 
     @property
     def unit_of_measurement(self):
