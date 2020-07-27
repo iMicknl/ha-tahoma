@@ -134,10 +134,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
-        # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if "Horizontal" in self.device.widget:
-            position = kwargs.get(ATTR_POSITION, 0)
-
         command = self.select_command(
             COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         )
