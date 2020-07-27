@@ -110,13 +110,15 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
             CORE_WINDSPEED_STATE,
         )
-        return round(state, 2)
+        return round(state, 2) if state else None
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-        attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
-        return UNITS.get(attribute.value) if attribute else None
+        if self.device.attributes:
+            attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
+            return UNITS.get(attribute.value)
+        return None
 
     @property
     def icon(self) -> Optional[str]:
