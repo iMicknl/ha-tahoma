@@ -105,7 +105,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-
         position = self.select_state(
             CORE_CLOSURE_STATE,
             CORE_DEPLOYMENT_STATE,
@@ -113,8 +112,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_TARGET_CLOSURE_STATE,
         )
 
-        # Position retrieved via TARGET_CLOSURE_STATE can be over 100 if unknown
-        if position > 100:
+        # Uno devices can have a position not in 0 to 100 range when unknown
+        if position < 0 or position > 100:
             return None
 
         if position is not None and "Horizontal" not in self.device.widget:
@@ -153,7 +152,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
     @property
     def is_closed(self):
         """Return if the cover is closed."""
-
         state = self.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
