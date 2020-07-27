@@ -19,10 +19,10 @@ SCAN_INTERVAL = timedelta(seconds=120)
 
 CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
-CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
 CORE_CONTACT_STATE = "core:ContactState"
 CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
 CORE_OCCUPANCY_STATE = "core:OccupancyState"
+CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
 CORE_RAIN_STATE = "core:RainState"
 CORE_SMOKE_STATE = "core:SmokeState"
 CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
