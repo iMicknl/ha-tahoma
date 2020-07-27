@@ -1,21 +1,19 @@
 """Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
     ENERGY_WATT_HOUR,
-    POWER_WATT,
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
-    UNIT_PERCENTAGE,
+    VOLUME_CUBIC_METERS,
 )
 from homeassistant.helpers.entity import Entity
 
@@ -41,6 +39,7 @@ CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
 CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_LUMINANCE_IN_LUX = "core:LuminanceInLux"
 CORE_ELECTRIC_ENERGY_IN_WH = "core:ElectricalEnergyInWh"
+CORE_VOLUME_IN_CUBIC_METER = "core:VolumeInCubicMeter"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
@@ -76,6 +75,7 @@ UNITS = {
     CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
     CORE_LUMINANCE_IN_LUX: UNIT_LX,
     CORE_ELECTRIC_ENERGY_IN_WH: ENERGY_WATT_HOUR,
+    CORE_VOLUME_IN_CUBIC_METER: VOLUME_CUBIC_METERS,
 }
 
 
