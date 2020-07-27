@@ -26,6 +26,7 @@ CORE_OPENING_STATE = "core:OpeningState"
 CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
 CORE_RAIN_STATE = "core:RainState"
 CORE_SMOKE_STATE = "core:SmokeState"
+CORE_THREE_WAY_HANDLE_DIRECTION_STATE = "core:ThreeWayHandleDirectionState"
 CORE_VIBRATION_STATE = "core:VibrationState"
 CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
 
@@ -90,6 +91,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
             CORE_OPEN_CLOSED_TILT_STATE,
             CORE_RAIN_STATE,
             CORE_SMOKE_STATE,
+            CORE_THREE_WAY_HANDLE_DIRECTION_STATE,
             CORE_VIBRATION_STATE,
             CORE_WATER_DETECTION_STATE,
             IO_VIBRATION_DETECTED_STATE,
