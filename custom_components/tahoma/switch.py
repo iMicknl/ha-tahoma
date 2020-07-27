@@ -64,19 +64,23 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
             await self.async_execute_command(COMMAND_ON)
 
         elif self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            # Values taken from iosiren.js (tahomalink.com). Parameter usage is currently unknown.
             await self.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
-                120000,
-                75,
-                2,
+                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
+                2 * 60 * 1000,  # 2 minutes
+                75,  # 90 seconds bip, 30 seconds silence
+                2,  # repeat 3 times
                 COMMAND_MEMORIZED_VOLUME,
             )
 
     async def async_turn_off(self, **_):
         """Send the off command."""
+        if self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+            return await self.async_execute_command(
+                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE, 2000, 100, 0, "standard",
+            )
+
         if self.has_command(COMMAND_OFF):
-            await self.async_execute_command(COMMAND_OFF)
+            return await self.async_execute_command(COMMAND_OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
