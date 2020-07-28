@@ -17,6 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 COMMAND_CYCLE = "cycle"
 COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
+COMMAND_STANDARD = "standard"
 
 DEVICE_CLASS_SIREN = "siren"
 
@@ -75,12 +76,16 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     async def async_turn_off(self, **_):
         """Send the off command."""
         if self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            return await self.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE, 2000, 100, 0, "standard",
+            await self.async_execute_command(
+                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
+                2000,
+                100,
+                0,
+                COMMAND_STANDARD,
             )
 
-        if self.has_command(COMMAND_OFF):
-            return await self.async_execute_command(COMMAND_OFF)
+        elif self.has_command(COMMAND_OFF):
+            await self.async_execute_command(COMMAND_OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
