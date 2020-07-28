@@ -190,7 +190,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
             return self.select_state(PRESET_TEMPERATURES[self.preset_mode])
         return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
-    def set_temperature(self, **kwargs) -> None:
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if temperature is None:
@@ -201,45 +201,45 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         elif temperature > self.max_temp():
             temperature = self.max_temp()
 
-        self.apply_action(
+        await self.async_execute_command(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
         )
-        self.apply_action(
+        await self.async_execute_command(
             COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
         )
-        self.apply_action(COMMAND_REFRESH_STATE)
+        await self.async_execute_command(COMMAND_REFRESH_STATE)
 
-    def set_hvac_mode(self, hvac_mode: str) -> None:
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == self.hvac_mode:
             return
         if hvac_mode == HVAC_MODE_AUTO:
             self._saved_target_temp = self.target_temperature
-            self.apply_action(COMMAND_EXIT_DEROGATION)
-            self.apply_action(COMMAND_REFRESH_STATE)
+            await self.async_execute_command(COMMAND_EXIT_DEROGATION)
+            await self.async_execute_command(COMMAND_REFRESH_STATE)
         elif hvac_mode == HVAC_MODE_HEAT:
             self.set_preset_mode(PRESET_NONE)
 
-    def set_preset_mode(self, preset_mode: str) -> None:
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         if self.preset_mode == preset_mode:
             return
         if preset_mode in [PRESET_FREEZE, PRESET_NIGHT, PRESET_AWAY, PRESET_HOME]:
             self._saved_target_temp = self.target_temperature
-            self.apply_action(
+            await self.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 MAP_REVERSE_PRESET_MODES[preset_mode],
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
         elif preset_mode == PRESET_NONE:
-            self.apply_action(
+            await self.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 self._saved_target_temp,
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
-            self.apply_action(
+            await self.async_execute_command(
                 COMMAND_SET_MODE_TEMPERATURE,
                 STATE_PRESET_MANUAL,
                 self._saved_target_temp,
             )
-        self.apply_action(COMMAND_REFRESH_STATE)
+        await self.async_execute_command(COMMAND_REFRESH_STATE)
