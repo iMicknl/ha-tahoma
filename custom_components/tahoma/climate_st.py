@@ -2,8 +2,6 @@
 import logging
 from typing import List, Optional
 
-from tahoma_api.models import Device
-
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
@@ -23,7 +21,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from . import TahomaDataUpdateCoordinator
+from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
