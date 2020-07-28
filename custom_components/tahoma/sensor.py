@@ -9,12 +9,19 @@ from homeassistant.const import (
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
+    ELECTRICAL_CURRENT_AMPERE,
+    ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
+    POWER_KILO_WATT,
+    POWER_WATT,
+    SPEED_METERS_PER_SECOND,
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
     UNIT_PERCENTAGE,
+    VOLT,
     VOLUME_CUBIC_METERS,
+    VOLUME_LITERS,
 )
 from homeassistant.helpers.entity import Entity
 
@@ -34,14 +41,6 @@ CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_SUN_ENERGY_STATE = "core:SunEnergyState"
-CORE_TEMPERATURE_IN_CELCIUS = "core:TemperatureInCelcius"
-CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
-CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
-CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
-CORE_LUMINANCE_IN_LUX = "core:LuminanceInLux"
-CORE_ELECTRIC_ENERGY_IN_WH = "core:ElectricalEnergyInWh"
-CORE_VOLUME_IN_CUBIC_METER = "core:VolumeInCubicMeter"
-CORE_RELATIVE_VALUE_IN_PERCENTAGE = "core:RelativeValueInPercentage"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
@@ -69,16 +68,30 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
 }
-
+# From https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/tahoma/bootstrap.js
 UNITS = {
-    CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
-    CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
-    CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
-    CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-    CORE_LUMINANCE_IN_LUX: UNIT_LX,
-    CORE_ELECTRIC_ENERGY_IN_WH: ENERGY_WATT_HOUR,
-    CORE_VOLUME_IN_CUBIC_METER: VOLUME_CUBIC_METERS,
-    CORE_RELATIVE_VALUE_IN_PERCENTAGE: UNIT_PERCENTAGE,
+    "core:TemperatureInCelcius": TEMP_CELSIUS,
+    "core:TemperatureInCelsius": TEMP_CELSIUS,
+    "core:TemperatureInKelvin": TEMP_KELVIN,
+    "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
+    "core:LuminanceInLux": UNIT_LX,
+    "core:ElectricCurrentInAmpere": ELECTRICAL_CURRENT_AMPERE,
+    "core:VoltageInVolt": VOLT,
+    "core:ElectricalEnergyInWh": ENERGY_WATT_HOUR,
+    "core:ElectricalEnergyInKWh": ENERGY_KILO_WATT_HOUR,
+    "core:ElectricalEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
+    "core:ElectricalPowerInW": POWER_WATT,
+    "core:ElectricalPowerInKW": POWER_KILO_WATT,
+    "core:ElectricalPowerInMW": f"M{POWER_WATT}",
+    "core:FlowInMeterCubePerHour": VOLUME_CUBIC_METERS,
+    "core:LinearSpeedInMeterPerSecond": SPEED_METERS_PER_SECOND,
+    "core:RelativeValueInPercentage": UNIT_PERCENTAGE,
+    "core:VolumeInCubicMeter": VOLUME_CUBIC_METERS,
+    "core:VolumeInLiter": VOLUME_LITERS,
+    "core:FossilEnergyInWh": ENERGY_WATT_HOUR,
+    "core:FossilEnergyInKWh": ENERGY_KILO_WATT_HOUR,
+    "core:FossilEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
+    "meters_seconds": SPEED_METERS_PER_SECOND,
 }
 
 
