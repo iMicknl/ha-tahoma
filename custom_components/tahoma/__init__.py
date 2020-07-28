@@ -4,7 +4,6 @@ from collections import defaultdict
 from datetime import timedelta
 import logging
 
-import async_timeout
 from tahoma_api.client import TahomaClient
 from tahoma_api.exceptions import BadCredentialsException, TooManyRequestsException
 
@@ -12,7 +11,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant
 
-from ...helpers.update_coordinator import DataUpdateCoordinator
 from .const import DOMAIN, SUPPORTED_PLATFORMS, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 

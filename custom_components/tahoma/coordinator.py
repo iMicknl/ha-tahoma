@@ -1,13 +1,19 @@
 from datetime import timedelta
 import logging
-from typing import Awaitable, Callable, Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from tahoma_api.client import TahomaClient
-from tahoma_api.models import Device
+from tahoma_api.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+
+TYPES = {
+    DataType.INTEGER: int,
+    DataType.STRING: str,
+    DataType.FLOAT: float,
+    DataType.BOOLEAN: bool,
+}
 
 
 class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
@@ -37,5 +43,14 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         for event in events:
             if event.name == "DeviceStateChangedEvent":
                 for state in event.device_states:
-                    self.devices[event.deviceurl].states[state.name].value = state.value
+                    self.devices[event.deviceurl].states[
+                        state.name
+                    ].value = self.get_state(state)
         return self.devices
+
+    @staticmethod
+    def get_state(state: State) -> Union[float, int, bool, str]:
+        if state.type:
+            caster = TYPES.get(DataType(state.type))
+            return caster(state.value)
+        return state.value
