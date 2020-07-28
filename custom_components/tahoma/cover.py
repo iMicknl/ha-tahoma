@@ -24,7 +24,6 @@ from homeassistant.components.cover import (
 )
 
 from .const import DOMAIN
-from .switch import COMMAND_CYCLE
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,6 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 ATTR_LOCK_ORIG = "lock_originator"
 ATTR_MEM_POS = "memorized_position"
 
+COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
 COMMAND_CLOSE_SLATS = "closeSlats"
 COMMAND_DOWN = "down"
@@ -213,7 +213,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(self.select_command(COMMAND_OPEN, COMMAND_UP))
+        await self.async_execute_command(
+            self.select_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE)
+        )
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
@@ -222,7 +224,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
     async def async_close_cover(self, **_):
         """Close the cover."""
         await self.async_execute_command(
-            self.select_command(COMMAND_CLOSE, COMMAND_DOWN)
+            self.select_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE)
         )
 
     async def async_close_cover_tilt(self, **_):
@@ -263,20 +265,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
         ):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(COMMAND_OPEN, COMMAND_UP):
+        if self.has_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE):
             supported_features |= SUPPORT_OPEN
 
             if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(COMMAND_CLOSE, COMMAND_DOWN):
+        if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features
-
-    async def async_toggle(self):
-        """Toggle the entity."""
-        if self.has_command(COMMAND_CYCLE):
-            await self.async_execute_command(COMMAND_CYCLE)
-        else:
-            super().toggle()
