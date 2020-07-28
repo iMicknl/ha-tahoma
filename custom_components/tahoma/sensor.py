@@ -1,21 +1,27 @@
 """Support for TaHoma sensors."""
 from datetime import timedelta
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
+    ELECTRICAL_CURRENT_AMPERE,
+    ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
+    POWER_KILO_WATT,
     POWER_WATT,
+    SPEED_METERS_PER_SECOND,
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
     UNIT_PERCENTAGE,
+    VOLT,
+    VOLUME_CUBIC_METERS,
+    VOLUME_LITERS,
 )
 from homeassistant.helpers.entity import Entity
 
@@ -35,10 +41,6 @@ CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_SUN_ENERGY_STATE = "core:SunEnergyState"
-CORE_TEMPERATURE_IN_CELCIUS = "core:TemperatureInCelcius"
-CORE_TEMPERATURE_IN_CELSIUS = "core:TemperatureInCelsius"
-CORE_TEMPERATURE_IN_FAHRENHEIT = "core:TemperatureInFahrenheit"
-CORE_TEMPERATURE_IN_KELVIN = "core:TemperatureInKelvin"
 CORE_TEMPERATURE_STATE = "core:TemperatureState"
 CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
@@ -66,6 +68,31 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
     "WindSensor": DEVICE_CLASS_WIND_SPEED,
 }
+# From https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/tahoma/bootstrap.js
+UNITS = {
+    "core:TemperatureInCelcius": TEMP_CELSIUS,
+    "core:TemperatureInCelsius": TEMP_CELSIUS,
+    "core:TemperatureInKelvin": TEMP_KELVIN,
+    "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
+    "core:LuminanceInLux": UNIT_LX,
+    "core:ElectricCurrentInAmpere": ELECTRICAL_CURRENT_AMPERE,
+    "core:VoltageInVolt": VOLT,
+    "core:ElectricalEnergyInWh": ENERGY_WATT_HOUR,
+    "core:ElectricalEnergyInKWh": ENERGY_KILO_WATT_HOUR,
+    "core:ElectricalEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
+    "core:ElectricalPowerInW": POWER_WATT,
+    "core:ElectricalPowerInKW": POWER_KILO_WATT,
+    "core:ElectricalPowerInMW": f"M{POWER_WATT}",
+    "core:FlowInMeterCubePerHour": VOLUME_CUBIC_METERS,
+    "core:LinearSpeedInMeterPerSecond": SPEED_METERS_PER_SECOND,
+    "core:RelativeValueInPercentage": UNIT_PERCENTAGE,
+    "core:VolumeInCubicMeter": VOLUME_CUBIC_METERS,
+    "core:VolumeInLiter": VOLUME_LITERS,
+    "core:FossilEnergyInWh": ENERGY_WATT_HOUR,
+    "core:FossilEnergyInKWh": ENERGY_KILO_WATT_HOUR,
+    "core:FossilEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
+    "meters_seconds": SPEED_METERS_PER_SECOND,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -74,7 +101,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     controller = data.get("controller")
 
     entities = [
-        TahomaSensor(device, controller) for device in data.get("entities").get(SENSOR)
+        TahomaSensor(device, controller)
+        for device in data.get("entities").get(SENSOR)
+        if device.states
     ]
 
     async_add_entities(entities)
@@ -104,35 +133,10 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-        attribute = [
-            attr.value
-            for attr in self.device.attributes
-            if attr.name == CORE_MEASURED_VALUE_TYPE
-        ]
-        TEMPERATURE_UNIT = {
-            CORE_TEMPERATURE_IN_CELSIUS: TEMP_CELSIUS,
-            CORE_TEMPERATURE_IN_CELCIUS: TEMP_CELSIUS,
-            CORE_TEMPERATURE_IN_KELVIN: TEMP_KELVIN,
-            CORE_TEMPERATURE_IN_FAHRENHEIT: TEMP_FAHRENHEIT,
-        }.get(attribute[0], TEMP_CELSIUS,)
-        state = self.select_state(
-            CORE_CO2_CONCENTRATION_STATE,
-            CORE_CO_CONCENTRATION_STATE,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
-            CORE_LUMINANCE_STATE,
-            CORE_RELATIVE_HUMIDITY_STATE,
-            CORE_TEMPERATURE_STATE,
-        )
-        return {
-            CORE_TEMPERATURE_STATE: TEMPERATURE_UNIT,
-            CORE_RELATIVE_HUMIDITY_STATE: UNIT_PERCENTAGE,
-            CORE_LUMINANCE_STATE: UNIT_LX,
-            CORE_ELECTRIC_POWER_CONSUMPTION_STATE: POWER_WATT,
-            CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE: ENERGY_WATT_HOUR,
-            CORE_CO_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
-            CORE_CO2_CONCENTRATION_STATE: CONCENTRATION_PARTS_PER_MILLION,
-        }.get(state)
+        if self.device.attributes:
+            attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
+            return UNITS.get(attribute.value)
+        return None
 
     @property
     def icon(self) -> Optional[str]:
