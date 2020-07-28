@@ -1,5 +1,6 @@
 """Parent class for every TaHoma devices."""
 from datetime import timedelta
+from typing import Any, Optional
 
 from tahoma_api.client import TahomaClient
 from tahoma_api.models import Command, Device
@@ -66,7 +67,7 @@ class TahomaDevice(Entity):
     @property
     def assumed_state(self):
         """Return True if unable to access real state of the entity."""
-        return self.device.states is not None and len(self.device.states) > 0
+        return self.device.states is None or len(self.device.states) == 0
 
     @property
     def device_state_attributes(self):
@@ -98,6 +99,10 @@ class TahomaDevice(Entity):
             if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
                 attr[ATTR_BATTERY_LEVEL] = 0
 
+        if self.device.attributes:
+            for attribute in self.device.attributes:
+                attr[attribute.name] = attribute.value
+
         if self.device.states:
             for state in self.device.states:
                 if "State" in state.name:
@@ -116,18 +121,12 @@ class TahomaDevice(Entity):
             "sw_version": self.device.controllable_name,
         }
 
-    def select_command(self, *commands):
+    def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
-        return next(
-            (
-                c
-                for c in self.device.definition.commands
-                if c.command_name in list(commands)
-            ),
-            None,
-        )
+        existing_commands = self.device.definition.commands
+        return next((c for c in commands if c in existing_commands), None)
 
-    def has_command(self, *commands):
+    def has_command(self, *commands: str) -> bool:
         """Return True if a command exists in a list of commands."""
         return self.select_command(*commands) is not None
 
@@ -156,10 +155,10 @@ class TahomaDevice(Entity):
 
         return len(self._exec_queue) > 0
 
-    async def async_execute_command(self, command_name, *args):
+    async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
         exec_id = await self.client.execute_command(
-            self.device.deviceurl, Command(command_name, *args), "Home Assistant"
+            self.device.deviceurl, Command(command_name, list(args)), "Home Assistant"
         )
 
         self._exec_queue.append(exec_id)
