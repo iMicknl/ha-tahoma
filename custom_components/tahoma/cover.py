@@ -116,7 +116,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if position is None or position < 0 or position > 100:
             return None
 
-        if position is not None and "Horizontal" not in self.device.widget:
+        if "Horizontal" not in self.device.widget:
             position = 100 - position
 
         return position
