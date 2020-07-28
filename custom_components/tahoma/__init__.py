@@ -42,8 +42,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.exception(exception)
         return False
 
-    scenes = await client.get_scenarios()
-
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
@@ -52,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         client=client,
         devices=await client.get_devices(),
         listener_id=await client.register_event_listener(),
-        update_interval=timedelta(seconds=5),
+        update_interval=timedelta(seconds=30),
     )
 
     await tahoma_coordinator.async_refresh()
@@ -62,7 +60,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "coordinator": tahoma_coordinator,
     }
 
-    hass.data[DOMAIN][entry.entry_id]["entities"]["scene"] = scenes
+    hass.data[DOMAIN][entry.entry_id]["entities"][
+        "scene"
+    ] = await client.get_scenarios()
 
     for device in tahoma_coordinator.data.values():
         if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
