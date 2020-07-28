@@ -10,6 +10,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 TYPES = {
     DataType.INTEGER: int,
+    DataType.DATE: int,
     DataType.STRING: str,
     DataType.FLOAT: float,
     DataType.BOOLEAN: bool,
