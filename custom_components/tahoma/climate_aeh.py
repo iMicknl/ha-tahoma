@@ -72,16 +72,18 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
         """Return a list of available preset modes."""
         return [PRESET_NONE, PRESET_FREEZE, PRESET_ECO, PRESET_COMFORT]
 
-    def set_hvac_mode(self, hvac_mode: str) -> None:
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        self.apply_action(COMMAND_SET_HEATING_LEVEL, MAP_HVAC_MODES[hvac_mode])
+        await self.async_execute_command(
+            COMMAND_SET_HEATING_LEVEL, MAP_HVAC_MODES[hvac_mode]
+        )
 
-    def set_preset_mode(self, preset_mode: str) -> None:
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        self.apply_action(
+        await self.async_execute_command(
             COMMAND_SET_HEATING_LEVEL, MAP_REVERSE_PRESET_MODES[preset_mode]
         )
 
-    def turn_off(self) -> None:
+    async def async_turn_off(self) -> None:
         """Turn off the device."""
-        self.apply_action(COMMAND_SET_HEATING_LEVEL, PRESET_OFF)
+        await self.async_execute_command(COMMAND_SET_HEATING_LEVEL, PRESET_OFF)

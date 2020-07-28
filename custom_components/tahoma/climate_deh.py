@@ -53,13 +53,13 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         """Return the temperature we try to reach."""
         return 100 - self.select_state(CORE_LEVEL_STATE)
 
-    def set_temperature(self, **kwargs) -> None:
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         level = kwargs.get(ATTR_TEMPERATURE)
         if level is None:
             return
-        self.apply_action(COMMAND_SET_LEVEL, 100 - int(level))
-        self.apply_action(COMMAND_GET_LEVEL)
+        await self.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
+        await self.async_execute_command(COMMAND_GET_LEVEL)
 
     @property
     def hvac_mode(self) -> str:
@@ -73,12 +73,12 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
         """Return the list of available hvac operation modes."""
         return [HVAC_MODE_OFF, HVAC_MODE_HEAT]
 
-    def set_hvac_mode(self, hvac_mode: str) -> None:
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         level = 0
         if hvac_mode == HVAC_MODE_HEAT:
             level = self._saved_level
         else:
             self._saved_level = self.target_temperature
-        self.apply_action(COMMAND_SET_LEVEL, 100 - int(level))
-        self.apply_action(COMMAND_GET_LEVEL)
+        await self.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
+        await self.async_execute_command(COMMAND_GET_LEVEL)

@@ -50,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass,
         _LOGGER,
         # Name of the data. For logging purposes.
-        name="Tahoma fetcher",
+        name="TaHoma Event Fetcher",
         client=client,
         devices=await client.get_devices(),
         listener_id=await client.register_event_listener(),
