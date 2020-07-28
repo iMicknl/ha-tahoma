@@ -47,6 +47,7 @@ COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UP = "up"
 
 CORE_CLOSURE_STATE = "core:ClosureState"
+CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
@@ -111,6 +112,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_DEPLOYMENT_STATE,
             CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
+            CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
         )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
@@ -162,7 +164,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         )
 
         if state is not None:
-            return state == "closed"
+            return state == STATE_CLOSED
 
         if self.current_cover_position is not None:
             return self.current_cover_position == 0
