@@ -22,10 +22,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma locks from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaLock(device, controller) for device in data.get("entities").get(LOCK)
+        TahomaLock(device.deviceurl, coordinator)
+        for device in data.get("entities").get(LOCK)
     ]
 
     async_add_entities(entities)
