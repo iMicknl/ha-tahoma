@@ -1,14 +1,12 @@
 """Parent class for every TaHoma devices."""
-from datetime import timedelta
 from typing import Any, Optional
 
-from tahoma_api.client import TahomaClient
-from tahoma_api.models import Command, Device
+from tahoma_api.models import Command
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
-from homeassistant.util import Throttle
 
+from . import TahomaDataUpdateCoordinator
 from .const import DOMAIN
 
 ATTR_RSSI_LEVEL = "rssi_level"
@@ -30,24 +28,19 @@ STATE_DEAD = "dead"
 class TahomaDevice(Entity):
     """Representation of a TaHoma device entity."""
 
-    def __init__(self, device: Device, client: TahomaClient):
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Initialize the device."""
-        self.device = device
-        self.client = client
-        self._exec_queue = []
+        self.coordinator = coordinator
+        self.device_url = device_url
 
-    async def async_update(self):
-        """Update method."""
-        if await self.should_wait():
-            self.hass.async_add_job(self.async_update)
-            return
+    @property
+    def device(self):
+        return self.coordinator.data[self.device_url]
 
-        self.device.states = await self.client.get_state(self.device.deviceurl)
-
-    async def async_added_to_hass(self):
-        """Entity created."""
-        await super().async_added_to_hass()
-        self.async_schedule_update_ha_state(True)
+    @property
+    def should_poll(self):
+        """No need to poll. Coordinator notifies entity of updates."""
+        return False
 
     @property
     def name(self):
@@ -121,6 +114,16 @@ class TahomaDevice(Entity):
             "sw_version": self.device.controllable_name,
         }
 
+    async def async_update(self) -> None:
+        """Update a Tahoma entity."""
+        await self.coordinator.async_request_refresh()
+
+    async def async_added_to_hass(self) -> None:
+        """Connect to dispatcher listening for entity data notifications."""
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self.async_write_ha_state)
+        )
+
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
         existing_commands = self.device.definition.commands
@@ -147,18 +150,8 @@ class TahomaDevice(Entity):
         """Return True if a state exists in self."""
         return self.select_state(*states)
 
-    @Throttle(timedelta(seconds=1))
-    async def should_wait(self):
-        """Wait for actions to finish."""
-        exec_queue = await self.client.get_current_executions()
-        self._exec_queue = [e.id for e in self._exec_queue if e in exec_queue]
-
-        return len(self._exec_queue) > 0
-
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
-        exec_id = await self.client.execute_command(
+        await self.coordinator.client.execute_command(
             self.device.deviceurl, Command(command_name, list(args)), "Home Assistant"
         )
-
-        self._exec_queue.append(exec_id)

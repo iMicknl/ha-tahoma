@@ -86,10 +86,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma covers from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaCover(device, controller) for device in data.get("entities").get(COVER)
+        TahomaCover(device.deviceurl, coordinator)
+        for device in data.get("entities").get(COVER)
     ]
 
     async_add_entities(entities)
@@ -112,6 +113,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
         )
+        if position is not None:
+            position = int(position)
 
         if position is not None and "Horizontal" not in self.device.widget:
             position = 100 - position

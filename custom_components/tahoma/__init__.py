@@ -1,8 +1,10 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
+from datetime import timedelta
 import logging
 
+import async_timeout
 from tahoma_api.client import TahomaClient
 from tahoma_api.exceptions import BadCredentialsException, TooManyRequestsException
 
@@ -10,7 +12,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant
 
+from ...helpers.update_coordinator import DataUpdateCoordinator
 from .const import DOMAIN, SUPPORTED_PLATFORMS, TAHOMA_TYPES
+from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,17 +44,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.exception(exception)
         return False
 
-    devices = await client.get_devices()
     scenes = await client.get_scenarios()
+
+    coordinator = TahomaDataUpdateCoordinator(
+        hass,
+        _LOGGER,
+        # Name of the data. For logging purposes.
+        name="Tahoma fetcher",
+        client=client,
+        devices=await client.get_devices(),
+        listener_id=await client.register_event_listener(),
+        update_interval=timedelta(seconds=5),
+    )
+
+    await coordinator.async_refresh()
 
     hass.data[DOMAIN][entry.entry_id] = {
         "controller": client,
         "entities": defaultdict(list),
+        "coordinator": coordinator,
     }
 
     hass.data[DOMAIN][entry.entry_id]["entities"]["scene"] = scenes
 
-    for device in devices:
+    for device in coordinator.data.values():
         if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
             platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(
                 device.ui_class
