@@ -1,3 +1,4 @@
+"""Helpers to help coordinate updates."""
 from datetime import timedelta
 import logging
 from typing import Dict, List, Optional, Union
@@ -18,6 +19,8 @@ TYPES = {
 
 
 class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
+    """Class to manage fetching TaHoma data."""
+
     def __init__(
         self,
         hass: HomeAssistant,
@@ -29,7 +32,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         listener_id: str,
         update_interval: Optional[timedelta] = None,
     ):
-
+        """Initialize global data updater."""
         super().__init__(
             hass, logger, name=name, update_interval=update_interval,
         )
@@ -46,11 +49,11 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 for state in event.device_states:
                     self.devices[event.deviceurl].states[
                         state.name
-                    ].value = self.get_state(state)
+                    ].value = self._get_state(state)
         return self.devices
 
     @staticmethod
-    def get_state(state: State) -> Union[float, int, bool, str]:
+    def _get_state(state: State) -> Union[float, int, bool, str]:
         if state.type:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)

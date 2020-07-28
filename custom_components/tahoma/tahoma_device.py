@@ -35,6 +35,7 @@ class TahomaDevice(Entity):
 
     @property
     def device(self):
+        """Return TaHoma device linked to this entity."""
         return self.coordinator.data[self.device_url]
 
     @property
