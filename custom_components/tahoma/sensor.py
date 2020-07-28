@@ -128,7 +128,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_THERMAL_ENERGY_CONSUMPTION_STATE,
             CORE_WINDSPEED_STATE,
         )
-        return round(state, 2)
+        return round(state, 2) if state else None
 
     @property
     def unit_of_measurement(self):
