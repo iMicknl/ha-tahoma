@@ -6,8 +6,8 @@ from tahoma_api.models import Command
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 
-from . import TahomaDataUpdateCoordinator
 from .const import DOMAIN
+from .coordinator import TahomaDataUpdateCoordinator
 
 ATTR_RSSI_LEVEL = "rssi_level"
 
