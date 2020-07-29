@@ -2,8 +2,8 @@
 import logging
 from typing import Any
 
-from tahoma.client import TahomaClient
-from tahoma.models import Scenario
+from pyhoma.client import TahomaClient
+from pyhoma.models import Scenario
 
 from homeassistant.components.scene import DOMAIN as SCENE, Scene
 

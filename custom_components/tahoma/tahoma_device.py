@@ -1,7 +1,7 @@
 """Parent class for every TaHoma devices."""
 from typing import Any, Optional
 
-from tahoma.models import Command
+from pyhoma.models import Command
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity

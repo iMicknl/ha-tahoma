@@ -1,8 +1,8 @@
 """Config flow for TaHoma integration."""
 import logging
 
-from tahoma.client import TahomaClient
-from tahoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.client import TahomaClient
+from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import voluptuous as vol
 
 from homeassistant import config_entries

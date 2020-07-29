@@ -4,8 +4,8 @@ from collections import defaultdict
 from datetime import timedelta
 import logging
 
-from tahoma.client import TahomaClient
-from tahoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.client import TahomaClient
+from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
