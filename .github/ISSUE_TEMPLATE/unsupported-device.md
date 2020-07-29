@@ -1,20 +1,22 @@
 ---
 name: Unsupported device
 about: Let's have a look if we can add support for your device to this component
-title: Add support for [ModelName] ([io:SomfySensorName])
+title: Add support for [ModelName] (io:SomfySensorName)
 labels: new-device
-assignees: ''
-
+assignees: ""
 ---
 
-_Please update the title according to your own model_
+<!--
+Please update the title to match your device model and type
+-->
 
 **Device information**
 A clear and concise description of the device, together with specific usecases that you would like to see supported.
 
 **Device details**
-_Please follow the instructions here: https://github.com/totalimmersion/com.somfy.tahoma/files/2755935/Instructions.for.the.TaHoma.devices.pdf to gather more details of the device and post them below_
 
-```json
-[PASTE DEVICE DETAILS HERE]
-```
+<!--
+Enable debug logging (https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste the Unsupported Tahoma device string here.
+
+If your device already shows up in Home Assistant, share the type (e.g. `io:DimmableLightIOComponent`), which can be gathered from device page in HA looking at Firmware] `/config/devices/dashboard`
+-->

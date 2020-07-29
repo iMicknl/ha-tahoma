@@ -6,5 +6,6 @@
   "requirements": [
     "git+https://github.com/iMicknl/python-tahoma-api.git#tahoma_api==0.1.0"
   ],
-  "codeowners": ["@philklei", "@imicknl", "@vlebourl", "@tetienne"]
+  "codeowners": ["@philklei", "@imicknl", "@vlebourl", "@tetienne"],
+  "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues"
 }
