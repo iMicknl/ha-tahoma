@@ -105,8 +105,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
 
-    client = hass.data[DOMAIN][entry.entry_id].get("controller")
-    await client.close()
+    await hass.data[DOMAIN][entry.entry_id].get("coordinator").client.close()
 
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 
