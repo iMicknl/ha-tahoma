@@ -1,6 +1,5 @@
 """Support for TaHoma binary sensors."""
 from datetime import timedelta
-import logging
 from typing import Optional
 
 from homeassistant.components.binary_sensor import (
@@ -65,10 +64,10 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaBinarySensor(device, controller)
+        TahomaBinarySensor(device.deviceurl, coordinator)
         for device in data.get("entities").get(BINARY_SENSOR)
     ]
     async_add_entities(entities)

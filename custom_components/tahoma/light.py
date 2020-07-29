@@ -36,10 +36,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma lights from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaLight(device, controller) for device in data.get("entities").get(LIGHT)
+        TahomaLight(device.deviceurl, coordinator)
+        for device in data.get("entities").get(LIGHT)
     ]
 
     async_add_entities(entities)

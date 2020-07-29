@@ -28,10 +28,11 @@ ICON_BELL_OFF = "mdi:bell-off"
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaSwitch(device, controller) for device in data.get("entities").get(SWITCH)
+        TahomaSwitch(device.deviceurl, coordinator)
+        for device in data.get("entities").get(SWITCH)
     ]
 
     async_add_entities(entities)

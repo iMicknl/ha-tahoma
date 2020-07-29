@@ -100,10 +100,10 @@ UNITS = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     entities = [
-        TahomaSensor(device, controller)
+        TahomaSensor(device.deviceurl, coordinator)
         for device in data.get("entities").get(SENSOR)
         if device.states
     ]
@@ -132,7 +132,7 @@ class TahomaSensor(TahomaDevice, Entity):
             CORE_WINDSPEED_STATE,
             CORE_WATER_CONSUMPTION_STATE,
         )
-        return round(state, 2)
+        return round(state, 2) if state else None
 
     @property
     def unit_of_measurement(self):

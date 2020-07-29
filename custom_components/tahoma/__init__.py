@@ -1,6 +1,7 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
+from datetime import timedelta
 import logging
 
 from tahoma_api.client import TahomaClient
@@ -11,6 +12,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTAN
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, TAHOMA_TYPES
+from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,17 +42,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.exception(exception)
         return False
 
-    devices = await client.get_devices()
-    scenes = await client.get_scenarios()
+    tahoma_coordinator = TahomaDataUpdateCoordinator(
+        hass,
+        _LOGGER,
+        # Name of the data. For logging purposes.
+        name="TaHoma Event Fetcher",
+        client=client,
+        devices=await client.get_devices(),
+        listener_id=await client.register_event_listener(),
+        update_interval=timedelta(seconds=30),
+    )
+
+    await tahoma_coordinator.async_refresh()
 
     hass.data[DOMAIN][entry.entry_id] = {
-        "controller": client,
         "entities": defaultdict(list),
+        "coordinator": tahoma_coordinator,
     }
 
-    hass.data[DOMAIN][entry.entry_id]["entities"]["scene"] = scenes
+    hass.data[DOMAIN][entry.entry_id]["entities"][
+        "scene"
+    ] = await client.get_scenarios()
 
-    for device in devices:
+    for device in tahoma_coordinator.data.values():
         if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
             platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(
                 device.ui_class
@@ -91,8 +105,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
 
-    client = hass.data[DOMAIN][entry.entry_id].get("controller")
-    await client.close()
+    await hass.data[DOMAIN][entry.entry_id].get("coordinator").client.close()
 
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 

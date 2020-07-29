@@ -16,14 +16,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma climate from a config entry."""
 
     data = hass.data[DOMAIN][entry.entry_id]
-    controller = data.get("controller")
+    coordinator = data.get("coordinator")
 
     climate_devices = [device for device in data.get("entities").get(CLIMATE)]
 
     entities = []
     for device in climate_devices:
         if device.widget == AEH:
-            entities.append(AtlanticElectricalHeater(device, controller))
+            entities.append(AtlanticElectricalHeater(device.deviceurl, coordinator))
         elif device.widget == ST:
             base_url = device.deviceurl.split("#", 1)[0]
             sensor = None
@@ -32,7 +32,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 if v.unique_id == base_url + "#2":
                     sensor = k
                     break
-            entities.append(SomfyThermostat(device, controller, sensor))
+            entities.append(SomfyThermostat(device.deviceurl, coordinator, sensor))
         elif device.widget == DEH:
-            entities.append(DimmerExteriorHeating(device, controller))
+            entities.append(DimmerExteriorHeating(device.deviceurl, coordinator))
     async_add_entities(entities)

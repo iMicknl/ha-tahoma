@@ -21,6 +21,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
+from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -79,9 +80,11 @@ PRESET_TEMPERATURES = {
 class SomfyThermostat(TahomaDevice, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
-    def __init__(self, device, controller, sensor):
+    def __init__(
+        self, device_url: str, coordinator: TahomaDataUpdateCoordinator, sensor
+    ):
         """Init method."""
-        super().__init__(device, controller)
+        super().__init__(device_url, coordinator)
         self._temp_sensor_entity_id = sensor
         if self.hvac_mode == HVAC_MODE_AUTO:
             self._saved_target_temp = self.select_state(
@@ -196,10 +199,10 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         if temperature is None:
             return
 
-        if temperature < self.min_temp():
-            temperature = self.min_temp()
-        elif temperature > self.max_temp():
-            temperature = self.max_temp()
+        if temperature < self.min_temp:
+            temperature = self.min_temp
+        elif temperature > self.max_temp:
+            temperature = self.max_temp
 
         await self.async_execute_command(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
