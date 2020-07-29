@@ -92,7 +92,7 @@ logger:
     custom_components.tahoma: debug
 ```
 
-### My device is not supported / working correctly
+### Device not supported / working correctly
 
 If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging). Copy the debug string and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose)
 
@@ -100,6 +100,6 @@ If your device is not visible in the device list of Home Assistant (/config/devi
 
 If your device is listed in the device list, copy the firmware and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose). (e.g. io:DimmableLightIOComponent)
 
-### How can I exclude devices
+### Exclude devices
 
 The previous component had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this is now functionality offered by default in Home Assistant core. You can now disable entities via the interface.
