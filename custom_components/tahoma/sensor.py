@@ -30,8 +30,6 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(seconds=60)
-
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
 CORE_CO_CONCENTRATION_STATE = "core:COConcentrationState"
 CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
