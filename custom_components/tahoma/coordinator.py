@@ -7,7 +7,7 @@ from tahoma_api.client import TahomaClient
 from tahoma_api.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 TYPES = {
     DataType.INTEGER: int,
@@ -43,14 +43,17 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch data from Tahoma."""
-        events = await self.client.fetch_event_listener(self.listener_id)
-        for event in events:
-            if event.name == "DeviceStateChangedEvent":
-                for state in event.device_states:
-                    self.devices[event.deviceurl].states[
-                        state.name
-                    ].value = self._get_state(state)
-        return self.devices
+        try:
+            events = await self.client.fetch_event_listener(self.listener_id)
+        except Exception as exception:
+            raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
+        else:
+            for event in events:
+                if event.name == "DeviceStateChangedEvent":
+                    for state in event.device_states:
+                        device = self.devices[event.deviceurl]
+                        device.states[state.name].value = self._get_state(state)
+            return self.devices
 
     @staticmethod
     def _get_state(state: State) -> Union[float, int, bool, str]:
