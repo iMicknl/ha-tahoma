@@ -3,8 +3,8 @@ from datetime import timedelta
 import logging
 from typing import Dict, List, Optional, Union
 
-from tahoma_api.client import TahomaClient
-from tahoma_api.models import DataType, Device, State
+from tahoma.client import TahomaClient
+from tahoma.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
