@@ -65,7 +65,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             "internal:TSKAlarmComponent",
         ]:  # Add here devices to hide from the debug log.
             _LOGGER.debug(
-                "Unsupported Tahoma device detected (%s - %s - %s).",
+                "Unsupported TaHoma device detected (%s - %s - %s).",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
