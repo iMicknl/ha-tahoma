@@ -14,8 +14,6 @@ from homeassistant.components.binary_sensor import (
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
-SCAN_INTERVAL = timedelta(seconds=120)
-
 CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
 CORE_CONTACT_STATE = "core:ContactState"

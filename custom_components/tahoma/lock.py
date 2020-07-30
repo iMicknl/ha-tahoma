@@ -10,8 +10,6 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(seconds=120)
-
 COMMAND_LOCK = "lock"
 COMMAND_UNLOCK = "unlock"
 

@@ -20,8 +20,6 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(seconds=30)
-
 COMMAND_SET_INTENSITY = "setIntensity"
 COMMAND_WINK = "wink"
 COMMAND_SET_RGB = "setRGB"
