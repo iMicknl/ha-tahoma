@@ -61,9 +61,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "coordinator": tahoma_coordinator,
     }
 
-    hass.data[DOMAIN][entry.entry_id]["entities"][
-        "scene"
-    ] = await client.get_scenarios()
+    entities = hass.data[DOMAIN][entry.entry_id]["entities"]
+    entities["scene"] = await client.get_scenarios()
 
     for device in tahoma_coordinator.data.values():
         if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
@@ -72,7 +71,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
 
             if platform in SUPPORTED_PLATFORMS:
-                hass.data[DOMAIN][entry.entry_id]["entities"][platform].append(device)
+                entities[platform].append(device)
 
         elif device.controllable_name not in [
             "ogp:Bridge",
@@ -86,10 +85,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.widget,
             )
 
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
-
-    for platform in entities_per_platform:
-        if len(entities_per_platform) > 0:
+    for platform in entities:
+        if len(entities) > 0:
             hass.async_create_task(
                 hass.config_entries.async_forward_entry_setup(entry, platform)
             )
