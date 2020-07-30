@@ -80,12 +80,10 @@ PRESET_TEMPERATURES = {
 class SomfyThermostat(TahomaDevice, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
-    def __init__(
-        self, device_url: str, coordinator: TahomaDataUpdateCoordinator, sensor
-    ):
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
-        self._temp_sensor_entity_id = sensor
+        self._temp_sensor_entity_id = None
         if self.hvac_mode == HVAC_MODE_AUTO:
             self._saved_target_temp = self.select_state(
                 PRESET_TEMPERATURES[self.preset_mode]
@@ -99,6 +97,16 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     async def async_added_to_hass(self):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
+
+        # The Somfy Thermostat require a temperature sensor
+        base_url = self.device.deviceurl.split("#", 1)[0]
+        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        entity_registry.async_entries_for_device(entity_registry,)
+        for k, v in entity_registry.entities.items():
+            if v.unique_id == f"{base_url}#2":
+                self._temp_sensor_entity_id = k
+                break
+
         async_track_state_change(
             self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
         )
