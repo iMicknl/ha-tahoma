@@ -101,7 +101,6 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         # The Somfy Thermostat require a temperature sensor
         base_url = self.device.deviceurl.split("#", 1)[0]
         entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
-        entity_registry.async_entries_for_device(entity_registry,)
         for k, v in entity_registry.entities.items():
             if v.unique_id == f"{base_url}#2":
                 self._temp_sensor_entity_id = k
