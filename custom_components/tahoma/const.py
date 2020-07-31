@@ -9,6 +9,12 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
 
+TAHOMA_NAMES_IGNORED = [
+    "ogp:Bridge",
+    "internal:PodV2Component",
+    "internal:TSKAlarmComponent",
+]
+
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,
