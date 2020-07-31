@@ -155,8 +155,6 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def device_class(self) -> Optional[str]:
         """Return the device class of this entity if any."""
-        return (
-            TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.widget)
-            or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
-            or None
-        )
+        return TAHOMA_SENSOR_DEVICE_CLASSES.get(
+            self.device.widget
+        ) or TAHOMA_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)

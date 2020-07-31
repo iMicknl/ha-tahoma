@@ -1,7 +1,7 @@
 """Parent class for every TaHoma devices."""
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
-from pyhoma.models import Command
+from pyhoma.models import Command, Device
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
@@ -34,17 +34,17 @@ class TahomaDevice(Entity):
         self.device_url = device_url
 
     @property
-    def device(self):
+    def device(self) -> Device:
         """Return TaHoma device linked to this entity."""
         return self.coordinator.data[self.device_url]
 
     @property
-    def should_poll(self):
+    def should_poll(self) -> bool:
         """No need to poll. Coordinator notifies entity of updates."""
         return False
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the device."""
         return self.device.label
 
@@ -59,12 +59,12 @@ class TahomaDevice(Entity):
         return self.device.deviceurl
 
     @property
-    def assumed_state(self):
+    def assumed_state(self) -> bool:
         """Return True if unable to access real state of the entity."""
         return self.device.states is None or len(self.device.states) == 0
 
     @property
-    def device_state_attributes(self):
+    def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {
             "ui_class": self.device.ui_class,
@@ -89,9 +89,8 @@ class TahomaDevice(Entity):
 
             attr[ATTR_BATTERY_LEVEL] = battery_state
 
-        if self.has_state(CORE_SENSOR_DEFECT_STATE):
-            if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
-                attr[ATTR_BATTERY_LEVEL] = 0
+        if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
+            attr[ATTR_BATTERY_LEVEL] = 0
 
         if self.device.attributes:
             for attribute in self.device.attributes:
@@ -105,7 +104,7 @@ class TahomaDevice(Entity):
         return attr
 
     @property
-    def device_info(self):
+    def device_info(self) -> Dict[str, Any]:
         """Return device registry information for this entity."""
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
@@ -134,7 +133,7 @@ class TahomaDevice(Entity):
         """Return True if a command exists in a list of commands."""
         return self.select_command(*commands) is not None
 
-    def select_state(self, *states):
+    def select_state(self, *states) -> Optional[str]:
         """Select first existing active state in a list of states."""
         if self.device.states:
             return next(
@@ -147,9 +146,9 @@ class TahomaDevice(Entity):
             )
         return None
 
-    def has_state(self, *states):
+    def has_state(self, *states: str) -> bool:
         """Return True if a state exists in self."""
-        return self.select_state(*states)
+        return self.select_state(*states) is not None
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
