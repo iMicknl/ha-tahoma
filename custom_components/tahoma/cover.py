@@ -234,8 +234,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if self.has_command(COMMAND_OPEN_SLATS):
             supported_features |= SUPPORT_OPEN_TILT
 
-        if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
-            supported_features |= SUPPORT_STOP_TILT
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+                supported_features |= SUPPORT_STOP_TILT
 
         if self.has_command(COMMAND_CLOSE_SLATS):
             supported_features |= SUPPORT_CLOSE_TILT
@@ -251,8 +251,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if self.has_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE):
             supported_features |= SUPPORT_OPEN
 
-        if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
-            supported_features |= SUPPORT_STOP
+            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+                supported_features |= SUPPORT_STOP
 
         if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
             supported_features |= SUPPORT_CLOSE
