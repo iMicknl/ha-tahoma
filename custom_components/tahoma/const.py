@@ -4,22 +4,10 @@ from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
-from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
-
-SUPPORTED_PLATFORMS = [
-    BINARY_SENSOR,
-    CLIMATE,
-    COVER,
-    LIGHT,
-    LOCK,
-    SCENE,
-    SENSOR,
-    SWITCH,
-]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {

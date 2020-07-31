@@ -7,15 +7,16 @@ import logging
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 
+from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, SUPPORTED_PLATFORMS, TAHOMA_TYPES
+from .const import DOMAIN, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=5)
+DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -56,22 +57,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     await tahoma_coordinator.async_refresh()
 
+    entities = defaultdict(list)
+    entities[SCENE] = await client.get_scenarios()
+
     hass.data[DOMAIN][entry.entry_id] = {
-        "entities": defaultdict(list),
+        "entities": entities,
         "coordinator": tahoma_coordinator,
     }
 
-    entities = hass.data[DOMAIN][entry.entry_id]["entities"]
-    entities["scene"] = await client.get_scenarios()
-
     for device in tahoma_coordinator.data.values():
-        if device.widget in TAHOMA_TYPES or device.ui_class in TAHOMA_TYPES:
-            platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(
-                device.ui_class
-            )
-
-            if platform in SUPPORTED_PLATFORMS:
-                entities[platform].append(device)
+        platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
+        if platform:
+            entities[platform].append(device)
 
         elif device.controllable_name not in [
             "ogp:Bridge",
@@ -86,10 +83,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
 
     for platform in entities:
-        if len(entities) > 0:
-            hass.async_create_task(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
+        )
 
     async def async_close_client(self, *_):
         """Close HTTP client."""
