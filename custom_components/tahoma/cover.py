@@ -28,9 +28,6 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-ATTR_LOCK_ORIG = "lock_originator"
-ATTR_MEM_POS = "memorized_position"
-
 COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
 COMMAND_CLOSE_SLATS = "closeSlats"
@@ -184,23 +181,6 @@ class TahomaCover(TahomaDevice, CoverEntity):
         )
 
     @property
-    def device_state_attributes(self):
-        """Return the device state attributes."""
-        attr = {}
-        super_attr = super().device_state_attributes
-
-        if super_attr is not None:
-            attr.update(super_attr)
-
-        if self.has_state(CORE_MEMORIZED_1_POSITION_STATE):
-            attr[ATTR_MEM_POS] = self.select_state(CORE_MEMORIZED_1_POSITION_STATE)
-
-        if self.has_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE):
-            attr[ATTR_LOCK_ORIG] = self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE)
-
-        return attr
-
-    @property
     def icon(self):
         """Return the icon to use in the frontend, if any."""
         if (
@@ -254,8 +234,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if self.has_command(COMMAND_OPEN_SLATS):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
-                supported_features |= SUPPORT_STOP_TILT
+        if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+            supported_features |= SUPPORT_STOP_TILT
 
         if self.has_command(COMMAND_CLOSE_SLATS):
             supported_features |= SUPPORT_CLOSE_TILT
@@ -271,8 +251,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if self.has_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE):
             supported_features |= SUPPORT_OPEN
 
-            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
-                supported_features |= SUPPORT_STOP
+        if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+            supported_features |= SUPPORT_STOP
 
         if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
             supported_features |= SUPPORT_CLOSE

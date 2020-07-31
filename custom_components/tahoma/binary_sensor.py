@@ -97,11 +97,9 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
     @property
     def device_class(self):
         """Return the class of the device."""
-        return (
-            TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.widget)
-            or TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
-            or None
-        )
+        return TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(
+            self.device.widget
+        ) or TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
 
     @property
     def icon(self) -> Optional[str]:
