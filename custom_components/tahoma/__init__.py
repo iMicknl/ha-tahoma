@@ -43,7 +43,7 @@ CONFIG_SCHEMA = vol.Schema(
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Hue platform."""
+    """Set up the TaHoma component."""
     conf = config.get(DOMAIN)
 
     if conf is None:
@@ -84,12 +84,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     try:
         client = TahomaClient(username, password)
         await client.login()
-    except TooManyRequestsException as exception:
-        _LOGGER.exception(exception)
-        return False
-    except BadCredentialsException as exception:
-        _LOGGER.exception(exception)
-        return False
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
