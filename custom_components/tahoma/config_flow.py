@@ -50,12 +50,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
 
-    async def async_step_import(self, import_info):
+    async def async_step_import(self, import_config: dict):
         """Handle YAML configuration."""
 
-        if import_info is not None:
-            username = import_info.get(CONF_USERNAME)
-            password = import_info.get(CONF_PASSWORD)
+        if import_config:
+            username = import_config.get(CONF_USERNAME)
+            password = import_config.get(CONF_PASSWORD)
 
             await self.async_set_unique_id(username)
             self._abort_if_unique_id_configured()
@@ -63,6 +63,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             async with TahomaClient(username, password) as client:
                 try:
                     await client.login()
-                    return self.async_create_entry(title=username, data=import_info)
+                    return self.async_create_entry(title=username, data=import_config)
                 except Exception as exception:  # pylint: disable=broad-except
                     _LOGGER.exception(exception)
