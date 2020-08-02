@@ -9,6 +9,12 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
 
+IGNORED_TAHOMA_TYPES = [
+    "ProtocolGateway",
+    "Pod",
+    "TSKAlarmController",  # widgetName, uiClass is Alarm
+]
+
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,

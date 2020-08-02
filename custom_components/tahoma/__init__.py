@@ -12,7 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, TAHOMA_TYPES
+from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -69,14 +69,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
         if platform:
             entities[platform].append(device)
-
-        elif device.controllable_name not in [
-            "ogp:Bridge",
-            "internal:PodV2Component",
-            "internal:TSKAlarmComponent",
-        ]:  # Add here devices to hide from the debug log.
+        elif (
+            device.widget not in IGNORED_TAHOMA_TYPES
+            and device.ui_class not in IGNORED_TAHOMA_TYPES
+        ):
             _LOGGER.debug(
-                "Unsupported TaHoma device detected (%s - %s - %s).",
+                "Unsupported TaHoma device detected (%s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
