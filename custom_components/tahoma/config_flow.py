@@ -28,9 +28,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
 
-        await self.async_set_unique_id(username)
-        self._abort_if_unique_id_configured()
-
         async with TahomaClient(username, password) as client:
             await client.login()
             return self.async_create_entry(title=username, data=user_input)
@@ -40,6 +37,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input:
+            await self.async_set_unique_id(user_input.get(CONF_USERNAME))
+            self._abort_if_unique_id_configured()
+
             try:
                 return await self.async_validate_input(user_input)
             except TooManyRequestsException:
