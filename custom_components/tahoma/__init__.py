@@ -6,11 +6,19 @@ import logging
 
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+import voluptuous as vol
 
+from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, EVENT_HOMEASSISTANT_STOP
+from homeassistant.const import (
+    CONF_EXCLUDE,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    EVENT_HOMEASSISTANT_STOP,
+)
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
@@ -18,9 +26,51 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
+CONFIG_SCHEMA = vol.Schema(
+    {
+        DOMAIN: vol.Schema(
+            {
+                vol.Required(CONF_USERNAME): cv.string,
+                vol.Required(CONF_PASSWORD): cv.string,
+                cv.deprecated(CONF_EXCLUDE, default=[]): vol.All(
+                    cv.ensure_list, [cv.string]
+                ),
+            }
+        )
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the TaHoma component."""
+    """Set up the Hue platform."""
+    conf = config.get(DOMAIN)
+
+    if conf is None:
+        return True
+
+    if CONF_USERNAME not in conf or CONF_PASSWORD not in conf:
+        return True
+
+    username = conf.get(CONF_USERNAME)
+    password = conf.get(CONF_PASSWORD)
+
+    existing_entries = {
+        entry.data.get(CONF_USERNAME)
+        for entry in hass.config_entries.async_entries(DOMAIN)
+    }
+
+    if username in existing_entries:
+        return True
+
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": config_entries.SOURCE_IMPORT},
+            data={CONF_USERNAME: username, CONF_PASSWORD: password},
+        )
+    )
+
     return True
 
 
