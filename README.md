@@ -20,15 +20,11 @@ Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot H
 
 ### HACS
 
-Add the repository url below to HACS, search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
-
-```
-https://github.com/imicknl/ha-tahoma
-```
+This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
 
 ## Supported Somfy devices
 
-This component doesn't have a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This way more devices will be supported out of the box, based on their category and available states and commands.
+This component doesn't have a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This way more devices will be supported out of the box, based on their category, available states and commands.
 
 | Somfy ui_class / widget      | Home Assistant platform |
 | ---------------------------- | ----------------------- |
@@ -102,4 +98,4 @@ If your device is listed in the device list, copy the firmware and create a [new
 
 ### Exclude devices
 
-The previous component had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this is now functionality offered by default in Home Assistant core. You can now disable entities via the interface.
+The previous component had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this functionality is now offered by default in Home Assistant core. You can now disable entities via the interface.
