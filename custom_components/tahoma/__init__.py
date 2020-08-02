@@ -28,14 +28,17 @@ DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
 CONFIG_SCHEMA = vol.Schema(
     {
-        DOMAIN: vol.Schema(
-            {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_PASSWORD): cv.string,
-                cv.deprecated(CONF_EXCLUDE, default=[]): vol.All(
-                    cv.ensure_list, [cv.string]
-                ),
-            }
+        DOMAIN: vol.All(
+            cv.deprecated(CONF_EXCLUDE),
+            vol.Schema(
+                {
+                    vol.Required(CONF_USERNAME): cv.string,
+                    vol.Required(CONF_PASSWORD): cv.string,
+                    vol.Optional(CONF_EXCLUDE, default=[]): vol.All(
+                        cv.ensure_list, [cv.string]
+                    ),
+                }
+            ),
         )
     },
     extra=vol.ALLOW_EXTRA,
