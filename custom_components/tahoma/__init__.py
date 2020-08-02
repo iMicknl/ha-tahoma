@@ -47,16 +47,13 @@ CONFIG_SCHEMA = vol.Schema(
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the TaHoma component."""
-    conf = config.get(DOMAIN)
+    configuration = config.get(DOMAIN)
 
-    if conf is None:
+    if configuration is None:
         return True
 
-    username = conf.get(CONF_USERNAME)
-    password = conf.get(CONF_PASSWORD)
-
     if any(
-        username in entry.data.get(CONF_USERNAME)
+        configuration.get(CONF_USERNAME) in entry.data.get(CONF_USERNAME)
         for entry in hass.config_entries.async_entries(DOMAIN)
     ):
         return True
@@ -65,7 +62,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
         hass.config_entries.flow.async_init(
             DOMAIN,
             context={"source": config_entries.SOURCE_IMPORT},
-            data={CONF_USERNAME: username, CONF_PASSWORD: password},
+            data=configuration,
         )
     )
 
