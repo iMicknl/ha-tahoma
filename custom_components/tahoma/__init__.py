@@ -49,18 +49,13 @@ async def async_setup(hass: HomeAssistant, config: dict):
     if conf is None:
         return True
 
-    if CONF_USERNAME not in conf or CONF_PASSWORD not in conf:
-        return True
-
     username = conf.get(CONF_USERNAME)
     password = conf.get(CONF_PASSWORD)
 
-    existing_entries = {
-        entry.data.get(CONF_USERNAME)
+    if any(
+        username in entry.data.get(CONF_USERNAME)
         for entry in hass.config_entries.async_entries(DOMAIN)
-    }
-
-    if username in existing_entries:
+    ):
         return True
 
     hass.async_create_task(
