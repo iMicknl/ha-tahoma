@@ -23,46 +23,41 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
+    async def async_validate_input(self, user_input):
+        """Validate user credentials."""
+        username = user_input.get(CONF_USERNAME)
+        password = user_input.get(CONF_PASSWORD)
+
+        await self.async_set_unique_id(username)
+        self._abort_if_unique_id_configured()
+
+        async with TahomaClient(username, password) as client:
+            await client.login()
+            return self.async_create_entry(title=username, data=user_input)
+
     async def async_step_user(self, user_input=None):
-        """Handle the initial step."""
+        """Handle the initial step via config flow."""
         errors = {}
 
-        if user_input is not None:
-            username = user_input.get(CONF_USERNAME)
-            password = user_input.get(CONF_PASSWORD)
-
-            await self.async_set_unique_id(username)
-            self._abort_if_unique_id_configured()
-
-            async with TahomaClient(username, password) as client:
-                try:
-                    await client.login()
-                    return self.async_create_entry(title=username, data=user_input)
-                except TooManyRequestsException:
-                    errors["base"] = "too_many_requests"
-                except BadCredentialsException:
-                    errors["base"] = "invalid_auth"
-                except Exception as exception:  # pylint: disable=broad-except
-                    errors["base"] = "unknown"
-                    _LOGGER.exception(exception)
+        if user_input:
+            try:
+                return await self.async_validate_input(user_input)
+            except TooManyRequestsException:
+                errors["base"] = "too_many_requests"
+            except BadCredentialsException:
+                errors["base"] = "invalid_auth"
+            except Exception as exception:  # pylint: disable=broad-except
+                errors["base"] = "unknown"
+                _LOGGER.exception(exception)
 
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
 
     async def async_step_import(self, import_config: dict):
-        """Handle YAML configuration."""
-
+        """Handle the initial step via YAML configuration."""
         if import_config:
-            username = import_config.get(CONF_USERNAME)
-            password = import_config.get(CONF_PASSWORD)
-
-            await self.async_set_unique_id(username)
-            self._abort_if_unique_id_configured()
-
-            async with TahomaClient(username, password) as client:
-                try:
-                    await client.login()
-                    return self.async_create_entry(title=username, data=import_config)
-                except Exception as exception:  # pylint: disable=broad-except
-                    _LOGGER.exception(exception)
+            try:
+                return await self.async_validate_input(import_config)
+            except Exception as exception:  # pylint: disable=broad-except
+                _LOGGER.exception(exception)
