@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
+    CURRENT_HVAC_HEAT,
+    CURRENT_HVAC_IDLE,
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     PRESET_AWAY,
@@ -85,9 +87,12 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         super().__init__(device_url, coordinator)
         self._temp_sensor_entity_id = None
         if self.hvac_mode == HVAC_MODE_AUTO:
-            self._saved_target_temp = self.select_state(
-                PRESET_TEMPERATURES[self.preset_mode]
-            )
+            if self.preset_mode == PRESET_NONE:
+                self._saved_target_temp = None
+            else:
+                self._saved_target_temp = self.select_state(
+                    PRESET_TEMPERATURES[self.preset_mode]
+                )
         else:
             self._saved_target_temp = self.select_state(
                 CORE_DEROGATED_TARGET_TEMPERATURE_STATE
@@ -159,6 +164,15 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
         return [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
+
+    @property
+    def hvac_action(self) -> str:
+        """Return the current running hvac operation if supported."""
+        if not self.current_temperature:
+            return CURRENT_HVAC_IDLE
+        if self.current_temperature < self.target_temperature:
+            return CURRENT_HVAC_HEAT
+        return CURRENT_HVAC_IDLE
 
     @property
     def preset_mode(self) -> Optional[str]:
