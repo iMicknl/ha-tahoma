@@ -197,6 +197,8 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     def target_temperature(self):
         """Return the temperature we try to reach."""
         if self.hvac_mode == HVAC_MODE_AUTO:
+            if self.preset_mode == PRESET_NONE:
+                return None
             return self.select_state(PRESET_TEMPERATURES[self.preset_mode])
         return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
@@ -228,7 +230,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
             await self.async_execute_command(COMMAND_EXIT_DEROGATION)
             await self.async_execute_command(COMMAND_REFRESH_STATE)
         elif hvac_mode == HVAC_MODE_HEAT:
-            self.set_preset_mode(PRESET_NONE)
+            await self.async_set_preset_mode(PRESET_NONE)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
