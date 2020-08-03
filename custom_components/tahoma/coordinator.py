@@ -53,7 +53,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 if event.name == "DeviceStateChangedEvent":
                     for state in event.device_states:
                         device = self.devices[event.deviceurl]
-                        if device.states[state.name] is None:
+                        if state.name not in device.states:
                             device.states[state.name] = state
                         device.states[state.name].value = self._get_state(state)
             return self.devices
