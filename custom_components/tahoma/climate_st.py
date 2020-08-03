@@ -168,7 +168,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     @property
     def hvac_action(self) -> str:
         """Return the current running hvac operation if supported."""
-        if not self.current_temperature:
+        if not self.current_temperature or not self.target_temperature:
             return CURRENT_HVAC_IDLE
         if self.current_temperature < self.target_temperature:
             return CURRENT_HVAC_HEAT
