@@ -55,8 +55,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                         device = self.devices[event.deviceurl]
                         if device.states[state.name] is None:
                             device.states[state.name] = state
-                        else:
-                            device.states[state.name].value = self._get_state(state)
+                        device.states[state.name].value = self._get_state(state)
             return self.devices
 
     @staticmethod
