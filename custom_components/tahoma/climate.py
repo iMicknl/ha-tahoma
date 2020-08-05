@@ -7,11 +7,11 @@ from .climate_deh import DimmerExteriorHeating
 from .climate_st import SomfyThermostat
 from .const import DOMAIN
 
-AEH = "AtlanticElectricalHeater"
-ST = "SomfyThermostat"
-DEH = "DimmerExteriorHeating"
-
-TYPE = {AEH: AtlanticElectricalHeater, ST: SomfyThermostat, DEH: DimmerExteriorHeating}
+TYPE = {
+    "AtlanticElectricalHeater": AtlanticElectricalHeater,
+    "SomfyThermostat": SomfyThermostat,
+    "DimmerExteriorHeating": DimmerExteriorHeating,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
