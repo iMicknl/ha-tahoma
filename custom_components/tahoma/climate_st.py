@@ -107,9 +107,12 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         base_url = self.device.deviceurl.split("#", 1)[0]
         entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
         self._temp_sensor_entity_id = next(
-            entity_id
-            for entity_id, entry in entity_registry.entities.items()
-            if entry.unique_id == f"{base_url}#2"
+            (
+                entity_id
+                for entity_id, entry in entity_registry.entities.items()
+                if entry.unique_id == f"{base_url}#2"
+            ),
+            None,
         )
 
         async_track_state_change(
