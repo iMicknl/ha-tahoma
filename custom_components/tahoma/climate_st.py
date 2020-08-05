@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
+    CURRENT_HVAC_HEAT,
+    CURRENT_HVAC_IDLE,
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     PRESET_AWAY,
@@ -80,16 +82,17 @@ PRESET_TEMPERATURES = {
 class SomfyThermostat(TahomaDevice, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
-    def __init__(
-        self, device_url: str, coordinator: TahomaDataUpdateCoordinator, sensor
-    ):
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
-        self._temp_sensor_entity_id = sensor
+        self._temp_sensor_entity_id = None
         if self.hvac_mode == HVAC_MODE_AUTO:
-            self._saved_target_temp = self.select_state(
-                PRESET_TEMPERATURES[self.preset_mode]
-            )
+            if self.preset_mode == PRESET_NONE:
+                self._saved_target_temp = None
+            else:
+                self._saved_target_temp = self.select_state(
+                    PRESET_TEMPERATURES[self.preset_mode]
+                )
         else:
             self._saved_target_temp = self.select_state(
                 CORE_DEROGATED_TARGET_TEMPERATURE_STATE
@@ -99,14 +102,33 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     async def async_added_to_hass(self):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
-        async_track_state_change(
-            self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+
+        # The Somfy Thermostat requires a temperature sensor
+        base_url = self.device.deviceurl.split("#", 1)[0]
+        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        self._temp_sensor_entity_id = next(
+            (
+                entity_id
+                for entity_id, entry in entity_registry.entities.items()
+                if entry.unique_id == f"{base_url}#2"
+            ),
+            None,
         )
+
+        if self._temp_sensor_entity_id:
+            async_track_state_change(
+                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+            )
+
+        else:
+            _LOGGER.warning(
+                "Temperature sensor could not be found for entity %s", self.name
+            )
 
         @callback
         def _async_startup(event):
             """Init on startup."""
-            if self._temp_sensor_entity_id is not None:
+            if self._temp_sensor_entity_id:
                 temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
                 if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
                     self.update_temp(temp_sensor_state)
@@ -154,6 +176,15 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         return [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
 
     @property
+    def hvac_action(self) -> str:
+        """Return the current running hvac operation if supported."""
+        if not self.current_temperature or not self.target_temperature:
+            return CURRENT_HVAC_IDLE
+        if self.current_temperature < self.target_temperature:
+            return CURRENT_HVAC_HEAT
+        return CURRENT_HVAC_IDLE
+
+    @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
         if self.hvac_mode == HVAC_MODE_AUTO:
@@ -190,6 +221,8 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     def target_temperature(self):
         """Return the temperature we try to reach."""
         if self.hvac_mode == HVAC_MODE_AUTO:
+            if self.preset_mode == PRESET_NONE:
+                return None
             return self.select_state(PRESET_TEMPERATURES[self.preset_mode])
         return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
@@ -221,7 +254,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
             await self.async_execute_command(COMMAND_EXIT_DEROGATION)
             await self.async_execute_command(COMMAND_REFRESH_STATE)
         elif hvac_mode == HVAC_MODE_HEAT:
-            self.set_preset_mode(PRESET_NONE)
+            await self.async_set_preset_mode(PRESET_NONE)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""

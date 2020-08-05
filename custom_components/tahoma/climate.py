@@ -7,9 +7,11 @@ from .climate_deh import DimmerExteriorHeating
 from .climate_st import SomfyThermostat
 from .const import DOMAIN
 
-AEH = "AtlanticElectricalHeater"
-ST = "SomfyThermostat"
-DEH = "DimmerExteriorHeating"
+TYPE = {
+    "AtlanticElectricalHeater": AtlanticElectricalHeater,
+    "SomfyThermostat": SomfyThermostat,
+    "DimmerExteriorHeating": DimmerExteriorHeating,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -20,19 +22,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     climate_devices = [device for device in data.get("entities").get(CLIMATE)]
 
-    entities = []
-    for device in climate_devices:
-        if device.widget == AEH:
-            entities.append(AtlanticElectricalHeater(device.deviceurl, coordinator))
-        elif device.widget == ST:
-            base_url = device.deviceurl.split("#", 1)[0]
-            sensor = None
-            entity_registry = await hass.helpers.entity_registry.async_get_registry()
-            for k, v in entity_registry.entities.items():
-                if v.unique_id == base_url + "#2":
-                    sensor = k
-                    break
-            entities.append(SomfyThermostat(device.deviceurl, coordinator, sensor))
-        elif device.widget == DEH:
-            entities.append(DimmerExteriorHeating(device.deviceurl, coordinator))
+    entities = [
+        TYPE[device.widget](device.deviceurl, coordinator)
+        for device in climate_devices
+        if device.widget in TYPE
+    ]
     async_add_entities(entities)

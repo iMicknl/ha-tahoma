@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 TYPES = {
+    DataType.NONE: None,
     DataType.INTEGER: int,
     DataType.DATE: int,
     DataType.STRING: str,
@@ -52,12 +53,14 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 if event.name == "DeviceStateChangedEvent":
                     for state in event.device_states:
                         device = self.devices[event.deviceurl]
+                        if state.name not in device.states:
+                            device.states[state.name] = state
                         device.states[state.name].value = self._get_state(state)
             return self.devices
 
     @staticmethod
-    def _get_state(state: State) -> Union[float, int, bool, str]:
-        if state.type:
+    def _get_state(state: State) -> Union[float, int, bool, str, None]:
+        if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)
         return state.value
