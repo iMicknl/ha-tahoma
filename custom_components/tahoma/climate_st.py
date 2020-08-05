@@ -115,14 +115,20 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
             None,
         )
 
-        async_track_state_change(
-            self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
-        )
+        if self._temp_sensor_entity_id:
+            async_track_state_change(
+                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+            )
+
+        else:
+            _LOGGER.warning(
+                "Temperature sensor could not be found for entity %s", self.name
+            )
 
         @callback
         def _async_startup(event):
             """Init on startup."""
-            if self._temp_sensor_entity_id is not None:
+            if self._temp_sensor_entity_id:
                 temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
                 if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
                     self.update_temp(temp_sensor_state)
