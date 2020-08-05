@@ -25,6 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
 
+- **ha-tahoma version:** [e.g. 2.0.0]
 - **Home Assistant version:** [e.g. 0.110.4]
 - **Platform**: [e.g. cover, sensor, binary_sensor]
 
