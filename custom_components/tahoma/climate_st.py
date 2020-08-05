@@ -103,7 +103,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
 
-        # The Somfy Thermostat require a temperature sensor
+        # The Somfy Thermostat requires a temperature sensor
         base_url = self.device.deviceurl.split("#", 1)[0]
         entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
         for k, v in entity_registry.entities.items():
