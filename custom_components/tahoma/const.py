@@ -20,14 +20,15 @@ TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
+    "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
     "ConsumptionSensor": SENSOR,
     "ContactSensor": BINARY_SENSOR,
     "Curtain": COVER,
+    "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
-    "ExteriorHeatingSystem": CLIMATE,
     "ExteriorScreen": COVER,
     "ExteriorVenetianBlind": COVER,
     "GarageDoor": COVER,
@@ -35,7 +36,6 @@ TAHOMA_TYPES = {
     "Gate": COVER,
     "Generic": COVER,
     "GenericSensor": SENSOR,
-    "HeatingSystem": CLIMATE,
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,
@@ -50,6 +50,7 @@ TAHOMA_TYPES = {
     "Siren": SWITCH,
     "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
     "SmokeSensor": BINARY_SENSOR,
+    "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "SunIntensitySensor": SENSOR,
     "SunSensor": SENSOR,
     "SwimmingPool": SWITCH,
