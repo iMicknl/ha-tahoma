@@ -34,12 +34,11 @@ jobs:
       - name: Test with pytest
         run: |
           pytest \
+              tests
               -qq \
-              -n auto \
               --cov com \
               -o console_output_style=count \
-              -p no:sugar \
-              tests
+              -p no:sugar
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v2.1.3
         with:
