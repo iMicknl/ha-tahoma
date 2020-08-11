@@ -131,8 +131,8 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
     async def async_alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
-        await self.async_execute_command("setAlarmStatus", "detected")
+        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, "detected")
 
     async def async_alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
-        await self.async_execute_command("setAlarmStatus", "undetected")
+        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, "undetected")
