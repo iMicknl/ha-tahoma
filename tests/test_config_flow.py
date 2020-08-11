@@ -27,12 +27,12 @@ async def test_form(hass):
             {"username": "test-username", "password": "test-password"},
         )
 
-    print(result2)
-
     assert result2["type"] == "create_entry"
     assert result2["title"] == "test-username"
     assert result2["data"] == {"username": "test-username", "password": "test-password"}
+
     await hass.async_block_till_done()
+
     assert len(mock_setup.mock_calls) == 1
     assert len(mock_setup_entry.mock_calls) == 1
 
@@ -54,7 +54,7 @@ async def test_form_invalid_auth(hass):
 
 
 async def test_form_too_many_requests(hass):
-    """Test we handle cannot connect error."""
+    """Test we handle too many requests error."""
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
