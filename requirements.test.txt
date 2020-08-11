@@ -5,3 +5,6 @@
 pytest<6.0
 pytest-cov<3.0.0
 pytest-homeassistant
+
+# from our manifest.json for our Custom Component
+pyhoma==0.3.2
