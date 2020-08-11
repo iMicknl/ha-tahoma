@@ -34,10 +34,10 @@ jobs:
       - name: Test with pytest
         run: |
           pytest \
-              tests
-              --cov com \
+              --cov custom_components/tahoma \
               -o console_output_style=count \
-              -p no:sugar
+              -p no:sugar \
+              tests
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v2.1.3
         with:
