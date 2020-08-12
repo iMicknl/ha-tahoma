@@ -70,7 +70,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         if self.has_state("core:IntrusionState"):
             state = self.select_state("core:IntrusionState")
 
-            if state:
+            if state == "detected":
                 alarm_state = STATE_ALARM_TRIGGERED
 
         if self.has_state("internal:CurrentAlarmModeState"):
