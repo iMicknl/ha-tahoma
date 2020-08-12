@@ -16,22 +16,39 @@ from homeassistant.components.alarm_control_panel.const import (
 from homeassistant.const import (
     STATE_ALARM_ARMED_AWAY,
     STATE_ALARM_ARMED_HOME,
+    STATE_ALARM_ARMED_NIGHT,
     STATE_ALARM_DISARMED,
+    STATE_ALARM_PENDING,
     STATE_ALARM_TRIGGERED,
-    STATE_OFF,
 )
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
-COMMAND_ARM = "arm"
-COMMAND_ALARM_ZONE_ON = "alarmZoneOn"
-COMMAND_PARTIAL = "partial"
+COMMAND_ALARM_OFF = "alarmOff"
 COMMAND_ALARM_PARTIAL_1 = "alarmPartial1"
 COMMAND_ALARM_PARTIAL_2 = "alarmPartial2"
-COMMAND_SET_ALARM_STATUS = "setAlarmStatus"
+COMMAND_ALARM_ZONE_ON = "alarmZoneOn"
+COMMAND_ARM = "arm"
 COMMAND_DISARM = "disarm"
-COMMAND_ALARM_OFF = "alarmOff"
+COMMAND_PARTIAL = "partial"
+COMMAND_SET_ALARM_STATUS = "setAlarmStatus"
+
+CORE_INTRUSION_STATE = "core:IntrusionState"
+INTERNAL_CURRENT_ALARM_MODE_STATE = "internal:CurrentAlarmModeState"
+INTERNAL_INTRUSION_DETECTED_STATE = "internal:IntrusionDetectedState"
+MYFOX_ALARM_STATUS_STATE = "myfox:AlarmStatusState"
+
+STATE_ARMED = "armed"
+STATE_DETECTED = "detected"
+STATE_DISARMED = "disarmed"
+STATE_OFF = "off"
+STATE_PARTIAL = "partial"
+STATE_PARTIAL_1 = "partial1"
+STATE_PARTIAL_2 = "partial2"
+STATE_PENDING = "pending"
+STATE_TOTAL = "total"
+STATE_UNDETECTED = "undetected"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -52,38 +69,43 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     @property
     def state(self):
         """Return the state of the device."""
-
         alarm_state = None
 
-        if self.has_state("myfox:AlarmStatusState"):
-            state = self.select_state("myfox:AlarmStatusState")
+        if self.has_state(MYFOX_ALARM_STATUS_STATE):
+            state = self.select_state(MYFOX_ALARM_STATUS_STATE)
 
-            if state == "armed":
+            if state == STATE_ARMED:
                 alarm_state = STATE_ALARM_ARMED_AWAY
-            elif state == "disarmed":
+            elif state == STATE_DISARMED:
                 alarm_state = STATE_ALARM_DISARMED
-            elif state == "partial":
+            elif state == STATE_PARTIAL:
+                alarm_state = STATE_ALARM_ARMED_NIGHT
+
+        if self.has_state(CORE_INTRUSION_STATE):
+            state = self.select_state(CORE_INTRUSION_STATE)
+
+            if state == STATE_DETECTED:
+                alarm_state = STATE_ALARM_TRIGGERED
+
+        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
+            state = self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+
+            if state == STATE_OFF:
+                alarm_state = STATE_ALARM_DISARMED
+            elif state == STATE_PARTIAL_1:
                 alarm_state = STATE_ALARM_ARMED_HOME
-            else:
-                alarm_state = None
+            elif state == STATE_PARTIAL_2:
+                alarm_state = STATE_ALARM_ARMED_NIGHT
+            elif state == STATE_TOTAL:
+                alarm_state = STATE_ALARM_ARMED_AWAY
 
-        if self.has_state("core:IntrusionState"):
-            state = self.select_state("core:IntrusionState")
+        if self.has_state(INTERNAL_INTRUSION_DETECTED_STATE):
+            state = self.select_state(INTERNAL_INTRUSION_DETECTED_STATE)
 
-            if state == "detected":
+            if state == STATE_DETECTED:
                 alarm_state = STATE_ALARM_TRIGGERED
-
-        if self.has_state("internal:CurrentAlarmModeState"):
-            state = self.select_state("internal:CurrentAlarmModeState")
-
-            if state == "off":
-                alarm_state = STATE_OFF
-
-        if self.has_state("internal:IntrusionDetectedState"):
-            state = self.select_state("internal:IntrusionDetectedState")
-
-            if state == "detected":
-                alarm_state = STATE_ALARM_TRIGGERED
+            elif state == STATE_PENDING:
+                alarm_state = STATE_ALARM_PENDING
 
         return alarm_state
 
@@ -131,8 +153,16 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
     async def async_alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
-        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, "detected")
+        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
 
     async def async_alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
-        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, "undetected")
+        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        """Return if the entity should be enabled when first added to the entity registry."""
+        if self.device.widget == "TSKAlarmController":
+            return False
+
+        return True
