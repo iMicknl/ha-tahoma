@@ -26,9 +26,9 @@ from .const import DOMAIN
 from .tahoma_device import TahomaDevice
 
 COMMAND_ALARM_OFF = "alarmOff"
+COMMAND_ALARM_ON = "alarmOn"
 COMMAND_ALARM_PARTIAL_1 = "alarmPartial1"
 COMMAND_ALARM_PARTIAL_2 = "alarmPartial2"
-COMMAND_ALARM_ZONE_ON = "alarmZoneOn"
 COMMAND_ARM = "arm"
 COMMAND_DISARM = "disarm"
 COMMAND_PARTIAL = "partial"
@@ -110,7 +110,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         """Return the list of supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_ARM, COMMAND_ALARM_ZONE_ON):
+        if self.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
             supported_features |= SUPPORT_ALARM_ARM_AWAY
 
         if self.has_command(COMMAND_ALARM_PARTIAL_1):
@@ -144,7 +144,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
         await self.async_execute_command(
-            self.select_command(COMMAND_ARM, COMMAND_ALARM_ZONE_ON)
+            self.select_command(COMMAND_ARM, COMMAND_ALARM_ON)
         )
 
     async def async_alarm_trigger(self, code=None) -> None:
