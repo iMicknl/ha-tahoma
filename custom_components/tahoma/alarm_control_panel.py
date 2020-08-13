@@ -93,13 +93,13 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             elif state == STATE_TOTAL:
                 alarm_state = STATE_ALARM_ARMED_AWAY
 
-        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE) and self.has_state(
-            "internal:TargetAlarmModeState"
+        if (
+            self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            and self.has_state("internal:TargetAlarmModeState")
+            and self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            != self.select_state("internal:TargetAlarmModeState")
         ):
-            if self.select_state(
-                INTERNAL_CURRENT_ALARM_MODE_STATE
-            ) != self.select_state("internal:TargetAlarmModeState"):
-                alarm_state = STATE_ALARM_PENDING
+            alarm_state = STATE_ALARM_PENDING
 
         if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
             state = self.select_state(
