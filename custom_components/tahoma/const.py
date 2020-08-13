@@ -40,6 +40,7 @@ TAHOMA_TYPES = {
     "Light": LIGHT,
     "LightSensor": SENSOR,
     "MotionSensor": BINARY_SENSOR,
+    "MyFoxSecurityCamera": COVER,  # widgetName, uiClass is Camera (not supported)
     "OccupancySensor": BINARY_SENSOR,
     "OnOff": SWITCH,
     "Pergola": COVER,

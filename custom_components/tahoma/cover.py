@@ -56,6 +56,7 @@ CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
+MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 
 ICON_LOCK_ALERT = "mdi:lock-alert"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
@@ -66,17 +67,18 @@ STATE_CLOSED = "closed"
 
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
+    "Blind": DEVICE_CLASS_BLIND,
+    "Curtain": DEVICE_CLASS_CURTAIN,
     "ExteriorScreen": DEVICE_CLASS_BLIND,
+    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
+    "GarageDoor": DEVICE_CLASS_GARAGE,
+    "Gate": DEVICE_CLASS_GATE,
+    "MyFoxSecurityCamera": DEVICE_CLASS_SHUTTER,
     "Pergola": DEVICE_CLASS_AWNING,
     "RollerShutter": DEVICE_CLASS_SHUTTER,
-    "Window": DEVICE_CLASS_WINDOW,
-    "Blind": DEVICE_CLASS_BLIND,
-    "GarageDoor": DEVICE_CLASS_GARAGE,
-    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
-    "Gate": DEVICE_CLASS_GATE,
-    "Curtain": DEVICE_CLASS_CURTAIN,
     "SwingingShutter": DEVICE_CLASS_SHUTTER,
+    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
+    "Window": DEVICE_CLASS_WINDOW,
 }
 
 
@@ -158,6 +160,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
             CORE_OPEN_CLOSED_PARTIAL_STATE,
             CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
             CORE_OPEN_CLOSED_UNKNOWN_STATE,
+            MYFOX_SHUTTER_STATUS_STATE,
         )
 
         if state is not None:
