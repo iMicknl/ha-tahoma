@@ -44,8 +44,8 @@ STATE_DETECTED = "detected"
 STATE_DISARMED = "disarmed"
 STATE_OFF = "off"
 STATE_PARTIAL = "partial"
-STATE_PARTIAL_1 = "partial1"
-STATE_PARTIAL_2 = "partial2"
+STATE_ZONE_1 = "zone1"
+STATE_ZONE_2 = "zone2"
 STATE_PENDING = "pending"
 STATE_TOTAL = "total"
 STATE_UNDETECTED = "undetected"
@@ -86,12 +86,20 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
             if state == STATE_OFF:
                 alarm_state = STATE_ALARM_DISARMED
-            elif state == STATE_PARTIAL_1:
+            elif state == STATE_ZONE_1:
                 alarm_state = STATE_ALARM_ARMED_HOME
-            elif state == STATE_PARTIAL_2:
+            elif state == STATE_ZONE_2:
                 alarm_state = STATE_ALARM_ARMED_NIGHT
             elif state == STATE_TOTAL:
                 alarm_state = STATE_ALARM_ARMED_AWAY
+
+        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE) and self.has_state(
+            "internal:TargetAlarmModeState"
+        ):
+            if self.select_state(
+                INTERNAL_CURRENT_ALARM_MODE_STATE
+            ) != self.select_state("internal:TargetAlarmModeState"):
+                alarm_state = STATE_ALARM_PENDING
 
         if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
             state = self.select_state(
