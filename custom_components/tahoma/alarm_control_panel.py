@@ -167,7 +167,4 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     @property
     def entity_registry_enabled_default(self) -> bool:
         """Return if the entity should be enabled when first added to the entity registry."""
-        if self.device.widget == "TSKAlarmController":
-            return False
-
-        return True
+       return self.device.widget != "TSKAlarmController"
