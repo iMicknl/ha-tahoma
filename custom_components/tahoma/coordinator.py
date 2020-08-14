@@ -54,10 +54,8 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
         else:
             for event in events:
-                print(f"{event.name} {event.exec_id} {event.deviceurl}")
-
                 if event.name == "DeviceAvailableEvent":
-                    print(event.deviceurl)
+                    self.devices[event.deviceurl].available = True
 
                 if event.name == "DeviceStateChangedEvent":
                     for state in event.device_states:
@@ -66,7 +64,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                             device.states[state.name] = state
                         device.states[state.name].value = self._get_state(state)
 
-                if event.name == "ExecutionRegisteredEvent":
+                if (
+                    event.name == "ExecutionRegisteredEvent"
+                    and event.exec_id in self.executions
+                ):
                     self.update_interval = timedelta(seconds=1)
 
                 if (
