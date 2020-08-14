@@ -4,7 +4,7 @@ from custom_components.tahoma import config_flow
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import pytest
 
-from homeassistant import config_entries, setup
+from homeassistant import config_entries
 
 from .common import MockConfigEntry
 
