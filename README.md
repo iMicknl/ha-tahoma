@@ -29,6 +29,7 @@ This component doesn't have a hardcoded list of devices anymore, but relies on t
 | Somfy ui_class / widget      | Home Assistant platform |
 | ---------------------------- | ----------------------- |
 | AdjustableSlatsRollerShutter | cover                   |
+| AtlanticElectricalHeater     | climate                 |
 | AirFlowSensor                | binary_sensor           |
 | AirSensor                    | sensor                  |
 | Awning                       | cover                   |
@@ -36,9 +37,9 @@ This component doesn't have a hardcoded list of devices anymore, but relies on t
 | ConsumptionSensor            | sensor                  |
 | ContactSensor                | binary_sensor           |
 | Curtain                      | cover                   |
+| DimmerExteriorHeating        | climate                 |
 | DoorLock                     | lock                    |
 | ElectricitySensor            | sensor                  |
-| ExteriorHeatingSystem        | climate                 |
 | ExteriorScreen               | cover                   |
 | ExteriorVenetianBlind        | cover                   |
 | GarageDoor                   | cover                   |
@@ -46,11 +47,11 @@ This component doesn't have a hardcoded list of devices anymore, but relies on t
 | Gate                         | cover                   |
 | Generic                      | cover                   |
 | GenericSensor                | sensor                  |
-| HeatingSystem                | climate                 |
 | HumiditySensor               | sensor                  |
 | Light                        | light                   |
 | LightSensor                  | sensor                  |
 | MotionSensor                 | binary_sensor           |
+| MyFoxSecurityCamera          | cover                   |
 | OccupancySensor              | binary_sensor           |
 | OnOff                        | switch                  |
 | Pergola                      | cover                   |
@@ -61,6 +62,7 @@ This component doesn't have a hardcoded list of devices anymore, but relies on t
 | Siren                        | switch                  |
 | SirenStatus                  | binary_sensor           |
 | SmokeSensor                  | binary_sensor           |
+| SomfyThermostat              | climate                 |
 | SunIntensitySensor           | sensor                  |
 | SunSensor                    | sensor                  |
 | SwimmingPool                 | switch                  |
