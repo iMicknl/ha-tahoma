@@ -29,6 +29,7 @@ This component doesn't have a hardcoded list of devices anymore, but relies on t
 | Somfy ui_class / widget      | Home Assistant platform |
 | ---------------------------- | ----------------------- |
 | AdjustableSlatsRollerShutter | cover                   |
+| Alarm                        | alarm_control_panel     |
 | AtlanticElectricalHeater     | climate                 |
 | AirFlowSensor                | binary_sensor           |
 | AirSensor                    | sensor                  |
