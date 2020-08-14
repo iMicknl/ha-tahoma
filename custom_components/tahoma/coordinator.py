@@ -1,15 +1,16 @@
 """Helpers to help coordinate updates."""
+from collections import defaultdict
 from datetime import timedelta
 import logging
 from typing import Dict, List, Optional, Union
 
-from aiohttp import ServerDisconnectedError
 from pyhoma.client import TahomaClient
-from pyhoma.exceptions import NotAuthenticatedException
 from pyhoma.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+
+from .const import DEFAULT_UPDATE_INTERVAL
 
 TYPES = {
     DataType.NONE: None,
@@ -19,8 +20,6 @@ TYPES = {
     DataType.FLOAT: float,
     DataType.BOOLEAN: bool,
 }
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
@@ -44,35 +43,46 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
+        self.executions: Dict[str, defaultdict] = {}
         self.listener_id = listener_id
 
     async def _async_update_data(self) -> Dict[str, Device]:
-        """Fetch TaHoma data via event listener."""
+        """Fetch data from Tahoma."""
         try:
             events = await self.client.fetch_event_listener(self.listener_id)
-        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
-            _LOGGER.debug(exception)
-            await self.client.login()
-            self.listener_id = await self.client.register_event_listener()
-            self.devices = {
-                d.deviceurl: d for d in await self.client.get_devices(refresh=True)
-            }
-            return self.devices
         except Exception as exception:
-            raise UpdateFailed(exception)
+            raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
+        else:
+            for event in events:
+                print(f"{event.name} {event.exec_id} {event.deviceurl}")
 
-        for event in events:
-            if event.name == "DeviceStateChangedEvent":
-                for state in event.device_states:
-                    device = self.devices[event.deviceurl]
-                    if state.name not in device.states:
-                        device.states[state.name] = state
-                    device.states[state.name].value = self._get_state(state)
+                if event.name == "DeviceAvailableEvent":
+                    print(event.deviceurl)
 
-        return self.devices
+                if event.name == "DeviceStateChangedEvent":
+                    for state in event.device_states:
+                        device = self.devices[event.deviceurl]
+                        if state.name not in device.states:
+                            device.states[state.name] = state
+                        device.states[state.name].value = self._get_state(state)
+
+                if event.name == "ExecutionRegisteredEvent":
+                    self.update_interval = timedelta(seconds=1)
+
+                if (
+                    event.name == "ExecutionStateChangedEvent"
+                    and event.exec_id in self.executions
+                ) and event.new_state == "COMPLETED":
+                    self.executions.pop(event.exec_id, None)
+
+            if len(self.executions) < 1:
+                self.update_interval = DEFAULT_UPDATE_INTERVAL
+
+            return self.devices
 
     @staticmethod
     def _get_state(state: State) -> Union[float, int, bool, str, None]:
+        """Cast string value to the right type."""
         if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)
