@@ -21,20 +21,13 @@
   },
   "options": {
     "step": {
-      "init": {
-        "description": "Select temperature sensors for thermostats and preset temperatures.\nNote: reset temperatures do not apply to the Smart Thermostat.",
+      "update_interval": {
+        "title": "Update Interval",
+        "description": "The Somfy TaHoma integration periodically listens to new events. Change the update interval to a lower value if you use a physical remote to control your devices.",
         "data": {
-          "_": "entity",
-          "no_climate": "No climate device, you can close this window",
-          "freeze": "Anti-Freeze preset temperature",
-          "eco": "Eco preset temperature",
-          "away": "Away preset temperature",
-          "comfort": "Comfort preset temperature"
+          "update_interval": "Update interval (in seconds)"
         }
       }
-    },
-    "error": {
-      "invalid_sensor": "Please select a valid sensor from the list"
     }
   }
 }

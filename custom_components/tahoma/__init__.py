@@ -1,6 +1,7 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
+from datetime import timedelta
 import logging
 
 from pyhoma.client import TahomaClient
@@ -9,6 +10,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.tahoma.config_flow import CONF_UPDATE_INTERVAL
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_EXCLUDE,
@@ -91,6 +93,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.close()
         return False
 
+    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
@@ -99,7 +103,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         client=client,
         devices=await client.get_devices(),
         listener_id=await client.register_event_listener(),
-        update_interval=DEFAULT_UPDATE_INTERVAL,
+        update_interval=timedelta(seconds=update_interval),
     )
 
     await tahoma_coordinator.async_refresh()

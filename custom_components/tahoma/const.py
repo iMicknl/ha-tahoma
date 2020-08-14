@@ -11,7 +11,9 @@ from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=30)
+
+MIN_UPDATE_INTERVAL = 1
+DEFAULT_UPDATE_INTERVAL = 30
 
 IGNORED_TAHOMA_TYPES = [
     "ProtocolGateway",

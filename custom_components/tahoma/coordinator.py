@@ -41,6 +41,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             hass, logger, name=name, update_interval=update_interval,
         )
 
+        self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, defaultdict] = {}
@@ -77,7 +78,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                     self.executions.pop(event.exec_id, None)
 
             if len(self.executions) < 1:
-                self.update_interval = DEFAULT_UPDATE_INTERVAL
+                self.update_interval = timedelta(seconds=self.original_update_interval)
 
             return self.devices
 
