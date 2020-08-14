@@ -29,7 +29,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Handle the  flow."""
+        """Handle the flow."""
         return OptionsFlowHandler(config_entry)
 
     async def async_validate_input(self, user_input):
