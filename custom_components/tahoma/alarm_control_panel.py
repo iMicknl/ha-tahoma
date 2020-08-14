@@ -30,6 +30,8 @@ COMMAND_ALARM_ON = "alarmOn"
 COMMAND_ALARM_PARTIAL_1 = "alarmPartial1"
 COMMAND_ALARM_PARTIAL_2 = "alarmPartial2"
 COMMAND_ARM = "arm"
+COMMAND_ARM_PARTIAL_DAY = "armPartialDay"
+COMMAND_ARM_PARTIAL_NIGHT = "armPartialNight"
 COMMAND_DISARM = "disarm"
 COMMAND_PARTIAL = "partial"
 COMMAND_SET_ALARM_STATUS = "setAlarmStatus"
@@ -39,8 +41,11 @@ INTERNAL_CURRENT_ALARM_MODE_STATE = "internal:CurrentAlarmModeState"
 INTERNAL_TARGET_ALARM_MODE_STATE = "internal:TargetAlarmModeState"
 INTERNAL_INTRUSION_DETECTED_STATE = "internal:IntrusionDetectedState"
 MYFOX_ALARM_STATUS_STATE = "myfox:AlarmStatusState"
+VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE = "verisure:AlarmPanelMainArmTypeState"
 
 STATE_ARMED = "armed"
+STATE_ARMED_DAY = "armedDay"
+STATE_ARMED_NIGHT = "armedNight"
 STATE_DETECTED = "detected"
 STATE_DISARMED = "disarmed"
 STATE_OFF = "off"
@@ -62,6 +67,13 @@ MAP_INTERNAL_STATUS_STATE = {
     STATE_ZONE_1: STATE_ALARM_ARMED_HOME,
     STATE_ZONE_2: STATE_ALARM_ARMED_NIGHT,
     STATE_TOTAL: STATE_ALARM_ARMED_AWAY,
+}
+
+MAP_VERISURE_STATUS_STATE = {
+    STATE_ARMED: STATE_ALARM_ARMED_AWAY,
+    STATE_DISARMED: STATE_ALARM_DISARMED,
+    STATE_ARMED_DAY: STATE_ALARM_ARMED_HOME,
+    STATE_ARMED_NIGHT: STATE_ALARM_ARMED_NIGHT,
 }
 
 
@@ -108,6 +120,11 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
                 self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
             ]
 
+        if self.has_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE):
+            return MAP_VERISURE_STATUS_STATE[
+                self.select_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE)
+            ]
+
         return None
 
     @property
@@ -118,10 +135,12 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         if self.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
             supported_features |= SUPPORT_ALARM_ARM_AWAY
 
-        if self.has_command(COMMAND_ALARM_PARTIAL_1):
+        if self.has_command(COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY):
             supported_features |= SUPPORT_ALARM_ARM_HOME
 
-        if self.has_command(COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2):
+        if self.has_command(
+            COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
+        ):
             supported_features |= SUPPORT_ALARM_ARM_NIGHT
 
         if self.has_command(COMMAND_SET_ALARM_STATUS):
@@ -138,12 +157,16 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
-        await self.async_execute_command(COMMAND_ALARM_PARTIAL_1)
+        await self.async_execute_command(
+            COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY
+        )
 
     async def async_alarm_arm_night(self, code=None):
         """Send arm night command."""
         await self.async_execute_command(
-            self.select_command(COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2)
+            self.select_command(
+                COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
+            )
         )
 
     async def async_alarm_arm_away(self, code=None):
