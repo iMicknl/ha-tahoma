@@ -1,10 +1,8 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
 import logging
 
-from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import voluptuous as vol
@@ -19,13 +17,12 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import aiohttp_client, config_validation as cv
+from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
+from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -77,15 +74,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    session = aiohttp_client.async_create_clientsession(
-        hass, cookie_jar=CookieJar(unsafe=True)
-    )
+    client = TahomaClient(username, password)
 
     try:
-        client = TahomaClient(username, password, session=session)
         await client.login()
+    except TooManyRequestsException:
+        _LOGGER.error("too_many_requests")
+        await client.close()
+        return False
+    except BadCredentialsException:
+        _LOGGER.error("invalid_auth")
+        await client.close()
+        return False
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
+        await client.close()
         return False
 
     tahoma_coordinator = TahomaDataUpdateCoordinator(

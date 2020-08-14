@@ -1,5 +1,7 @@
 """Constants for the TaHoma integration."""
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
+from datetime import timedelta
+
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
@@ -9,6 +11,7 @@ from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
+DEFAULT_UPDATE_INTERVAL = timedelta(seconds=30)
 
 IGNORED_TAHOMA_TYPES = [
     "ProtocolGateway",
