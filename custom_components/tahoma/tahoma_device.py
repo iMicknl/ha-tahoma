@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 from pyhoma.models import Command, Device
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
