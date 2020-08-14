@@ -18,5 +18,16 @@
     "abort": {
       "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
     }
+  },
+  "options": {
+    "step": {
+      "update_interval": {
+        "title": "Update interval",
+        "description": "De Somfy TaHoma-integratie haalt periodiek nieuwe gebeurtenissen op. Verander het update-interval naar een lagere waarde als u een fysieke afstandsbediening gebruikt om uw apparaten te bedienen.",
+        "data": {
+          "update_interval": "Update interval (in seconden)"
+        }
+      }
+    }
   }
 }
