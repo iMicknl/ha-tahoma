@@ -56,7 +56,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
         configuration.get(CONF_USERNAME) in entry.data.get(CONF_USERNAME)
         for entry in hass.config_entries.async_entries(DOMAIN)
     ):
-        return True
+        return False
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
