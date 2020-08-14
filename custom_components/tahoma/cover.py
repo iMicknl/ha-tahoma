@@ -250,7 +250,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
                     execution
                     for execution in self.coordinator.executions.values()
                     if execution.get("deviceurl") == self.device.deviceurl
-                    and execution.get("command") in list(COMMAND_OPEN, COMMAND_UP)
+                    and execution.get("command_name") in list(COMMAND_OPEN, COMMAND_UP)
                 ),
                 None,
             )
@@ -266,7 +266,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
                     execution
                     for execution in self.coordinator.executions.values()
                     if execution.get("deviceurl") == self.device.deviceurl
-                    and execution.get("command") in list(COMMAND_CLOSE, COMMAND_DOWN)
+                    and execution.get("command_name")
+                    in list(COMMAND_CLOSE, COMMAND_DOWN)
                 ),
                 None,
             )

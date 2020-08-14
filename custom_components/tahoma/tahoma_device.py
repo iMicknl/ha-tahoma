@@ -156,10 +156,10 @@ class TahomaDevice(Entity):
             self.device.deviceurl, Command(command_name, list(args)), "Home Assistant"
         )
 
-        # ExecutionRegisteredEvent doesn't have a device url, thus we need to register it here already
+        # ExecutionRegisteredEvent doesn't contain the deviceurl, thus we need to register it here
         self.coordinator.executions[exec_id] = {
             "deviceurl": self.device.deviceurl,
-            "command": command_name,
+            "command_name": command_name,
         }
 
         await self.coordinator.async_refresh()
