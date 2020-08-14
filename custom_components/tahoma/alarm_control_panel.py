@@ -36,6 +36,7 @@ COMMAND_SET_ALARM_STATUS = "setAlarmStatus"
 
 CORE_INTRUSION_STATE = "core:IntrusionState"
 INTERNAL_CURRENT_ALARM_MODE_STATE = "internal:CurrentAlarmModeState"
+INTERNAL_TARGET_ALARM_MODE_STATE = "internal:TargetAlarmModeState"
 INTERNAL_INTRUSION_DETECTED_STATE = "internal:IntrusionDetectedState"
 MYFOX_ALARM_STATUS_STATE = "myfox:AlarmStatusState"
 
@@ -94,11 +95,11 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
                 alarm_state = STATE_ALARM_ARMED_AWAY
 
         if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE) and self.has_state(
-            "internal:TargetAlarmModeState"
+            INTERNAL_TARGET_ALARM_MODE_STATE
         ):
             if self.select_state(
                 INTERNAL_CURRENT_ALARM_MODE_STATE
-            ) != self.select_state("internal:TargetAlarmModeState"):
+            ) != self.select_state(INTERNAL_TARGET_ALARM_MODE_STATE):
                 alarm_state = STATE_ALARM_PENDING
 
         if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
@@ -166,7 +167,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     @property
     def entity_registry_enabled_default(self) -> bool:
         """Return if the entity should be enabled when first added to the entity registry."""
-        # if self.device.widget == "TSKAlarmController":
-        #     return False
+        if self.device.widget == "TSKAlarmController":
+            return False
 
         return True
