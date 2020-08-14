@@ -78,7 +78,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                     self.executions.pop(event.exec_id, None)
 
             if len(self.executions) < 1:
-                self.update_interval = timedelta(seconds=self.original_update_interval)
+                self.update_interval = self.original_update_interval
 
             return self.devices
 
