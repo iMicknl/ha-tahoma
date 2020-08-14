@@ -132,7 +132,9 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code=None):
         """Send disarm command."""
-        await self.async_execute_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
+        await self.async_execute_command(
+            self.select_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
+        )
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
@@ -140,19 +142,27 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
 
     async def async_alarm_arm_night(self, code=None):
         """Send arm night command."""
-        await self.async_execute_command(COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2)
+        await self.async_execute_command(
+            self.select_command(COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2)
+        )
 
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
-        await self.async_execute_command(COMMAND_ARM, COMMAND_ALARM_ON)
+        await self.async_execute_command(
+            self.select_command(COMMAND_ARM, COMMAND_ALARM_ON)
+        )
 
     async def async_alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
-        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
+        await self.async_execute_command(
+            self.select_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
+        )
 
     async def async_alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
-        await self.async_execute_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
+        await self.async_execute_command(
+            self.select_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
+        )
 
     @property
     def entity_registry_enabled_default(self) -> bool:
