@@ -143,3 +143,22 @@ async def test_import(hass):
 
         assert len(mock_setup.mock_calls) == 1
         assert len(mock_setup_entry.mock_calls) == 1
+
+@pytest.mark.parametrize(
+    "side_effect, error",
+    [
+        (BadCredentialsException, "invalid_auth",),
+        (TooManyRequestsException, "too_many_requests",),
+        (Exception, "unknown",),
+    ],
+)
+async def test_import_failing(hass, side_effect, error):
+    """Test failing config flow using configuration.yaml."""
+    with patch("pyhoma.client.TahomaClient.login", side_effect=side_effect):
+        await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN,
+            context={"source": config_entries.SOURCE_IMPORT},
+            data={"username": TEST_EMAIL, "password": TEST_PASSWORD},
+        )
+
+    # Should write Exception to the log

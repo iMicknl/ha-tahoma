@@ -59,5 +59,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if import_config:
             try:
                 return await self.async_validate_input(import_config)
+            except TooManyRequestsException:
+                _LOGGER.error("too_many_requests")
+                return self.async_abort(reason="too_many_requests")
+            except BadCredentialsException:
+                _LOGGER.error("invalid_auth")
+                return self.async_abort(reason="invalid_auth")
             except Exception as exception:  # pylint: disable=broad-except
                 _LOGGER.exception(exception)
+                return self.async_abort(reason="unknown")
