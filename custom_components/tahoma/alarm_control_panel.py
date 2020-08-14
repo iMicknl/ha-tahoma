@@ -51,6 +51,19 @@ STATE_PENDING = "pending"
 STATE_TOTAL = "total"
 STATE_UNDETECTED = "undetected"
 
+MAP_MYFOX_STATUS_STATE = {
+    STATE_ARMED: STATE_ALARM_ARMED_AWAY,
+    STATE_DISARMED: STATE_ALARM_DISARMED,
+    STATE_PARTIAL: STATE_ALARM_ARMED_NIGHT,
+}
+
+MAP_INTERNAL_STATUS_STATE = {
+    STATE_OFF: STATE_ALARM_DISARMED,
+    STATE_ZONE_1: STATE_ALARM_ARMED_HOME,
+    STATE_ZONE_2: STATE_ALARM_ARMED_NIGHT,
+    STATE_TOTAL: STATE_ALARM_ARMED_AWAY,
+}
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
@@ -70,49 +83,32 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
     @property
     def state(self):
         """Return the state of the device."""
-        alarm_state = None
-
-        if self.has_state(MYFOX_ALARM_STATUS_STATE):
-            state = self.select_state(MYFOX_ALARM_STATUS_STATE)
-
-            if state == STATE_ARMED:
-                alarm_state = STATE_ALARM_ARMED_AWAY
-            elif state == STATE_DISARMED:
-                alarm_state = STATE_ALARM_DISARMED
-            elif state == STATE_PARTIAL:
-                alarm_state = STATE_ALARM_ARMED_NIGHT
-
-        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
-            state = self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
-
-            if state == STATE_OFF:
-                alarm_state = STATE_ALARM_DISARMED
-            elif state == STATE_ZONE_1:
-                alarm_state = STATE_ALARM_ARMED_HOME
-            elif state == STATE_ZONE_2:
-                alarm_state = STATE_ALARM_ARMED_NIGHT
-            elif state == STATE_TOTAL:
-                alarm_state = STATE_ALARM_ARMED_AWAY
-
-        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE) and self.has_state(
-            INTERNAL_TARGET_ALARM_MODE_STATE
-        ):
-            if self.select_state(
-                INTERNAL_CURRENT_ALARM_MODE_STATE
-            ) != self.select_state(INTERNAL_TARGET_ALARM_MODE_STATE):
-                alarm_state = STATE_ALARM_PENDING
-
         if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
             state = self.select_state(
                 CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
             )
-
             if state == STATE_DETECTED:
-                alarm_state = STATE_ALARM_TRIGGERED
+                return STATE_ALARM_TRIGGERED
             elif state == STATE_PENDING:
-                alarm_state = STATE_ALARM_PENDING
+                return STATE_ALARM_PENDING
 
-        return alarm_state
+        if (
+            self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            and self.has_state(INTERNAL_TARGET_ALARM_MODE_STATE)
+            and self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            != self.select_state(INTERNAL_TARGET_ALARM_MODE_STATE)
+        ):
+            return STATE_ALARM_PENDING
+
+        if self.has_state(MYFOX_ALARM_STATUS_STATE):
+            return MAP_MYFOX_STATUS_STATE[self.select_state(MYFOX_ALARM_STATUS_STATE)]
+
+        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
+            return MAP_INTERNAL_STATUS_STATE[
+                self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            ]
+
+        return None
 
     @property
     def supported_features(self) -> int:
