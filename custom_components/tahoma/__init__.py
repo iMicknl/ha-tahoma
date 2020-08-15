@@ -113,6 +113,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN][entry.entry_id] = {
         "entities": entities,
         "coordinator": tahoma_coordinator,
+        "update_listener": entry.add_update_listener(update_listener),
     }
 
     for device in tahoma_coordinator.data.values():
@@ -148,6 +149,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
 
     await hass.data[DOMAIN][entry.entry_id].get("coordinator").client.close()
+    await hass.data[DOMAIN][entry.entry_id].get("update_listener")()
 
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 
@@ -164,3 +166,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def update_listener(hass, entry):
+    """Update when config_entry options update."""
+    if entry.options[CONF_UPDATE_INTERVAL]:
+        coordinator = hass.data[DOMAIN][entry.entry_id].get("coordinator")
+        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
+        coordinator.update_interval = (
+            coordinator.original_update_interval
+        ) = new_update_interval
