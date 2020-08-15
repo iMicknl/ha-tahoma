@@ -21,6 +21,8 @@ TYPES = {
     DataType.BOOLEAN: bool,
 }
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching TaHoma data."""
@@ -44,7 +46,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
-        self.executions: Dict[str, defaultdict] = {}
+        self.executions: Dict[str, Dict[str, str]] = {}
         self.listener_id = listener_id
 
     async def _async_update_data(self) -> Dict[str, Device]:
@@ -55,6 +57,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
         else:
             for event in events:
+                _LOGGER.debug(
+                    f"{event.name}/{event.exec_id} (device:{event.deviceurl},state:{event.old_state}->{event.new_state})"
+                )
+
                 if event.name == "DeviceAvailableEvent":
                     self.devices[event.deviceurl].available = True
 
@@ -72,10 +78,14 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                     self.update_interval = timedelta(seconds=1)
 
                 if (
-                    event.name == "ExecutionStateChangedEvent"
-                    and event.exec_id in self.executions
-                ) and event.new_state == "COMPLETED":
-                    self.executions.pop(event.exec_id, None)
+                    (
+                        event.name == "ExecutionStateChangedEvent"
+                        and event.exec_id in self.executions
+                    )
+                    and event.new_state == "COMPLETED"
+                    or event.new_state == "FAILED"
+                ):
+                    del self.executions[event.exec_id]
 
             if len(self.executions) < 1:
                 self.update_interval = self.original_update_interval
