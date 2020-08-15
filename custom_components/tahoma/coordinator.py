@@ -78,16 +78,14 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                     self.update_interval = timedelta(seconds=1)
 
                 if (
-                    (
-                        event.name == "ExecutionStateChangedEvent"
-                        and event.exec_id in self.executions
-                    )
+                    event.name == "ExecutionStateChangedEvent"
+                    and event.exec_id in self.executions
                     and event.new_state == "COMPLETED"
                     or event.new_state == "FAILED"
                 ):
                     del self.executions[event.exec_id]
 
-            if len(self.executions) < 1:
+            if not self.executions:
                 self.update_interval = self.original_update_interval
 
             return self.devices
