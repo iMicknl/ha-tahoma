@@ -1,4 +1,5 @@
 """Constants for the TaHoma integration."""
+from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
@@ -12,12 +13,12 @@ DOMAIN = "tahoma"
 IGNORED_TAHOMA_TYPES = [
     "ProtocolGateway",
     "Pod",
-    "TSKAlarmController",  # widgetName, uiClass is Alarm
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,
+    "Alarm": ALARM_CONTROL_PANEL,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
