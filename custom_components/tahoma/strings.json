@@ -11,6 +11,7 @@
     },
     "error": {
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "too_many_requests": "Too many requests, try again later.",
       "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
@@ -22,7 +23,7 @@
     "step": {
       "update_interval": {
         "title": "Update Interval",
-        "description": "The Somfy TaHoma integration periodically checks for new events. Change the update interval to a lower value if you use a physical remote to control your devices.",
+        "description": "The Somfy TaHoma integration periodically retrieves new events. Change the update interval to a lower value if you want more frequent updates, for example when you also control your devices outside Home Assistant.",
         "data": {
           "update_interval": "Update interval (in seconds)"
         }
