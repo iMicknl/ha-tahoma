@@ -1,7 +1,5 @@
 """Constants for the TaHoma integration."""
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
-from datetime import timedelta
-
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
