@@ -10,7 +10,6 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.components.tahoma.config_flow import CONF_UPDATE_INTERVAL
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_EXCLUDE,
@@ -21,6 +20,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
+from .config_flow import CONF_UPDATE_INTERVAL
 from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
