@@ -22,6 +22,7 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
+from homeassistant.helpers import entity_platform
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
@@ -65,6 +66,8 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
 STATE_CLOSED = "closed"
 
+SERVICE_MY = "cover_my"
+
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
     "Blind": DEVICE_CLASS_BLIND,
@@ -94,6 +97,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     ]
 
     async_add_entities(entities)
+
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(
+        SERVICE_MY, {}, "async_my",
+    )
 
 
 class TahomaCover(TahomaDevice, CoverEntity):
@@ -228,6 +236,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         await self.async_execute_command(
             self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
         )
+
+    async def async_my(self, **_):
+        """Set cover to preset position."""
+        await self.async_execute_command(COMMAND_MY)
 
     @property
     def supported_features(self):
