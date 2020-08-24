@@ -1,0 +1,13 @@
+cover_my:
+  description: Move cover to preset position, simulating the "my" button.
+  fields:
+    entity_id:
+      description: Name of entity that will be set to preset position.
+      example: "cover.living_room"
+
+light_my:
+  description: Move light to preset position, simulating the "my" button.
+  fields:
+    entity_id:
+      description: Name of entity that will be set to preset position.
+      example: "light.living_room"

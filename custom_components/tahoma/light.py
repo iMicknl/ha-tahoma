@@ -1,5 +1,4 @@
 """TaHoma light platform that implements dimmable TaHoma lights."""
-from datetime import timedelta
 import logging
 
 from homeassistant.components.light import (
@@ -13,6 +12,7 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.const import STATE_ON
+from homeassistant.helpers import entity_platform
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
@@ -20,14 +20,17 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
+COMMAND_MY = "my"
 COMMAND_SET_INTENSITY = "setIntensity"
-COMMAND_WINK = "wink"
 COMMAND_SET_RGB = "setRGB"
+COMMAND_WINK = "wink"
 
 CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
 CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
 CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
 CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
+
+SERVICE_MY = "light_my"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -42,6 +45,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     ]
 
     async_add_entities(entities)
+
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(
+        SERVICE_MY, {}, "async_my",
+    )
 
 
 class TahomaLight(TahomaDevice, LightEntity):
@@ -109,11 +117,13 @@ class TahomaLight(TahomaDevice, LightEntity):
         else:
             await self.async_execute_command(COMMAND_ON)
 
-        self.async_write_ha_state()
-
     async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
         await self.async_execute_command(COMMAND_OFF)
+
+    async def async_my(self, **_):
+        """Set light to preset position."""
+        await self.async_execute_command(COMMAND_MY)
 
     @property
     def effect_list(self) -> list:
