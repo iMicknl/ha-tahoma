@@ -51,7 +51,8 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         except (ServerDisconnectedError, NotAuthenticatedException):
             await self.client.login()
             self.listener_id = await self.client.register_event_listener()
-            return await self.client.get_devices(refresh=True)
+            self.devices = await self.client.get_devices(refresh=True)
+            return self.devices
         except Exception as exception:
             raise UpdateFailed(exception)
 
