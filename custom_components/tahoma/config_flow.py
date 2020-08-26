@@ -1,6 +1,8 @@
 """Config flow for TaHoma integration."""
+import asyncio
 import logging
 
+import aiohttp
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import voluptuous as vol
@@ -15,6 +17,8 @@ _LOGGER = logging.getLogger(__name__)
 DATA_SCHEMA = vol.Schema(
     {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
 )
+
+HTTP_CONNECT_ERRORS = (asyncio.TimeoutError, aiohttp.ClientError)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -46,6 +50,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "too_many_requests"
             except BadCredentialsException:
                 errors["base"] = "invalid_auth"
+            except HTTP_CONNECT_ERRORS:
+                errors["base"] = "cannot_connect"
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.exception(exception)
@@ -65,6 +71,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except BadCredentialsException:
                 _LOGGER.error("invalid_auth")
                 return self.async_abort(reason="invalid_auth")
+            except HTTP_CONNECT_ERRORS:
+                _LOGGER.error("cannot_connect")
+                return self.async_abort(reason="cannot_connect")
             except Exception as exception:  # pylint: disable=broad-except
                 _LOGGER.exception(exception)
                 return self.async_abort(reason="unknown")
