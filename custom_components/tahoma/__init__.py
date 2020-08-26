@@ -4,6 +4,7 @@ from collections import defaultdict
 from datetime import timedelta
 import logging
 
+from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import voluptuous as vol
@@ -18,7 +19,7 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import aiohttp_client, config_validation as cv
 
 from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
@@ -76,8 +77,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
+    session = aiohttp_client.async_create_clientsession(
+        hass, verify_ssl=True, cookie_jar=CookieJar(unsafe=True)
+    )
+
     try:
-        client = TahomaClient(username, password)
+        client = TahomaClient(username, password, session=session)
         await client.login()
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
