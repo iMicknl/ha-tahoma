@@ -50,7 +50,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         except ServerDisconnectedError:
             await self.client.login()
             self.listener_id = await self.client.register_event_listener()
-            return self._async_update_data()
+            return await self.client.get_devices(refresh=True)
         except Exception as exception:
             raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
 
