@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from pyhoma.client import TahomaClient
+from pyhoma.exceptions import NotAuthenticatedException
 from pyhoma.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
@@ -47,12 +48,12 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_event_listener(self.listener_id)
-        except ServerDisconnectedError:
+        except (ServerDisconnectedError, NotAuthenticatedException):
             await self.client.login()
             self.listener_id = await self.client.register_event_listener()
             return await self.client.get_devices(refresh=True)
         except Exception as exception:
-            raise UpdateFailed(f"Error communicating with the TaHoma API: {exception}")
+            raise UpdateFailed(exception)
 
         for event in events:
             if event.name == "DeviceStateChangedEvent":
