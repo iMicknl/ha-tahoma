@@ -25,7 +25,7 @@ from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=1200)
+DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
 CONFIG_SCHEMA = vol.Schema(
     {
