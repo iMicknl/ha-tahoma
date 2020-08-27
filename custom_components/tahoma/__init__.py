@@ -180,3 +180,5 @@ async def update_listener(hass, entry):
         coordinator.update_interval = (
             coordinator.original_update_interval
         ) = new_update_interval
+
+        await coordinator.async_refresh()
