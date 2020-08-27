@@ -74,7 +74,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             if event.name == "DeviceAvailableEvent":
                 self.devices[event.deviceurl].available = True
 
-            if event.name == "DeviceStateChangedEvent":
+            elif event.name == "DeviceUnavailableEvent":
+                self.devices[event.deviceurl].available = False
+
+            elif event.name == "DeviceStateChangedEvent":
                 for state in event.device_states:
                     device = self.devices[event.deviceurl]
                     if state.name not in device.states:
