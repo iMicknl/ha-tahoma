@@ -20,6 +20,8 @@ TYPES = {
     DataType.BOOLEAN: bool,
 }
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching TaHoma data."""
@@ -48,10 +50,13 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_event_listener(self.listener_id)
-        except (ServerDisconnectedError, NotAuthenticatedException):
+        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
+            _LOGGER.debug(exception)
             await self.client.login()
             self.listener_id = await self.client.register_event_listener()
-            self.devices = await self.client.get_devices(refresh=True)
+            self.devices = {
+                d.deviceurl: d for d in await self.client.get_devices(refresh=True)
+            }
             return self.devices
         except Exception as exception:
             raise UpdateFailed(exception)

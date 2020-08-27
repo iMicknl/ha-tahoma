@@ -25,7 +25,7 @@ from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
+DEFAULT_UPDATE_INTERVAL = timedelta(seconds=1200)
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -78,7 +78,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data.get(CONF_PASSWORD)
 
     session = aiohttp_client.async_create_clientsession(
-        hass, verify_ssl=True, cookie_jar=CookieJar(unsafe=True)
+        hass, cookie_jar=CookieJar(unsafe=True)
     )
 
     try:
