@@ -53,7 +53,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaLight(TahomaDevice, LightEntity):
-    """Representation of a Tahome light."""
+    """Representation of a TaHoma Light."""
 
     def __init__(self, tahoma_device, controller):
         """Initialize a device."""

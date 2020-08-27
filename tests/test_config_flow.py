@@ -3,6 +3,8 @@ from asynctest import patch
 from custom_components.tahoma import config_flow
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import pytest
+from asyncio import TimeoutError
+from aiohttp import ClientError
 
 from homeassistant import config_entries
 
@@ -46,9 +48,11 @@ async def test_form(hass):
 @pytest.mark.parametrize(
     "side_effect, error",
     [
-        (BadCredentialsException, "invalid_auth",),
-        (TooManyRequestsException, "too_many_requests",),
-        (Exception, "unknown",),
+        (BadCredentialsException, "invalid_auth"),
+        (TooManyRequestsException, "too_many_requests"),
+        (TimeoutError, "cannot_connect"),
+        (ClientError, "cannot_connect"),
+        (Exception, "unknown"),
     ],
 )
 async def test_form_invalid(hass, side_effect, error):
@@ -144,12 +148,15 @@ async def test_import(hass):
         assert len(mock_setup.mock_calls) == 1
         assert len(mock_setup_entry.mock_calls) == 1
 
+
 @pytest.mark.parametrize(
     "side_effect, error",
     [
-        (BadCredentialsException, "invalid_auth",),
-        (TooManyRequestsException, "too_many_requests",),
-        (Exception, "unknown",),
+        (BadCredentialsException, "invalid_auth"),
+        (TooManyRequestsException, "too_many_requests"),
+        (TimeoutError, "cannot_connect"),
+        (ClientError, "cannot_connect"),
+        (Exception, "unknown"),
     ],
 )
 async def test_import_failing(hass, side_effect, error):

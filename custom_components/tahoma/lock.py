@@ -31,7 +31,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class TahomaLock(TahomaDevice, LockEntity):
-    """Representation a TaHoma lock."""
+    """Representation of a TaHoma Lock."""
 
     async def async_unlock(self, **_):
         """Unlock method."""
