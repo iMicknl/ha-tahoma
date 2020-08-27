@@ -106,7 +106,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         name="TaHoma Event Fetcher",
         client=client,
         devices=await client.get_devices(),
-        listener_id=await client.register_event_listener(),
         update_interval=timedelta(seconds=update_interval),
     )
 

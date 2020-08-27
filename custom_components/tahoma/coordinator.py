@@ -12,8 +12,6 @@ from pyhoma.models import DataType, Device, State
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_UPDATE_INTERVAL
-
 TYPES = {
     DataType.NONE: None,
     DataType.INTEGER: int,
@@ -37,7 +35,6 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         name: str,
         client: TahomaClient,
         devices: List[Device],
-        listener_id: str,
         update_interval: Optional[timedelta] = None,
     ):
         """Initialize global data updater."""
@@ -49,16 +46,15 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
-        self.listener_id = listener_id
 
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
-            events = await self.client.fetch_event_listener(self.listener_id)
+            events = await self.client.fetch_events()
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
             await self.client.login()
-            self.listener_id = await self.client.register_event_listener()
+            await self.client.register_event_listener()
             self.devices = {
                 d.deviceurl: d for d in await self.client.get_devices(refresh=True)
             }
