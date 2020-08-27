@@ -4,6 +4,7 @@ from collections import defaultdict
 from datetime import timedelta
 import logging
 
+from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import voluptuous as vol
@@ -18,7 +19,7 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import aiohttp_client, config_validation as cv
 
 from .config_flow import CONF_UPDATE_INTERVAL
 from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
@@ -76,7 +77,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    client = TahomaClient(username, password)
+    session = aiohttp_client.async_create_clientsession(
+        hass, cookie_jar=CookieJar(unsafe=True)
+    )
+
+    client = TahomaClient(username, password, session=session)
 
     try:
         await client.login()
