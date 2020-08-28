@@ -87,15 +87,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.login()
     except TooManyRequestsException:
         _LOGGER.error("too_many_requests")
-        await client.close()
         return False
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
-        await client.close()
         return False
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
-        await client.close()
         return False
 
     update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
@@ -140,19 +137,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
-    async def async_close_client(self, *_):
-        """Close HTTP client."""
-        await client.close()
-
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_close_client)
-
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
 
-    await hass.data[DOMAIN][entry.entry_id].get("coordinator").client.close()
     await hass.data[DOMAIN][entry.entry_id].get("update_listener")()
 
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
