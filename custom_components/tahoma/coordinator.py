@@ -54,7 +54,6 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
             await self.client.login()
-            await self.client.register_event_listener()
             self.devices = {
                 d.deviceurl: d for d in await self.client.get_devices(refresh=True)
             }
