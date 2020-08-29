@@ -1,5 +1,4 @@
 """Helpers to help coordinate updates."""
-from collections import defaultdict
 from datetime import timedelta
 import logging
 from typing import Dict, List, Optional, Union
