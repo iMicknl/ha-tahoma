@@ -1,6 +1,8 @@
 """Support for TaHoma cover - shutters etc."""
 import logging
 
+import voluptuous as vol
+
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -40,6 +42,7 @@ COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_ORIENTATION = "setOrientation"
 COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UP = "up"
@@ -67,6 +70,7 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 STATE_CLOSED = "closed"
 
 SERVICE_MY = "cover_my"
+SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
@@ -101,6 +105,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
     platform = entity_platform.current_platform.get()
     platform.async_register_entity_service(
         SERVICE_MY, {}, "async_my",
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_COVER_POSITION_LOW_SPEED,
+        {
+            vol.Required(ATTR_POSITION): vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=100)
+            )
+        },
+        "async_set_cover_position_low_speed",
     )
 
 
@@ -152,6 +166,23 @@ class TahomaCover(TahomaDevice, CoverEntity):
             COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         )
         await self.async_execute_command(command, position)
+
+    async def async_set_cover_position_low_speed(self, **kwargs):
+        """Move the cover to a specific position with a low speed."""
+        position = 100 - kwargs.get(ATTR_POSITION, 0)
+
+        # HorizontalAwning devices need a reversed position that can not be obtained via the API
+        if "Horizontal" in self.device.widget:
+            position = kwargs.get(ATTR_POSITION, 0)
+
+        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
+            await self.async_execute_command(
+                COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
+            )
+        else:
+            _LOGGER.warning(
+                f"{self.device.label} does not support low speed movements."
+            )
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
