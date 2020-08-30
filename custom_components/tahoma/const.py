@@ -75,3 +75,5 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
+
+CONF_UPDATE_INTERVAL = "update_interval"

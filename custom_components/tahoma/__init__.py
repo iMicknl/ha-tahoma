@@ -16,8 +16,13 @@ from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
-from .config_flow import CONF_UPDATE_INTERVAL
-from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
+from .const import (
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
+    IGNORED_TAHOMA_TYPES,
+    TAHOMA_TYPES,
+)
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
