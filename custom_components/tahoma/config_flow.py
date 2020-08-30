@@ -119,7 +119,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         CONF_UPDATE_INTERVAL,
-                        default=self.config_entry.options.get(CONF_UPDATE_INTERVAL),
+                        default=self.options.get(CONF_UPDATE_INTERVAL),
                     ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL))
                 }
             ),
