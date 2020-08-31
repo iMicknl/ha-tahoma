@@ -69,7 +69,7 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
 STATE_CLOSED = "closed"
 
-SERVICE_MY = "cover_my"
+SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
 SUPPORT_MY = 512
@@ -107,7 +107,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
     platform = entity_platform.current_platform.get()
-    platform.async_register_entity_service(SERVICE_MY, {}, "async_my", [SUPPORT_MY])
+    platform.async_register_entity_service(
+        SERVICE_COVER_MY_POSITION, {}, "async_my", [SUPPORT_MY]
+    )
 
     platform.async_register_entity_service(
         SERVICE_COVER_POSITION_LOW_SPEED,
