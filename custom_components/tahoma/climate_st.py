@@ -279,7 +279,3 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
                 self._saved_target_temp,
             )
         await self.async_execute_command(COMMAND_REFRESH_STATE)
-
-    async def async_my(self, **_):
-        """Set heater to programmed level."""
-        _LOGGER.warning(f"{self.device.label} does not support my command.")

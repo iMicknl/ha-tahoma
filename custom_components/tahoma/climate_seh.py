@@ -13,6 +13,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
+from .climate import SUPPORT_MY
 from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE
+        return SUPPORT_PRESET_MODE | SUPPORT_MY
 
     @property
     def preset_mode(self) -> Optional[str]:

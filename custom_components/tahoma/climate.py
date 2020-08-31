@@ -20,6 +20,7 @@ TYPE = {
 }
 
 SERVICE_MY = "climate_my"
+SUPPORT_MY = 512
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -41,5 +42,5 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.widget == "StatelessExteriorHeating":
             platform = entity_platform.current_platform.get()
             platform.async_register_entity_service(
-                SERVICE_MY, {}, "async_my",
+                SERVICE_MY, {}, "async_my", [SUPPORT_MY]
             )

@@ -82,7 +82,3 @@ class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
             self._saved_level = self.target_temperature
         await self.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
         await self.async_execute_command(COMMAND_GET_LEVEL)
-
-    async def async_my(self, **_):
-        """Set heater to programmed level."""
-        _LOGGER.warning(f"{self.device.label} does not support my command.")
