@@ -1,4 +1,5 @@
 """Support for Atlantic Electrical Heater IO controller."""
+import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -15,6 +16,8 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import TEMP_CELSIUS
 
 from .tahoma_device import TahomaDevice
+
+_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
@@ -87,3 +90,15 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     async def async_turn_off(self) -> None:
         """Turn off the device."""
         await self.async_execute_command(COMMAND_SET_HEATING_LEVEL, PRESET_OFF)
+
+    async def async_down(self, **_):
+        """Move heater level down."""
+        _LOGGER.warning(f"{self.device.label} does not support down command.")
+
+    async def async_my(self, **_):
+        """Set heater to programmed level."""
+        _LOGGER.warning(f"{self.device.label} does not support my command.")
+
+    async def async_up(self, **_):
+        """Move heater level up."""
+        _LOGGER.warning(f"{self.device.label} does not support up command.")
