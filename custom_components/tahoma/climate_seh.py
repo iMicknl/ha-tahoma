@@ -1,10 +1,16 @@
 """Support for Atlantic Electrical Heater IO controller."""
 import logging
-from typing import List
+from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
-from homeassistant.components.climate.const import HVAC_MODE_HEAT, HVAC_MODE_OFF
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.components.climate.const import (
+    HVAC_MODE_HEAT,
+    HVAC_MODE_OFF,
+    PRESET_BOOST,
+    PRESET_COMFORT,
+    PRESET_ECO,
+    SUPPORT_PRESET_MODE,
+)
 
 from .tahoma_device import TahomaDevice
 
@@ -31,17 +37,44 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return 0
+        return SUPPORT_PRESET_MODE
 
     @property
-    def temperature_unit(self) -> str:
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp."""
+        return None
+
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes."""
+        return [PRESET_ECO, PRESET_COMFORT, PRESET_BOOST]
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+        if preset_mode in PRESET_ECO:
+            await self.async_execute_command(COMMAND_DOWN)
+            await self.async_execute_command(COMMAND_DOWN)
+        elif preset_mode == PRESET_COMFORT:
+            await self.async_execute_command(COMMAND_DOWN)
+            await self.async_execute_command(COMMAND_DOWN)
+            await self.async_execute_command(COMMAND_UP)
+        elif preset_mode == PRESET_BOOST:
+            await self.async_execute_command(COMMAND_UP)
+            await self.async_execute_command(COMMAND_UP)
+        else:
+            _LOGGER.error(
+                "Invalid preset mode %s for device %s", preset_mode, self.name
+            )
+
+    @property
+    def temperature_unit(self) -> Optional[str]:
         """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
+        return None
 
     @property
-    def hvac_mode(self) -> str:
+    def hvac_mode(self) -> Optional[str]:
         """Return hvac operation ie. heat, cool mode."""
-        return HVAC_MODE_UNKNOWN
+        return None
 
     @property
     def hvac_modes(self) -> List[str]:
