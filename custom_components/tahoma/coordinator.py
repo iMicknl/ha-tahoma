@@ -79,17 +79,16 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                         device.states[state.name] = state
                     device.states[state.name].value = self._get_state(state)
 
-            if (
-                event.name == "ExecutionRegisteredEvent"
-                and event.exec_id in self.executions
-            ):
+            if event.name == "ExecutionRegisteredEvent":
+                if event.exec_id not in self.executions:
+                    self.coordinator.executions[event.exec_id] = {}
+
                 self.update_interval = timedelta(seconds=1)
 
             if (
                 event.name == "ExecutionStateChangedEvent"
                 and event.exec_id in self.executions
-                and event.new_state == "COMPLETED"
-                or event.new_state == "FAILED"
+                and event.new_state in ["COMPLETED", "FAILED"]
             ):
                 del self.executions[event.exec_id]
 

@@ -245,8 +245,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def is_opening(self):
         """Return if the cover is opening or not."""
         return any(
-            execution["deviceurl"] == self.device.deviceurl
-            and execution["command_name"]
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
             in [COMMAND_OPEN, COMMAND_UP, COMMAND_OPEN_SLATS]
             for execution in self.coordinator.executions.values()
         )
@@ -255,8 +255,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
     def is_closing(self):
         """Return if the cover is closing or not."""
         return any(
-            execution["deviceurl"] == self.device.deviceurl
-            and execution["command_name"]
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
             in [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CLOSE_SLATS]
             for execution in self.coordinator.executions.values()
         )

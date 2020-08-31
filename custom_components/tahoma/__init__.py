@@ -166,8 +166,7 @@ async def update_listener(hass, entry):
     if entry.options[CONF_UPDATE_INTERVAL]:
         coordinator = hass.data[DOMAIN][entry.entry_id].get("coordinator")
         new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
-        coordinator.update_interval = (
-            coordinator.original_update_interval
-        ) = new_update_interval
+        coordinator.update_interval = new_update_interval
+        coordinator.original_update_interval = new_update_interval
 
         await coordinator.async_refresh()
