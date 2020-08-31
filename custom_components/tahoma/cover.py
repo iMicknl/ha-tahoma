@@ -72,6 +72,10 @@ STATE_CLOSED = "closed"
 SERVICE_MY = "cover_my"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
+SUPPORT_MY = 512
+SUPPORT_COVER_POSITION_LOW_SPEED = 1024
+
+
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
     "Blind": DEVICE_CLASS_BLIND,
@@ -103,9 +107,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
     platform = entity_platform.current_platform.get()
-    platform.async_register_entity_service(
-        SERVICE_MY, {}, "async_my",
-    )
+    platform.async_register_entity_service(SERVICE_MY, {}, "async_my", [SUPPORT_MY])
 
     platform.async_register_entity_service(
         SERVICE_COVER_POSITION_LOW_SPEED,
@@ -115,6 +117,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             )
         },
         "async_set_cover_position_low_speed",
+        [SUPPORT_COVER_POSITION_LOW_SPEED],
     )
 
 
@@ -175,14 +178,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "Horizontal" in self.device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
-        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
-            await self.async_execute_command(
-                COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
-            )
-        else:
-            _LOGGER.warning(
-                f"{self.device.label} does not support low speed movements."
-            )
+        await self.async_execute_command(
+            COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
+        )
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
@@ -302,5 +300,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
             supported_features |= SUPPORT_CLOSE
+
+        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
+            supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
+
+        if self.has_command(COMMAND_MY):
+            supported_features |= SUPPORT_MY
 
         return supported_features
