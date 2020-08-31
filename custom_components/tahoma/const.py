@@ -29,6 +29,7 @@ TAHOMA_TYPES = {
     "Curtain": COVER,
     "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
     "DoorLock": LOCK,
+    "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "ElectricitySensor": SENSOR,
     "ExteriorScreen": COVER,
     "ExteriorVenetianBlind": COVER,

@@ -65,6 +65,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
         if self.has_command(COMMAND_ON):
             await self.async_execute_command(COMMAND_ON)
 
+        elif self.has_command("setForceHeating"):
+            await self.async_execute_command("setForceHeating", "on")
+
         elif self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
@@ -85,6 +88,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
                 COMMAND_STANDARD,
             )
 
+        elif self.has_command("setForceHeating"):
+            await self.async_execute_command("setForceHeating", "off")
+
         elif self.has_command(COMMAND_OFF):
             await self.async_execute_command(COMMAND_OFF)
 
@@ -96,4 +102,4 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return self.select_state(CORE_ON_OFF_STATE) == STATE_ON
+        return self.select_state(CORE_ON_OFF_STATE, "io:ForceHeatingState") == STATE_ON
