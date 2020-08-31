@@ -81,7 +81,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
             if event.name == "ExecutionRegisteredEvent":
                 if event.exec_id not in self.executions:
-                    self.coordinator.executions[event.exec_id] = {}
+                    self.executions[event.exec_id] = {}
 
                 self.update_interval = timedelta(seconds=1)
 
