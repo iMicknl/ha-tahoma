@@ -28,7 +28,7 @@ PRESET_UNKNOWN = "Unknown"
 
 
 class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
-    """Representation of TaHoma IO Atlantic Electrical Heater."""
+    """Representation of TaHoma Stateless Exterior Heating device."""
 
     def __init__(self, tahoma_device, controller):
         """Init method."""
@@ -81,21 +81,13 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
         """Return the list of available hvac operation modes."""
         return [HVAC_MODE_OFF, HVAC_MODE_HEAT]
 
-    async def async_down(self, **_):
-        """Move heater level down."""
-        await self.async_execute_command(COMMAND_DOWN)
-
-    async def async_my(self, **_):
-        """Set heater to programmed level."""
-        await self.async_execute_command(COMMAND_MY)
-
-    async def async_up(self, **_):
-        """Move heater level up."""
-        await self.async_execute_command(COMMAND_UP)
-
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_HEAT:
             await self.async_execute_command(COMMAND_ON)
         else:
             await self.async_execute_command(COMMAND_OFF)
+
+    async def async_my(self, **_):
+        """Set heater to programmed level."""
+        await self.async_execute_command(COMMAND_MY)

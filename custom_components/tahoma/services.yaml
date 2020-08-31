@@ -11,3 +11,10 @@ light_my:
     entity_id:
       description: Name of entity that will be set to preset position.
       example: "light.living_room"
+
+climate_my:
+  description: Move climate to preset position, simulating the "my" button.
+  fields:
+    entity_id:
+      description: Name of entity that will be set to preset position.
+      example: "climate.outdoor"

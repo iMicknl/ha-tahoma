@@ -19,9 +19,7 @@ TYPE = {
     "StatelessExteriorHeating": StatelessExteriorHeating,
 }
 
-SERVICE_DOWN = "climate_down"
 SERVICE_MY = "climate_my"
-SERVICE_UP = "climate_up"
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -43,11 +41,5 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.widget == "StatelessExteriorHeating":
             platform = entity_platform.current_platform.get()
             platform.async_register_entity_service(
-                SERVICE_DOWN, {}, "async_down",
-            )
-            platform.async_register_entity_service(
                 SERVICE_MY, {}, "async_my",
-            )
-            platform.async_register_entity_service(
-                SERVICE_UP, {}, "async_up",
             )
