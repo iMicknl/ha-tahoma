@@ -13,10 +13,10 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 TYPE = {
-    "AtlanticElectricalHeater": AtlanticElectricalHeater,
+    # "AtlanticElectricalHeater": AtlanticElectricalHeater,
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,
-    "StatelessExteriorHeating": StatelessExteriorHeating,
+    "AtlanticElectricalHeater": StatelessExteriorHeating,
 }
 
 SERVICE_MY = "climate_my"

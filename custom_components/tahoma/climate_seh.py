@@ -11,6 +11,7 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     SUPPORT_PRESET_MODE,
 )
+from homeassistant.const import TEMP_CELSIUS
 
 from .tahoma_device import TahomaDevice
 
@@ -69,7 +70,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def temperature_unit(self) -> Optional[str]:
         """Return the unit of measurement used by the platform."""
-        return None
+        return TEMP_CELSIUS  # Not used but climate devices need a recognized temperature unit...
 
     @property
     def hvac_mode(self) -> Optional[str]:
