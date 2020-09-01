@@ -32,8 +32,6 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
         """Init method."""
         _LOGGER.debug("Init StatelessExteriorHeating")
         super().__init__(tahoma_device, controller)
-        self._last_ha_preset = None
-        self._last_ha_hvac_mode = None
 
     @property
     def supported_features(self) -> int:
@@ -43,7 +41,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return self._last_ha_preset
+        return None
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -66,7 +64,6 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
             _LOGGER.error(
                 "Invalid preset mode %s for device %s", preset_mode, self.name
             )
-        self._last_ha_preset = preset_mode
 
     @property
     def temperature_unit(self) -> Optional[str]:
@@ -76,7 +73,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def hvac_mode(self) -> Optional[str]:
         """Return hvac operation ie. heat, cool mode."""
-        return self._last_ha_hvac_mode
+        return None
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -87,10 +84,8 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_HEAT:
             await self.async_execute_command(COMMAND_ON)
-            self._last_ha_hvac_mode = HVAC_MODE_HEAT
         else:
             await self.async_execute_command(COMMAND_OFF)
-            self._last_ha_hvac_mode = HVAC_MODE_OFF
 
     async def async_my(self, **_):
         """Set heater to programmed level."""
