@@ -5,10 +5,10 @@ from pprint import pformat
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.helpers import entity_platform
 
-from .climate_aeh import AtlanticElectricalHeater
-from .climate_deh import DimmerExteriorHeating
-from .climate_seh import StatelessExteriorHeating
-from .climate_st import SomfyThermostat
+from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
+from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
+from .climate_devices.somfy_thermostat import SomfyThermostat
+from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
