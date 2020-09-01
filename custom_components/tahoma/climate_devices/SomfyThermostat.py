@@ -23,8 +23,8 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from .coordinator import TahomaDataUpdateCoordinator
-from .tahoma_device import TahomaDevice
+from ..coordinator import TahomaDataUpdateCoordinator
+from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 

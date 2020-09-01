@@ -2,9 +2,9 @@
 
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
-from .climate_aeh import AtlanticElectricalHeater
-from .climate_deh import DimmerExteriorHeating
-from .climate_st import SomfyThermostat
+from .climate_devices.AtlanticElectricalHeater import AtlanticElectricalHeater
+from .climate_devices.DimmerExteriorHeating import DimmerExteriorHeating
+from .climate_devices.SomfyThermostat import SomfyThermostat
 from .const import DOMAIN
 
 TYPE = {
