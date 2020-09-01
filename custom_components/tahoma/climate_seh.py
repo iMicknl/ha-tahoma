@@ -1,5 +1,6 @@
 """Support for Atlantic Electrical Heater IO controller."""
 import logging
+from pprint import pformat
 from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
@@ -34,6 +35,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
 
     def __init__(self, tahoma_device, controller):
         """Init method."""
+        _LOGGER.debug("Init StatelessExteriorHeating")
         super().__init__(tahoma_device, controller)
 
     @property

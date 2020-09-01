@@ -1,5 +1,6 @@
 """Support for TaHoma climate devices."""
 import logging
+from pprint import pformat
 
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.helpers import entity_platform
@@ -20,7 +21,7 @@ TYPE = {
 }
 
 SERVICE_MY = "climate_my"
-SUPPORT_MY = 512
+SUPPORT_MY = pow(2, 20)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -30,6 +31,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = data.get("coordinator")
 
     climate_devices = [device for device in data.get("entities").get(CLIMATE)]
+    _LOGGER.debug(f"Climate devices found:\n{pformat(climate_devices)}")
 
     entities = [
         TYPE[device.widget](device.deviceurl, coordinator)
@@ -37,10 +39,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.widget in TYPE
     ]
     async_add_entities(entities)
+    _LOGGER.debug(f"Entities added:\n{pformat(entities)}")
 
-    for device in climate_devices:
-        if device.widget == "StatelessExteriorHeating":
-            platform = entity_platform.current_platform.get()
-            platform.async_register_entity_service(
-                SERVICE_MY, {}, "async_my", [SUPPORT_MY]
-            )
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(SERVICE_MY, {}, "async_my", [SUPPORT_MY])
