@@ -3,6 +3,9 @@ import logging
 from pprint import pformat
 from typing import List, Optional
 
+from custom_components.tahoma.climate import SUPPORT_MY
+from custom_components.tahoma.tahoma_device import TahomaDevice
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
@@ -13,9 +16,6 @@ from homeassistant.components.climate.const import (
     SUPPORT_PRESET_MODE,
 )
 from homeassistant.const import TEMP_CELSIUS
-
-from .climate import SUPPORT_MY
-from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
