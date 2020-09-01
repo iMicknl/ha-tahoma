@@ -33,7 +33,9 @@ class TahomaDevice(Entity):
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Initialize the device."""
-        _LOGGER.debug("Init Tahoma Device")
+        _LOGGER.debug(
+            f"Init Tahoma Device: {self.name} - {self.device.widget} - {self.device.uiclass}"
+        )
         self.coordinator = coordinator
         self.device_url = device_url
 
