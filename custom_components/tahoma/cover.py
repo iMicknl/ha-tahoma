@@ -242,6 +242,26 @@ class TahomaCover(TahomaDevice, CoverEntity):
         await self.async_execute_command(COMMAND_MY)
 
     @property
+    def is_opening(self):
+        """Return if the cover is opening or not."""
+        return any(
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
+            in [COMMAND_OPEN, COMMAND_UP, COMMAND_OPEN_SLATS]
+            for execution in self.coordinator.executions.values()
+        )
+
+    @property
+    def is_closing(self):
+        """Return if the cover is closing or not."""
+        return any(
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
+            in [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CLOSE_SLATS]
+            for execution in self.coordinator.executions.values()
+        )
+
+    @property
     def supported_features(self):
         """Flag supported features."""
         supported_features = 0

@@ -10,6 +10,9 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
 
+MIN_UPDATE_INTERVAL = 1
+DEFAULT_UPDATE_INTERVAL = 30
+
 IGNORED_TAHOMA_TYPES = [
     "ProtocolGateway",
     "Pod",
@@ -72,3 +75,5 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
+
+CONF_UPDATE_INTERVAL = "update_interval"

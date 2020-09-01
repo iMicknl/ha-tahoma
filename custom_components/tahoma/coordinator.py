@@ -34,7 +34,6 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         name: str,
         client: TahomaClient,
         devices: List[Device],
-        listener_id: str,
         update_interval: Optional[timedelta] = None,
     ):
         """Initialize global data updater."""
@@ -42,18 +41,19 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             hass, logger, name=name, update_interval=update_interval,
         )
 
+        self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
-        self.listener_id = listener_id
+        self.executions: Dict[str, Dict[str, str]] = {}
 
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
-            events = await self.client.fetch_event_listener(self.listener_id)
+            events = await self.client.fetch_events()
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
+            self.executions = {}
             await self.client.login()
-            self.listener_id = await self.client.register_event_listener()
             self.devices = {
                 d.deviceurl: d for d in await self.client.get_devices(refresh=True)
             }
@@ -62,17 +62,44 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(exception)
 
         for event in events:
-            if event.name == "DeviceStateChangedEvent":
+            _LOGGER.debug(
+                f"{event.name}/{event.exec_id} (device:{event.deviceurl},state:{event.old_state}->{event.new_state})"
+            )
+
+            if event.name == "DeviceAvailableEvent":
+                self.devices[event.deviceurl].available = True
+
+            elif event.name == "DeviceUnavailableEvent":
+                self.devices[event.deviceurl].available = False
+
+            elif event.name == "DeviceStateChangedEvent":
                 for state in event.device_states:
                     device = self.devices[event.deviceurl]
                     if state.name not in device.states:
                         device.states[state.name] = state
                     device.states[state.name].value = self._get_state(state)
 
+            if event.name == "ExecutionRegisteredEvent":
+                if event.exec_id not in self.executions:
+                    self.executions[event.exec_id] = {}
+
+                self.update_interval = timedelta(seconds=1)
+
+            if (
+                event.name == "ExecutionStateChangedEvent"
+                and event.exec_id in self.executions
+                and event.new_state in ["COMPLETED", "FAILED"]
+            ):
+                del self.executions[event.exec_id]
+
+        if not self.executions:
+            self.update_interval = self.original_update_interval
+
         return self.devices
 
     @staticmethod
     def _get_state(state: State) -> Union[float, int, bool, str, None]:
+        """Cast string value to the right type."""
         if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)

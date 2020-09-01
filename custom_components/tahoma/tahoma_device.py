@@ -152,6 +152,14 @@ class TahomaDevice(Entity):
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
-        await self.coordinator.client.execute_command(
+        exec_id = await self.coordinator.client.execute_command(
             self.device.deviceurl, Command(command_name, list(args)), "Home Assistant"
         )
+
+        # ExecutionRegisteredEvent doesn't contain the deviceurl, thus we need to register it here
+        self.coordinator.executions[exec_id] = {
+            "deviceurl": self.device.deviceurl,
+            "command_name": command_name,
+        }
+
+        await self.coordinator.async_refresh()
