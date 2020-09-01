@@ -26,6 +26,7 @@ SUPPORT_MY = pow(2, 20)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma climate from a config entry."""
+    _LOGGER.debug(f"climate.async_setup_entry: {entry.entry_id}")
 
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data.get("coordinator")

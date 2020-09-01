@@ -13,7 +13,6 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..climate import SUPPORT_MY
 from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,6 +22,8 @@ COMMAND_MY = "my"
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
 COMMAND_UP = "up"
+
+SUPPORT_MY = pow(2, 20)
 
 
 class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
