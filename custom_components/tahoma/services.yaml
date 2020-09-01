@@ -21,3 +21,6 @@ set_cover_position_low_speed:
     position:
       description: Position of the cover (0 to 100).
       example: 30
+
+refresh_states:
+  description: Ask the box to refresh all devices states for protocols supporting that operation.

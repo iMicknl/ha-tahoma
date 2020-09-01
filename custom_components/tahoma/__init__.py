@@ -12,7 +12,12 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_EXCLUDE,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    EVENT_HOMEASSISTANT_START,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
@@ -44,6 +49,8 @@ CONFIG_SCHEMA = vol.Schema(
     },
     extra=vol.ALLOW_EXTRA,
 )
+
+SERVICE_REFRESH_STATES = "refresh_states"
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -136,6 +143,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
+
+    async def handle_service_refresh_states(call):
+        """Handle the service call."""
+        await client.refresh_states()
+
+    def _register_services(event):
+        """Register the domain services."""
+        hass.services.register(
+            DOMAIN, SERVICE_REFRESH_STATES, handle_service_refresh_states
+        )
+
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _register_services)
 
     return True
 
