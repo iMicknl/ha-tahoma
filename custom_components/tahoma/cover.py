@@ -258,15 +258,57 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
+        exec_id = next(
+            (
+                exec_id
+                for exec_id, execution in self.coordinator.executions.items()
+                if execution.get("deviceurl") == self.device.deviceurl
+                and execution.get("command_name")
+                in [
+                    COMMAND_OPEN,
+                    COMMAND_UP,
+                    COMMAND_CYCLE,
+                    COMMAND_CLOSE,
+                    COMMAND_DOWN,
+                    COMMAND_SET_POSITION,
+                    COMMAND_SET_CLOSURE,
+                    COMMAND_SET_PEDESTRIAN_POSITION,
+                    COMMAND_SET_POSITION_AND_LINEAR_SPEED,
+                ]
+            ),
+            None,
         )
 
+        if exec_id:
+            self.debug("Cancelling command " + exec_id)
+            await self.async_cancel_command(exec_id)
+        else:
+            self.debug("Calling stop command")
+            await self.async_execute_command(
+                self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
+            )
+
     async def async_stop_cover_tilt(self, **_):
-        """Stop the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
+        """Stop the cover tilt."""
+        exec_id = next(
+            (
+                exec_id
+                for exec_id, execution in self.coordinator.executions.items()
+                if execution.get("deviceurl") == self.device.deviceurl
+                and execution.get("command_name")
+                in [COMMAND_OPEN_SLATS, COMMAND_CLOSE_SLATS, COMMAND_SET_ORIENTATION]
+            ),
+            None,
         )
+
+        if exec_id:
+            self.debug("Cancelling command " + exec_id)
+            await self.async_cancel_command(exec_id)
+        else:
+            self.debug("Calling stop command")
+            await self.async_execute_command(
+                self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
+            )
 
     async def async_my(self, **_):
         """Set cover to preset position."""
