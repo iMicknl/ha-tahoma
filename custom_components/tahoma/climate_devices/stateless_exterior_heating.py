@@ -1,4 +1,4 @@
-"""Support for Atlantic Electrical Heater IO controller."""
+"""Support for Stateless Exterior Heating device."""
 import logging
 from typing import List, Optional
 
@@ -6,9 +6,6 @@ from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
-    PRESET_BOOST,
-    PRESET_COMFORT,
-    PRESET_ECO,
     SUPPORT_PRESET_MODE,
 )
 from homeassistant.const import TEMP_CELSIUS
@@ -22,6 +19,8 @@ COMMAND_MY = "my"
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
 COMMAND_UP = "up"
+
+PRESET_MY = "My"
 
 SUPPORT_MY = pow(2, 20)
 
@@ -47,20 +46,12 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return a list of available preset modes."""
-        return [PRESET_ECO, PRESET_COMFORT, PRESET_BOOST]
+        return [PRESET_MY]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        if preset_mode in PRESET_ECO:
-            await self.async_execute_command(COMMAND_DOWN)
-            await self.async_execute_command(COMMAND_DOWN)
-        elif preset_mode == PRESET_COMFORT:
-            await self.async_execute_command(COMMAND_DOWN)
-            await self.async_execute_command(COMMAND_DOWN)
-            await self.async_execute_command(COMMAND_UP)
-        elif preset_mode == PRESET_BOOST:
-            await self.async_execute_command(COMMAND_UP)
-            await self.async_execute_command(COMMAND_UP)
+        if preset_mode in PRESET_MY:
+            await self.async_execute_command(COMMAND_MY)
         else:
             _LOGGER.error(
                 "Invalid preset mode %s for device %s", preset_mode, self.name
@@ -88,6 +79,6 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
         else:
             await self.async_execute_command(COMMAND_OFF)
 
-    async def async_my(self, **_):
-        """Set heater to programmed level."""
-        await self.async_execute_command(COMMAND_MY)
+    #async def async_my(self, **_):
+    #    """Set heater to programmed level."""
+    #    await self.async_execute_command(COMMAND_MY)
