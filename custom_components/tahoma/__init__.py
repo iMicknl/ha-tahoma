@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 from datetime import timedelta
 import logging
+from typing import Any
 
 from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
@@ -13,7 +14,12 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_EXCLUDE,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    EVENT_HOMEASSISTANT_STOP,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import (
     aiohttp_client,
