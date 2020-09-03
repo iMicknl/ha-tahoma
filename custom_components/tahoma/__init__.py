@@ -33,6 +33,8 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
+SERVICE_EXECUTE_COMMAND = "execute_command"
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.All(
@@ -145,17 +147,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             "Home Assistant Service",
         )
 
-    SCHEMA = vol.Schema(
-        {
-            vol.Required("entity_id"): cv.string,
-            vol.Required("command"): cv.string,
-            vol.Optional("args", default=[]): vol.All(
-                cv.ensure_list, [vol.Any(str, int)]
-            ),
-        }
-    )
     hass.services.async_register(
-        DOMAIN, "execute_command", handle_execute_command, SCHEMA
+        DOMAIN,
+        SERVICE_EXECUTE_COMMAND,
+        handle_execute_command,
+        vol.Schema(
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("command"): cv.string,
+                vol.Optional("args", default=[]): vol.All(
+                    cv.ensure_list, [vol.Any(str, int)]
+                ),
+            }
+        ),
     )
 
     async def async_close_client(self, *_):
