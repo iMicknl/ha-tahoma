@@ -78,7 +78,3 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
             await self.async_execute_command(COMMAND_ON)
         else:
             await self.async_execute_command(COMMAND_OFF)
-
-    #async def async_my(self, **_):
-    #    """Set heater to programmed level."""
-    #    await self.async_execute_command(COMMAND_MY)
