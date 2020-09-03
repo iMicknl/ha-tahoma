@@ -7,7 +7,7 @@ from homeassistant.components.switch import (
     DOMAIN as SWITCH,
     SwitchEntity,
 )
-from homeassistant.const import STATE_ON
+from homeassistant.const import STATE_OFF, STATE_ON
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .tahoma_device import TahomaDevice
@@ -17,7 +17,10 @@ _LOGGER = logging.getLogger(__name__)
 COMMAND_CYCLE = "cycle"
 COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
+COMMAND_SET_FORCE_HEATING = "setForceHeating"
 COMMAND_STANDARD = "standard"
+
+IO_FORCE_HEATING_STATE = "io:ForceHeatingState"
 
 DEVICE_CLASS_SIREN = "siren"
 
@@ -65,6 +68,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
         if self.has_command(COMMAND_ON):
             await self.async_execute_command(COMMAND_ON)
 
+        elif self.has_command(COMMAND_SET_FORCE_HEATING):
+            await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_ON)
+
         elif self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
@@ -85,6 +91,9 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
                 COMMAND_STANDARD,
             )
 
+        elif self.has_command(COMMAND_SET_FORCE_HEATING):
+            await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_OFF)
+
         elif self.has_command(COMMAND_OFF):
             await self.async_execute_command(COMMAND_OFF)
 
@@ -96,4 +105,4 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return self.select_state(CORE_ON_OFF_STATE) == STATE_ON
+        return self.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE) == STATE_ON

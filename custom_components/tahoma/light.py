@@ -30,7 +30,9 @@ CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
 CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
 CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
-SERVICE_MY = "light_my"
+SERVICE_LIGHT_MY_POSITION = "set_light_my_position"
+
+SUPPORT_MY = 512
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -48,7 +50,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     platform = entity_platform.current_platform.get()
     platform.async_register_entity_service(
-        SERVICE_MY, {}, "async_my",
+        SERVICE_LIGHT_MY_POSITION, {}, "async_my", [SUPPORT_MY]
     )
 
 
@@ -92,6 +94,9 @@ class TahomaLight(TahomaDevice, LightEntity):
 
         if self.has_command(COMMAND_SET_RGB):
             supported_features |= SUPPORT_COLOR
+
+        if self.has_command(COMMAND_MY):
+            supported_features |= SUPPORT_MY
 
         return supported_features
 

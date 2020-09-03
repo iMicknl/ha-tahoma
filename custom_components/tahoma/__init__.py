@@ -12,20 +12,20 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    CONF_EXCLUDE,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    EVENT_HOMEASSISTANT_STOP,
-)
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
-from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
+from .const import (
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
+    IGNORED_TAHOMA_TYPES,
+    TAHOMA_TYPES,
+)
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_UPDATE_INTERVAL = timedelta(seconds=10)
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -81,22 +81,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass, cookie_jar=CookieJar(unsafe=True)
     )
 
+    client = TahomaClient(username, password, session=session)
+
     try:
-        client = TahomaClient(username, password, session=session)
         await client.login()
+    except TooManyRequestsException:
+        _LOGGER.error("too_many_requests")
+        return False
+    except BadCredentialsException:
+        _LOGGER.error("invalid_auth")
+        return False
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
 
+    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
-        # Name of the data. For logging purposes.
         name="TaHoma Event Fetcher",
         client=client,
         devices=await client.get_devices(),
-        listener_id=await client.register_event_listener(),
-        update_interval=DEFAULT_UPDATE_INTERVAL,
+        update_interval=timedelta(seconds=update_interval),
     )
 
     await tahoma_coordinator.async_refresh()
@@ -107,6 +114,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN][entry.entry_id] = {
         "entities": entities,
         "coordinator": tahoma_coordinator,
+        "update_listener": entry.add_update_listener(update_listener),
     }
 
     for device in tahoma_coordinator.data.values():
@@ -135,20 +143,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
-    async def async_close_client(self, *_):
-        """Close HTTP client."""
-        await client.close()
-
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_close_client)
-
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
 
-    await hass.data[DOMAIN][entry.entry_id].get("coordinator").client.close()
-
+    hass.data[DOMAIN][entry.entry_id]["update_listener"]()
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 
     unload_ok = all(
@@ -164,3 +165,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def update_listener(hass, entry):
+    """Update when config_entry options update."""
+    if entry.options[CONF_UPDATE_INTERVAL]:
+        coordinator = hass.data[DOMAIN][entry.entry_id].get("coordinator")
+        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
+        coordinator.update_interval = new_update_interval
+        coordinator.original_update_interval = new_update_interval
+
+        await coordinator.async_refresh()

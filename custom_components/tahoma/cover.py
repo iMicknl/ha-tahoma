@@ -1,6 +1,8 @@
 """Support for TaHoma cover - shutters etc."""
 import logging
 
+import voluptuous as vol
+
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -40,6 +42,7 @@ COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_ORIENTATION = "setOrientation"
 COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 COMMAND_SET_POSITION = "setPosition"
+COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UP = "up"
@@ -66,7 +69,12 @@ IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
 STATE_CLOSED = "closed"
 
-SERVICE_MY = "cover_my"
+SERVICE_COVER_MY_POSITION = "set_cover_my_position"
+SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
+
+SUPPORT_MY = 512
+SUPPORT_COVER_POSITION_LOW_SPEED = 1024
+
 
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Awning": DEVICE_CLASS_AWNING,
@@ -100,7 +108,18 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     platform = entity_platform.current_platform.get()
     platform.async_register_entity_service(
-        SERVICE_MY, {}, "async_my",
+        SERVICE_COVER_MY_POSITION, {}, "async_my", [SUPPORT_MY]
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_COVER_POSITION_LOW_SPEED,
+        {
+            vol.Required(ATTR_POSITION): vol.All(
+                vol.Coerce(int), vol.Range(min=0, max=100)
+            )
+        },
+        "async_set_cover_position_low_speed",
+        [SUPPORT_COVER_POSITION_LOW_SPEED],
     )
 
 
@@ -152,6 +171,18 @@ class TahomaCover(TahomaDevice, CoverEntity):
             COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
         )
         await self.async_execute_command(command, position)
+
+    async def async_set_cover_position_low_speed(self, **kwargs):
+        """Move the cover to a specific position with a low speed."""
+        position = 100 - kwargs.get(ATTR_POSITION, 0)
+
+        # HorizontalAwning devices need a reversed position that can not be obtained via the API
+        if "Horizontal" in self.device.widget:
+            position = kwargs.get(ATTR_POSITION, 0)
+
+        await self.async_execute_command(
+            COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
+        )
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
@@ -242,6 +273,26 @@ class TahomaCover(TahomaDevice, CoverEntity):
         await self.async_execute_command(COMMAND_MY)
 
     @property
+    def is_opening(self):
+        """Return if the cover is opening or not."""
+        return any(
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
+            in [COMMAND_OPEN, COMMAND_UP, COMMAND_OPEN_SLATS]
+            for execution in self.coordinator.executions.values()
+        )
+
+    @property
+    def is_closing(self):
+        """Return if the cover is closing or not."""
+        return any(
+            execution.get("deviceurl") == self.device.deviceurl
+            and execution.get("command_name")
+            in [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CLOSE_SLATS]
+            for execution in self.coordinator.executions.values()
+        )
+
+    @property
     def supported_features(self):
         """Flag supported features."""
         supported_features = 0
@@ -271,5 +322,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
             supported_features |= SUPPORT_CLOSE
+
+        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
+            supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
+
+        if self.has_command(COMMAND_MY):
+            supported_features |= SUPPORT_MY
 
         return supported_features

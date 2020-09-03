@@ -1,20 +1,23 @@
-cover_my:
-  description: Move cover to preset position, simulating the "my" button.
+set_cover_my_position:
+  description: Move to preset position, simulating the "my" button.
   fields:
     entity_id:
-      description: Name of entity that will be set to preset position.
+      description: Name(s) of cover(s) that will be set to preset position.
       example: "cover.living_room"
 
-light_my:
-  description: Move light to preset position, simulating the "my" button.
+set_light_my_position:
+  description: Move to preset position, simulating the "my" button.
   fields:
     entity_id:
-      description: Name of entity that will be set to preset position.
+      description: Name(s) of lights that will be set to preset position.
       example: "light.living_room"
 
-climate_my:
-  description: Move climate to preset position, simulating the "my" button.
+set_cover_position_low_speed:
+  description:  Move to specific position all or specified cover with a low speed.
   fields:
     entity_id:
-      description: Name of entity that will be set to preset position.
-      example: "climate.outdoor"
+      description: Name(s) of cover(s) to set cover position with a low speed.
+      example: "cover.living_room"
+    position:
+      description: Position of the cover (0 to 100).
+      example: 30

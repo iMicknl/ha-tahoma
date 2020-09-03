@@ -10,6 +10,9 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
 
+MIN_UPDATE_INTERVAL = 1
+DEFAULT_UPDATE_INTERVAL = 30
+
 IGNORED_TAHOMA_TYPES = [
     "ProtocolGateway",
     "Pod",
@@ -18,9 +21,9 @@ IGNORED_TAHOMA_TYPES = [
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,
-    "Alarm": ALARM_CONTROL_PANEL,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
+    "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
@@ -28,6 +31,7 @@ TAHOMA_TYPES = {
     "ContactSensor": BINARY_SENSOR,
     "Curtain": COVER,
     "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+    "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
     "ExteriorScreen": COVER,
@@ -73,3 +77,5 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
+
+CONF_UPDATE_INTERVAL = "update_interval"
