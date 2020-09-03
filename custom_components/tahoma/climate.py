@@ -21,7 +21,6 @@ TYPE = {
 }
 
 SERVICE_CLIMATE_MY_POSITION = "set_climate_my_position"
-SUPPORT_MY = pow(2, 20)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):

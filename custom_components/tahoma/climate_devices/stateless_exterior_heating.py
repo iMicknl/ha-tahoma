@@ -22,8 +22,6 @@ COMMAND_UP = "up"
 
 PRESET_MY = "My"
 
-SUPPORT_MY = pow(2, 20)
-
 
 class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     """Representation of TaHoma Stateless Exterior Heating device."""
@@ -36,7 +34,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_MY
+        return SUPPORT_PRESET_MODE
 
     @property
     def preset_mode(self) -> Optional[str]:
