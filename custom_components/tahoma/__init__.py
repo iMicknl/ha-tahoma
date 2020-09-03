@@ -3,10 +3,12 @@ import asyncio
 from collections import defaultdict
 from datetime import timedelta
 import logging
+from typing import Any
 
 from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.models import Command
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -19,7 +21,11 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import aiohttp_client, config_validation as cv
+from homeassistant.helpers import (
+    aiohttp_client,
+    config_validation as cv,
+    entity_platform,
+)
 
 from .const import DOMAIN, IGNORED_TAHOMA_TYPES, TAHOMA_TYPES
 from .coordinator import TahomaDataUpdateCoordinator
@@ -128,6 +134,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
+
+    async def handle_execute_command(call):
+        """Handle execute command service."""
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        await tahoma_coordinator.client.execute_command(
+            entity.unique_id,
+            Command(call.data.get("command"), call.data.get("args")),
+            "Home Assistant Service",
+        )
+
+    SCHEMA = vol.Schema(
+        {
+            vol.Required("entity_id"): cv.string,
+            vol.Required("command"): cv.string,
+            vol.Optional("args", default=[]): vol.All(
+                cv.ensure_list, [vol.Any(str, int)]
+            ),
+        }
+    )
+    hass.services.async_register(
+        DOMAIN, "execute_command", handle_execute_command, SCHEMA
+    )
 
     async def async_close_client(self, *_):
         """Close HTTP client."""
