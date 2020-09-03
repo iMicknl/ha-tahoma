@@ -20,5 +20,5 @@
   },
   "error": {
       "invalid_sensor": "Please select a valid sensor from the list"
-   }
+  }
 }
