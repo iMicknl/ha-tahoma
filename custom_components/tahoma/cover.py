@@ -280,10 +280,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         )
 
         if exec_id:
-            self.debug("Cancelling command " + exec_id)
+            logging.debug("Cancelling command " + exec_id)
             await self.async_cancel_command(exec_id)
         else:
-            self.debug("Calling stop command")
+            logging.debug("Calling stop command")
             await self.async_execute_command(
                 self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
             )
@@ -302,10 +302,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
         )
 
         if exec_id:
-            self.debug("Cancelling command " + exec_id)
+            logging.debug("Cancelling command " + exec_id)
             await self.async_cancel_command(exec_id)
         else:
-            self.debug("Calling stop command")
+            logging.debug("Calling stop command")
             await self.async_execute_command(
                 self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
             )
