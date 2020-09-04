@@ -175,12 +175,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ),
     )
 
-    async def async_close_client(self, *_):
-        """Close HTTP client."""
-        await client.close()
-
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_close_client)
-
     return True
 
 
