@@ -14,11 +14,9 @@ from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-COMMAND_DOWN = "down"
 COMMAND_MY = "my"
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
-COMMAND_UP = "up"
 
 PRESET_MY = "My"
 
