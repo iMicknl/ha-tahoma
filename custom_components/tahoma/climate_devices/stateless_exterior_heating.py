@@ -21,15 +21,16 @@ COMMAND_ON = "on"
 COMMAND_UP = "up"
 
 PRESET_MY = "My"
+UNKNOWN = "Unknown"
 
 
 class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     """Representation of TaHoma Stateless Exterior Heating device."""
 
-    def __init__(self, tahoma_device, controller):
-        """Init method."""
-        _LOGGER.debug("Init StatelessExteriorHeating")
-        super().__init__(tahoma_device, controller)
+    @property
+    def temperature_unit(self) -> Optional[str]:
+        """Return the unit of measurement used by the platform."""
+        return TEMP_CELSIUS  # Not used but climate devices need a recognized temperature unit...
 
     @property
     def supported_features(self) -> int:
@@ -39,7 +40,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return None
+        return UNKNOWN
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -56,14 +57,9 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
             )
 
     @property
-    def temperature_unit(self) -> Optional[str]:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS  # Not used but climate devices need a recognized temperature unit...
-
-    @property
     def hvac_mode(self) -> Optional[str]:
         """Return hvac operation ie. heat, cool mode."""
-        return None
+        return UNKNOWN
 
     @property
     def hvac_modes(self) -> List[str]:

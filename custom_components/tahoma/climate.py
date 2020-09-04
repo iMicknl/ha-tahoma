@@ -39,4 +39,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.widget in TYPE
     ]
     async_add_entities(entities)
-    _LOGGER.debug(f"Entities added:\n{pformat(entities)}")
+    _LOGGER.debug("Climate Entities added:")
+    for e in entities:
+        _LOGGER.debug(f"\tentity: {e.name}")
