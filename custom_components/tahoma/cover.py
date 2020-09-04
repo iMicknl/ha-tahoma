@@ -291,11 +291,11 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Cancelling a running execution will stop the cover movement
         if exec_id:
-            logging.debug("Cancelling command " + exec_id)
+            _LOGGER.debug("Cancelling command " + exec_id)
             await self.async_cancel_command(exec_id)
         # Fallback to available stop commands when executed started outside HA
         else:
-            logging.debug("Calling stop command")
+            _LOGGER.debug("Calling stop command")
             await self.async_execute_command(self.select_command(*stop_commands))
 
     async def async_my(self, **_):
