@@ -57,6 +57,7 @@ TAHOMA_TYPES = {
     "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
     "SmokeSensor": BINARY_SENSOR,
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SunIntensitySensor": SENSOR,
     "SunSensor": SENSOR,
     "SwimmingPool": SWITCH,
