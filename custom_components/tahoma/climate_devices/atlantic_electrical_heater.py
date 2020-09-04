@@ -1,5 +1,4 @@
 """Support for Atlantic Electrical Heater IO controller."""
-import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -16,8 +15,6 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import TEMP_CELSIUS
 
 from ..tahoma_device import TahomaDevice
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 

@@ -1,5 +1,4 @@
 """Parent class for every TaHoma devices."""
-import logging
 from typing import Any, Dict, Optional
 
 from pyhoma.models import Command, Device
@@ -9,8 +8,6 @@ from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
-
-_LOGGER = logging.getLogger(__name__)
 
 ATTR_RSSI_LEVEL = "rssi_level"
 
@@ -33,9 +30,6 @@ class TahomaDevice(Entity):
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Initialize the device."""
-        _LOGGER.debug(
-            f"Init Tahoma Device: {self.name} - {self.device.widget} - {self.device.ui_class}"
-        )
         self.coordinator = coordinator
         self.device_url = device_url
 
