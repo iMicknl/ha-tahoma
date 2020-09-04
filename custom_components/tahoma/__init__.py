@@ -7,6 +7,7 @@ import logging
 from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.models import Command
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -26,6 +27,8 @@ from .const import (
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+SERVICE_EXECUTE_COMMAND = "execute_command"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -136,6 +139,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
+
+    async def handle_execute_command(call):
+        """Handle execute command service."""
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        await tahoma_coordinator.client.execute_command(
+            entity.unique_id,
+            Command(call.data.get("command"), call.data.get("args")),
+            "Home Assistant Service",
+        )
+
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_EXECUTE_COMMAND,
+        handle_execute_command,
+        vol.Schema(
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("command"): cv.string,
+                vol.Optional("args", default=[]): vol.All(
+                    cv.ensure_list, [vol.Any(str, int)]
+                ),
+            }
+        ),
+    )
 
     return True
 

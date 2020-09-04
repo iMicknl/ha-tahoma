@@ -21,3 +21,16 @@ set_cover_position_low_speed:
     position:
       description: Position of the cover (0 to 100).
       example: 30
+
+execute_command:
+  description: Send a command to tahomalink endpoint through the API.
+  fields:
+    entity_id:
+      description: Name of entity that will be set to preset position.
+      example: "light.living_room"
+    command:
+      description: Command to send
+      example: "setIntensity"
+    args:
+      description: List of arguments to pass to the command if necessary
+      example: 100
