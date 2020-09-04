@@ -196,8 +196,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
+        command = self.select_command(*COMMANDS_SET_TILT_POSITION)
         await self.async_execute_command(
-            COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
+            command, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
         )
 
     @property
