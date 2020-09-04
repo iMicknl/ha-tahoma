@@ -179,7 +179,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "Horizontal" in self.device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
-        command = self.select_command(COMMANDS_SET_POSITION)
+        command = self.select_command(*COMMANDS_SET_POSITION)
         await self.async_execute_command(command, position)
 
     async def async_set_cover_position_low_speed(self, **kwargs):
@@ -248,19 +248,19 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(self.select_command(COMMANDS_OPEN))
+        await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
-        await self.async_execute_command(self.select_command(COMMANDS_OPEN_TILT))
+        await self.async_execute_command(self.select_command(*COMMANDS_OPEN_TILT))
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.async_execute_command(self.select_command(COMMANDS_CLOSE))
+        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
 
     async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
-        await self.async_execute_command(self.select_command(COMMANDS_CLOSE_TILT))
+        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE_TILT))
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
@@ -282,7 +282,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         # Fallback to available stop commands when executed started outside HA
         else:
             logging.debug("Calling stop command")
-            await self.async_execute_command(self.select_command(COMMANDS_STOP))
+            await self.async_execute_command(self.select_command(*COMMANDS_STOP))
 
     async def async_stop_cover_tilt(self, **_):
         """Stop the cover tilt."""
@@ -303,7 +303,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         # Fallback to available stop commands when executed started outside HA
         else:
             logging.debug("Calling stop command")
-            await self.async_execute_command(self.select_command(COMMANDS_STOP_TILT))
+            await self.async_execute_command(self.select_command(*COMMANDS_STOP_TILT))
 
     async def async_my(self, **_):
         """Set cover to preset position."""
@@ -332,28 +332,28 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.has_command(COMMANDS_OPEN_TILT):
+        if self.has_command(*COMMANDS_OPEN_TILT):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if self.has_command(COMMANDS_STOP_TILT):
+            if self.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if self.has_command(COMMANDS_CLOSE_TILT):
+        if self.has_command(*COMMANDS_CLOSE_TILT):
             supported_features |= SUPPORT_CLOSE_TILT
 
-        if self.has_command(COMMANDS_SET_TILT_POSITION):
+        if self.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.has_command(COMMANDS_SET_POSITION):
+        if self.has_command(*COMMANDS_SET_POSITION):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(COMMANDS_OPEN):
+        if self.has_command(*COMMANDS_OPEN):
             supported_features |= SUPPORT_OPEN
 
-            if self.has_command(COMMANDS_STOP):
+            if self.has_command(*COMMANDS_STOP):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(COMMANDS_CLOSE):
+        if self.has_command(*COMMANDS_CLOSE):
             supported_features |= SUPPORT_CLOSE
 
         if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
