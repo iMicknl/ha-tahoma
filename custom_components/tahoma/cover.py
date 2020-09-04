@@ -179,8 +179,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "Horizontal" in self.device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
-        command = self.select_command(*COMMANDS_SET_POSITION)
-        await self.async_execute_command(command, position)
+        await self.async_execute_command(
+            self.select_command(*COMMANDS_SET_POSITION), position
+        )
 
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
@@ -196,9 +197,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        command = self.select_command(*COMMANDS_SET_TILT_POSITION)
         await self.async_execute_command(
-            command, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
+            self.select_command(*COMMANDS_SET_TILT_POSITION),
+            100 - kwargs.get(ATTR_TILT_POSITION, 0),
         )
 
     @property
@@ -266,9 +267,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
     async def async_stop_cover(self, **_):
         """Stop the cover."""
         self.async_cancel_or_stop_cover(
-            COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE,
-            COMMANDS_STOP_TILT,
-            COMMANDS_STOP,
+            COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE, COMMANDS_STOP,
         )
 
     async def async_stop_cover_tilt(self, **_):
