@@ -266,13 +266,13 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
-        self.async_cancel_or_stop_cover(
+        await self.async_cancel_or_stop_cover(
             COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE, COMMANDS_STOP,
         )
 
     async def async_stop_cover_tilt(self, **_):
         """Stop the cover tilt."""
-        self.async_cancel_or_stop_cover(
+        await self.async_cancel_or_stop_cover(
             COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT,
             COMMANDS_STOP_TILT,
         )
