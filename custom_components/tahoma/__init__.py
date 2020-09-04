@@ -164,7 +164,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update when config_entry options update."""
     if entry.options[CONF_UPDATE_INTERVAL]:
-        coordinator = hass.data[DOMAIN][entry.entry_id].get("coordinator")
+        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
         new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
         coordinator.update_interval = new_update_interval
         coordinator.original_update_interval = new_update_interval
