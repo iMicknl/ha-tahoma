@@ -264,46 +264,39 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
-        exec_id = next(
-            (
-                exec_id
-                for exec_id, execution in self.coordinator.executions.items()
-                if execution.get("deviceurl") == self.device.deviceurl
-                and execution.get("command_name")
-                in COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE
-            ),
-            None,
+        self.async_cancel_or_stop_cover(
+            COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE,
+            COMMANDS_STOP_TILT,
+            COMMANDS_STOP,
         )
-
-        # Cancel running execution will stop the cover movement
-        if exec_id:
-            logging.debug("Cancelling command " + exec_id)
-            await self.async_cancel_command(exec_id)
-        # Fallback to available stop commands when executed started outside HA
-        else:
-            logging.debug("Calling stop command")
-            await self.async_execute_command(self.select_command(*COMMANDS_STOP))
 
     async def async_stop_cover_tilt(self, **_):
         """Stop the cover tilt."""
+        self.async_cancel_or_stop_cover(
+            COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT,
+            COMMANDS_STOP_TILT,
+        )
+
+    async def async_cancel_or_stop_cover(self, cancel_commands, stop_commands) -> None:
+        """Cancel running execution or send stop command."""
         exec_id = next(
             (
                 exec_id
                 for exec_id, execution in self.coordinator.executions.items()
                 if execution.get("deviceurl") == self.device.deviceurl
-                and execution.get("command_name")
-                in COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT
+                and execution.get("command_name") in cancel_commands
             ),
             None,
         )
-        # Cancel running execution will stop the cover movement
+
+        # Cancelling a running execution will stop the cover movement
         if exec_id:
             logging.debug("Cancelling command " + exec_id)
             await self.async_cancel_command(exec_id)
         # Fallback to available stop commands when executed started outside HA
         else:
             logging.debug("Calling stop command")
-            await self.async_execute_command(self.select_command(*COMMANDS_STOP_TILT))
+            await self.async_execute_command(self.select_command(*stop_commands))
 
     async def async_my(self, **_):
         """Set cover to preset position."""
