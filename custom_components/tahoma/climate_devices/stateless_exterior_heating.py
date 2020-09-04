@@ -21,7 +21,6 @@ COMMAND_ON = "on"
 COMMAND_UP = "up"
 
 PRESET_MY = "My"
-UNKNOWN = "Unknown"
 
 
 class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
@@ -40,7 +39,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return UNKNOWN
+        return None
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -59,7 +58,7 @@ class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
     @property
     def hvac_mode(self) -> Optional[str]:
         """Return hvac operation ie. heat, cool mode."""
-        return UNKNOWN
+        return None
 
     @property
     def hvac_modes(self) -> List[str]:
