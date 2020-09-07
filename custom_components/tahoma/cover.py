@@ -282,6 +282,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         exec_id = next(
             (
                 exec_id
+                # Reverse dictionary to cancel the last added execution
                 for exec_id, execution in reversed(self.coordinator.executions.items())
                 if execution.get("deviceurl") == self.device.deviceurl
                 and execution.get("command_name") in cancel_commands
