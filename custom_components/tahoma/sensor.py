@@ -18,7 +18,6 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
-    UNIT_PERCENTAGE,
     VOLT,
     VOLUME_CUBIC_METERS,
     VOLUME_LITERS,
@@ -27,6 +26,12 @@ from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
+
+try:  # TODO: Remove for core PR. This ensures compatibility with <0.115
+    from homeassistant.const import PERCENTAGE
+except Exception:
+    from homeassistant.const import UNIT_PERCENTAGE as PERCENTAGE
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -85,7 +90,7 @@ UNITS = {
     "core:ElectricalPowerInMW": f"M{POWER_WATT}",
     "core:FlowInMeterCubePerHour": VOLUME_CUBIC_METERS,
     "core:LinearSpeedInMeterPerSecond": SPEED_METERS_PER_SECOND,
-    "core:RelativeValueInPercentage": UNIT_PERCENTAGE,
+    "core:RelativeValueInPercentage": PERCENTAGE,
     "core:VolumeInCubicMeter": VOLUME_CUBIC_METERS,
     "core:VolumeInLiter": VOLUME_LITERS,
     "core:FossilEnergyInWh": ENERGY_WATT_HOUR,
