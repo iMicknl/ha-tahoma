@@ -1,4 +1,4 @@
-"""Parent class for every TaHoma devices."""
+"""Parent class for every TaHoma device."""
 import logging
 from typing import Any, Dict, Optional
 
