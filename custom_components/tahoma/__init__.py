@@ -7,6 +7,7 @@ import logging
 from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.models import Command
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -31,6 +32,8 @@ from .const import (
 from .coordinator import TahomaDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+SERVICE_EXECUTE_COMMAND = "execute_command"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -144,17 +147,42 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
-    async def handle_service_refresh_states(call):
-        """Handle the service call."""
-        await client.refresh_states()
-
     def _register_services(event):
         """Register the domain services."""
-        hass.services.register(
+        hass.services.async_register(
             DOMAIN, SERVICE_REFRESH_STATES, handle_service_refresh_states
         )
 
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_EXECUTE_COMMAND,
+            handle_execute_command,
+            vol.Schema(
+                {
+                    vol.Required("entity_id"): cv.string,
+                    vol.Required("command"): cv.string,
+                    vol.Optional("args", default=[]): vol.All(
+                        cv.ensure_list, [vol.Any(str, int)]
+                    ),
+                }
+            ),
+        )
+
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _register_services)
+
+    async def handle_execute_command(call):
+        """Handle execute command service."""
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        await tahoma_coordinator.client.execute_command(
+            entity.unique_id,
+            Command(call.data.get("command"), call.data.get("args")),
+            "Home Assistant Service",
+        )
+
+    async def handle_service_refresh_states(call):
+        """Handle the service call."""
+        await client.refresh_states()
 
     return True
 
@@ -180,10 +208,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return unload_ok
 
 
-async def update_listener(hass, entry):
+async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update when config_entry options update."""
     if entry.options[CONF_UPDATE_INTERVAL]:
-        coordinator = hass.data[DOMAIN][entry.entry_id].get("coordinator")
+        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
         new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
         coordinator.update_interval = new_update_interval
         coordinator.original_update_interval = new_update_interval

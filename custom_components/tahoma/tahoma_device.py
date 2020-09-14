@@ -163,3 +163,7 @@ class TahomaDevice(Entity):
         }
 
         await self.coordinator.async_refresh()
+
+    async def async_cancel_command(self, exec_id: str):
+        """Cancel device command in async context."""
+        await self.coordinator.client.cancel_command(exec_id)

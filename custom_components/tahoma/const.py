@@ -21,9 +21,9 @@ IGNORED_TAHOMA_TYPES = [
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_TYPES = {
     "AdjustableSlatsRollerShutter": COVER,
-    "Alarm": ALARM_CONTROL_PANEL,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
+    "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
@@ -31,6 +31,7 @@ TAHOMA_TYPES = {
     "ContactSensor": BINARY_SENSOR,
     "Curtain": COVER,
     "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+    "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
     "ExteriorScreen": COVER,
@@ -56,6 +57,7 @@ TAHOMA_TYPES = {
     "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
     "SmokeSensor": BINARY_SENSOR,
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SunIntensitySensor": SENSOR,
     "SunSensor": SENSOR,
     "SwimmingPool": SWITCH,
