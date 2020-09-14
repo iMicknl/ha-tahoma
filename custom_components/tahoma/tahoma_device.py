@@ -13,6 +13,8 @@ ATTR_RSSI_LEVEL = "rssi_level"
 
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
+CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
+CORE_MODEL_STATE = "core:ModelState"
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
@@ -106,11 +108,14 @@ class TahomaDevice(Entity):
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device registry information for this entity."""
+        manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
+        model = self.select_state(CORE_MODEL_STATE) or self.device.widget
+
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": "Somfy",
+            "manufacturer": manufacturer,
             "name": self.name,
-            "model": self.device.widget,
+            "model": model,
             "sw_version": self.device.controllable_name,
         }
 
