@@ -292,10 +292,23 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Cancelling a running execution will stop the cover movement
         if exec_id:
-            await self.async_cancel_command(exec_id)
-        # Fallback to available stop commands when execution was initiated outside Home Assistant
-        else:
-            await self.async_execute_command(self.select_command(*stop_commands))
+            return await self.async_cancel_command(exec_id)
+
+        # Retrieve running executions from server for executions initiated outside Home Assistant
+        executions = await self.coordinator.client.get_current_executions()
+
+        for execution in executions:
+            for action in execution.action_group.get("actions"):
+                if action.get("deviceurl") == self.device.deviceurl:
+                    for command in action.get("commands"):
+                        if command.get("name") in cancel_commands:
+                            exec_id = execution.id
+
+        if exec_id:
+            return await self.async_cancel_command(exec_id)
+
+        # Fallback to available stop commands when no execution can be found
+        await self.async_execute_command(self.select_command(*stop_commands))
 
     async def async_my(self, **_):
         """Set cover to preset position."""
