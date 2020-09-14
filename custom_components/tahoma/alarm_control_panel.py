@@ -96,7 +96,11 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             state = self.select_state(
                 CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
             )
-            if state == STATE_DETECTED:
+            if (
+                state == STATE_DETECTED
+                # Only trigger alarm when MyFox alarm is armed
+                and self.select_state(MYFOX_ALARM_STATUS_STATE) is not STATE_DISARMED
+            ):
                 return STATE_ALARM_TRIGGERED
             elif state == STATE_PENDING:
                 return STATE_ALARM_PENDING
