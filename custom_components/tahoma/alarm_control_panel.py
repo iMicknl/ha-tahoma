@@ -80,11 +80,11 @@ MAP_VERISURE_STATUS_STATE = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data.get("coordinator")
+    coordinator = data["coordinator"]
 
     entities = [
         TahomaAlarmControlPanel(device.deviceurl, coordinator)
-        for device in data.get("entities").get(ALARM_CONTROL_PANEL)
+        for device in data["entities"].get(ALARM_CONTROL_PANEL)
     ]
     async_add_entities(entities)
 

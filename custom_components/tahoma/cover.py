@@ -47,6 +47,19 @@ COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UP = "up"
 
+COMMANDS_STOP = [COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]
+COMMANDS_STOP_TILT = [COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]
+COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
+COMMANDS_OPEN_TILT = [COMMAND_OPEN_SLATS]
+COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
+COMMANDS_CLOSE_TILT = [COMMAND_CLOSE_SLATS]
+COMMANDS_SET_POSITION = [
+    COMMAND_SET_POSITION,
+    COMMAND_SET_CLOSURE,
+    COMMAND_SET_PEDESTRIAN_POSITION,
+]
+COMMANDS_SET_TILT_POSITION = [COMMAND_SET_ORIENTATION]
+
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
@@ -95,13 +108,12 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma covers from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data.get("coordinator")
+    coordinator = data["coordinator"]
 
     entities = [
         TahomaCover(device.deviceurl, coordinator)
-        for device in data.get("entities").get(COVER)
+        for device in data["entities"].get(COVER)
     ]
 
     async_add_entities(entities)
@@ -167,10 +179,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if "Horizontal" in self.device.widget:
             position = kwargs.get(ATTR_POSITION, 0)
 
-        command = self.select_command(
-            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
+        await self.async_execute_command(
+            self.select_command(*COMMANDS_SET_POSITION), position
         )
-        await self.async_execute_command(command, position)
 
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
@@ -187,7 +198,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
         await self.async_execute_command(
-            COMMAND_SET_ORIENTATION, 100 - kwargs.get(ATTR_TILT_POSITION, 0)
+            self.select_command(*COMMANDS_SET_TILT_POSITION),
+            100 - kwargs.get(ATTR_TILT_POSITION, 0),
         )
 
     @property
@@ -238,35 +250,52 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE)
-        )
+        await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
-        await self.async_execute_command(self.select_command(COMMAND_OPEN_SLATS))
+        await self.async_execute_command(self.select_command(*COMMANDS_OPEN_TILT))
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE)
-        )
+        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
 
     async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
-        await self.async_execute_command(self.select_command(COMMAND_CLOSE_SLATS))
+        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE_TILT))
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY)
+        await self.async_cancel_or_stop_cover(
+            COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE, COMMANDS_STOP,
         )
 
     async def async_stop_cover_tilt(self, **_):
-        """Stop the cover."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY)
+        """Stop the cover tilt."""
+        await self.async_cancel_or_stop_cover(
+            COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT,
+            COMMANDS_STOP_TILT,
         )
+
+    async def async_cancel_or_stop_cover(self, cancel_commands, stop_commands) -> None:
+        """Cancel running execution or send stop command."""
+        exec_id = next(
+            (
+                exec_id
+                # Reverse dictionary to cancel the last added execution
+                for exec_id, execution in reversed(self.coordinator.executions.items())
+                if execution.get("deviceurl") == self.device.deviceurl
+                and execution.get("command_name") in cancel_commands
+            ),
+            None,
+        )
+
+        # Cancelling a running execution will stop the cover movement
+        if exec_id:
+            await self.async_cancel_command(exec_id)
+        # Fallback to available stop commands when execution was initiated outside Home Assistant
+        else:
+            await self.async_execute_command(self.select_command(*stop_commands))
 
     async def async_my(self, **_):
         """Set cover to preset position."""
@@ -277,8 +306,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return if the cover is opening or not."""
         return any(
             execution.get("deviceurl") == self.device.deviceurl
-            and execution.get("command_name")
-            in [COMMAND_OPEN, COMMAND_UP, COMMAND_OPEN_SLATS]
+            and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
             for execution in self.coordinator.executions.values()
         )
 
@@ -287,8 +315,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return if the cover is closing or not."""
         return any(
             execution.get("deviceurl") == self.device.deviceurl
-            and execution.get("command_name")
-            in [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CLOSE_SLATS]
+            and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
             for execution in self.coordinator.executions.values()
         )
 
@@ -297,30 +324,28 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_OPEN_SLATS):
+        if self.has_command(*COMMANDS_OPEN_TILT):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+            if self.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if self.has_command(COMMAND_CLOSE_SLATS):
+        if self.has_command(*COMMANDS_CLOSE_TILT):
             supported_features |= SUPPORT_CLOSE_TILT
 
-        if self.has_command(COMMAND_SET_ORIENTATION):
+        if self.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.has_command(
-            COMMAND_SET_POSITION, COMMAND_SET_CLOSURE, COMMAND_SET_PEDESTRIAN_POSITION
-        ):
+        if self.has_command(*COMMANDS_SET_POSITION):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE):
+        if self.has_command(*COMMANDS_OPEN):
             supported_features |= SUPPORT_OPEN
 
-            if self.has_command(COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY):
+            if self.has_command(*COMMANDS_STOP):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE):
+        if self.has_command(*COMMANDS_CLOSE):
             supported_features |= SUPPORT_CLOSE
 
         if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):

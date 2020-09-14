@@ -103,11 +103,11 @@ UNITS = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data.get("coordinator")
+    coordinator = data["coordinator"]
 
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
-        for device in data.get("entities").get(SENSOR)
+        for device in data["entities"].get(SENSOR)
         if device.states
     ]
 

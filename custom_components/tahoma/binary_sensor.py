@@ -62,11 +62,11 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data.get("coordinator")
+    coordinator = data["coordinator"]
 
     entities = [
         TahomaBinarySensor(device.deviceurl, coordinator)
-        for device in data.get("entities").get(BINARY_SENSOR)
+        for device in data["entities"].get(BINARY_SENSOR)
     ]
     async_add_entities(entities)
 
