@@ -1,4 +1,5 @@
-"""Parent class for every TaHoma devices."""
+"""Parent class for every TaHoma device."""
+import logging
 from typing import Any, Dict, Optional
 
 from pyhoma.models import Command, Device
@@ -23,6 +24,8 @@ STATE_BATTERY_NORMAL = "normal"
 STATE_BATTERY_LOW = "low"
 STATE_BATTERY_VERY_LOW = "verylow"
 STATE_DEAD = "dead"
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class TahomaDevice(Entity):
@@ -152,9 +155,15 @@ class TahomaDevice(Entity):
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
-        exec_id = await self.coordinator.client.execute_command(
-            self.device.deviceurl, Command(command_name, list(args)), "Home Assistant"
-        )
+        try:
+            exec_id = await self.coordinator.client.execute_command(
+                self.device.deviceurl,
+                Command(command_name, list(args)),
+                "Home Assistant",
+            )
+        except Exception as exception:
+            _LOGGER.error(exception)
+            return
 
         # ExecutionRegisteredEvent doesn't contain the deviceurl, thus we need to register it here
         self.coordinator.executions[exec_id] = {
