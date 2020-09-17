@@ -5,6 +5,7 @@ title: Add support for [ModelName] (io:SomfySensorName)
 labels: new-device
 assignees: ""
 ---
+- [ ] **I have read the [Readme](https://github.com/iMicknl/ha-tahoma/blob/master/README.md), including the [Advanced](https://github.com/iMicknl/ha-tahoma/blob/master/README.md#advanced) section regarding debugging.**
 
 <!--
 Please update the title to match your device model and type

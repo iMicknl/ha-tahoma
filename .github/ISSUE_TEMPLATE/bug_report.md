@@ -5,6 +5,7 @@ title: ""
 labels: bug
 assignees: ""
 ---
+- [ ] **I have read the [Readme](https://github.com/iMicknl/ha-tahoma/blob/master/README.md), including the [Advanced](https://github.com/iMicknl/ha-tahoma/blob/master/README.md#advanced) section regarding debugging.**
 
 **Describe the bug**
 A clear and concise description of what the bug is.
