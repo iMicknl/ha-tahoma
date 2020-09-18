@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "pyhoma==0.4.3"
+    "git+https://github.com/iMicknl/python-tahoma-api.git@feature/add_gateway_endpoint#pyhoma"
   ],
   "codeowners": ["@philklei", "@imicknl", "@vlebourl", "@tetienne"],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues"
