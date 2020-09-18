@@ -55,6 +55,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
+        self.refresh_in_progress = False
 
         _LOGGER.debug(
             "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
@@ -120,8 +121,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             elif event.name == EventName.EXECUTION_REGISTERED:
                 if event.exec_id not in self.executions:
                     self.executions[event.exec_id] = {}
-
-                self.update_interval = timedelta(seconds=1)
+                self.set_update_interval(1)
 
             elif (
                 event.name == EventName.EXECUTION_STATE_CHANGED
@@ -130,8 +130,11 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             ):
                 del self.executions[event.exec_id]
 
-        if not self.executions:
-            self.update_interval = self.original_update_interval
+            if event.name == "RefreshAllDevicesStatesCompletedEvent":
+                self.set_refresh_in_progress(False)
+
+        if not self.executions and self.refresh_in_progress is False:
+            self.restore_update_interval()
 
         return self.devices
 

@@ -18,6 +18,9 @@ from .const import (
     CONF_HUB,
     CONF_UPDATE_INTERVAL,
     DEFAULT_HUB,
+    CONF_REFRESH_STATE_INTERVAL,
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_REFRESH_STATE_INTERVAL,
     DEFAULT_UPDATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
     SUPPORTED_ENDPOINTS,
@@ -123,6 +126,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         if self.options.get(CONF_UPDATE_INTERVAL) is None:
             self.options[CONF_UPDATE_INTERVAL] = DEFAULT_UPDATE_INTERVAL
 
+        if self.options.get(CONF_REFRESH_STATE_INTERVAL) is None:
+            self.options[CONF_REFRESH_STATE_INTERVAL] = DEFAULT_REFRESH_STATE_INTERVAL
+
     async def async_step_init(self, user_input=None):
         """Manage the Somfy TaHoma options."""
         return await self.async_step_update_interval()
@@ -140,7 +146,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         CONF_UPDATE_INTERVAL,
                         default=self.options.get(CONF_UPDATE_INTERVAL),
-                    ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL))
+                    ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL)),
+                    vol.Required(
+                        CONF_REFRESH_STATE_INTERVAL,
+                        default=self.options.get(CONF_REFRESH_STATE_INTERVAL),
+                    ): vol.All(cv.positive_int, vol.Clamp(min=5)),
                 }
             ),
         )

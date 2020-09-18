@@ -25,9 +25,10 @@
     "step": {
       "update_interval": {
         "title": "Update Interval",
-        "description": "The Somfy TaHoma integration periodically retrieves new events. Change the update interval to a lower value if you want more frequent updates, for example when you also control your devices outside Home Assistant.",
+        "description": "The Somfy TaHoma integration periodically retrieves new events. Change the update interval to a lower value if you want more frequent updates, for example when you also control your devices outside Home Assistant.\n\n Some Somfy devices don't support realtime state updates. Change the state refresh interval to a lower value if you want to force a state update.",
         "data": {
-          "update_interval": "Update interval (in seconds)"
+          "update_interval": "Update interval (in seconds)",
+          "refresh_state_interval": "Force state refresh interval (in seconds)"
         }
       }
     }
