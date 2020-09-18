@@ -25,7 +25,7 @@
     "step": {
       "update_interval": {
         "title": "Update interval",
-        "description": "De Somfy TaHoma-integratie haalt periodiek nieuwe gebeurtenissen op. Wijzig de update-interval naar een lagere waarde als je vaker updates wilt, bijvoorbeeld wanneer je je apparaten ook buiten Home Assistant bedient.\n\n Enkele Somfy apparaten ondersteunen bieden geen realtime updates van de staat. Wijzig de nieuw staat interval naar een lagere waarde als je periodiek een update wilt forceren.",
+        "description": "De Somfy TaHoma-integratie haalt periodiek nieuwe gebeurtenissen op. Wijzig de update-interval naar een lagere waarde als je vaker updates wilt, bijvoorbeeld wanneer je je apparaten ook buiten Home Assistant bedient.\n\n Enkele Somfy apparaten ondersteunen geen realtime staat updates. Wijzig de nieuw staat interval naar een lagere waarde als je periodiek een update wilt forceren.",
         "data": {
           "update_interval": "Update interval (in seconden)",
           "refresh_state_interval": "Forceer nieuwe staat interval (in seconden)"
