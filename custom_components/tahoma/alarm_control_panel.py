@@ -99,7 +99,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             if (
                 state == STATE_DETECTED
                 # Only trigger alarm when MyFox alarm is armed
-                and self.select_state(MYFOX_ALARM_STATUS_STATE) is not STATE_DISARMED
+                and self.select_state(MYFOX_ALARM_STATUS_STATE) != STATE_DISARMED
             ):
                 return STATE_ALARM_TRIGGERED
             elif state == STATE_PENDING:
