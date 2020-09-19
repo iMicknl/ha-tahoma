@@ -1,6 +1,9 @@
 """Test the Somfy TaHoma config flow."""
 from asynctest import patch
+from homeassistant.config_entries import ENTRY_STATE_LOADED
 from custom_components.tahoma import config_flow
+from custom_components.tahoma.const import DOMAIN
+
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import pytest
 from asyncio import TimeoutError
@@ -169,3 +172,39 @@ async def test_import_failing(hass, side_effect, error):
         )
 
     # Should write Exception to the log
+
+
+async def test_options_flow(hass):
+    """Test options flow."""
+
+    entry = MockConfigEntry(
+        domain=config_flow.DOMAIN,
+        unique_id=TEST_EMAIL,
+        data={"username": TEST_EMAIL, "password": TEST_PASSWORD},
+    )
+
+    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
+        "custom_components.tahoma.async_setup", return_value=True
+    ) as mock_setup, patch(
+        "custom_components.tahoma.async_setup_entry", return_value=True
+    ) as mock_setup_entry:
+        entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+    assert entry.state == ENTRY_STATE_LOADED
+
+    result = await hass.config_entries.options.async_init(
+        entry.entry_id, context={"source": "test"}, data=None
+    )
+    assert result["type"] == "form"
+    assert result["step_id"] == "update_interval"
+
+    assert entry.options == {}
+
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], user_input={"update_interval": 12000,},
+    )
+
+    assert entry.options == {"update_interval": 12000}
