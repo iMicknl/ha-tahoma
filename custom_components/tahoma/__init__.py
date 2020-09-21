@@ -80,10 +80,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    session = aiohttp_client.async_create_clientsession(
-        hass, cookie_jar=CookieJar(unsafe=True)
-    )
-
+    session = aiohttp_client.async_create_clientsession(hass)
     client = TahomaClient(username, password, session=session)
 
     try:
