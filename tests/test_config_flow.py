@@ -206,7 +206,8 @@ async def test_options_flow(hass):
     assert entry.options == {}
 
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], user_input={"update_interval": 12000,},
+        result["flow_id"],
+        user_input={"update_interval": 12000, "refresh_state_interval": 10},
     )
 
-    assert entry.options == {"update_interval": 12000}
+    assert entry.options == {"update_interval": 12000, "refresh_state_interval": 10}
