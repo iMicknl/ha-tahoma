@@ -41,6 +41,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             hass, logger, name=name, update_interval=update_interval,
         )
 
+        self.data = {}
         self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
