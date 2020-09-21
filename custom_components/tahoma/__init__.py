@@ -152,12 +152,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     entities = defaultdict(list)
     entities[SCENE] = scenarios
 
-    hass.data[DOMAIN][entry.entry_id] = {
-        "entities": entities,
-        "coordinator": tahoma_coordinator,
-        "update_listener": entry.add_update_listener(update_listener),
-    }
-
     for device in tahoma_coordinator.data.values():
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
         if platform:
@@ -232,9 +226,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     refresh_state_interval = entry.options.get(
         CONF_REFRESH_STATE_INTERVAL, DEFAULT_REFRESH_STATE_INTERVAL
     )
-    async_track_time_interval(
+    task_refresh_state = async_track_time_interval(
         hass, handle_refresh_states, timedelta(seconds=refresh_state_interval)
     )
+
+    hass.data[DOMAIN][entry.entry_id] = {
+        "entities": entities,
+        "coordinator": tahoma_coordinator,
+        "update_listener": entry.add_update_listener(update_listener),
+        "task_refresh_state": task_refresh_state,
+    }
 
     return True
 
@@ -261,6 +262,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update when config_entry options update."""
+
+    async def handle_refresh_states(*_):
+        """Request a state refresh and notify DataUpdateCoordinator."""
+        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+
+        coordinator.set_refresh_in_progress(True)
+        coordinator.set_update_interval(1)
+        await coordinator.client.refresh_states()
+        await coordinator.async_refresh()
+
     if entry.options[CONF_UPDATE_INTERVAL]:
         coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
         new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
@@ -269,6 +280,18 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
 
         await coordinator.async_refresh()
 
+    if entry.options[CONF_REFRESH_STATE_INTERVAL]:
+        # Cancel current task
+        hass.data[DOMAIN][entry.entry_id]["task_refresh_state"]()
+
+        # Create new task, with new time interval
+        hass.data[DOMAIN][entry.entry_id][
+            "task_refresh_state"
+        ] = async_track_time_interval(
+            hass,
+            handle_refresh_states,
+            timedelta(seconds=entry.options[CONF_REFRESH_STATE_INTERVAL]),
+        )
 
 def print_homekit_setup_code(device: Device):
     """Retrieve and print HomeKit Setup Code."""

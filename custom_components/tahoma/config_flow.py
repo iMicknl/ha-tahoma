@@ -137,6 +137,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Manage the options regarding interval updates."""
         if user_input is not None:
             self.options[CONF_UPDATE_INTERVAL] = user_input[CONF_UPDATE_INTERVAL]
+            self.options[CONF_REFRESH_STATE_INTERVAL] = user_input[
+                CONF_REFRESH_STATE_INTERVAL
+            ]
             return self.async_create_entry(title="", data=self.options)
 
         return self.async_show_form(
