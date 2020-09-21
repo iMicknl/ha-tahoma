@@ -5,8 +5,9 @@ from typing import Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from pyhoma.client import TahomaClient
+from pyhoma.enums import EventName, ExecutionState
 from pyhoma.exceptions import NotAuthenticatedException
-from pyhoma.models import DataType, Device, EventName, ExecutionState, State
+from pyhoma.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry
