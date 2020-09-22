@@ -130,7 +130,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             ):
                 del self.executions[event.exec_id]
 
-            if event.name == "RefreshAllDevicesStatesCompletedEvent":
+            elif event.name == EventName.REFRESH_ALL_DEVICES_STATES_COMPLETED:
                 self.set_refresh_in_progress(False)
 
         if not self.executions and self.refresh_in_progress is False:
