@@ -112,7 +112,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
         return self.devices
 
-    async def _get_devices(self):
+    async def _get_devices(self) -> Dict[str, Device]:
         """Fetch devices."""
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
