@@ -22,6 +22,8 @@ from .const import (
     CONF_UPDATE_INTERVAL,
     DEFAULT_REFRESH_STATE_INTERVAL,
     DEFAULT_UPDATE_INTERVAL,
+    DOMAIN,
+    MIN_REFRESH_STATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
     SUPPORTED_ENDPOINTS,
 )
@@ -153,7 +155,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         CONF_REFRESH_STATE_INTERVAL,
                         default=self.options.get(CONF_REFRESH_STATE_INTERVAL),
-                    ): vol.All(cv.positive_int, vol.Clamp(min=5)),
+                    ): vol.All(
+                        cv.positive_int, vol.Clamp(min=MIN_REFRESH_STATE_INTERVAL)
+                    ),
                 }
             ),
         )
