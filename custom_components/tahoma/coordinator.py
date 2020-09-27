@@ -5,10 +5,12 @@ from typing import Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from pyhoma.client import TahomaClient
+from pyhoma.enums import EventName, ExecutionState
 from pyhoma.exceptions import NotAuthenticatedException
 from pyhoma.models import DataType, Device, State
 
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 TYPES = {
@@ -55,9 +57,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(exception)
             self.executions = {}
             await self.client.login()
-            self.devices = {
-                d.deviceurl: d for d in await self.client.get_devices(refresh=True)
-            }
+            self.devices = await self._get_devices()
             return self.devices
         except Exception as exception:
             raise UpdateFailed(exception)
@@ -67,29 +67,43 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 f"{event.name}/{event.exec_id} (device:{event.deviceurl},state:{event.old_state}->{event.new_state})"
             )
 
-            if event.name == "DeviceAvailableEvent":
+            if event.name == EventName.DEVICE_AVAILABLE:
                 self.devices[event.deviceurl].available = True
 
-            elif event.name == "DeviceUnavailableEvent":
+            elif event.name in [
+                EventName.DEVICE_UNAVAILABLE,
+                EventName.DEVICE_DISABLED,
+            ]:
                 self.devices[event.deviceurl].available = False
 
-            elif event.name == "DeviceStateChangedEvent":
+            elif event.name in [
+                EventName.DEVICE_CREATED,
+                EventName.DEVICE_UPDATED,
+            ]:
+                self.devices = await self._get_devices()
+
+            elif event.name == EventName.DEVICE_REMOVED:
+                registry = await device_registry.async_get_registry(self.hass)
+                registry.async_remove_device(event.deviceurl)
+                del self.devices[event.deviceurl]
+
+            elif event.name == EventName.DEVICE_STATE_CHANGED:
                 for state in event.device_states:
                     device = self.devices[event.deviceurl]
                     if state.name not in device.states:
                         device.states[state.name] = state
                     device.states[state.name].value = self._get_state(state)
 
-            if event.name == "ExecutionRegisteredEvent":
+            elif event.name == EventName.EXECUTION_REGISTERED:
                 if event.exec_id not in self.executions:
                     self.executions[event.exec_id] = {}
 
                 self.update_interval = timedelta(seconds=1)
 
-            if (
-                event.name == "ExecutionStateChangedEvent"
+            elif (
+                event.name == EventName.EXECUTION_STATE_CHANGED
                 and event.exec_id in self.executions
-                and event.new_state in ["COMPLETED", "FAILED"]
+                and event.new_state in [ExecutionState.COMPLETED, ExecutionState.FAILED]
             ):
                 del self.executions[event.exec_id]
 
@@ -97,6 +111,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             self.update_interval = self.original_update_interval
 
         return self.devices
+
+    async def _get_devices(self) -> Dict[str, Device]:
+        """Fetch devices."""
+        return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
     def _get_state(state: State) -> Union[float, int, bool, str, None]:
