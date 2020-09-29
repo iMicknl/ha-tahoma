@@ -149,23 +149,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     async def handle_execute_command(call):
         """Handle execute command service."""
-
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                # Change to SOURCE_REAUTH after 116.0 release
-                DOMAIN,
-                context={"source": "reauth"},
-                data=entry.data,
-            )
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        await tahoma_coordinator.client.execute_command(
+            entity.unique_id,
+            Command(call.data.get("command"), call.data.get("args")),
+            "Home Assistant Service",
         )
-
-        # entity_registry = await hass.helpers.entity_registry.async_get_registry()
-        # entity = entity_registry.entities.get(call.data.get("entity_id"))
-        # await tahoma_coordinator.client.execute_command(
-        #     entity.unique_id,
-        #     Command(call.data.get("command"), call.data.get("args")),
-        #     "Home Assistant Service",
-        # )
 
     hass.services.async_register(
         DOMAIN,
