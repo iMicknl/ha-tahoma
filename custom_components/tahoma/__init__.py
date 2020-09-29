@@ -1,10 +1,11 @@
 """The TaHoma integration."""
 import asyncio
+from asyncio import TimeoutError
 from collections import defaultdict
 from datetime import timedelta
 import logging
 
-from aiohttp import CookieJar
+from aiohttp import ClientError, ServerDisconnectedError
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 from pyhoma.models import Command
@@ -15,6 +16,7 @@ from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
 from .const import (
@@ -85,12 +87,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await client.login()
-    except TooManyRequestsException:
-        _LOGGER.error("too_many_requests")
-        return False
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
         return False
+    except TooManyRequestsException as exception:
+        _LOGGER.error("too_many_requests")
+        raise ConfigEntryNotReady from exception
+    except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
+        _LOGGER.error("cannot_connect")
+        raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
