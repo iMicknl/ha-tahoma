@@ -11,9 +11,8 @@ from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 from pyhoma.models import Command
 import voluptuous as vol
 
-from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -66,9 +65,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": config_entries.SOURCE_IMPORT},
-            data=configuration,
+            DOMAIN, context={"source": SOURCE_IMPORT}, data=configuration,
         )
     )
 
@@ -89,6 +86,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.login()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                # Change to SOURCE_REAUTH after 116.0 release
+                DOMAIN,
+                context={"source": "reauth"},
+                data=entry.data,
+            )
+        )
         return False
     except TooManyRequestsException as exception:
         _LOGGER.error("too_many_requests")
@@ -144,13 +149,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     async def handle_execute_command(call):
         """Handle execute command service."""
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()
-        entity = entity_registry.entities.get(call.data.get("entity_id"))
-        await tahoma_coordinator.client.execute_command(
-            entity.unique_id,
-            Command(call.data.get("command"), call.data.get("args")),
-            "Home Assistant Service",
+
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                # Change to SOURCE_REAUTH after 116.0 release
+                DOMAIN,
+                context={"source": "reauth"},
+                data=entry.data,
+            )
         )
+
+        # entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        # entity = entity_registry.entities.get(call.data.get("entity_id"))
+        # await tahoma_coordinator.client.execute_command(
+        #     entity.unique_id,
+        #     Command(call.data.get("command"), call.data.get("args")),
+        #     "Home Assistant Service",
+        # )
 
     hass.services.async_register(
         DOMAIN,
