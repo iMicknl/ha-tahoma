@@ -66,6 +66,7 @@ TAHOMA_TYPES = {
     "ThermalEnergySensor": SENSOR,
     "VenetianBlind": COVER,
     "WaterDetectionSensor": BINARY_SENSOR,  # widgetName, uiClass is HumiditySensor (sensor)
+    "WaterHeatingSystem": CLIMATE,
     "WaterSensor": SENSOR,
     "WeatherSensor": SENSOR,
     "WindSensor": SENSOR,
