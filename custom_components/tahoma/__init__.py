@@ -84,6 +84,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await client.login()
+        devices = await client.get_devices()
+        scenarios = await client.get_scenarios()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
         return False
@@ -104,14 +106,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER,
         name="TaHoma Event Fetcher",
         client=client,
-        devices=await client.get_devices(),
+        devices=devices,
         update_interval=timedelta(seconds=update_interval),
     )
 
     await tahoma_coordinator.async_refresh()
 
     entities = defaultdict(list)
-    entities[SCENE] = await client.get_scenarios()
+    entities[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
         "entities": entities,
