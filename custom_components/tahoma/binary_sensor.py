@@ -1,5 +1,4 @@
 """Support for TaHoma binary sensors."""
-from datetime import timedelta
 from typing import Optional
 
 from homeassistant.components.binary_sensor import (

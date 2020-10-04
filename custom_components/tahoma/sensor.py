@@ -1,5 +1,4 @@
 """Support for TaHoma sensors."""
-from datetime import timedelta
 import logging
 from typing import Optional
 
