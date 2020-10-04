@@ -4,16 +4,14 @@ from collections import defaultdict
 from datetime import timedelta
 import logging
 
-from aiohttp import CookieJar
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 from pyhoma.models import Command
 import voluptuous as vol
 
-from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
@@ -64,9 +62,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": config_entries.SOURCE_IMPORT},
-            data=configuration,
+            DOMAIN, context={CONF_SOURCE: SOURCE_IMPORT}, data=configuration,
         )
     )
 
@@ -90,6 +86,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         return False
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                # TODO Change to SOURCE_REAUTH after 116.0 release
+                DOMAIN,
+                context={CONF_SOURCE: "reauth"},
+                data=entry.data,
+            )
+        )
         return False
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
