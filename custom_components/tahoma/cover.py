@@ -296,13 +296,17 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         # Retrieve running executions from server for executions initiated outside Home Assistant
         executions = await self.coordinator.client.get_current_executions()
-
-        for execution in executions:
-            for action in execution.action_group.get("actions"):
-                if action.get("deviceurl") == self.device.deviceurl:
-                    for command in action.get("commands"):
-                        if command.get("name") in cancel_commands:
-                            exec_id = execution.id
+        exec_id = next(
+            (
+                execution.id
+                for execution in executions
+                for action in reversed(execution.action_group.get("actions"))
+                for command in action.get("commands")
+                if action.get("deviceurl") == self.device.deviceurl
+                and command.get("name") in cancel_commands
+            ),
+            None,
+        )
 
         if exec_id:
             return await self.async_cancel_command(exec_id)
