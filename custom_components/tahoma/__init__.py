@@ -86,14 +86,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.login()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                # Change to SOURCE_REAUTH after 116.0 release
-                DOMAIN,
-                context={"source": "reauth"},
-                data=entry.data,
-            )
-        )
         return False
     except TooManyRequestsException as exception:
         _LOGGER.error("too_many_requests")
