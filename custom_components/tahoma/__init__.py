@@ -21,10 +21,6 @@ from pyhoma.exceptions import (
 from pyhoma.models import Command, Device
 import voluptuous as vol
 
-from .const import (
-    CONF_HUB,
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_HUB,
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_EXCLUDE,
@@ -32,11 +28,17 @@ from homeassistant.const import (
     CONF_USERNAME,
     EVENT_HOMEASSISTANT_START,
 )
+from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
+    CONF_HUB,
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
     CONF_REFRESH_STATE_INTERVAL,
     CONF_UPDATE_INTERVAL,
     DEFAULT_REFRESH_STATE_INTERVAL,
@@ -200,28 +202,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.refresh_states()
         await tahoma_coordinator.async_refresh()
 
-    def _register_services(event):
-        """Register the domain services."""
-        hass.services.async_register(
-            DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states
-        )
+    hass.services.async_register(DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states)
 
-        hass.services.async_register(
-            DOMAIN,
-            SERVICE_EXECUTE_COMMAND,
-            handle_execute_command,
-            vol.Schema(
-                {
-                    vol.Required("entity_id"): cv.string,
-                    vol.Required("command"): cv.string,
-                    vol.Optional("args", default=[]): vol.All(
-                        cv.ensure_list, [vol.Any(str, int)]
-                    ),
-                }
-            ),
-        )
-
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _register_services)
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_EXECUTE_COMMAND,
+        handle_execute_command,
+        vol.Schema(
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("command"): cv.string,
+                vol.Optional("args", default=[]): vol.All(
+                    cv.ensure_list, [vol.Any(str, int)]
+                ),
+            }
+        ),
+    )
 
     refresh_state_interval = entry.options.get(
         CONF_REFRESH_STATE_INTERVAL, DEFAULT_REFRESH_STATE_INTERVAL
