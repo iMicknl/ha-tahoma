@@ -1,6 +1,5 @@
 """The TaHoma integration."""
 import asyncio
-from asyncio import TimeoutError
 from collections import defaultdict
 from datetime import timedelta
 import logging

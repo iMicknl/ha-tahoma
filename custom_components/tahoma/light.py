@@ -66,7 +66,7 @@ class TahomaLight(TahomaDevice, LightEntity):
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
         brightness = self.select_state(CORE_LIGHT_INTENSITY_STATE)
-        return int(brightness * 255 / 100)
+        return round(brightness * 255 / 100)
 
     @property
     def is_on(self) -> bool:
@@ -106,13 +106,13 @@ class TahomaLight(TahomaDevice, LightEntity):
             await self.async_execute_command(
                 COMMAND_SET_RGB,
                 *[
-                    int(float(c))
+                    round(float(c))
                     for c in color_util.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
                 ],
             )
 
         if ATTR_BRIGHTNESS in kwargs:
-            brightness = int(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
+            brightness = round(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
             await self.async_execute_command(COMMAND_SET_INTENSITY, brightness)
 
         elif ATTR_EFFECT in kwargs:
