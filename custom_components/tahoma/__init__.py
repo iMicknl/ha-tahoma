@@ -1,19 +1,21 @@
 """The TaHoma integration."""
 import asyncio
+from asyncio import TimeoutError
 from collections import defaultdict
 from datetime import timedelta
 import logging
 
+from aiohttp import ClientError, ServerDisconnectedError
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 from pyhoma.models import Command
 import voluptuous as vol
 
-from homeassistant import config_entries
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 
 from .const import (
@@ -63,9 +65,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={"source": config_entries.SOURCE_IMPORT},
-            data=configuration,
+            DOMAIN, context={"source": SOURCE_IMPORT}, data=configuration,
         )
     )
 
@@ -84,12 +84,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await client.login()
-    except TooManyRequestsException:
-        _LOGGER.error("too_many_requests")
-        return False
+        devices = await client.get_devices()
+        scenarios = await client.get_scenarios()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
         return False
+    except TooManyRequestsException as exception:
+        _LOGGER.error("too_many_requests")
+        raise ConfigEntryNotReady from exception
+    except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
+        _LOGGER.error("cannot_connect")
+        raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
@@ -101,14 +106,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER,
         name="TaHoma Event Fetcher",
         client=client,
-        devices=await client.get_devices(),
+        devices=devices,
         update_interval=timedelta(seconds=update_interval),
     )
 
     await tahoma_coordinator.async_refresh()
 
     entities = defaultdict(list)
-    entities[SCENE] = await client.get_scenarios()
+    entities[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
         "entities": entities,
