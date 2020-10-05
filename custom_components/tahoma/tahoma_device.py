@@ -166,7 +166,7 @@ class TahomaDevice(Entity):
                 Command(command_name, list(args)),
                 "Home Assistant",
             )
-        except Exception as exception:
+        except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.error(exception)
             return
 

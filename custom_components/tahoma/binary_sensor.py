@@ -106,8 +106,7 @@ class TahomaBinarySensor(TahomaDevice, BinarySensorEntity):
         if self.device_class == DEVICE_CLASS_WATER:
             if self.is_on:
                 return ICON_WATER
-            else:
-                return ICON_WATER_OFF
+            return ICON_WATER_OFF
 
         icons = {DEVICE_CLASS_GAS: ICON_WAVES, DEVICE_CLASS_RAIN: ICON_WEATHER_RAINY}
 

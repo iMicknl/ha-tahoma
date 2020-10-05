@@ -58,8 +58,7 @@ class TahomaSwitch(TahomaDevice, SwitchEntity):
         if self.device_class == DEVICE_CLASS_SIREN:
             if self.is_on:
                 return ICON_BELL_RING
-            else:
-                return ICON_BELL_OFF
+            return ICON_BELL_OFF
 
         return None
 

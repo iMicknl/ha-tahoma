@@ -243,8 +243,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         ):
             if self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
                 return ICON_WEATHER_WINDY
-            else:
-                return ICON_LOCK_ALERT
+            return ICON_LOCK_ALERT
 
         return None
 
