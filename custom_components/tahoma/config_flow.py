@@ -1,5 +1,4 @@
 """Config flow for TaHoma integration."""
-from asyncio import TimeoutError
 import logging
 
 from aiohttp import ClientError
@@ -12,12 +11,8 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 
-from .const import (
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_UPDATE_INTERVAL,
-    DOMAIN,
-    MIN_UPDATE_INTERVAL,
-)
+from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
+from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 

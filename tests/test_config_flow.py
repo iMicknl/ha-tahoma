@@ -6,7 +6,6 @@ from custom_components.tahoma.const import DOMAIN
 
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import pytest
-from asyncio import TimeoutError
 from aiohttp import ClientError
 
 from homeassistant import config_entries
