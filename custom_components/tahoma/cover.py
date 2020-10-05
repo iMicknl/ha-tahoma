@@ -47,8 +47,8 @@ COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UP = "up"
 
-COMMANDS_STOP = [COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]
-COMMANDS_STOP_TILT = [COMMAND_STOP_IDENTIFY, COMMAND_STOP, COMMAND_MY]
+COMMANDS_STOP = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
+COMMANDS_STOP_TILT = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
 COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
 COMMANDS_OPEN_TILT = [COMMAND_OPEN_SLATS]
 COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
@@ -278,6 +278,8 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     async def async_cancel_or_stop_cover(self, cancel_commands, stop_commands) -> None:
         """Cancel running execution or send stop command."""
+        # Cancelling a running execution will stop the cover movement
+        # Retrieve executions initiated via Home Assistant from Data Update Coordinator queue
         exec_id = next(
             (
                 exec_id
@@ -289,12 +291,30 @@ class TahomaCover(TahomaDevice, CoverEntity):
             None,
         )
 
-        # Cancelling a running execution will stop the cover movement
         if exec_id:
-            await self.async_cancel_command(exec_id)
-        # Fallback to available stop commands when execution was initiated outside Home Assistant
-        else:
-            await self.async_execute_command(self.select_command(*stop_commands))
+            return await self.async_cancel_command(exec_id)
+
+        # Retrieve executions initiated outside Home Assistant via API
+        executions = await self.coordinator.client.get_current_executions()
+        exec_id = next(
+            (
+                execution.id
+                for execution in executions
+                # Reverse dictionary to cancel the last added execution
+                for action in reversed(execution.action_group.get("actions"))
+                for command in action.get("commands")
+                if action.get("deviceurl") == self.device.deviceurl
+                and command.get("name") in cancel_commands
+            ),
+            None,
+        )
+
+        if exec_id:
+            return await self.async_cancel_command(exec_id)
+
+        # Fallback to available stop commands when no executions are found
+        # Stop commands don't work with all devices, due to a bug in Somfy service
+        await self.async_execute_command(self.select_command(*stop_commands))
 
     async def async_my(self, **_):
         """Set cover to preset position."""
