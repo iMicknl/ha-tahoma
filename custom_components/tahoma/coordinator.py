@@ -61,7 +61,8 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("invalid_auth") from exception
         except TooManyRequestsException as exception:
             raise UpdateFailed("too_many_requests") from exception
-        except (ServerDisconnectedError, NotAuthenticatedException):
+        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
+            _LOGGER.debug(exception)
             self.executions = {}
             await self.client.login()
             self.devices = await self._get_devices()
@@ -127,6 +128,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _get_devices(self) -> Dict[str, Device]:
         """Fetch devices."""
+        _LOGGER.debug("Fetching all devices and state via /setup/devices")
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
