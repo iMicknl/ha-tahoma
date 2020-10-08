@@ -159,7 +159,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         if (
             "Horizontal" not in self.device.widget
-            or "AwningValance" == self.device.widget
+            and "AwningValance" != self.device.widget
         ):
             position = 100 - position
 
