@@ -172,7 +172,12 @@ class TahomaCover(TahomaDevice, CoverEntity):
         None is unknown, 0 is closed, 100 is fully open.
         """
         position = self.select_state(CORE_SLATS_ORIENTATION_STATE)
-        return 100 - position if position is not None else None
+        if position is None:
+            return None
+        elif self.device.widget == "PositionableExteriorVenetianBlind":
+            return position
+        else:
+            return 100 - position
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
