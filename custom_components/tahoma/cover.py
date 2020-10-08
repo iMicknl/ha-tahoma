@@ -71,6 +71,7 @@ CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
+CORE_SLATE_ORIENTATION_STATE = "core:SlateOrientationState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
@@ -168,13 +169,10 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = self.select_state(CORE_SLATS_ORIENTATION_STATE)
-        if position is None:
-            return None
-        elif self.device.widget == "PositionableExteriorVenetianBlind":
-            return position
-        else:
-            return 100 - position
+        position = self.select_state(
+            CORE_SLATS_ORIENTATION_STATE, CORE_SLATE_ORIENTATION_STATE
+        )
+        return 100 - position if position is not None else None
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
