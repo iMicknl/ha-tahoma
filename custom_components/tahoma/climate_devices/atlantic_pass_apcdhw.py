@@ -21,24 +21,33 @@ from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-
-"""
-ON / OFF switch
-{
-    "values": ["off", "on"],
-    "type": "DiscreteState",
-    "qualifiedName": "core:DHWOnOffState"
-}
-{
-    "commandName": "setDHWOnOffState",
-    "nparams": 1
-}
-"""
-CORE_DWH_ON_OFF_STATE = "core:DHWOnOffState"
+COMMAND_REFRESH_ECO_TARGET_DWH_TEMPERATURE = "refreshEcoTargetDHWTemperature"
+COMMAND_REFRESH_COMFORT_TARGET_DWH_TEMPERATURE = "refreshComfortTargetDHWTemperature"
+COMMAND_REFRESH_TARGET_DWH_TEMPERATURE = "refreshTargetDHWTemperature"
 COMMAND_SET_DWH_ON_OFF_STATE = "setDHWOnOffState"
+COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE = "setEcoTargetDHWTemperature"
+COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE = "setComfortTargetDHWTemperature"
+COMMAND_SET_PASS_APCDHW_MODE = "setPassAPCDHWMode"
+
+CORE_BOOST_ON_OFF_STATE = "core:BoostOnOffState"
+CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE = "core:ComfortTargetDHWTemperatureState"
+CORE_DHW_DEROGATION_AVAILABILITY_STATE = "core:DHWDerogationAvailabilityState"
+CORE_DWH_ON_OFF_STATE = "core:DHWOnOffState"
+CORE_ECO_TARGET_DWH_TEMPERATURE_STATE = "core:EcoTargetDHWTemperatureState"
+CORE_STATUS_STATE = "core:StatusState"
+CORE_TARGET_DWH_TEMPERATURE_STATE = "core:TargetDHWTemperatureState"
 
 DWH_OFF_STATE = "off"
 DHW_ON_STATE = "on"
+
+IO_PASS_APCDHW_CONFIGURATION_STATE = "io:PassAPCDHWConfigurationState"
+IO_PASS_APCDWH_MODE_STATE = "io:PassAPCDHWModeState"
+IO_PASS_APCDHW_PROFILE_STATE = "io:PassAPCDHWProfileState"
+
+PASS_APCDHW_MODE_COMFORT = "comfort"
+PASS_APCDHW_MODE_ECO = "eco"
+PASS_APCDWH_MODE_INTERNAL_SCHEDULING = "internalScheduling"
+PASS_APCDHW_MODE_STOP = "stop"
 
 MAP_HVAC_MODES = {
     DHW_ON_STATE: HVAC_MODE_HEAT,
@@ -46,141 +55,13 @@ MAP_HVAC_MODES = {
 }
 MAP_REVERSE_HVAC_MODES = dict(map(reversed, MAP_HVAC_MODES.items()))
 
-"""
-Preset selection
-{
-    "values": ["comfort", "eco", "externalScheduling", "internalScheduling", "manu", "peakAndOffPeakScheduling", "peakAndOffPeakTimes", "stop"],
-    "type": "DiscreteState",
-    "qualifiedName": "io:PassAPCDHWModeState"
-}
-{
-    "commandName": "setPassAPCDHWMode",
-    "nparams": 1
-}
-"""
-PASS_APCDHW_MODE_COMFORT = "comfort"
-PASS_APCDHW_MODE_ECO = "eco"
-# PASS_APCDWH_MODE_EXTERNAL_SCHEDULING="externalScheduling"
-PASS_APCDWH_MODE_INTERNAL_SCHEDULING = "internalScheduling"
-# PASS_APCDHW_MODE_MANU="manu"
-# PASS_APCDWH_MODE_PEAK_SCHEDULING="peakAndOffPeakScheduling"
-# PASS_APCDWH_MODE_PEAK_TIMES="peakAndOffPeakTimes"
-PASS_APCDHW_MODE_STOP = "stop"
-IO_PASS_APCDWH_MODE_STATE = "io:PassAPCDHWModeState"
-COMMAND_SET_PASS_APCDHW_MODE = "setPassAPCDHWMode"
-
 MAP_PRESET_MODES = {
-    # param 57 (ECS mode) : 0 (off) - 2 (Eco) - 3 (Comfort) - 4 (PROG)
-    PASS_APCDHW_MODE_COMFORT: PRESET_COMFORT,  # 3
-    PASS_APCDHW_MODE_ECO: PRESET_ECO,  # 2
-    # PASS_APCDWH_MODE_EXTERNAL_SCHEDULING: PASS_APCDWH_MODE_EXTERNAL_SCHEDULING,
-    PASS_APCDWH_MODE_INTERNAL_SCHEDULING: PASS_APCDWH_MODE_INTERNAL_SCHEDULING,  # 4
-    # PASS_APCDHW_MODE_MANU: PASS_APCDHW_MODE_MANU,
-    # PASS_APCDWH_MODE_PEAK_SCHEDULING: PASS_APCDWH_MODE_PEAK_SCHEDULING,
-    # PASS_APCDWH_MODE_PEAK_TIMES: PASS_APCDWH_MODE_PEAK_TIMES,
-    PASS_APCDHW_MODE_STOP: PASS_APCDHW_MODE_STOP,  # 0
+    PASS_APCDHW_MODE_COMFORT: PRESET_COMFORT,
+    PASS_APCDHW_MODE_ECO: PRESET_ECO,
+    PASS_APCDWH_MODE_INTERNAL_SCHEDULING: PASS_APCDWH_MODE_INTERNAL_SCHEDULING,
+    PASS_APCDHW_MODE_STOP: PASS_APCDHW_MODE_STOP,
 }
 MAP_REVERSE_PRESET_MODES = dict(map(reversed, MAP_PRESET_MODES.items()))
-
-"""
-Eco temperature
-{
-    "commandName": "refreshEcoTargetDHWTemperature",
-    "nparams": 0
-}
-{
-    "commandName": "setEcoTargetDHWTemperature",
-    "nparams": 1
-}
-{
-    "type": "ContinuousState",
-    "qualifiedName": "core:EcoTargetDHWTemperatureState"
-}
-"""
-COMMAND_REFRESH_ECO_TARGET_DWH_TEMPERATURE = "refreshEcoTargetDHWTemperature"
-COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE = "setEcoTargetDHWTemperature"
-CORE_ECO_TARGET_DWH_TEMPERATURE_STATE = "core:EcoTargetDHWTemperatureState"
-
-"""
-Target temperature
-{
-    "commandName": "refreshTargetDHWTemperature",
-    "nparams": 0
-},
-{
-    "type": "ContinuousState",
-    "qualifiedName": "core:TargetDHWTemperatureState"
-}
-"""
-COMMAND_REFRESH_TARGET_DWH_TEMPERATURE = "refreshTargetDHWTemperature"
-CORE_TARGET_DWH_TEMPERATURE_STATE = "core:TargetDHWTemperatureState"
-
-"""
-Comfort temperature
-{
-    "commandName": "refreshComfortTargetDHWTemperature",
-    "nparams": 0
-}
-{
-    "commandName": "setComfortTargetDHWTemperature",
-    "nparams": 1
-}
-{
-    "type": "ContinuousState",
-    "qualifiedName": "core:ComfortTargetDHWTemperatureState"
-}
-"""
-COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE = "setComfortTargetDHWTemperature"
-COMMAND_REFRESH_COMFORT_TARGET_DWH_TEMPERATURE = "refreshComfortTargetDHWTemperature"
-CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE = "core:ComfortTargetDHWTemperatureState"
-
-"""
-Commands not tested/implemented :
-{
-   "commandName": "refreshDHWDerogationAvailability",
-   "nparams": 0
-}, {
-   "commandName": "refreshDHWOnOffState",
-   "nparams": 0
-}, {
-   "commandName": "setBoostOnOffState",
-   "nparams": 1
-}, {
-   "commandName": "refreshDHWConfiguration",
-   "nparams": 0
-}, {
-   "commandName": "refreshPassAPCDHWProfile",
-   "nparams": 0
-}
-
-States not tests / implemented :
-{
-   "values": ["off", "on"],
-   "type": "DiscreteState",
-   "qualifiedName": "core:BoostOnOffState"
-}, {
-   "values": ["available", "unavailable"],
-   "type": "DiscreteState",
-   "qualifiedName": "core:DHWDerogationAvailabilityState"
-}, {
-   "values": ["available", "unavailable"],
-   "type": "DiscreteState",
-   "qualifiedName": "core:StatusState"
-}, {
-   "values": ["cumulated", "snapshot"],
-   "type": "DiscreteState",
-   "qualifiedName": "io:PassAPCDHWConfigurationState"
-}, {
-   "values": ["absence", "comfort", "derogation", "eco", "externalSetpoint", "frostprotection", "manu", "stop"],
-   "type": "DiscreteState",
-   "qualifiedName": "io:PassAPCDHWProfileState"
-}
-"""
-CORE_BOOST_ON_OFF_STATE = "core:BoostOnOffState"
-CORE_DHW_DEROGATION_AVAILABILITY_STATE = "core:DHWDerogationAvailabilityState"
-CORE_STATUS_STATE = "core:StatusState"
-IO_PASS_APCDHW_CONFIGURATION_STATE = "io:PassAPCDHWConfigurationState"
-IO_PASS_APCDHW_PROFILE_STATE = "io:PassAPCDHWProfileState"
 
 
 class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
@@ -239,13 +120,11 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
         await self.async_execute_command(
             COMMAND_SET_PASS_APCDHW_MODE, MAP_REVERSE_PRESET_MODES[preset_mode]
         )
-        # update target temperature
         await self.async_execute_command("refreshTargetDHWTemperature")
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature for current preset."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        # it's only possible to define a eco or comfort temperature
         if self.preset_mode == PRESET_ECO:
             await self.async_execute_command(
                 COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
@@ -255,7 +134,6 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
                 COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
             )
 
-        # Refresh target temperature immediately
         await self.async_execute_command("refreshTargetDHWTemperature")
 
     @property
@@ -271,22 +149,4 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
     @property
     def current_temperature(self):
         """Return current temperature."""
-        self.debug()
-        # current temperature is the same as target temperature
         return self.target_temperature
-
-    def debug(self):
-        """FIXME: Only for debugging purpose."""
-        for value in [
-            IO_PASS_APCDWH_MODE_STATE,
-            CORE_ECO_TARGET_DWH_TEMPERATURE_STATE,
-            CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE,
-            CORE_DWH_ON_OFF_STATE,
-            CORE_TARGET_DWH_TEMPERATURE_STATE,
-            CORE_BOOST_ON_OFF_STATE,
-            CORE_DHW_DEROGATION_AVAILABILITY_STATE,
-            CORE_STATUS_STATE,
-            IO_PASS_APCDHW_CONFIGURATION_STATE,
-            IO_PASS_APCDHW_PROFILE_STATE,
-        ]:
-            _LOGGER.info("%s: %s", value, self.select_state(value))
