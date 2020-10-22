@@ -12,7 +12,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from aiohttp import CookieJar, ClientError, ServerDisconnectedError
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
