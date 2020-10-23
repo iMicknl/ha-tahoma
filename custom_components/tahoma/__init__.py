@@ -2,6 +2,7 @@
 import asyncio
 from collections import defaultdict
 from datetime import timedelta
+import json
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -29,6 +30,7 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
+SERVICE_GET_DEVICE_DEFINITION = "get_device_definition"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -163,6 +165,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 ),
             }
         ),
+    )
+
+    async def handle_get_device_defintion(call):
+        """Handle get device definition."""
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        definition = await tahoma_coordinator.client.get_device_definition(
+            entity.unique_id
+        )
+        _LOGGER.info(
+            "Device definition for %s:\n%s",
+            entity.entity_id,
+            str(json.dumps(definition, indent=2)),
+        )
+
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_GET_DEVICE_DEFINITION,
+        handle_get_device_defintion,
+        vol.Schema({vol.Required("entity_id"): cv.string}),
     )
 
     return True
