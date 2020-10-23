@@ -1,5 +1,4 @@
 """Support for AtlanticPassAPCDHWComponement."""
-import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -10,24 +9,27 @@ from homeassistant.components.climate import (
     ClimateEntity,
 )
 from homeassistant.components.climate.const import (
+    PRESET_BOOST,
     PRESET_COMFORT,
     PRESET_ECO,
-    PRESET_NONE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_device import TahomaDevice
 
-_LOGGER = logging.getLogger(__name__)
+BOOST_ON_STATE = "on"
+BOOST_OFF_STATE = "Off"
 
-COMMAND_REFRESH_ECO_TARGET_DWH_TEMPERATURE = "refreshEcoTargetDHWTemperature"
 COMMAND_REFRESH_COMFORT_TARGET_DWH_TEMPERATURE = "refreshComfortTargetDHWTemperature"
+COMMAND_REFRESH_ECO_TARGET_DWH_TEMPERATURE = "refreshEcoTargetDHWTemperature"
 COMMAND_REFRESH_TARGET_DWH_TEMPERATURE = "refreshTargetDHWTemperature"
+COMMAND_SET_BOOST_ON_OFF_STATE = "setBoostOnOffState"
+COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE = "setComfortTargetDHWTemperature"
 COMMAND_SET_DWH_ON_OFF_STATE = "setDHWOnOffState"
 COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE = "setEcoTargetDHWTemperature"
-COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE = "setComfortTargetDHWTemperature"
 COMMAND_SET_PASS_APCDHW_MODE = "setPassAPCDHWMode"
+
 
 CORE_BOOST_ON_OFF_STATE = "core:BoostOnOffState"
 CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE = "core:ComfortTargetDHWTemperatureState"
@@ -36,6 +38,9 @@ CORE_DWH_ON_OFF_STATE = "core:DHWOnOffState"
 CORE_ECO_TARGET_DWH_TEMPERATURE_STATE = "core:EcoTargetDHWTemperatureState"
 CORE_STATUS_STATE = "core:StatusState"
 CORE_TARGET_DWH_TEMPERATURE_STATE = "core:TargetDHWTemperatureState"
+
+CUSTOM_PRESET_OFF = "Off"
+CUSTOM_PRESET_PROG = "Prog"
 
 DWH_OFF_STATE = "off"
 DHW_ON_STATE = "on"
@@ -49,6 +54,7 @@ PASS_APCDHW_MODE_ECO = "eco"
 PASS_APCDWH_MODE_INTERNAL_SCHEDULING = "internalScheduling"
 PASS_APCDHW_MODE_STOP = "stop"
 
+
 MAP_HVAC_MODES = {
     DHW_ON_STATE: HVAC_MODE_HEAT,
     DWH_OFF_STATE: HVAC_MODE_OFF,
@@ -56,10 +62,11 @@ MAP_HVAC_MODES = {
 MAP_REVERSE_HVAC_MODES = dict(map(reversed, MAP_HVAC_MODES.items()))
 
 MAP_PRESET_MODES = {
-    PASS_APCDHW_MODE_COMFORT: PRESET_COMFORT,
     PASS_APCDHW_MODE_ECO: PRESET_ECO,
-    PASS_APCDWH_MODE_INTERNAL_SCHEDULING: PASS_APCDWH_MODE_INTERNAL_SCHEDULING,
-    PASS_APCDHW_MODE_STOP: PASS_APCDHW_MODE_STOP,
+    PASS_APCDHW_MODE_COMFORT: PRESET_COMFORT,
+    PRESET_BOOST: PRESET_BOOST,
+    PASS_APCDWH_MODE_INTERNAL_SCHEDULING: CUSTOM_PRESET_PROG,
+    PASS_APCDHW_MODE_STOP: CUSTOM_PRESET_OFF,
 }
 MAP_REVERSE_PRESET_MODES = dict(map(reversed, MAP_PRESET_MODES.items()))
 
@@ -80,30 +87,50 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
     @property
     def min_temp(self) -> float:
         """Return minimum temperature."""
-        # FIXME: only for naia micro ?
         return 30
 
     @property
     def max_temp(self) -> float:
         """Return maximum temperature."""
-        # FIXME: only for naia micro ?
         return 65
 
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return MAP_PRESET_MODES[self.select_state(IO_PASS_APCDWH_MODE_STATE)]
+        if self.select_state(IO_PASS_APCDWH_MODE_STATE) in [
+            PASS_APCDHW_MODE_ECO,
+            PASS_APCDWH_MODE_INTERNAL_SCHEDULING,
+            PASS_APCDHW_MODE_STOP,
+        ]:
+            return MAP_PRESET_MODES[self.select_state(IO_PASS_APCDWH_MODE_STATE)]
+        else:
+            if self.select_state(CORE_BOOST_ON_OFF_STATE) == BOOST_ON_STATE:
+                return PRESET_BOOST
+            else:
+                return PRESET_COMFORT
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return a list of available preset modes."""
         return [*MAP_REVERSE_PRESET_MODES]
 
-    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
-        """Set new target hvac mode."""
-        await self.async_execute_command(
-            COMMAND_SET_DWH_ON_OFF_STATE, MAP_REVERSE_HVAC_MODES[hvac_mode]
-        )
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+        if preset_mode in [
+            PRESET_COMFORT,
+            PRESET_ECO,
+            CUSTOM_PRESET_OFF,
+            CUSTOM_PRESET_PROG,
+        ]:
+            presetModeToSet = MAP_REVERSE_PRESET_MODES[preset_mode]
+            boostModeToSet = BOOST_OFF_STATE
+        elif preset_mode == PRESET_BOOST:
+            presetModeToSet = MAP_REVERSE_PRESET_MODES[PRESET_COMFORT]
+            boostModeToSet = BOOST_ON_STATE
+
+        await self.async_execute_command(COMMAND_SET_BOOST_ON_OFF_STATE, boostModeToSet)
+        await self.async_execute_command(COMMAND_SET_PASS_APCDHW_MODE, presetModeToSet)
+        await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
 
     @property
     def hvac_mode(self) -> str:
@@ -115,33 +142,18 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
         """Return the list of available hvac operation modes."""
         return [*MAP_REVERSE_HVAC_MODES]
 
-    async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set new preset mode."""
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
+        """Set new target hvac mode."""
         await self.async_execute_command(
-            COMMAND_SET_PASS_APCDHW_MODE, MAP_REVERSE_PRESET_MODES[preset_mode]
+            COMMAND_SET_DWH_ON_OFF_STATE, MAP_REVERSE_HVAC_MODES[hvac_mode]
         )
-        await self.async_execute_command("refreshTargetDHWTemperature")
-
-    async def async_set_temperature(self, **kwargs) -> None:
-        """Set new temperature for current preset."""
-        temperature = kwargs.get(ATTR_TEMPERATURE)
-        if self.preset_mode == PRESET_ECO:
-            await self.async_execute_command(
-                COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
-            )
-        elif self.preset_mode == PRESET_COMFORT:
-            await self.async_execute_command(
-                COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
-            )
-
-        await self.async_execute_command("refreshTargetDHWTemperature")
 
     @property
     def target_temperature(self):
         """Return the temperature corresponding to the PRESET."""
         if self.preset_mode == PRESET_ECO:
             return self.select_state(CORE_ECO_TARGET_DWH_TEMPERATURE_STATE)
-        elif self.preset_mode == PRESET_COMFORT:
+        elif self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
             return self.select_state(CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE)
         else:
             return self.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
@@ -150,3 +162,17 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
     def current_temperature(self):
         """Return current temperature."""
         return self.target_temperature
+
+    async def async_set_temperature(self, **kwargs) -> None:
+        """Set new temperature for current preset."""
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        if self.preset_mode == PRESET_ECO:
+            await self.async_execute_command(
+                COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
+            )
+        elif self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
+            await self.async_execute_command(
+                COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
+            )
+        else:
+            await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
