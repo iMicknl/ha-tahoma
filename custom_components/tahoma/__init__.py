@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 from datetime import timedelta
 import logging
+from typing import List
 
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
@@ -17,7 +18,7 @@ from pyhoma.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command
+from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
@@ -107,6 +108,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         return False
 
     update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+
+    if is_stateless(devices):
+        update_interval = None
 
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
@@ -205,3 +209,8 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         coordinator.original_update_interval = new_update_interval
 
         await coordinator.async_refresh()
+
+
+async def is_stateless(devices: List[Device]) -> bool:
+    """Return true if all the devices are stateless."""
+    return all(device.states is None or len(device.states) == 0 for device in devices)
