@@ -103,11 +103,11 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
             PASS_APCDHW_MODE_STOP,
         ]:
             return MAP_PRESET_MODES[self.select_state(IO_PASS_APCDWH_MODE_STATE)]
-        else:
-            if self.select_state(CORE_BOOST_ON_OFF_STATE) == BOOST_ON_STATE:
-                return PRESET_BOOST
-            else:
-                return PRESET_COMFORT
+
+        if self.select_state(CORE_BOOST_ON_OFF_STATE) == BOOST_ON_STATE:
+            return PRESET_BOOST
+
+        return PRESET_COMFORT
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
