@@ -19,7 +19,7 @@ from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_device import TahomaDevice
 
 BOOST_ON_STATE = "on"
-BOOST_OFF_STATE = "Off"
+BOOST_OFF_STATE = "off"
 
 COMMAND_REFRESH_COMFORT_TARGET_DWH_TEMPERATURE = "refreshComfortTargetDHWTemperature"
 COMMAND_REFRESH_ECO_TARGET_DWH_TEMPERATURE = "refreshEcoTargetDHWTemperature"
