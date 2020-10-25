@@ -5,6 +5,15 @@ from datetime import timedelta
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
+from pyhoma.client import TahomaClient
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    MaintenanceException,
+    TooManyRequestsException,
+)
+from pyhoma.models import Command
+import voluptuous as vol
+
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
@@ -14,7 +23,6 @@ from homeassistant.helpers import aiohttp_client, config_validation as cv
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 from pyhoma.models import Command
-import voluptuous as vol
 
 from .const import (
     CONF_UPDATE_INTERVAL,
@@ -63,7 +71,9 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": SOURCE_IMPORT}, data=configuration,
+            DOMAIN,
+            context={"source": SOURCE_IMPORT},
+            data=configuration,
         )
     )
 
@@ -92,6 +102,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
         _LOGGER.error("cannot_connect")
+        raise ConfigEntryNotReady from exception
+    except MaintenanceException as exception:
+        _LOGGER.error("server_in_maintenance")
         raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
