@@ -169,6 +169,9 @@ class TahomaDevice(Entity):
             _LOGGER.error(exception)
             return
 
+        if self.assumed_state:
+            return
+
         # ExecutionRegisteredEvent doesn't contain the deviceurl, thus we need to register it here
         self.coordinator.executions[exec_id] = {
             "deviceurl": self.device.deviceurl,
