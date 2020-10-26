@@ -14,8 +14,6 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
-from pyhoma.client import TahomaClient
-from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 
 from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
 from .const import DOMAIN  # pylint: disable=unused-import
