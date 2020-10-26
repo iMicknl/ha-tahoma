@@ -1,27 +1,28 @@
+ # yamllint disable rule:line-length
 name: Mark stale issues and pull requests
 
 on:
   schedule:
-  - cron: "30 1 * * *"
+    - cron: "30 1 * * *"
 
 jobs:
   stale:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/stale@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: >
-          'There hasn't been any activity on this issue recently. Is this issue still present?
-          
-          Please make sure to update to the latest Home Assistant version and version of this integration to see
-          if that solves the issue. Let us know if that works for you by adding a
-          comment 👍.
-          
-          This issue now has been marked as stale and will be closed if no further
-          activity occurs. Thank you for your contributions.'
-        days-before-stale: 30
-        days-before-close: 5
-        stale-issue-label: 'no-issue-activity'
-        exempt-issue-labels: 'work-in-progress,blocked,help wanted,under investigation'
+      - uses: actions/stale@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: >
+            'There hasn't been any activity on this issue recently. Is this issue still present?
+
+            Please make sure to update to the latest Home Assistant version and version of this integration to see
+            if that solves the issue. Let us know if that works for you by adding a
+            comment 👍.
+
+            This issue now has been marked as stale and will be closed if no further
+            activity occurs. Thank you for your contributions.'
+          days-before-stale: 30
+          days-before-close: 5
+          stale-issue-label: 'no-issue-activity'
+          exempt-issue-labels: 'work-in-progress,blocked,help wanted,under investigation'
