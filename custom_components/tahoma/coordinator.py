@@ -44,7 +44,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     ):
         """Initialize global data updater."""
         super().__init__(
-            hass, logger, name=name, update_interval=update_interval,
+            hass,
+            logger,
+            name=name,
+            update_interval=update_interval,
         )
 
         self.data = {}
