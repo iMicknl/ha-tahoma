@@ -11,7 +11,7 @@
 		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh"
 	],
 	"extensions": [
-		"ms-python.python",
+		"ms-python.vscode-pylance",
 		"github.vscode-pull-request-github",
 		"tabnine.tabnine-vscode"
 	],
