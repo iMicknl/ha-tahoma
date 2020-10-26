@@ -88,7 +88,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.error("cannot_connect")
             return self.async_abort(reason="cannot_connect")
         except MaintenanceException:
-            _LOGGER.error("too_many_requests")
+            _LOGGER.error("server_in_maintenance")
             return self.async_abort(reason="server_in_maintenance")
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.exception(exception)
