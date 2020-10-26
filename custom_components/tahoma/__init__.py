@@ -6,7 +6,6 @@ import json
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
