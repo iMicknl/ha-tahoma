@@ -4,6 +4,9 @@ import logging
 from typing import Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from pyhoma.client import TahomaClient
 from pyhoma.enums import EventName, ExecutionState
 from pyhoma.exceptions import (
@@ -12,10 +15,6 @@ from pyhoma.exceptions import (
     TooManyRequestsException,
 )
 from pyhoma.models import DataType, Device, State
-
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 TYPES = {
     DataType.NONE: None,
