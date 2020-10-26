@@ -6,14 +6,6 @@ import json
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from pyhoma.client import TahomaClient
-from pyhoma.exceptions import (
-    BadCredentialsException,
-    InvalidCommandException,
-    TooManyRequestsException,
-)
-from pyhoma.models import Command
-import voluptuous as vol
 
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
@@ -22,7 +14,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 from pyhoma.client import TahomaClient
-from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    InvalidCommandException,
+    TooManyRequestsException,
+)
 from pyhoma.models import Command
 import voluptuous as vol
 
