@@ -7,7 +7,11 @@ import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
 from pyhoma.client import TahomaClient
-from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    InvalidCommandException,
+    TooManyRequestsException,
+)
 from pyhoma.models import Command
 import voluptuous as vol
 
@@ -151,19 +155,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 Command(call.data.get("command"), call.data.get("args")),
                 "Home Assistant Service",
             )
-        except Exception as e:
-            if e.args[0].startswith("No such command"):
-                definition = await tahoma_coordinator.client.get_device_definition(
-                    entity.unique_id
-                )
-                _LOGGER.error(
-                    "%s\nAvailable commands for %s:\n%s",
-                    str(e),
-                    entity.entity_id,
-                    str(json.dumps(definition.get("commands")).replace("},", "},\n")),
-                )
-            else:
-                raise e
+        except InvalidCommandException as e:
+            definition = await tahoma_coordinator.client.get_device_definition(
+                entity.unique_id
+            )
+            _LOGGER.error(
+                "%s\nAvailable commands for %s:\n%s",
+                str(e),
+                entity.entity_id,
+                str(json.dumps(definition.get("commands")).replace("},", "},\n")),
+            )
 
     hass.services.async_register(
         DOMAIN,
