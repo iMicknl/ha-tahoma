@@ -1,8 +1,6 @@
 """Support for TaHoma cover - shutters etc."""
 import logging
 
-import voluptuous as vol
-
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -25,6 +23,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 from homeassistant.helpers import entity_platform
+import voluptuous as vol
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice

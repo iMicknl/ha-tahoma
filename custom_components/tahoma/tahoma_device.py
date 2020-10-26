@@ -2,10 +2,9 @@
 import logging
 from typing import Any, Dict, Optional
 
-from pyhoma.models import Command, Device
-
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
+from pyhoma.models import Command, Device
 
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
