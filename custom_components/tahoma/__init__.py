@@ -5,6 +5,12 @@ from datetime import timedelta
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
+from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import aiohttp_client, config_validation as cv
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
@@ -13,13 +19,6 @@ from pyhoma.exceptions import (
 )
 from pyhoma.models import Command
 import voluptuous as vol
-
-from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import aiohttp_client, config_validation as cv
 
 from .const import (
     CONF_UPDATE_INTERVAL,
