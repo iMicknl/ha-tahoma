@@ -34,10 +34,3 @@ execute_command:
     args:
       description: List of arguments to pass to the command if necessary
       example: 100
-
-get_device_definition:
-  description: Retrieve an entity definition in a json format and log it at info level.
-  fields:
-    entity_id:
-      description: Name of the entity to retrieve the definition of.
-      example: "cover.living_room"

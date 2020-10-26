@@ -30,7 +30,6 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
-SERVICE_GET_DEVICE_DEFINITION = "get_device_definition"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -146,11 +145,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         """Handle execute command service."""
         entity_registry = await hass.helpers.entity_registry.async_get_registry()
         entity = entity_registry.entities.get(call.data.get("entity_id"))
-        await tahoma_coordinator.client.execute_command(
-            entity.unique_id,
-            Command(call.data.get("command"), call.data.get("args")),
-            "Home Assistant Service",
-        )
+        try:
+            await tahoma_coordinator.client.execute_command(
+                entity.unique_id,
+                Command(call.data.get("command"), call.data.get("args")),
+                "Home Assistant Service",
+            )
+        except Exception as e:
+            if e.args[0].startswith("No such command"):
+                definition = await tahoma_coordinator.client.get_device_definition(
+                    entity.unique_id
+                )
+                _LOGGER.error(
+                    "%s\nAvailable commands for %s:\n%s",
+                    str(e),
+                    entity.entity_id,
+                    str(json.dumps(definition.get("commands")).replace("},", "},\n")),
+                )
+            else:
+                raise e
 
     hass.services.async_register(
         DOMAIN,
@@ -165,26 +178,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 ),
             }
         ),
-    )
-
-    async def handle_get_device_defintion(call):
-        """Handle get device definition."""
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()
-        entity = entity_registry.entities.get(call.data.get("entity_id"))
-        definition = await tahoma_coordinator.client.get_device_definition(
-            entity.unique_id
-        )
-        _LOGGER.info(
-            "Device definition for %s:\n%s",
-            entity.entity_id,
-            str(json.dumps(definition, indent=2)),
-        )
-
-    hass.services.async_register(
-        DOMAIN,
-        SERVICE_GET_DEVICE_DEFINITION,
-        handle_get_device_defintion,
-        vol.Schema({vol.Required("entity_id"): cv.string}),
     )
 
     return True
