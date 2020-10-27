@@ -6,6 +6,11 @@
   "requirements": [
     "pyhoma==0.5.1"
   ],
-  "codeowners": ["@philklei", "@imicknl", "@vlebourl", "@tetienne"],
+  "codeowners": [
+    "@philklei",
+    "@imicknl",
+    "@vlebourl",
+    "@tetienne"
+  ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues"
 }

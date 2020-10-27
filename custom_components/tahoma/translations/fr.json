@@ -13,6 +13,7 @@
       "cannot_connect": "Connexion impossible",
       "too_many_requests": "Trop de reqûtees, veuillez réessayer plus tard.",
       "invalid_auth": "Mot de passe ou nom d'utilisateur incorrect",
+      "server_in_maintenance": "Le serveur est en cours de maintenance",
       "unknown": "Une erreur inconnue est survenue."
     },
     "abort": {
