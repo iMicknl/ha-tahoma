@@ -1,7 +1,4 @@
 """Support for TaHoma alarm."""
-from datetime import timedelta
-from typing import Optional
-
 from homeassistant.components.alarm_control_panel import (
     DOMAIN as ALARM_CONTROL_PANEL,
     AlarmControlPanelEntity,

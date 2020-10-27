@@ -4,14 +4,18 @@ import logging
 from typing import Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
-from pyhoma.client import TahomaClient
-from pyhoma.enums import EventName, ExecutionState
-from pyhoma.exceptions import NotAuthenticatedException
-from pyhoma.models import DataType, Device, State
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from pyhoma.client import TahomaClient
+from pyhoma.enums import EventName, ExecutionState
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    MaintenanceException,
+    NotAuthenticatedException,
+    TooManyRequestsException,
+)
+from pyhoma.models import DataType, Device, State
 
 TYPES = {
     DataType.NONE: None,
@@ -40,7 +44,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     ):
         """Initialize global data updater."""
         super().__init__(
-            hass, logger, name=name, update_interval=update_interval,
+            hass,
+            logger,
+            name=name,
+            update_interval=update_interval,
         )
 
         self.data = {}
@@ -49,10 +56,20 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
 
+        _LOGGER.debug(
+            "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
+        )
+
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_events()
+        except BadCredentialsException as exception:
+            raise UpdateFailed("invalid_auth") from exception
+        except TooManyRequestsException as exception:
+            raise UpdateFailed("too_many_requests") from exception
+        except MaintenanceException as exception:
+            raise UpdateFailed("server_in_maintenance") from exception
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
             self.executions = {}
@@ -60,11 +77,17 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             self.devices = await self._get_devices()
             return self.devices
         except Exception as exception:
-            raise UpdateFailed(exception)
+            _LOGGER.debug(exception)
+            raise UpdateFailed(exception) from exception
 
         for event in events:
             _LOGGER.debug(
-                f"{event.name}/{event.exec_id} (device:{event.deviceurl},state:{event.old_state}->{event.new_state})"
+                "%s/%s (device: %s, state: %s -> %s)",
+                event.name,
+                event.exec_id,
+                event.deviceurl,
+                event.old_state,
+                event.new_state,
             )
 
             if event.name == EventName.DEVICE_AVAILABLE:
@@ -114,6 +137,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _get_devices(self) -> Dict[str, Device]:
         """Fetch devices."""
+        _LOGGER.debug("Fetching all devices and state via /setup/devices")
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod

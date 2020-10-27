@@ -2,10 +2,9 @@
 import logging
 from typing import Any, Dict, Optional
 
-from pyhoma.models import Command, Device
-
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
+from pyhoma.models import Command, Device
 
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
@@ -166,7 +165,7 @@ class TahomaDevice(Entity):
                 Command(command_name, list(args)),
                 "Home Assistant",
             )
-        except Exception as exception:
+        except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.error(exception)
             return
 

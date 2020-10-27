@@ -1,23 +1,21 @@
 """Config flow for TaHoma integration."""
-from asyncio import TimeoutError
 import logging
 
 from aiohttp import ClientError
-from pyhoma.client import TahomaClient
-from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
-import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
-
-from .const import (
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_UPDATE_INTERVAL,
-    DOMAIN,
-    MIN_UPDATE_INTERVAL,
+from pyhoma.client import TahomaClient
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    MaintenanceException,
+    TooManyRequestsException,
 )
+import voluptuous as vol
+
+from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
+from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,6 +68,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except (TimeoutError, ClientError):
                 errors["base"] = "cannot_connect"
+            except MaintenanceException:
+                errors["base"] = "server_in_maintenance"
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.exception(exception)
@@ -94,6 +94,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except (TimeoutError, ClientError):
             _LOGGER.error("cannot_connect")
             return self.async_abort(reason="cannot_connect")
+        except MaintenanceException:
+            _LOGGER.error("server_in_maintenance")
+            return self.async_abort(reason="server_in_maintenance")
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.exception(exception)
             return self.async_abort(reason="unknown")

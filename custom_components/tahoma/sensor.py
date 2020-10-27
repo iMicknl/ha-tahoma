@@ -1,5 +1,4 @@
 """Support for TaHoma sensors."""
-from datetime import timedelta
 import logging
 from typing import Optional
 
@@ -29,7 +28,7 @@ from .tahoma_device import TahomaDevice
 
 try:  # TODO: Remove for core PR. This ensures compatibility with <0.115
     from homeassistant.const import PERCENTAGE
-except Exception:
+except Exception:  # pylint: disable=broad-except
     from homeassistant.const import UNIT_PERCENTAGE as PERCENTAGE
 
 

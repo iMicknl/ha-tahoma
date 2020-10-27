@@ -13,7 +13,7 @@ set_light_my_position:
       example: "light.living_room"
 
 set_cover_position_low_speed:
-  description:  Move to specific position all or specified cover with a low speed.
+  description: Move cover to specific position with a low speed.
   fields:
     entity_id:
       description: Name(s) of cover(s) to set cover position with a low speed.

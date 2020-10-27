@@ -1,5 +1,4 @@
 """Support for TaHoma lock."""
-from datetime import timedelta
 import logging
 
 from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
