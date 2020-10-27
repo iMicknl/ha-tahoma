@@ -155,25 +155,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 Command(call.data.get("command"), call.data.get("args")),
                 "Home Assistant Service",
             )
-        except InvalidCommandException as e:
+        except InvalidCommandException as exception:
             definition = await tahoma_coordinator.client.get_device_definition(
                 entity.unique_id
             )
-            commands = (
-                "Available commands for "
-                + entity.entity_id
-                + "as command_name(number_of_parameters):"
-            )
+            commands = f"Available commands for {entity.entity_id} as command_name(number_of_parameters):"
             for command in definition.get("commands"):
                 commands = (
                     commands
-                    + "\n\t- "
-                    + command.get("commandName")
-                    + "("
-                    + str(command.get("nparams"))
-                    + ")"
+                    + f"\n\t- {command.get('commandName')} ({str(command.get('nparams'))})"
                 )
-            _LOGGER.error("%s\n%s", str(e), commands)
+            exception.args = (exception.args[0] + f"\n{commands}",)
+            raise
 
     hass.services.async_register(
         DOMAIN,
