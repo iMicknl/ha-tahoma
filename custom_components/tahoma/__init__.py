@@ -160,16 +160,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             commands = (
                 "Available commands for "
                 + entity.entity_id
-                + "as command_name(number_of_parameters):\n"
+                + "as command_name(number_of_parameters):"
             )
             for command in definition.get("commands"):
                 commands = (
                     commands
-                    + "\t- "
+                    + "\n\t- "
                     + command.get("commandName")
                     + "("
                     + str(command.get("nparams"))
-                    + ")\n"
+                    + ")"
                 )
             _LOGGER.error("%s\n%s", str(e), commands)
 
