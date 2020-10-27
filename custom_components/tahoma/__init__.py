@@ -2,7 +2,6 @@
 import asyncio
 from collections import defaultdict
 from datetime import timedelta
-import json
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -158,12 +157,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             definition = await tahoma_coordinator.client.get_device_definition(
                 entity.unique_id
             )
-            _LOGGER.error(
-                "%s\nAvailable commands for %s:\n%s",
-                str(e),
-                entity.entity_id,
-                str(json.dumps(definition.get("commands")).replace("},", "},\n")),
+            commands = (
+                "Available commands for "
+                + entity.entity_id
+                + "as command_name(number_of_parameters):\n"
             )
+            for command in definition.get("commands"):
+                commands = (
+                    commands
+                    + "\t- "
+                    + command.get("commandName")
+                    + "("
+                    + str(command.get("nparams"))
+                    + ")\n"
+                )
+            _LOGGER.error("%s\n%s", str(e), commands)
 
     hass.services.async_register(
         DOMAIN,
