@@ -1,14 +1,13 @@
 """Test the Somfy TaHoma config flow."""
+from aiohttp import ClientError
 from asynctest import patch
+from homeassistant import config_entries
 from homeassistant.config_entries import ENTRY_STATE_LOADED
-from custom_components.tahoma import config_flow
-from custom_components.tahoma.const import DOMAIN
-
 from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
 import pytest
-from aiohttp import ClientError
 
-from homeassistant import config_entries
+from custom_components.tahoma import config_flow
+from custom_components.tahoma.const import DOMAIN
 
 from .common import MockConfigEntry
 

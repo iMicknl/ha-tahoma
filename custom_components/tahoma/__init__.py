@@ -12,7 +12,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client, config_validation as cv
 from pyhoma.client import TahomaClient
-from pyhoma.exceptions import BadCredentialsException, TooManyRequestsException
+from pyhoma.exceptions import (
+    BadCredentialsException,
+    MaintenanceException,
+    TooManyRequestsException,
+)
 from pyhoma.models import Command
 import voluptuous as vol
 
@@ -63,7 +67,9 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     hass.async_create_task(
         hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": SOURCE_IMPORT}, data=configuration,
+            DOMAIN,
+            context={"source": SOURCE_IMPORT},
+            data=configuration,
         )
     )
 
@@ -92,6 +98,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
         _LOGGER.error("cannot_connect")
+        raise ConfigEntryNotReady from exception
+    except MaintenanceException as exception:
+        _LOGGER.error("server_in_maintenance")
         raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)

@@ -11,6 +11,7 @@ from pyhoma.client import TahomaClient
 from pyhoma.enums import EventName, ExecutionState
 from pyhoma.exceptions import (
     BadCredentialsException,
+    MaintenanceException,
     NotAuthenticatedException,
     TooManyRequestsException,
 )
@@ -43,7 +44,10 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     ):
         """Initialize global data updater."""
         super().__init__(
-            hass, logger, name=name, update_interval=update_interval,
+            hass,
+            logger,
+            name=name,
+            update_interval=update_interval,
         )
 
         self.data = {}
@@ -64,6 +68,8 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("invalid_auth") from exception
         except TooManyRequestsException as exception:
             raise UpdateFailed("too_many_requests") from exception
+        except MaintenanceException as exception:
+            raise UpdateFailed("server_in_maintenance") from exception
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
             self.executions = {}
