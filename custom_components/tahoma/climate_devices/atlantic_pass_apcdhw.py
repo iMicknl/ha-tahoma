@@ -15,7 +15,6 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_device import TahomaDevice
 
 BOOST_ON_STATE = "on"
@@ -122,14 +121,18 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
             CUSTOM_PRESET_OFF,
             CUSTOM_PRESET_PROG,
         ]:
-            presetModeToSet = MAP_REVERSE_PRESET_MODES[preset_mode]
-            boostModeToSet = BOOST_OFF_STATE
+            preset_mode_to_set = MAP_REVERSE_PRESET_MODES[preset_mode]
+            boost_mode_to_set = BOOST_OFF_STATE
         elif preset_mode == PRESET_BOOST:
-            presetModeToSet = MAP_REVERSE_PRESET_MODES[PRESET_COMFORT]
-            boostModeToSet = BOOST_ON_STATE
+            preset_mode_to_set = MAP_REVERSE_PRESET_MODES[PRESET_COMFORT]
+            boost_mode_to_set = BOOST_ON_STATE
 
-        await self.async_execute_command(COMMAND_SET_BOOST_ON_OFF_STATE, boostModeToSet)
-        await self.async_execute_command(COMMAND_SET_PASS_APCDHW_MODE, presetModeToSet)
+        await self.async_execute_command(
+            COMMAND_SET_BOOST_ON_OFF_STATE, boost_mode_to_set
+        )
+        await self.async_execute_command(
+            COMMAND_SET_PASS_APCDHW_MODE, preset_mode_to_set
+        )
         await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
 
     @property
@@ -149,14 +152,15 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
         )
 
     @property
-    def target_temperature(self):
+    def target_temperature(self) -> None:
         """Return the temperature corresponding to the PRESET."""
         if self.preset_mode == PRESET_ECO:
             return self.select_state(CORE_ECO_TARGET_DWH_TEMPERATURE_STATE)
-        elif self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
+
+        if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
             return self.select_state(CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE)
-        else:
-            return self.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
+
+        return self.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):
@@ -170,9 +174,10 @@ class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
             await self.async_execute_command(
                 COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
             )
-        elif self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
+
+        if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
             await self.async_execute_command(
                 COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
             )
-        else:
-            await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
+
+        await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
