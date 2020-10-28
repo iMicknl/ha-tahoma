@@ -62,7 +62,7 @@ MAP_PRESET_MODES = {
     STATE_PRESET_MANUAL: PRESET_NONE,
     STATE_PRESET_SLEEPING_MODE: PRESET_NIGHT,
 }
-MAP_REVERSE_PRESET_MODES = dict(map(reversed, MAP_PRESET_MODES.items()))
+MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 MAP_PRESET_TEMPERATURES = {
     PRESET_HOME: "somfythermostat:AtHomeTargetTemperatureState",
     PRESET_AWAY: "somfythermostat:AwayModeTargetTemperatureState",
