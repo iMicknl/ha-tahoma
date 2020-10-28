@@ -34,18 +34,17 @@ COMMAND_SET_DEROGATION = "setDerogation"
 COMMAND_SET_MODE_TEMPERATURE = "setModeTemperature"
 
 CORE_DEROGATED_TARGET_TEMPERATURE_STATE = "core:DerogatedTargetTemperatureState"
-CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+CORE_DEROGATION_ACTIVATION_STATE = "core:DerogationActivationState"
 
 PRESET_FREEZE = "Freeze"
 PRESET_NIGHT = "Night"
 
-ST_DEROGATION_TYPE_STATE = "somfythermostat:DerogationTypeState"
 ST_HEATING_MODE_STATE = "somfythermostat:HeatingModeState"
 ST_DEROGATION_HEATING_MODE_STATE = "somfythermostat:DerogationHeatingModeState"
 
 STATE_DEROGATION_FURTHER_NOTICE = "further_notice"
-STATE_DEROGATION_NEXT_MODE = "next_mode"
-STATE_DEROGATION_DATE = "date"
+STATE_DEROGATION_ACTIVE = "active"
+STATE_DEROGATION_INACTIVE = "inactive"
 STATE_PRESET_AT_HOME = "atHomeMode"
 STATE_PRESET_AWAY = "awayMode"
 STATE_PRESET_FREEZE = "freezeMode"
@@ -53,9 +52,8 @@ STATE_PRESET_MANUAL = "manualMode"
 STATE_PRESET_SLEEPING_MODE = "sleepingMode"
 
 MAP_HVAC_MODES = {
-    STATE_DEROGATION_DATE: HVAC_MODE_AUTO,
-    STATE_DEROGATION_NEXT_MODE: HVAC_MODE_HEAT,
-    STATE_DEROGATION_FURTHER_NOTICE: HVAC_MODE_HEAT,
+    STATE_DEROGATION_ACTIVE: HVAC_MODE_HEAT,
+    STATE_DEROGATION_INACTIVE: HVAC_MODE_AUTO,
 }
 MAP_PRESET_MODES = {
     STATE_PRESET_AT_HOME: PRESET_HOME,
@@ -64,14 +62,8 @@ MAP_PRESET_MODES = {
     STATE_PRESET_MANUAL: PRESET_NONE,
     STATE_PRESET_SLEEPING_MODE: PRESET_NIGHT,
 }
-MAP_REVERSE_PRESET_MODES = {
-    PRESET_HOME: STATE_PRESET_AT_HOME,
-    PRESET_AWAY: STATE_PRESET_AWAY,
-    PRESET_FREEZE: STATE_PRESET_FREEZE,
-    PRESET_NONE: STATE_PRESET_MANUAL,
-    PRESET_NIGHT: STATE_PRESET_SLEEPING_MODE,
-}
-PRESET_TEMPERATURES = {
+MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
+MAP_PRESET_TEMPERATURES = {
     PRESET_HOME: "somfythermostat:AtHomeTargetTemperatureState",
     PRESET_AWAY: "somfythermostat:AwayModeTargetTemperatureState",
     PRESET_FREEZE: "somfythermostat:FreezeModeTargetTemperatureState",
@@ -91,7 +83,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
                 self._saved_target_temp = None
             else:
                 self._saved_target_temp = self.select_state(
-                    PRESET_TEMPERATURES[self.preset_mode]
+                    MAP_PRESET_TEMPERATURES[self.preset_mode]
                 )
         else:
             self._saved_target_temp = self.select_state(
@@ -168,7 +160,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return MAP_HVAC_MODES[self.select_state(ST_DEROGATION_TYPE_STATE)]
+        return MAP_HVAC_MODES[self.select_state(CORE_DEROGATION_ACTIVATION_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -223,7 +215,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
         if self.hvac_mode == HVAC_MODE_AUTO:
             if self.preset_mode == PRESET_NONE:
                 return None
-            return self.select_state(PRESET_TEMPERATURES[self.preset_mode])
+            return self.select_state(MAP_PRESET_TEMPERATURES[self.preset_mode])
         return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
