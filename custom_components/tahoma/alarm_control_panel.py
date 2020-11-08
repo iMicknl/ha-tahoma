@@ -96,11 +96,7 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
             state = self.select_state(
                 CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
             )
-            if (
-                state == STATE_DETECTED
-                # Only trigger alarm when MyFox alarm is armed
-                and self.select_state(MYFOX_ALARM_STATUS_STATE) != STATE_DISARMED
-            ):
+            if state == STATE_DETECTED:
                 return STATE_ALARM_TRIGGERED
             elif state == STATE_PENDING:
                 return STATE_ALARM_PENDING
@@ -155,6 +151,13 @@ class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
         await self.async_execute_command(
             self.select_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
         )
+
+        # MyFoxAlarmController doesn't reset alarm status on disarm
+        # https://github.com/iMicknl/ha-tahoma/issues/258
+        if self.device.widget == "MyFoxAlarmController":
+            await self.async_execute_command(
+                self.select_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
+            )
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
