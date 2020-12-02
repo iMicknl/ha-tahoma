@@ -43,7 +43,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         async with TahomaClient(username, password) as client:
             await client.login()
-            return self.async_create_entry(title=username, data=user_input)
+            return self.async_create_entry(
+                title=username,
+                data=user_input,
+                api_url="https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+            )
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step via config flow."""

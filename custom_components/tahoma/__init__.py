@@ -88,7 +88,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data.get(CONF_PASSWORD)
 
     session = async_get_clientsession(hass)
-    client = TahomaClient(username, password, session=session)
+    client = TahomaClient(
+        username,
+        password,
+        session=session,
+        api_url="https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    )
 
     try:
         await client.login()
