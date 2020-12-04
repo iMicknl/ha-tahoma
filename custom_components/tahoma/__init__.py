@@ -143,6 +143,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.widget,
             )
 
+        if device.widget == "HomekitStack":
+            homekit_code = None
+            if device.attributes:
+                for attribute in device.attributes:
+                    if attribute.name == "homekit:SetupCode":
+                        homekit_code = attribute.value
+
+            _LOGGER.info("HomeKit support detected with setup code %s.", homekit_code)
     for platform in entities:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
