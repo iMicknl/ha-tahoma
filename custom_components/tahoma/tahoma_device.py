@@ -11,7 +11,6 @@ from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
 
 ATTR_RSSI_LEVEL = "rssi_level"
-ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
@@ -20,8 +19,6 @@ CORE_MODEL_STATE = "core:ModelState"
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
-
-IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 
 STATE_AVAILABLE = "available"
 STATE_BATTERY_FULL = "full"
@@ -91,9 +88,6 @@ class TahomaDevice(CoordinatorEntity, Entity):
                 battery_state = 10
 
             attr[ATTR_BATTERY_LEVEL] = battery_state
-
-        if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
-            attr[ATTR_OBSTRUCTION_DETECTED] = True
 
         if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
