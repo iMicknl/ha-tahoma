@@ -33,6 +33,9 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
+HOMEKIT_SETUP_CODE = "homekit:SetupCode"
+HOMEKIT_STACK = "HomekitStack"
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.All(
@@ -143,7 +146,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.widget,
             )
 
-        if device.widget == "HomekitStack":
+        if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
 
     for platform in entities:
@@ -213,7 +216,7 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
 def print_homekit_setup_code(device: Device):
     """Retrieve and print HomeKit Setup Code."""
     if device.attributes:
-        homekit = device.attributes.get("homekit:SetupCode")
+        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
