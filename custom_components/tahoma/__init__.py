@@ -213,8 +213,7 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
 def print_homekit_setup_code(device: Device):
     """Retrieve and print HomeKit Setup Code."""
     if device.attributes:
-        for attribute in device.attributes:
-            if attribute.name == "homekit:SetupCode":
-                _LOGGER.info(
-                    "HomeKit support detected with setup code %s.", attribute.value
-                )
+        homekit = device.attributes.get("homekit:SetupCode")
+
+        if homekit:
+            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
