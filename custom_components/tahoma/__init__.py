@@ -17,7 +17,7 @@ from pyhoma.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command
+from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
@@ -144,13 +144,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
 
         if device.widget == "HomekitStack":
-            homekit_code = None
-            if device.attributes:
-                for attribute in device.attributes:
-                    if attribute.name == "homekit:SetupCode":
-                        homekit_code = attribute.value
+            print_homekit_setup_code(device)
 
-            _LOGGER.info("HomeKit support detected with setup code %s.", homekit_code)
     for platform in entities:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
@@ -213,3 +208,13 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         coordinator.original_update_interval = new_update_interval
 
         await coordinator.async_refresh()
+
+
+def print_homekit_setup_code(device: Device):
+    """Retrieve and print HomeKit Setup Code."""
+    if device.attributes:
+        for attribute in device.attributes:
+            if attribute.name == "homekit:SetupCode":
+                _LOGGER.info(
+                    "HomeKit support detected with setup code %s.", attribute.value
+                )
