@@ -216,9 +216,11 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
 
         await coordinator.async_refresh()
 
+
 async def is_stateless(devices: List[Device]) -> bool:
     """Return true if all the devices are stateless."""
     return all(device.states is None or len(device.states) == 0 for device in devices)
+
 
 def print_homekit_setup_code(device: Device):
     """Retrieve and print HomeKit Setup Code."""
