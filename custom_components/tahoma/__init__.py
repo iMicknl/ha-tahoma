@@ -140,7 +140,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
-                device.deviceurl
+                device.deviceurl,
             )
         elif (
             device.widget not in IGNORED_TAHOMA_TYPES
@@ -151,7 +151,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
-                device.deviceurl
+                device.deviceurl,
             )
 
         if device.widget == HOMEKIT_STACK:
