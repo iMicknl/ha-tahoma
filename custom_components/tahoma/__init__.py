@@ -135,15 +135,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
         if platform:
             entities[platform].append(device)
+            _LOGGER.debug(
+                "Added Device (%s - %s - %s - %s)",
+                device.controllable_name,
+                device.ui_class,
+                device.widget,
+                device.deviceurl,
+            )
         elif (
             device.widget not in IGNORED_TAHOMA_TYPES
             and device.ui_class not in IGNORED_TAHOMA_TYPES
         ):
             _LOGGER.debug(
-                "Unsupported TaHoma device detected (%s - %s - %s)",
+                "Unsupported TaHoma device detected (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
+                device.deviceurl,
             )
 
         if device.widget == HOMEKIT_STACK:
