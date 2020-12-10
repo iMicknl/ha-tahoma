@@ -104,3 +104,7 @@ If your device is listed in the device list, copy the firmware and create a [new
 ### Exclude devices
 
 The previous component had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this functionality is now offered by default in Home Assistant core. You can now disable entities via the interface.
+
+### Retrieve HomeKit code
+
+If your TaHoma box supports HomeKit natively, the integration will log the HomeKit code on start currently. This is currently an experimental implementation and in order to enable this, you need to have debug logging enabled.
