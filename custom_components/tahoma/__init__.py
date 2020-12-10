@@ -34,6 +34,9 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
+HOMEKIT_SETUP_CODE = "homekit:SetupCode"
+HOMEKIT_STACK = "HomekitStack"
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.All(
@@ -147,6 +150,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.widget,
             )
 
+        if device.widget == HOMEKIT_STACK:
+            print_homekit_setup_code(device)
+
     for platform in entities:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
@@ -210,7 +216,14 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
 
         await coordinator.async_refresh()
 
-
 async def is_stateless(devices: List[Device]) -> bool:
     """Return true if all the devices are stateless."""
     return all(device.states is None or len(device.states) == 0 for device in devices)
+
+def print_homekit_setup_code(device: Device):
+    """Retrieve and print HomeKit Setup Code."""
+    if device.attributes:
+        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
+
+        if homekit:
+            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)

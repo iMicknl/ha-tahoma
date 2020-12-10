@@ -3,6 +3,7 @@
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
+from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
@@ -13,6 +14,7 @@ TYPE = {
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,
     "StatelessExteriorHeating": StatelessExteriorHeating,
+    "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
 }
 
 SERVICE_CLIMATE_MY_POSITION = "set_climate_my_position"
