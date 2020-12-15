@@ -190,7 +190,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if "Horizontal" in self.device.widget:
+        if "Horizontal" in self.device.widget or self.device.widget == "AwningValance":
             position = kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
