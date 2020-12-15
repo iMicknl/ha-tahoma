@@ -157,7 +157,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         if position is None or position < 0 or position > 100:
             return None
 
-        if "Horizontal" not in self.device.widget:
+        if not self._reversed_position_device():
             position = 100 - position
 
         return position
@@ -177,8 +177,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
-        # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if "Horizontal" in self.device.widget:
+        if self._reversed_position_device():
             position = kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
@@ -189,8 +188,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Move the cover to a specific position with a low speed."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
-        # HorizontalAwning devices need a reversed position that can not be obtained via the API
-        if "Horizontal" in self.device.widget:
+        if self._reversed_position_device():
             position = kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
@@ -377,3 +375,9 @@ class TahomaCover(TahomaDevice, CoverEntity):
             supported_features |= SUPPORT_MY
 
         return supported_features
+
+    def _reversed_position_device(self):
+        """Return true if the device need a reversed position that can not be obtained via the API."""
+        return (
+            "Horizontal" in self.device.widget or self.device.widget == "AwningValance"
+        )
