@@ -1,11 +1,13 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
+from copy import deepcopy
 from datetime import timedelta
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
@@ -131,10 +133,27 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "update_listener": entry.add_update_listener(update_listener),
     }
 
+    def has_state(states, names):
+        for s in states:
+            if s.qualified_name in names:
+                return True
+        return False
+
     for device in tahoma_coordinator.data.values():
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
         if platform:
             entities[platform].append(device)
+            if device.definition.states and has_state(
+                device.definition.states,
+                [
+                    "core:BatteryState",
+                    "core:BatteryLevelState",
+                    "core:SensorDefectState",
+                ],
+            ):
+                new_device = deepcopy(device)
+                new_device.label = "BATTERY_" + new_device.label
+                entities[SENSOR].append(new_device)
             _LOGGER.debug(
                 "Added Device (%s - %s - %s - %s)",
                 device.controllable_name,

@@ -46,6 +46,8 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def name(self) -> str:
         """Return the name of the device."""
+        if hasattr(self, "_battery_sensor"):
+            return self.device.label + " battery sensor"
         return self.device.label
 
     @property
@@ -56,6 +58,8 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
+        if hasattr(self, "_battery_sensor"):
+            return self.device.deviceurl + "-battery"
         return self.device.deviceurl
 
     @property
@@ -109,10 +113,26 @@ class TahomaDevice(CoordinatorEntity, Entity):
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
         model = self.select_state(CORE_MODEL_STATE) or self.device.widget
 
+        name = self.name
+        device_url = self.device_url
+        if "#" in self.device_url:
+            device_url = self.device.deviceurl.split("#", 1)[0]
+            entity_registry = self.hass.data["entity_registry"]
+            name = next(
+                (
+                    entry.original_name
+                    for entity_id, entry in entity_registry.entities.items()
+                    if entry.unique_id == f"{device_url}#1"
+                ),
+                None,
+            )
+        if "battery sensor" in name:
+            name = name[: name.index(" battery sensor")]
+
         return {
-            "identifiers": {(DOMAIN, self.unique_id)},
+            "identifiers": {(DOMAIN, device_url)},
             "manufacturer": manufacturer,
-            "name": self.name,
+            "name": name,
             "model": model,
             "sw_version": self.device.controllable_name,
         }

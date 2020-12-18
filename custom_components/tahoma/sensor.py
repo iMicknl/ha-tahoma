@@ -4,6 +4,7 @@ from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
+    DEVICE_CLASS_BATTERY,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -59,6 +60,15 @@ ICON_PERIODIC_TABLE_CO2 = "mdi:periodic-table-co2"
 ICON_SOLAR_POWER = "mdi:solar-power"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
+STATE_AVAILABLE = "available"
+STATE_BATTERY_FULL = "full"
+STATE_BATTERY_NORMAL = "normal"
+STATE_BATTERY_LOW = "low"
+STATE_BATTERY_VERY_LOW = "verylow"
+STATE_DEAD = "dead"
+STATE_LOW_BATTERY = "lowBattery"
+STATE_NO_DEFECT = "noDefect"
+
 UNIT_LX = "lx"
 
 TAHOMA_SENSOR_DEVICE_CLASSES = {
@@ -107,10 +117,61 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
         for device in data["entities"].get(SENSOR)
-        if device.states
+        if device.states and "BATTERY_" not in device.label
+    ]
+
+    battery_entities = [
+        TahomaBatterySensor(device.deviceurl, coordinator)
+        for device in data["entities"].get(SENSOR)
+        if device.states and "BATTERY_" in device.label
     ]
 
     async_add_entities(entities)
+    async_add_entities(battery_entities)
+
+
+class TahomaBatterySensor(TahomaDevice, Entity):
+    """Representation of a Tahoma device battery sensor."""
+
+    def __init__(self, device_url, coordinator):
+        """Initialize the sensor."""
+        self._battery_sensor = True
+        super().__init__(device_url, coordinator)
+
+    @property
+    def state(self):
+        """Return the value of the sensor."""
+        state = self.select_state(
+            "core:BatteryState",
+            "core:BatteryLevelState",
+            "core:SensorDefectState",
+        )
+
+        if not state:
+            return None
+        elif isinstance(state, (int, float)):
+            return int(state)
+        elif state == STATE_BATTERY_FULL or state == STATE_NO_DEFECT:
+            state = 100
+        elif state == STATE_BATTERY_NORMAL:
+            state = 75
+        elif state == STATE_BATTERY_LOW or state == STATE_LOW_BATTERY:
+            state = 25
+        elif state == STATE_BATTERY_VERY_LOW:
+            state = 10
+        elif state == STATE_DEAD:
+            state = 0
+        return state
+
+    @property
+    def device_class(self) -> Optional[str]:
+        """Return the device class of this entity if any."""
+        return DEVICE_CLASS_BATTERY
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return PERCENTAGE
 
 
 class TahomaSensor(TahomaDevice, Entity):
