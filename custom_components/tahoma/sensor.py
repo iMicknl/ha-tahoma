@@ -107,6 +107,14 @@ UNITS = {
     "core:FossilEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
     "meters_seconds": SPEED_METERS_PER_SECOND,
 }
+BATTERY_STATES = {
+    STATE_BATTERY_FULL: 100,
+    STATE_NO_DEFECT: 100,
+    STATE_BATTERY_NORMAL: 75,
+    STATE_BATTERY_LOW: 25,
+    STATE_LOW_BATTERY: 25,
+    STATE_DEAD: 0,
+}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -126,11 +134,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.states and "BATTERY_" in device.label
     ]
 
-    async_add_entities(entities)
-    async_add_entities(battery_entities)
+    async_add_entities([entities, battery_entities])
 
 
-class TahomaBatterySensor(TahomaDevice, Entity):
+class TahomaBatterySensor(TahomaDevice):
     """Representation of a Tahoma device battery sensor."""
 
     def __init__(self, device_url, coordinator):
@@ -149,19 +156,9 @@ class TahomaBatterySensor(TahomaDevice, Entity):
 
         if not state:
             return None
-        elif isinstance(state, (int, float)):
+        if isinstance(state, (int, float)):
             return int(state)
-        elif state == STATE_BATTERY_FULL or state == STATE_NO_DEFECT:
-            state = 100
-        elif state == STATE_BATTERY_NORMAL:
-            state = 75
-        elif state == STATE_BATTERY_LOW or state == STATE_LOW_BATTERY:
-            state = 25
-        elif state == STATE_BATTERY_VERY_LOW:
-            state = 10
-        elif state == STATE_DEAD:
-            state = 0
-        return state
+        return BATTERY_STATES[state]
 
     @property
     def device_class(self) -> Optional[str]:
