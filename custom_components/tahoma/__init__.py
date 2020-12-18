@@ -10,7 +10,8 @@ from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import aiohttp_client, config_validation as cv
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
@@ -86,7 +87,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    session = aiohttp_client.async_create_clientsession(hass)
+    session = async_get_clientsession(hass)
     client = TahomaClient(username, password, session=session)
 
     try:
