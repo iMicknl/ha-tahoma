@@ -134,10 +134,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     }
 
     def has_state(states, names):
-        for s in states:
-            if s.qualified_name in names:
-                return True
-        return False
+        return any(state.qualified_name in names for state in states)
 
     for device in tahoma_coordinator.data.values():
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
