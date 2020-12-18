@@ -149,7 +149,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 ],
             ):
                 new_device = deepcopy(device)
-                new_device.label = "BATTERY_" + new_device.label
+                new_device.label = f"BATTERY_{new_device.label}"
                 entities[SENSOR].append(new_device)
             _LOGGER.debug(
                 "Added Device (%s - %s - %s - %s)",
