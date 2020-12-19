@@ -135,3 +135,4 @@ dmypy.json
 /Config/
 
 **/.DS_Store
+.vscode/settings.json
