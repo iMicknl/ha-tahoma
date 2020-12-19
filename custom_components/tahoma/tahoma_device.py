@@ -2,7 +2,6 @@
 import logging
 from typing import Any, Dict, Optional
 
-from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Command, Device
@@ -46,8 +45,6 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def name(self) -> str:
         """Return the name of the device."""
-        if hasattr(self, "_battery_sensor"):
-            return self.device.label + " battery sensor"
         return self.device.label
 
     @property
@@ -58,8 +55,6 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        if hasattr(self, "_battery_sensor"):
-            return self.device.deviceurl + "-battery"
         return self.device.deviceurl
 
     @property
@@ -78,23 +73,6 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
         if self.has_state(CORE_RSSI_LEVEL_STATE):
             attr[ATTR_RSSI_LEVEL] = self.select_state(CORE_RSSI_LEVEL_STATE)
-
-        if self.has_state(CORE_BATTERY_STATE):
-            battery_state = self.select_state(CORE_BATTERY_STATE)
-
-            if battery_state == STATE_BATTERY_FULL:
-                battery_state = 100
-            elif battery_state == STATE_BATTERY_NORMAL:
-                battery_state = 75
-            elif battery_state == STATE_BATTERY_LOW:
-                battery_state = 25
-            elif battery_state == STATE_BATTERY_VERY_LOW:
-                battery_state = 10
-
-            attr[ATTR_BATTERY_LEVEL] = battery_state
-
-        if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
-            attr[ATTR_BATTERY_LEVEL] = 0
 
         if self.device.attributes:
             for attribute in self.device.attributes:
@@ -115,8 +93,11 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
         name = self.name
         device_url = self.device_url
+        # Some devices, such as the Smart Thermostat have several devices in one physical device,
+        # with same device URL, terminated by '#' and a number.
+        # We use the base url as a device unique id.
         if "#" in self.device_url:
-            device_url = self.device.deviceurl.split("#", 1)[0]
+            device_url, _ = self.device.deviceurl.split("#")
             entity_registry = self.hass.data["entity_registry"]
             name = next(
                 (
@@ -126,8 +107,6 @@ class TahomaDevice(CoordinatorEntity, Entity):
                 ),
                 None,
             )
-        if "battery sensor" in name:
-            name = name[: name.index(" battery sensor")]
 
         return {
             "identifiers": {(DOMAIN, device_url)},

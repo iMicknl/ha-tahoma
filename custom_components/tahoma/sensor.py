@@ -1,6 +1,6 @@
 """Support for TaHoma sensors."""
 import logging
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
@@ -169,6 +169,23 @@ class TahomaBatterySensor(TahomaDevice):
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
         return PERCENTAGE
+
+    @property
+    def name(self) -> str:
+        """Return the name of the device."""
+        return f"{self.device.label} battery sensor"
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique ID."""
+        return f"{self.device.deviceurl}-battery"
+
+    @property
+    def device_info(self) -> Dict[str, Any]:
+        """Return device registry information for this entity."""
+        info = super().device_info
+        info["name"] = self.device.label
+        return info
 
 
 class TahomaSensor(TahomaDevice, Entity):
