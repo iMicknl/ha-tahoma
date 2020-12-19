@@ -134,7 +134,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if device.states and "BATTERY_" in device.label
     ]
 
-    async_add_entities([entities, battery_entities])
+    async_add_entities(entities + battery_entities)
 
 
 class TahomaBatterySensor(TahomaDevice):
