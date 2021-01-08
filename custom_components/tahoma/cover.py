@@ -347,6 +347,7 @@ class TahomaCover(TahomaDevice, CoverEntity):
         """Return the device state attributes."""
         attr = super().device_state_attributes or {}
 
+        # Obstruction Detected attribute is used by HomeKit
         if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
             attr[ATTR_OBSTRUCTION_DETECTED] = True
 
