@@ -1,8 +1,9 @@
 """Support for TaHoma switches."""
 import logging
 
-from homeassistant.components.water_heater import (  # SUPPORT_AWAY_MODE,; SUPPORT_OPERATION_MODE,; SUPPORT_TARGET_TEMPERATURE,
+from homeassistant.components.water_heater import (  # ATTR_TEMPERATURE,; STATE_ON,; STATE_OFF,; SUPPORT_AWAY_MODE,; SUPPORT_OPERATION_MODE,; SUPPORT_TARGET_TEMPERATURE,; SUPPORT_AWAY_MODE,; SUPPORT_OPERATION_MODE,; SUPPORT_TARGET_TEMPERATURE,
     DOMAIN as WATER_HEATER,
+    STATE_ECO,
     WaterHeaterEntity,
 )
 
@@ -31,5 +32,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities(entities)
 
 
+# DomesticHotWaterProduction
 class TahomaWaterHeater(TahomaDevice, WaterHeaterEntity):
     """Representation a TaHoma Water Heater."""
+
+    MAP_HEATING_MODES = {
+        "manualEcoActive": STATE_ECO,
+        "manualEcoInactive": "manuel",
+        "autoMode": "auto",
+    }
+    MAP_REVERSE_HEATING_MODES = {v: k for k, v in MAP_HEATING_MODES.items()}
