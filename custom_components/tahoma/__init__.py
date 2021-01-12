@@ -195,8 +195,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id), (DOMAIN, gateway.placeoid)},
-            manufacturer=gateway.sub_type.name,
-            name=gateway.type.name,
+            model=(gateway.sub_type.name).replace("_", " ").capitalize(),
+            manufacturer="Somfy",
+            name=(gateway.type.name).replace("_", " ").capitalize(),
             sw_version=gateway.connectivity.protocol_version,
         )
 
