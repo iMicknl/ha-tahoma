@@ -24,6 +24,7 @@ import voluptuous as vol
 from .const import (
     CONF_HUB,
     CONF_UPDATE_INTERVAL,
+    DEFAULT_ENDPOINT,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_TAHOMA_TYPES,
@@ -88,11 +89,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
-
-    if entry.data.get(CONF_HUB):
-        endpoint = SUPPORTED_ENDPOINTS[entry.data.get(CONF_HUB)]
-    else:
-        endpoint = None
+    hub = entry.data.get(CONF_HUB) or DEFAULT_ENDPOINT
+    endpoint = SUPPORTED_ENDPOINTS[hub]
 
     session = async_get_clientsession(hass)
     client = TahomaClient(

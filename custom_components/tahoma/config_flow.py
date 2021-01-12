@@ -17,6 +17,7 @@ import voluptuous as vol
 from .const import (
     CONF_HUB,
     CONF_UPDATE_INTERVAL,
+    DEFAULT_ENDPOINT,
     DEFAULT_UPDATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
     SUPPORTED_ENDPOINTS,
@@ -53,10 +54,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
 
-        if user_input.get(CONF_HUB):
-            endpoint = SUPPORTED_ENDPOINTS[user_input.get(CONF_HUB)]
-        else:
-            endpoint = None
+        hub = user_input.get(CONF_HUB) or DEFAULT_ENDPOINT
+        endpoint = SUPPORTED_ENDPOINTS[hub]
 
         async with TahomaClient(username, password, api_url=endpoint) as client:
             await client.login()

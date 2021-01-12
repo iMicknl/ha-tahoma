@@ -11,6 +11,7 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 CONF_HUB = "hub"
 DOMAIN = "tahoma"
 
+DEFAULT_ENDPOINT = "Somfy TaHoma"
 SUPPORTED_ENDPOINTS = {
     "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
