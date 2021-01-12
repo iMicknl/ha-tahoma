@@ -27,6 +27,8 @@ from .const import (
     DOMAIN,
     IGNORED_TAHOMA_TYPES,
     TAHOMA_TYPES,
+    SUPPORTED_ENDPOINTS,
+    CONF_HUB
 )
 from .coordinator import TahomaDataUpdateCoordinator
 
@@ -87,12 +89,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
+    if entry.data.get(CONF_HUB):
+        endpoint = SUPPORTED_ENDPOINTS[entry.data.get(CONF_HUB)] # TODO Handle cases where endpoint is None
+    else:
+        endpoint = None
+
     session = async_get_clientsession(hass)
     client = TahomaClient(
         username,
         password,
         session=session,
-        api_url="https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+        api_url=endpoint,
     )
 
     try:

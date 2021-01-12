@@ -14,13 +14,17 @@ from pyhoma.exceptions import (
 )
 import voluptuous as vol
 
-from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
+from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL, SUPPORTED_ENDPOINTS, CONF_HUB
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
 DATA_SCHEMA = vol.Schema(
-    {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
+    {
+        vol.Required(CONF_USERNAME): str,
+        vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_HUB, default="Somfy TaHoma"): vol.In(SUPPORTED_ENDPOINTS.keys())
+    }
 )
 
 
@@ -40,8 +44,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Validate user credentials."""
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
+        endpoint = SUPPORTED_ENDPOINTS[user_input.get(CONF_HUB)] # TODO Handle cases where endpoint is None
 
-        async with TahomaClient(username, password, api_url="https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/") as client:
+        async with TahomaClient(username, password, api_url=endpoint) as client:
             await client.login()
             return self.async_create_entry(
                 title=username,
