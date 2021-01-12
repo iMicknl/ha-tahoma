@@ -30,9 +30,7 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_HUB, default="Somfy TaHoma"): vol.In(
-            SUPPORTED_ENDPOINTS.keys()
-        ),
+        vol.Required(CONF_HUB, default=DEFAULT_HUB): vol.In(SUPPORTED_ENDPOINTS.keys()),
     }
 )
 
