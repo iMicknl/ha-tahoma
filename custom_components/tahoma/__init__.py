@@ -10,14 +10,15 @@ from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import aiohttp_client, config_validation as cv
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command
+from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
@@ -32,6 +33,9 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
+
+HOMEKIT_SETUP_CODE = "homekit:SetupCode"
+HOMEKIT_STACK = "HomekitStack"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -81,7 +85,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    session = aiohttp_client.async_create_clientsession(hass)
+    session = async_get_clientsession(hass)
     client = TahomaClient(username, password, session=session)
 
     try:
@@ -138,16 +142,27 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
         if platform:
             entities[platform].append(device)
+            _LOGGER.debug(
+                "Added Device (%s - %s - %s - %s)",
+                device.controllable_name,
+                device.ui_class,
+                device.widget,
+                device.deviceurl,
+            )
         elif (
             device.widget not in IGNORED_TAHOMA_TYPES
             and device.ui_class not in IGNORED_TAHOMA_TYPES
         ):
             _LOGGER.debug(
-                "Unsupported TaHoma device detected (%s - %s - %s)",
+                "Unsupported TaHoma device detected (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
+                device.deviceurl,
             )
+
+        if device.widget == HOMEKIT_STACK:
+            print_homekit_setup_code(device)
 
     for platform in entities:
         hass.async_create_task(
@@ -211,3 +226,12 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         coordinator.original_update_interval = new_update_interval
 
         await coordinator.async_refresh()
+
+
+def print_homekit_setup_code(device: Device):
+    """Retrieve and print HomeKit Setup Code."""
+    if device.attributes:
+        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
+
+        if homekit:
+            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)

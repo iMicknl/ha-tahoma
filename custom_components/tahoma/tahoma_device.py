@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Command, Device
 
 from .const import DOMAIN
@@ -29,23 +30,18 @@ STATE_DEAD = "dead"
 _LOGGER = logging.getLogger(__name__)
 
 
-class TahomaDevice(Entity):
+class TahomaDevice(CoordinatorEntity, Entity):
     """Representation of a TaHoma device entity."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Initialize the device."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self.device_url = device_url
 
     @property
     def device(self) -> Device:
         """Return TaHoma device linked to this entity."""
         return self.coordinator.data[self.device_url]
-
-    @property
-    def should_poll(self) -> bool:
-        """No need to poll. Coordinator notifies entity of updates."""
-        return False
 
     @property
     def name(self) -> str:
@@ -120,16 +116,6 @@ class TahomaDevice(Entity):
             "model": model,
             "sw_version": self.device.controllable_name,
         }
-
-    async def async_update(self) -> None:
-        """Update a Tahoma entity."""
-        await self.coordinator.async_request_refresh()
-
-    async def async_added_to_hass(self) -> None:
-        """Connect to dispatcher listening for entity data notifications."""
-        self.async_on_remove(
-            self.coordinator.async_add_listener(self.async_write_ha_state)
-        )
 
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
