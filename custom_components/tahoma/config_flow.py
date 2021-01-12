@@ -52,9 +52,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Validate user credentials."""
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
-        endpoint = SUPPORTED_ENDPOINTS[
-            user_input.get(CONF_HUB)
-        ]  # TODO Handle cases where endpoint is None
+
+        if user_input.get(CONF_HUB):
+            endpoint = SUPPORTED_ENDPOINTS[user_input.get(CONF_HUB)]
+        else:
+            endpoint = None
 
         async with TahomaClient(username, password, api_url=endpoint) as client:
             await client.login()

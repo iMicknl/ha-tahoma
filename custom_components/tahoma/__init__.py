@@ -90,9 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data.get(CONF_PASSWORD)
 
     if entry.data.get(CONF_HUB):
-        endpoint = SUPPORTED_ENDPOINTS[
-            entry.data.get(CONF_HUB)
-        ]  # TODO Handle cases where endpoint is None
+        endpoint = SUPPORTED_ENDPOINTS[entry.data.get(CONF_HUB)]
     else:
         endpoint = None
 
@@ -151,7 +149,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if platform:
             entities[platform].append(device)
             _LOGGER.debug(
-                "Added Device (%s - %s - %s - %s)",
+                "Added TaHoma device (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,

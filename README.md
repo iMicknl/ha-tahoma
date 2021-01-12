@@ -8,11 +8,13 @@
 
 This component builds upon the work of [@philklei](https://github.com/philklei) and is an updated version of his [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of merging into core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test [all changes](./CHANGELOG.md).
 
-## Supported Somfy gateways
+## Supported (Somfy) hubs
 
 - Somfy TaHoma Box
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
+- Cozytouch
+- Rexel
 
 ## Installation
 

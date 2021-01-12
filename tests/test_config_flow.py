@@ -39,6 +39,7 @@ async def test_form(hass):
     assert result2["data"] == {
         "username": TEST_EMAIL,
         "password": TEST_PASSWORD,
+        "hub": DEFAULT_HUB
     }
 
     await hass.async_block_till_done()
@@ -137,7 +138,7 @@ async def test_import(hass):
         result = await hass.config_entries.flow.async_init(
             config_flow.DOMAIN,
             context={"source": config_entries.SOURCE_IMPORT},
-            data={"username": TEST_EMAIL, "password": TEST_PASSWORD},
+            data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": DEFAULT_HUB},
         )
         assert result["type"] == "create_entry"
         assert result["title"] == TEST_EMAIL
