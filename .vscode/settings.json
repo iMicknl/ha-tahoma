@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "~/Projects/personal-projects/home-assistant/core"
+    ]
+}

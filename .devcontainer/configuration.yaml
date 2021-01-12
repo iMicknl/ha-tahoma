@@ -4,3 +4,5 @@ logger:
   default: error
   logs:
     custom_components.tahoma: debug
+
+demo:

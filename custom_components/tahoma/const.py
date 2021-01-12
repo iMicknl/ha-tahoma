@@ -26,7 +26,6 @@ TAHOMA_TYPES = {
     "AirSensor": SENSOR,
     "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "AtlanticPassAPCDHW": CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
     "ConsumptionSensor": SENSOR,
@@ -74,7 +73,7 @@ TAHOMA_TYPES = {
     "Window": COVER,
     "WindowHandle": BINARY_SENSOR,
     "DomesticHotWaterProduction": WATER_HEATER,
-    # "AtlanticPassAPCDHW": WATER_HEATER, # Mapped to Climate already.
+    "AtlanticPassAPCDHW": WATER_HEATER,  # widgetName, uiClass is WaterHeatingSystem (not supported)
 }
 
 CORE_ON_OFF_STATE = "core:OnOffState"
