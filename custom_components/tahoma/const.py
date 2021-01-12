@@ -20,7 +20,7 @@ SUPPORTED_ENDPOINTS = {
     "Rexel": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
 }
 
-MIN_UPDATE_INTERVAL = 1
+MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
 IGNORED_TAHOMA_TYPES = [
