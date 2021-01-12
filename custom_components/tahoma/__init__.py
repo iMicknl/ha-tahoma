@@ -10,7 +10,7 @@ from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
@@ -94,6 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.login()
         devices = await client.get_devices()
         scenarios = await client.get_scenarios()
+        gateways = await client.get_gateways()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
         return False
@@ -187,6 +188,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             }
         ),
     )
+
+    device_registry = await dr.async_get_registry(hass)
+
+    for gateway in gateways:
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, gateway.id), (DOMAIN, gateway.placeoid)},
+            manufacturer=gateway.sub_type.name,
+            name=gateway.type.name,
+            sw_version=gateway.connectivity.protocol_version,
+        )
 
     return True
 
