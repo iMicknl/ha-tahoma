@@ -7,6 +7,7 @@ from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
 DOMAIN = "tahoma"
 
@@ -72,6 +73,8 @@ TAHOMA_TYPES = {
     "WindSensor": SENSOR,
     "Window": COVER,
     "WindowHandle": BINARY_SENSOR,
+    "DomesticHotWaterProduction": WATER_HEATER,
+    # "AtlanticPassAPCDHW": WATER_HEATER, # Mapped to Climate already.
 }
 
 CORE_ON_OFF_STATE = "core:OnOffState"
