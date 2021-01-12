@@ -22,13 +22,13 @@ from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
+    CONF_HUB,
     CONF_UPDATE_INTERVAL,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_TAHOMA_TYPES,
-    TAHOMA_TYPES,
     SUPPORTED_ENDPOINTS,
-    CONF_HUB
+    TAHOMA_TYPES,
 )
 from .coordinator import TahomaDataUpdateCoordinator
 
@@ -90,7 +90,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data.get(CONF_PASSWORD)
 
     if entry.data.get(CONF_HUB):
-        endpoint = SUPPORTED_ENDPOINTS[entry.data.get(CONF_HUB)] # TODO Handle cases where endpoint is None
+        endpoint = SUPPORTED_ENDPOINTS[
+            entry.data.get(CONF_HUB)
+        ]  # TODO Handle cases where endpoint is None
     else:
         endpoint = None
 
