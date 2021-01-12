@@ -10,7 +10,7 @@ from homeassistant.components.switch import DOMAIN as SWITCH
 
 DOMAIN = "tahoma"
 
-MIN_UPDATE_INTERVAL = 1
+MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
 IGNORED_TAHOMA_TYPES = [
