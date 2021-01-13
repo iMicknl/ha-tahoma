@@ -1,1 +1,5 @@
-pre-commit==2.5.0
+aiohttp~=3.7.2
+homeassistant~=0.116.4
+pre-commit==2.7.1
+pyhoma~=0.5.1
+voluptuous~=0.12.0
