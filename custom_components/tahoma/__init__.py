@@ -7,7 +7,7 @@ import logging
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
@@ -22,10 +22,13 @@ from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
+    CONF_HUB,
     CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_TAHOMA_TYPES,
+    SUPPORTED_ENDPOINTS,
     TAHOMA_TYPES,
 )
 from .coordinator import TahomaDataUpdateCoordinator
@@ -72,7 +75,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
     hass.async_create_task(
         hass.config_entries.flow.async_init(
             DOMAIN,
-            context={"source": SOURCE_IMPORT},
+            context={CONF_SOURCE: SOURCE_IMPORT},
             data=configuration,
         )
     )
@@ -86,9 +89,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    hub = entry.data.get(CONF_HUB) or DEFAULT_HUB
+    endpoint = SUPPORTED_ENDPOINTS[hub]
 
     session = async_get_clientsession(hass)
-    client = TahomaClient(username, password, session=session)
+    client = TahomaClient(
+        username,
+        password,
+        session=session,
+        api_url=endpoint,
+    )
 
     try:
         await client.login()
@@ -137,7 +147,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if platform:
             entities[platform].append(device)
             _LOGGER.debug(
-                "Added Device (%s - %s - %s - %s)",
+                "Added TaHoma device (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,

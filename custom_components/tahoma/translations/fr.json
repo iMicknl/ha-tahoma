@@ -5,7 +5,8 @@
         "description": "Entrez vos identifiants TaHoma.",
         "data": {
           "username": "Courriel",
-          "password": "Mot de passe"
+          "password": "Mot de passe",
+          "hub": "Hub"
         }
       }
     },

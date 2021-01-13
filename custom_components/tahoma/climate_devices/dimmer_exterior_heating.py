@@ -10,6 +10,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
+from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,9 +24,9 @@ CORE_LEVEL_STATE = "core:LevelState"
 class DimmerExteriorHeating(TahomaDevice, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
-    def __init__(self, tahoma_device, controller):
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Init method."""
-        super().__init__(tahoma_device, controller)
+        super().__init__(device_url, coordinator)
         self._saved_level = 100 - self.select_state(CORE_LEVEL_STATE)
 
     @property
