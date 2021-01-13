@@ -14,13 +14,24 @@ from pyhoma.exceptions import (
 )
 import voluptuous as vol
 
-from .const import CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
+from .const import (
+    CONF_HUB,
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
+    DEFAULT_UPDATE_INTERVAL,
+    MIN_UPDATE_INTERVAL,
+    SUPPORTED_ENDPOINTS,
+)
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
 DATA_SCHEMA = vol.Schema(
-    {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
+    {
+        vol.Required(CONF_USERNAME): str,
+        vol.Required(CONF_PASSWORD): str,
+        vol.Required(CONF_HUB, default=DEFAULT_HUB): vol.In(SUPPORTED_ENDPOINTS.keys()),
+    }
 )
 
 
@@ -41,9 +52,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
 
-        async with TahomaClient(username, password) as client:
+        hub = user_input.get(CONF_HUB) or DEFAULT_HUB
+        endpoint = SUPPORTED_ENDPOINTS[hub]
+
+        async with TahomaClient(username, password, api_url=endpoint) as client:
             await client.login()
-            return self.async_create_entry(title=username, data=user_input)
+            return self.async_create_entry(
+                title=username,
+                data=user_input,
+            )
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step via config flow."""
