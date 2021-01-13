@@ -25,7 +25,13 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_device import (
+    STATE_BATTERY_FULL,
+    STATE_BATTERY_LOW,
+    STATE_BATTERY_NORMAL,
+    STATE_DEAD,
+    TahomaDevice,
+)
 
 try:  # TODO: Remove for core PR. This ensures compatibility with <0.115
     from homeassistant.const import PERCENTAGE
@@ -61,11 +67,6 @@ ICON_SOLAR_POWER = "mdi:solar-power"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
 STATE_AVAILABLE = "available"
-STATE_BATTERY_FULL = "full"
-STATE_BATTERY_NORMAL = "normal"
-STATE_BATTERY_LOW = "low"
-STATE_BATTERY_VERY_LOW = "verylow"
-STATE_DEAD = "dead"
 STATE_LOW_BATTERY = "lowBattery"
 STATE_NO_DEFECT = "noDefect"
 
@@ -125,13 +126,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
         for device in data["entities"].get(SENSOR)
-        if device.states and "BATTERY_" not in device.label
+        if device.states and " battery" not in device.label
     ]
 
     battery_entities = [
         TahomaBatterySensor(device.deviceurl, coordinator)
         for device in data["entities"].get(SENSOR)
-        if device.states and "BATTERY_" in device.label
+        if device.states and " battery" in device.label
     ]
 
     async_add_entities(entities + battery_entities)
@@ -173,7 +174,7 @@ class TahomaBatterySensor(TahomaDevice):
     @property
     def name(self) -> str:
         """Return the name of the device."""
-        return f"{self.device.label} battery sensor"
+        return f"{self.device.label} battery"
 
     @property
     def unique_id(self) -> str:
