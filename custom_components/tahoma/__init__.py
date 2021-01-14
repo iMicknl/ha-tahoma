@@ -197,7 +197,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             identifiers={(DOMAIN, gateway.id)},
             model=beautify_name(gateway.sub_type.name),
             manufacturer="Somfy",
-            name=beautify_name(gateway.type.name),
+            name=f"{beautify_name(gateway.type.name)} hub",
             sw_version=gateway.connectivity.protocol_version,
         )
 
