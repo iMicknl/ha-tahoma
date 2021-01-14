@@ -1,19 +1,20 @@
 """Support for TaHoma water heater devices."""
-
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
-
-from .water_heater_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .const import DOMAIN
+from .water_heater_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
+from .water_heater_devices.domestic_hot_water_production import (
+    DomesticHotWaterProduction,
+)
 
 TYPE = {
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
+    "DomesticHotWaterProduction": DomesticHotWaterProduction,
 }
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the TaHoma water heater from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
