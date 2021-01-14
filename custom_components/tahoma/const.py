@@ -9,9 +9,19 @@ from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
+CONF_HUB = "hub"
 DOMAIN = "tahoma"
 
-MIN_UPDATE_INTERVAL = 1
+DEFAULT_HUB = "Somfy TaHoma"
+SUPPORTED_ENDPOINTS = {
+    "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy Connexoon IO": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy Connexoon RTS": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Rexel": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+}
+
+MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
 IGNORED_TAHOMA_TYPES = [
