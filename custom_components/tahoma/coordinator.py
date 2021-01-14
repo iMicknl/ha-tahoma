@@ -3,7 +3,7 @@ from datetime import timedelta
 import logging
 from typing import Dict, List, Optional, Union
 
-from aiohttp import ClientError, ServerDisconnectedError
+from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -70,7 +70,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("too_many_requests") from exception
         except MaintenanceException as exception:
             raise UpdateFailed("server_in_maintenance") from exception
-        except (TimeoutError, ClientError) as exception:
+        except TimeoutError as exception:
             raise UpdateFailed("cannot_connect") from exception
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
