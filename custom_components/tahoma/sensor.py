@@ -17,6 +17,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
+    UNIT_PERCENTAGE as PERCENTAGE,
     VOLT,
     VOLUME_CUBIC_METERS,
     VOLUME_LITERS,
@@ -25,12 +26,6 @@ from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
-
-try:  # TODO: Remove for core PR. This ensures compatibility with <0.115
-    from homeassistant.const import PERCENTAGE
-except Exception:  # pylint: disable=broad-except
-    from homeassistant.const import UNIT_PERCENTAGE as PERCENTAGE
-
 
 _LOGGER = logging.getLogger(__name__)
 
