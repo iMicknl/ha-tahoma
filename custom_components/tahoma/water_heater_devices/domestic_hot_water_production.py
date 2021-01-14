@@ -91,7 +91,9 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.select_command(COMMAND_SET_TARGET_TEMPERATURE, target_temperature)
+        await self.async_execute_command(
+            COMMAND_SET_TARGET_TEMPERATURE, target_temperature
+        )
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
@@ -113,7 +115,7 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
-        await self.select_command(
+        await self.async_execute_command(
             COMMAND_SET_CURRENT_OPERATING_MODE,
             {
                 "relaunch": STATE_OFF,
@@ -123,7 +125,7 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
-        await self.select_command(
+        await self.async_execute_command(
             COMMAND_SET_CURRENT_OPERATING_MODE,
             {
                 "relaunch": STATE_OFF,
