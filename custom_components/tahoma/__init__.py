@@ -183,7 +183,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             "Home Assistant Service",
         )
 
-    hass.services.async_register(
+    hass.services.async_register_admin_service(
         DOMAIN,
         SERVICE_EXECUTE_COMMAND,
         handle_execute_command,
