@@ -105,10 +105,30 @@ class TahomaDevice(CoordinatorEntity, Entity):
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
         model = self.select_state(CORE_MODEL_STATE) or self.device.widget
 
+        name = self.name
+        device_url = self.device_url
+
+        # Some devices, such as the Smart Thermostat have several devices in one physical device,
+        # with same device url, terminated by '#' and a number.
+        # We use the base device url as the device identifier.
+        if "#" in self.device_url:
+            device_url, _ = self.device.deviceurl.split("#")
+
+            if not self.device_url.endswith("#1"):
+                entity_registry = self.hass.data["entity_registry"]
+                name = next(
+                    (
+                        entry.original_name
+                        for entity_id, entry in entity_registry.entities.items()
+                        if entry.unique_id == f"{device_url}#1"
+                    ),
+                    None,
+                )
+
         return {
-            "identifiers": {(DOMAIN, self.unique_id)},
+            "identifiers": {(DOMAIN, device_url)},
             "manufacturer": manufacturer,
-            "name": self.name,
+            "name": name,
             "model": model,
             "sw_version": self.device.controllable_name,
         }
