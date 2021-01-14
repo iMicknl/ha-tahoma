@@ -195,9 +195,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=(gateway.sub_type.name).replace("_", " ").capitalize(),
+            model=beautify_name(gateway.sub_type.name),
             manufacturer="Somfy",
-            name=(gateway.type.name).replace("_", " ").capitalize(),
+            name=beautify_name(gateway.type.name),
             sw_version=gateway.connectivity.protocol_version,
         )
 
@@ -242,3 +242,8 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+def beautify_name(name: str):
+    """Return human readable string."""
+    return name.replace("_", " ").capitalize()
