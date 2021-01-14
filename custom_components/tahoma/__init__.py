@@ -192,12 +192,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     device_registry = await dr.async_get_registry(hass)
 
     for gateway in gateways:
+        gateway_model = (
+            beautify_name(gateway.sub_type.name) if gateway.sub_type else None
+        )
+        gateway_name = (
+            f"{beautify_name(gateway.type.name)} hub" if gateway.type else None
+        )
+
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=beautify_name(gateway.sub_type.name),
+            model=gateway_model,
             manufacturer="Somfy",
-            name=f"{beautify_name(gateway.type.name)} hub",
+            name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
         )
 
