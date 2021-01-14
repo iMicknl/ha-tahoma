@@ -246,4 +246,4 @@ def print_homekit_setup_code(device: Device):
 
 def beautify_name(name: str):
     """Return human readable string."""
-    return name.replace("_", " ").capitalize()
+    return name.replace("_", " ").title()
