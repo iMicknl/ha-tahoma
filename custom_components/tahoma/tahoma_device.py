@@ -116,7 +116,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
             "name": self.name,
             "model": model,
             "sw_version": self.device.controllable_name,
-            "via_hub": self.get_gateway_id(self.device_url),
+            "via_device": self.get_gateway_id(self.device_url),
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
