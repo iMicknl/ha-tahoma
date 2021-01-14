@@ -6,29 +6,40 @@ from homeassistant.components.water_heater import (
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, TEMP_CELSIUS
 
 from ..tahoma_device import TahomaDevice
 
 CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
 CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeState"
+CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 
 IO_DHW_MODE_STATE = "io:DHWModeState"
+IO_MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
 
 STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
+STATE_ABSENCE = "absence"
+STATE_RELAUNCH = "relaunch"
 
+COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
+COMMAND_SET_DHW_MODE = "setDHWMode"
+COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
+
+MODE_AUTO = "autoMode"
+MODE_MANUAL_ECO_ACTIVE = "manualEcoActive"
+MODE_MANUAL_ECO_INACTIVE = "manualEcoInactive"
 
 MAP_OPERATION_MODES = {
-    "manualEcoActive": STATE_ECO,
-    "manualEcoInactive": STATE_MANUAL,
-    "autoMode": STATE_AUTO,
+    MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
+    MODE_MANUAL_ECO_INACTIVE: STATE_MANUAL,
+    MODE_AUTO: STATE_AUTO,
 }
 
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
 
 
-# https://github.com/Cyr-ius/hass-cozytouch/issues/12
 class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
@@ -60,12 +71,12 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.select_state("io:MiddleWaterTemperatureState")
+        return self.select_state(IO_MIDDLE_WATER_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state("core:TargetTemperatureState")  # TODO Validate
+        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)  # TODO Validate
 
     @property
     def target_temperature_high(self):
@@ -80,14 +91,12 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.select_command("setTargetTemperature", target_temperature)
+        await self.select_command(COMMAND_SET_TARGET_TEMPERATURE, target_temperature)
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-        # TODO Understand if we need to set DHWMode or CurrentOperatingMode
-        # HomeKit does it different https://github.com/dubocr/homebridge-tahoma/blob/0fca75b3867330d50bb79d6d2c05c5657135b6ed/services/Thermostat.js#L371-L380
         await self.async_execute_command(
-            "setDHWMode", MAP_REVERSE_OPERATION_MODES[operation_mode]
+            COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
 
     @property
@@ -98,24 +107,26 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     @property
     def is_away_mode_on(self):
         """Return true if away mode is on."""
-        return self.select_state("core:OperatingModeState").get("absence") == "on"
+        return (
+            self.select_state(CORE_OPERATING_MODE_STATE).get(STATE_ABSENCE) == STATE_ON
+        )
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
         await self.select_command(
-            "setCurrentOperatingMode",
+            COMMAND_SET_CURRENT_OPERATING_MODE,
             {
-                "relaunch": "off",
-                "absence": "on",
-            },  # TODO Check if only absence is enough
+                "relaunch": STATE_OFF,
+                "absence": STATE_ON,
+            },
         )
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
         await self.select_command(
-            "setCurrentOperatingMode",
+            COMMAND_SET_CURRENT_OPERATING_MODE,
             {
-                "relaunch": "off",
-                "absence": "off",
-            },  # TODO Check if only absence is enough
+                "relaunch": STATE_OFF,
+                "absence": STATE_OFF,
+            },
         )
