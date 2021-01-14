@@ -15,14 +15,13 @@ CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeS
 
 IO_DHW_MODE_STATE = "io:DHWModeState"
 
-STATE_MANUEL = "manuel"
+STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
 
 
-# Somfy to Hass
 MAP_OPERATION_MODES = {
     "manualEcoActive": STATE_ECO,
-    "manualEcoInactive": STATE_MANUEL,
+    "manualEcoInactive": STATE_MANUAL,
     "autoMode": STATE_AUTO,
 }
 
