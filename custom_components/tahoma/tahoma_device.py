@@ -66,11 +66,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
-        attr = {
-            "ui_class": self.device.ui_class,
-            "widget": self.device.widget,
-            "controllable_name": self.device.controllable_name,
-        }
+        attr = {}
 
         if self.has_state(CORE_RSSI_LEVEL_STATE):
             attr[ATTR_RSSI_LEVEL] = self.select_state(CORE_RSSI_LEVEL_STATE)
