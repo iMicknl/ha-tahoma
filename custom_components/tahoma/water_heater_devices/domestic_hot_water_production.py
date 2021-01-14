@@ -95,3 +95,28 @@ class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
     def supported_features(self):
         """Return the list of supported features."""
         return SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
+
+    @property
+    def is_away_mode_on(self):
+        """Return true if away mode is on."""
+        return self.select_state("core:OperatingModeState").get("absence") == "on"
+
+    async def async_turn_away_mode_on(self):
+        """Turn away mode on."""
+        await self.select_command(
+            "setCurrentOperatingMode",
+            {
+                "relaunch": "off",
+                "absence": "on",
+            },  # TODO Check if only absence is enough
+        )
+
+    async def async_turn_away_mode_off(self):
+        """Turn away mode off."""
+        await self.select_command(
+            "setCurrentOperatingMode",
+            {
+                "relaunch": "off",
+                "absence": "off",
+            },  # TODO Check if only absence is enough
+        )
