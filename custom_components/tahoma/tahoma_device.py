@@ -125,13 +125,21 @@ class TahomaDevice(CoordinatorEntity, Entity):
                     None,
                 )
 
-        return {
+        device_info = {
             "identifiers": {(DOMAIN, device_url)},
             "manufacturer": manufacturer,
             "name": name,
-            "model": model,
-            "sw_version": self.device.controllable_name,
         }
+
+        if self.device_url.endswith("#1") or "#" not in self.device_url:
+            device_info.update(
+                {
+                    "model": model,
+                    "sw_version": self.device.controllable_name,
+                }
+            )
+
+        return
 
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
