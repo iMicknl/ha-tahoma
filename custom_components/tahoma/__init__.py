@@ -22,10 +22,13 @@ from pyhoma.models import Command, Device
 import voluptuous as vol
 
 from .const import (
+    CONF_HUB,
     CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_TAHOMA_TYPES,
+    SUPPORTED_ENDPOINTS,
     TAHOMA_TYPES,
 )
 from .coordinator import TahomaDataUpdateCoordinator
@@ -86,9 +89,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    hub = entry.data.get(CONF_HUB) or DEFAULT_HUB
+    endpoint = SUPPORTED_ENDPOINTS[hub]
 
     session = async_get_clientsession(hass)
-    client = TahomaClient(username, password, session=session)
+    client = TahomaClient(
+        username,
+        password,
+        session=session,
+        api_url=endpoint,
+    )
 
     try:
         await client.login()
@@ -138,7 +148,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if platform:
             entities[platform].append(device)
             _LOGGER.debug(
-                "Added Device (%s - %s - %s - %s)",
+                "Added TaHoma device (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
