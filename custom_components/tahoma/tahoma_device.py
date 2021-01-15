@@ -139,7 +139,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
                 }
             )
 
-        return
+        return device_info
 
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
