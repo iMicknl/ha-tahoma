@@ -58,7 +58,7 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return [*MAP_REVERSE_HVAC_MODES]
+        return [*MAP_HVAC_MODES]
 
     @property
     def preset_mode(self) -> Optional[str]:
