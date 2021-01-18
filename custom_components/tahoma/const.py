@@ -14,10 +14,12 @@ DOMAIN = "tahoma"
 DEFAULT_HUB = "Somfy TaHoma"
 SUPPORTED_ENDPOINTS = {
     "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "eedomus": "https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Hi Kumo": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI",
+    "Rexel Energeasy Connect": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Somfy Connexoon IO": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
     "Somfy Connexoon RTS": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Rexel": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
 }
 
 MIN_UPDATE_INTERVAL = 30
