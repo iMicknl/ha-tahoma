@@ -30,6 +30,8 @@ from .tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
+ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
+
 COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
 COMMAND_CLOSE_SLATS = "closeSlats"
@@ -78,6 +80,7 @@ MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 ICON_LOCK_ALERT = "mdi:lock-alert"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
+IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
 STATE_CLOSED = "closed"
@@ -338,6 +341,17 @@ class TahomaCover(TahomaDevice, CoverEntity):
             and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
             for execution in self.coordinator.executions.values()
         )
+
+    @property
+    def device_state_attributes(self):
+        """Return the device state attributes."""
+        attr = super().device_state_attributes or {}
+
+        # Obstruction Detected attribute is used by HomeKit
+        if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
+            attr[ATTR_OBSTRUCTION_DETECTED] = True
+
+        return attr
 
     @property
     def supported_features(self):
