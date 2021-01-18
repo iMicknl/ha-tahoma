@@ -10,7 +10,7 @@ from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, service
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 from pyhoma.client import TahomaClient
@@ -189,9 +189,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.refresh_states()
         await tahoma_coordinator.async_refresh()
 
-    hass.services.async_register(DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states)
+    service.async_register_service(DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states)
 
-    hass.services.async_register(
+    service.async_register_admin_service(
+        hass,
         DOMAIN,
         SERVICE_EXECUTE_COMMAND,
         handle_execute_command,
