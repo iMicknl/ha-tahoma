@@ -34,7 +34,6 @@ MAP_PRESET_MODES = {
 MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 
 MAP_HVAC_MODES = {HVAC_MODE_HEAT: PRESET_COMFORT, HVAC_MODE_OFF: PRESET_OFF}
-MAP_REVERSE_HVAC_MODES = {v: k for k, v in MAP_HVAC_MODES.items()}
 
 
 class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
@@ -58,7 +57,7 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return [*MAP_REVERSE_HVAC_MODES]
+        return [*MAP_HVAC_MODES]
 
     @property
     def preset_mode(self) -> Optional[str]:
