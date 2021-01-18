@@ -22,14 +22,17 @@ set_cover_position_low_speed:
       description: Position of the cover (0 to 100).
       example: 30
 
+refresh_states:
+  description: Refresh device states for protocols supporting that operation.
+
 execute_command:
-  description: Send a command to tahomalink endpoint through the API.
+  description: Execute a command on a specific device.
   fields:
     entity_id:
-      description: Name of entity that will be set to preset position.
+      description: Name of entity where command will be executed.
       example: "light.living_room"
     command:
-      description: Command to send
+      description: Command to execute
       example: "setIntensity"
     args:
       description: List of arguments to pass to the command if necessary
