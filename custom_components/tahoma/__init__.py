@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.event import async_track_time_interval
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
@@ -21,26 +22,11 @@ from pyhoma.exceptions import (
 from pyhoma.models import Command, Device
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (
-    CONF_EXCLUDE,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    EVENT_HOMEASSISTANT_START,
-)
-from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers import aiohttp_client, config_validation as cv
-from homeassistant.helpers.event import async_track_time_interval
-
 from .const import (
     CONF_HUB,
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_HUB,
     CONF_REFRESH_STATE_INTERVAL,
     CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
     DEFAULT_REFRESH_STATE_INTERVAL,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
@@ -53,7 +39,6 @@ from .coordinator import TahomaDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
-SERVICE_REFRESH_STATES = "refresh_states"
 
 HOMEKIT_SETUP_CODE = "homekit:SetupCode"
 HOMEKIT_STACK = "HomekitStack"
@@ -75,6 +60,8 @@ CONFIG_SCHEMA = vol.Schema(
     },
     extra=vol.ALLOW_EXTRA,
 )
+
+SERVICE_REFRESH_STATES = "refresh_states"
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -219,11 +206,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ),
     )
 
-    refresh_state_interval = entry.options.get(
-        CONF_REFRESH_STATE_INTERVAL, DEFAULT_REFRESH_STATE_INTERVAL
+    refresh_state_interval = timedelta(
+        seconds=entry.options.get(
+            CONF_REFRESH_STATE_INTERVAL, DEFAULT_REFRESH_STATE_INTERVAL
+        )
     )
     task_refresh_state = async_track_time_interval(
-        hass, handle_refresh_states, timedelta(seconds=refresh_state_interval)
+        hass, handle_refresh_states, refresh_state_interval
+    )
+
+    _LOGGER.debug(
+        "Initialized Refresh State task with %s interval.", str(refresh_state_interval)
     )
 
     hass.data[DOMAIN][entry.entry_id] = {
@@ -238,10 +231,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
+    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 
     hass.data[DOMAIN][entry.entry_id]["update_listener"]()
     hass.data[DOMAIN][entry.entry_id]["task_refresh_state"]()
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
 
     unload_ok = all(
         await asyncio.gather(
@@ -282,6 +275,7 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     if entry.options[CONF_REFRESH_STATE_INTERVAL]:
         # Cancel current task
         hass.data[DOMAIN][entry.entry_id]["task_refresh_state"]()
+        refresh_interval = timedelta(seconds=entry.options[CONF_REFRESH_STATE_INTERVAL])
 
         # Create new task, with new time interval
         hass.data[DOMAIN][entry.entry_id][
@@ -289,8 +283,13 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         ] = async_track_time_interval(
             hass,
             handle_refresh_states,
-            timedelta(seconds=entry.options[CONF_REFRESH_STATE_INTERVAL]),
+            refresh_interval,
         )
+
+        _LOGGER.debug(
+            "Changed Refresh State task to %s interval.", str(refresh_interval)
+        )
+
 
 def print_homekit_setup_code(device: Device):
     """Retrieve and print HomeKit Setup Code."""
