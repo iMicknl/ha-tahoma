@@ -189,7 +189,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.refresh_states()
         await tahoma_coordinator.async_refresh()
 
-    service.async_register_service(DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states)
+    service.async_register_service(
+        DOMAIN, SERVICE_REFRESH_STATES, handle_refresh_states
+    )
 
     service.async_register_admin_service(
         hass,
