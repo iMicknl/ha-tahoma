@@ -2,6 +2,7 @@
 import asyncio
 from collections import defaultdict
 from datetime import timedelta
+from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -208,10 +209,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     for gateway in gateways:
         gateway_model = (
-            beautify_name(gateway.sub_type.name) if gateway.sub_type else None
+            beautify_name(gateway.sub_type.name)
+            if isinstance(gateway.sub_type, Enum)
+            else None
         )
         gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub" if gateway.type else None
+            f"{beautify_name(gateway.type.name)} hub"
+            if isinstance(gateway.type, Enum)
+            else None
         )
 
         device_registry.async_get_or_create(
