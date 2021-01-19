@@ -127,17 +127,20 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
         device_info = {
             "identifiers": {(DOMAIN, device_url)},
-            "manufacturer": manufacturer,
-            "name": name,
         }
 
-        if self.device_url.endswith("#1") or "#" not in self.device_url:
-            device_info.update(
-                {
-                    "model": model,
-                    "sw_version": self.device.controllable_name,
-                }
-            )
+        # Only return device identifier for sub devices.
+        if "#" in self.device_url and not self.device_url.endswith("#1"):
+            return device_info
+
+        device_info.update(
+            {
+                "name": name,
+                "manufacturer": manufacturer,
+                "model": model,
+                "sw_version": self.device.controllable_name,
+            }
+        )
 
         return device_info
 
