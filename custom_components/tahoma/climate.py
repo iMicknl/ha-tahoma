@@ -11,10 +11,11 @@ from .const import DOMAIN
 
 TYPE = {
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
-    "SomfyThermostat": SomfyThermostat,
-    "DimmerExteriorHeating": DimmerExteriorHeating,
-    "StatelessExteriorHeating": StatelessExteriorHeating,
+    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeater,
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
+    "DimmerExteriorHeating": DimmerExteriorHeating,
+    "SomfyThermostat": SomfyThermostat,
+    "StatelessExteriorHeating": StatelessExteriorHeating,
 }
 
 SERVICE_CLIMATE_MY_POSITION = "set_climate_my_position"
