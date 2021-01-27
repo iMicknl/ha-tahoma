@@ -17,6 +17,8 @@ from homeassistant.const import TEMP_CELSIUS
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
 
+CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+
 MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
 MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
@@ -24,12 +26,9 @@ SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
 
 # Map Home Assistant presets to TaHoma presets
 TAHOMA_TO_PRESET_MODE = {
-    "auto": "auto",
-    "cooling": "cool",
-    "dehumidify": "dry",
-    "fan": "fan_only",
-    "heating": "heat",
-    "off": "off",
+    "auto": "auto",  # core:AutoManuModeState
+    "manu": "manu",  # core:AutoManuModeState
+    "holiday": "holiday",  # core:HolidaysModeState
 }
 
 PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
