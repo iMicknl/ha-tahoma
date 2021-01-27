@@ -199,9 +199,13 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
             COMMAND_SET_HEATING_LEVEL, TAHOMA_TO_PRESET_MODE[preset_mode]
         )
 
+    async def async_turn_on(self) -> None:
+        """Turn on the device."""
+        await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "on")
+
     async def async_turn_off(self) -> None:
         """Turn off the device."""
-        await self.async_execute_command("setOperatingMode", "off")
+        await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "off")
 
     @property
     def target_temperature(self) -> None:
