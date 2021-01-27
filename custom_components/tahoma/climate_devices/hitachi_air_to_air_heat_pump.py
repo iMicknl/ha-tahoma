@@ -11,8 +11,9 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_OFF,
     SUPPORT_FAN_MODE,
     SUPPORT_SWING_MODE,
+    SUPPORT_TARGET_TEMPERATURE,
 )
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
@@ -23,6 +24,7 @@ MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
 MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
 SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
+ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
 
 # Map Home Assistant presets to TaHoma presets
 TAHOMA_TO_PRESET_MODE = {
@@ -64,7 +66,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return SUPPORT_FAN_MODE | SUPPORT_SWING_MODE
+        return SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE | SUPPORT_SWING_MODE
 
     async def async_turn_on(self) -> None:
         """Turn on the device."""
@@ -92,7 +94,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             None,  # Target Temperature
             fan_mode,  # Fan Mode
             None,  # Mode
-            None,  # Swing Mode?
+            None,  # Swing Mode
             None,
         )
 
@@ -114,7 +116,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             None,  # Target Temperature
             None,  # Fan Mode
             None,  # Mode
-            swing_mode,  # Swing Mode?
+            swing_mode,  # Swing Mode
             None,
         )
 
@@ -136,6 +138,29 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             None,  # Target Temperature
             None,  # Fan Mode
             HVAC_MODES_TO_TAHOMA[hvac_mode],  # Mode
-            None,  # Swing Mode?
+            None,  # Swing Mode
+            None,
+        )
+
+    @property
+    def target_temperature(self) -> None:
+        """Return the temperature."""
+        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+
+    @property
+    def current_temperature(self) -> None:
+        """Return current temperature."""
+        return self.select_state(ROOM_TEMPERATURE_STATE)
+
+    async def async_set_temperature(self, **kwargs) -> None:
+        """Set new temperature."""
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        await self.async_execute_command(
+            "globalControl",
+            None,  # Power State
+            temperature,  # Target Temperature
+            None,  # Fan Mode
+            None,  # Mode
+            None,  # Swing Mode
             None,
         )
