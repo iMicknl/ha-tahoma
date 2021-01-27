@@ -1,5 +1,5 @@
 """Support for HitachiAirToAirHeatPump."""
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
@@ -192,3 +192,11 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
         if preset_mode == "holidays":
             await self.async_execute_command("setHolidays", "on")
+
+    @property
+    def device_info(self) -> Dict[str, Any]:
+        """Return the device state attributes."""
+        device_info = super().device_info or {}
+        device_info["manufacturer"] = "Hitachi"
+
+        return device_info
