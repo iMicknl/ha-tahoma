@@ -10,6 +10,7 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
     SUPPORT_FAN_MODE,
+    SUPPORT_PRESET_MODE,
     SUPPORT_SWING_MODE,
     SUPPORT_TARGET_TEMPERATURE,
 )
@@ -25,16 +26,10 @@ FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
 MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
 SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
 ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
-
-# Map Home Assistant presets to TaHoma presets
-TAHOMA_TO_PRESET_MODE = {
-    "auto": "auto",  # core:AutoManuModeState
-    "manu": "manu",  # core:AutoManuModeState
-    "holiday": "holiday",  # core:HolidaysModeState
-}
-
-PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
-
+HLINK_VIRTUAL_OPERATING_MODE_STATE = [
+    "ovp:HLinkVirtualOperatingModeState",
+    "hlrrwifi:HLinkVirtualOperatingModeState",
+]
 
 TAHOMA_TO_HVAC_MODES = {
     "heating": HVAC_MODE_HEAT,
@@ -57,6 +52,9 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
         self._fan_modes = self.select_state_definition(FAN_SPEED_STATE)
         self._swing_modes = self.select_state_definition(SWING_STATE)
+        self._preset_modes = self.select_state_definition(
+            HLINK_VIRTUAL_OPERATING_MODE_STATE
+        )
 
     @property
     def temperature_unit(self) -> str:
@@ -66,7 +64,12 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE | SUPPORT_SWING_MODE
+        return (
+            SUPPORT_TARGET_TEMPERATURE
+            | SUPPORT_FAN_MODE
+            | SUPPORT_SWING_MODE
+            | SUPPORT_PRESET_MODE
+        )
 
     async def async_turn_on(self) -> None:
         """Turn on the device."""
@@ -164,3 +167,28 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             None,  # Swing Mode
             None,
         )
+
+    @property
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp."""
+        if self.select_state("core:AutoManuModeState") == "on":
+            return "auto"
+
+        if self.select_state("core:AutoManuModeState") == "manu":
+            return "manu"
+
+        return None
+
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes."""
+        return self._preset_modes
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+
+        if preset_mode == "auto":
+            await self.async_execute_command("setAutoManu", "auto")
+
+        if preset_mode == "holidays":
+            await self.async_execute_command("setHolidays", "on")
