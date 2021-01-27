@@ -18,6 +18,10 @@ Custom component for Home Assistant to interact with smart devices via the Somfy
 - Rexel
 - eedomus
 
+## Supported devices
+
+This integration doesn't rely on a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
+
 ## Installation
 
 ### Manual
@@ -27,10 +31,6 @@ Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot H
 ### HACS
 
 This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
-
-## Supported devices
-
-This integration doesn't rely on a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
 
 ## Advanced
 
