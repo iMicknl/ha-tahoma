@@ -127,7 +127,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return [*TAHOMA_TO_HVAC_MODES]
+        return [*HVAC_MODES_TO_TAHOMA]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
