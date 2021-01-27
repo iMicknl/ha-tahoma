@@ -1,4 +1,5 @@
 """Support for Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
+import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -14,9 +15,19 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     PRESET_NONE,
 )
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    EVENT_HOMEASSISTANT_START,
+    STATE_UNKNOWN,
+    TEMP_CELSIUS,
+)
+from homeassistant.core import callback
+from homeassistant.helpers.event import async_track_state_change
 
+from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_device import TahomaDevice
+
+_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
@@ -67,6 +78,76 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     """Representation of Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
+
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+        """Init method."""
+        super().__init__(device_url, coordinator)
+
+        self._temp_sensor_entity_id = None
+        self._current_temperature = None
+
+    async def async_added_to_hass(self):
+        """Register temperature sensor after added to hass."""
+        await super().async_added_to_hass()
+
+        # Only the AtlanticElectricarHeater WithAdjustableTemperatureSetpoint has a separate temperature sensor
+        if (
+            self.device.widget
+            != "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint"
+        ):
+            return
+
+        base_url = self.device.deviceurl.split("#", 1)[0]
+        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        self._temp_sensor_entity_id = next(
+            (
+                entity_id
+                for entity_id, entry in entity_registry.entities.items()
+                if entry.unique_id == f"{base_url}#2"
+            ),
+            None,
+        )
+
+        if self._temp_sensor_entity_id:
+            async_track_state_change(
+                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+            )
+
+        else:
+            _LOGGER.warning(
+                "Temperature sensor could not be found for entity %s", self.name
+            )
+
+        @callback
+        def _async_startup(event):
+            """Init on startup."""
+            if self._temp_sensor_entity_id:
+                temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
+                if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
+                    self.update_temp(temp_sensor_state)
+
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
+
+        self.schedule_update_ha_state(True)
+
+    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state) -> None:
+        """Handle temperature changes."""
+        if new_state is None or old_state == new_state:
+            return
+
+        self.update_temp(new_state)
+        self.schedule_update_ha_state()
+
+    @callback
+    def update_temp(self, state):
+        """Update thermostat with latest state from sensor."""
+        if state is None or state.state == STATE_UNKNOWN:
+            return
+
+        try:
+            self._current_temperature = float(state.state)
+        except ValueError as ex:
+            _LOGGER.error("Unable to update from sensor: %s", ex)
 
     @property
     def temperature_unit(self) -> str:
@@ -127,10 +208,10 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
         """Return the temperature."""
         return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
-    # @property
-    # def current_temperature(self):
-    #     """Return current temperature."""
-    #     return self.target_temperature  # TODO Retrieve current temperature from sensor
+    @property
+    def current_temperature(self):
+        """Return current temperature."""
+        return self._current_temperature
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
