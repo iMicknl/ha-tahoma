@@ -95,13 +95,22 @@ logger:
     custom_components.tahoma: debug
 ```
 
-### Device not supported / working correctly
+### Device not supported
 
 If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging). Copy the debug string and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose)
 
 `DEBUG (MainThread) [custom_components.tahoma] Unsupported TaHoma device (io:DimmableLightIOComponent - Light - DimmableLight).`
 
+### Device not working correctly.
+
 If your device is listed in the device list, copy the firmware and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose). (e.g. io:DimmableLightIOComponent)
+
+In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor (e.g. TaHoma) app and capture the commands.
+
+```
+2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 21:30:00: off executed via Home Assistant on io://xxxx, with [].
+2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 16:23:29: setIntensity executed via Home Assistant on io://xxxx, with [70].
+```
 
 ### Exclude devices
 
@@ -110,3 +119,5 @@ The previous component had functionality to exclude devices from Home Assistant.
 ### Retrieve HomeKit code
 
 If your TaHoma box supports HomeKit natively, the integration will log the HomeKit code on start currently. This is currently an experimental implementation and in order to enable this, you need to have debug logging enabled.
+
+
