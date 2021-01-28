@@ -1,7 +1,7 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -199,6 +199,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ),
     )
 
+    async def handle_get_execution_history(call):
+        """Handle get execution history service."""
+        await write_execution_history_to_log(tahoma_coordinator.client)
+
+    service.async_register_admin_service(
+        hass,
+        DOMAIN,
+        "get_execution_history",
+        handle_get_execution_history,
+    )
+
     return True
 
 
@@ -240,3 +251,24 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+async def write_execution_history_to_log(client: TahomaClient):
+    """Retrieve execution history and write output to log."""
+    history = await client.get_execution_history()
+
+    for item in history:
+        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
+
+        for command in item.commands:
+            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+            _LOGGER.info(
+                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
+                    command=command.command,
+                    timestamp=date,
+                    device=command.deviceurl,
+                    parameters=command.parameters,
+                    app=item.label,
+                )
+            )
