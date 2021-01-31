@@ -179,7 +179,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Return base device url."""
         device_url, _ = self.device.deviceurl.split("#")
         return device_url
-      
+
     def get_gateway_id(self, device_url: str):
         """Retrieve gateway id from device url."""
         result = re.search(r":\/\/(.*)\/", device_url)
