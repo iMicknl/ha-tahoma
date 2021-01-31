@@ -2,6 +2,7 @@
 import asyncio
 from collections import defaultdict
 from datetime import timedelta
+from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -10,7 +11,11 @@ from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers import config_validation as cv, service
+from homeassistant.helpers import (
+    config_validation as cv,
+    device_registry as dr,
+    service,
+)
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
@@ -104,6 +109,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await client.login()
         devices = await client.get_devices()
         scenarios = await client.get_scenarios()
+        gateways = await client.get_gateways()
     except BadCredentialsException:
         _LOGGER.error("invalid_auth")
         return False
@@ -199,6 +205,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ),
     )
 
+    device_registry = await dr.async_get_registry(hass)
+
+    for gateway in gateways:
+        _LOGGER.debug(
+            "Added gateway (%s - %s - %s)",
+            gateway.id,
+            gateway.type,
+            gateway.sub_type,
+        )
+
+        gateway_model = (
+            beautify_name(gateway.sub_type.name)
+            if isinstance(gateway.sub_type, Enum)
+            else None
+        )
+        gateway_name = (
+            f"{beautify_name(gateway.type.name)} hub"
+            if isinstance(gateway.type, Enum)
+            else None
+        )
+
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, gateway.id)},
+            model=gateway_model,
+            manufacturer="Somfy",
+            name=gateway_name,
+            sw_version=gateway.connectivity.protocol_version,
+        )
+
     return True
 
 
@@ -240,3 +276,8 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+def beautify_name(name: str):
+    """Return human readable string."""
+    return name.replace("_", " ").title()

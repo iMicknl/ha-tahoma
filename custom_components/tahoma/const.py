@@ -7,6 +7,7 @@ from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
 CONF_HUB = "hub"
 DOMAIN = "tahoma"
@@ -15,7 +16,7 @@ DEFAULT_HUB = "Somfy TaHoma"
 SUPPORTED_ENDPOINTS = {
     "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "eedomus": "https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Hi Kumo": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI",
+    "Hi Kumo": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Rexel Energeasy Connect": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Somfy Connexoon IO": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
     "Somfy Connexoon RTS": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
@@ -44,6 +45,7 @@ TAHOMA_TYPES = {
     "ContactSensor": BINARY_SENSOR,
     "Curtain": COVER,
     "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+    "DomesticHotWaterProduction": WATER_HEATER,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
