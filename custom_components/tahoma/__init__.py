@@ -246,6 +246,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         handle_get_execution_history,
     )
 
+    device_registry = await dr.async_get_registry(hass)
+
+    for gateway in gateways:
+        _LOGGER.debug(
+            "Added gateway (%s - %s - %s)",
+            gateway.id,
+            gateway.type,
+            gateway.sub_type,
+        )
+
+        gateway_model = (
+            beautify_name(gateway.sub_type.name)
+            if isinstance(gateway.sub_type, Enum)
+            else None
+        )
+        gateway_name = (
+            f"{beautify_name(gateway.type.name)} hub"
+            if isinstance(gateway.type, Enum)
+            else None
+        )
+
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, gateway.id)},
+            model=gateway_model,
+            manufacturer="Somfy",
+            name=gateway_name,
+            sw_version=gateway.connectivity.protocol_version,
+        )
+
     return True
 
 
@@ -287,6 +317,11 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+def beautify_name(name: str):
+    """Return human readable string."""
+    return name.replace("_", " ").title()
 
 
 async def write_execution_history_to_log(client: TahomaClient):
