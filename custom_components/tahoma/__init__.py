@@ -1,7 +1,7 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from enum import Enum
 import logging
 
@@ -179,32 +179,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
-    async def handle_execute_command(call):
-        """Handle execute command service."""
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()
-        entity = entity_registry.entities.get(call.data.get("entity_id"))
-        await tahoma_coordinator.client.execute_command(
-            entity.unique_id,
-            Command(call.data.get("command"), call.data.get("args")),
-            "Home Assistant Service",
-        )
-
-    service.async_register_admin_service(
-        hass,
-        DOMAIN,
-        SERVICE_EXECUTE_COMMAND,
-        handle_execute_command,
-        vol.Schema(
-            {
-                vol.Required("entity_id"): cv.string,
-                vol.Required("command"): cv.string,
-                vol.Optional("args", default=[]): vol.All(
-                    cv.ensure_list, [vol.Any(str, int)]
-                ),
-            }
-        ),
-    )
-
     device_registry = await dr.async_get_registry(hass)
 
     for gateway in gateways:
@@ -234,6 +208,43 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
         )
+
+    async def handle_execute_command(call):
+        """Handle execute command service."""
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity = entity_registry.entities.get(call.data.get("entity_id"))
+        await tahoma_coordinator.client.execute_command(
+            entity.unique_id,
+            Command(call.data.get("command"), call.data.get("args")),
+            "Home Assistant Service",
+        )
+
+    service.async_register_admin_service(
+        hass,
+        DOMAIN,
+        SERVICE_EXECUTE_COMMAND,
+        handle_execute_command,
+        vol.Schema(
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("command"): cv.string,
+                vol.Optional("args", default=[]): vol.All(
+                    cv.ensure_list, [vol.Any(str, int)]
+                ),
+            }
+        ),
+    )
+
+    async def handle_get_execution_history(call):
+        """Handle get execution history service."""
+        await write_execution_history_to_log(tahoma_coordinator.client)
+
+    service.async_register_admin_service(
+        hass,
+        DOMAIN,
+        "get_execution_history",
+        handle_get_execution_history,
+    )
 
     return True
 
@@ -276,6 +287,27 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+async def write_execution_history_to_log(client: TahomaClient):
+    """Retrieve execution history and write output to log."""
+    history = await client.get_execution_history()
+
+    for item in history:
+        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
+
+        for command in item.commands:
+            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+            _LOGGER.info(
+                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
+                    command=command.command,
+                    timestamp=date,
+                    device=command.deviceurl,
+                    parameters=command.parameters,
+                    app=item.label,
+                )
+            )
 
 
 def beautify_name(name: str):
