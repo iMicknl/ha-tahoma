@@ -179,6 +179,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
+    device_registry = await dr.async_get_registry(hass)
+
+    for gateway in gateways:
+        _LOGGER.debug(
+            "Added gateway (%s - %s - %s)",
+            gateway.id,
+            gateway.type,
+            gateway.sub_type,
+        )
+
+        gateway_model = (
+            beautify_name(gateway.sub_type.name)
+            if isinstance(gateway.sub_type, Enum)
+            else None
+        )
+        gateway_name = (
+            f"{beautify_name(gateway.type.name)} hub"
+            if isinstance(gateway.type, Enum)
+            else None
+        )
+
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, gateway.id)},
+            model=gateway_model,
+            manufacturer="Somfy",
+            name=gateway_name,
+            sw_version=gateway.connectivity.protocol_version,
+        )
+
     async def handle_execute_command(call):
         """Handle execute command service."""
         entity_registry = await hass.helpers.entity_registry.async_get_registry()
@@ -205,36 +235,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ),
     )
 
-    device_registry = await dr.async_get_registry(hass)
-
-    for gateway in gateways:
-        _LOGGER.debug(
-            "Added gateway (%s - %s - %s)",
-            gateway.id,
-            gateway.type,
-            gateway.sub_type,
-        )
-
-        gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
-            else None
-        )
-        gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else None
-        )
-
-        device_registry.async_get_or_create(
-            config_entry_id=entry.entry_id,
-            identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
-            manufacturer="Somfy",
-            name=gateway_name,
-            sw_version=gateway.connectivity.protocol_version,
-        )
-
     async def handle_get_execution_history(call):
         """Handle get execution history service."""
         await write_execution_history_to_log(tahoma_coordinator.client)
@@ -245,36 +245,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "get_execution_history",
         handle_get_execution_history,
     )
-
-    device_registry = await dr.async_get_registry(hass)
-
-    for gateway in gateways:
-        _LOGGER.debug(
-            "Added gateway (%s - %s - %s)",
-            gateway.id,
-            gateway.type,
-            gateway.sub_type,
-        )
-
-        gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
-            else None
-        )
-        gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else None
-        )
-
-        device_registry.async_get_or_create(
-            config_entry_id=entry.entry_id,
-            identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
-            manufacturer="Somfy",
-            name=gateway_name,
-            sw_version=gateway.connectivity.protocol_version,
-        )
 
     return True
 
