@@ -1,7 +1,7 @@
 """The TaHoma integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from enum import Enum
 import logging
 
@@ -235,6 +235,47 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             sw_version=gateway.connectivity.protocol_version,
         )
 
+    async def handle_get_execution_history(call):
+        """Handle get execution history service."""
+        await write_execution_history_to_log(tahoma_coordinator.client)
+
+    service.async_register_admin_service(
+        hass,
+        DOMAIN,
+        "get_execution_history",
+        handle_get_execution_history,
+    )
+
+    device_registry = await dr.async_get_registry(hass)
+
+    for gateway in gateways:
+        _LOGGER.debug(
+            "Added gateway (%s - %s - %s)",
+            gateway.id,
+            gateway.type,
+            gateway.sub_type,
+        )
+
+        gateway_model = (
+            beautify_name(gateway.sub_type.name)
+            if isinstance(gateway.sub_type, Enum)
+            else None
+        )
+        gateway_name = (
+            f"{beautify_name(gateway.type.name)} hub"
+            if isinstance(gateway.type, Enum)
+            else None
+        )
+
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, gateway.id)},
+            model=gateway_model,
+            manufacturer="Somfy",
+            name=gateway_name,
+            sw_version=gateway.connectivity.protocol_version,
+        )
+
     return True
 
 
@@ -276,6 +317,27 @@ def print_homekit_setup_code(device: Device):
 
         if homekit:
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
+
+
+async def write_execution_history_to_log(client: TahomaClient):
+    """Retrieve execution history and write output to log."""
+    history = await client.get_execution_history()
+
+    for item in history:
+        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
+
+        for command in item.commands:
+            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+            _LOGGER.info(
+                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
+                    command=command.command,
+                    timestamp=date,
+                    device=command.deviceurl,
+                    parameters=command.parameters,
+                    app=item.label,
+                )
+            )
 
 
 def beautify_name(name: str):
