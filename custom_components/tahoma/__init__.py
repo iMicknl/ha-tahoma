@@ -153,7 +153,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if platform:
             entities[platform].append(device)
             _LOGGER.debug(
-                "Added TaHoma device (%s - %s - %s - %s)",
+                "Added device (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
@@ -164,7 +164,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             and device.ui_class not in IGNORED_TAHOMA_TYPES
         ):
             _LOGGER.debug(
-                "Unsupported TaHoma device detected (%s - %s - %s - %s)",
+                "Unsupported device detected (%s - %s - %s - %s)",
                 device.controllable_name,
                 device.ui_class,
                 device.widget,
@@ -209,7 +209,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     for gateway in gateways:
         _LOGGER.debug(
-            "Gateway detected (%s - %s - %s)",
+            "Added gateway (%s - %s - %s)",
             gateway.id,
             gateway.type,
             gateway.sub_type,
