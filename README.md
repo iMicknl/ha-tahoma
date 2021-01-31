@@ -4,17 +4,23 @@
 
 # Somfy TaHoma - Home Assistant
 
-> The Tahoma integration platform is used as an interface to the tahomalink.com website. It adds covers, scenes and a sun sensor from the Tahoma platform.
+Custom component for Home Assistant to interact with smart devices via the Somfy TaHoma platform. Despite the name of this integration, many other platforms sharing the same OverKiz API structure are supported as well. Have a look at all [supported hubs](#supported-hubs).
 
-This component builds upon the work of [@philklei](https://github.com/philklei) and is an updated version of his [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of merging into core. The installation of this component will replace the original Tahoma integration and thus allows you to beta-test [all changes](./CHANGELOG.md).
+>This component builds upon the work of [@philklei](https://github.com/philklei) and is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of eventually merging into core. The installation of this component will replace the original TaHoma integration and thus allows you to beta-test [all changes](https://github.com/iMicknl/ha-tahoma/releases).
 
-## Supported (Somfy) hubs
+## Supported hubs
 
 - Somfy TaHoma Box
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
 - Cozytouch
+- Hi Kumo
 - Rexel
+- eedomus
+
+## Supported devices
+
+This integration doesn't rely on a hardcoded list of devices anymore, but relies on the characteristics of every device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
 
 ## Installation
 
@@ -25,62 +31,6 @@ Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot H
 ### HACS
 
 This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
-
-## Supported Somfy devices
-
-This component doesn't have a hardcoded list of devices anymore, but relies on the `ui_class` of every Somfy device. This way more devices will be supported out of the box, based on their category, available states and commands.
-
-| Somfy ui_class / widget      | Home Assistant platform |
-| ---------------------------- | ----------------------- |
-| AdjustableSlatsRollerShutter | cover                   |
-| Alarm                        | alarm_control_panel     |
-| AtlanticElectricalHeater     | climate                 |
-| AirFlowSensor                | binary_sensor           |
-| AirSensor                    | sensor                  |
-| Awning                       | cover                   |
-| CarButtonSensor              | binary_sensor           |
-| ConsumptionSensor            | sensor                  |
-| ContactSensor                | binary_sensor           |
-| Curtain                      | cover                   |
-| DimmerExteriorHeating        | climate                 |
-| DoorLock                     | lock                    |
-| ElectricitySensor            | sensor                  |
-| ExteriorScreen               | cover                   |
-| ExteriorVenetianBlind        | cover                   |
-| GarageDoor                   | cover                   |
-| GasSensor                    | sensor                  |
-| Gate                         | cover                   |
-| Generic                      | cover                   |
-| GenericSensor                | sensor                  |
-| HumiditySensor               | sensor                  |
-| Light                        | light                   |
-| LightSensor                  | sensor                  |
-| MotionSensor                 | binary_sensor           |
-| MyFoxSecurityCamera          | cover                   |
-| OccupancySensor              | binary_sensor           |
-| OnOff                        | switch                  |
-| Pergola                      | cover                   |
-| RainSensor                   | binary_sensor           |
-| RollerShutter                | cover                   |
-| Screen                       | cover                   |
-| Shutter                      | cover                   |
-| Siren                        | switch                  |
-| SirenStatus                  | binary_sensor           |
-| SmokeSensor                  | binary_sensor           |
-| SomfyThermostat              | climate                 |
-| SunIntensitySensor           | sensor                  |
-| SunSensor                    | sensor                  |
-| SwimmingPool                 | switch                  |
-| SwingingShutter              | cover                   |
-| TemperatureSensor            | sensor                  |
-| ThermalEnergySensor          | sensor                  |
-| VenetianBlind                | cover                   |
-| WaterDetectionSensor         | binary_sensor           |
-| WaterSensor                  | sensor                  |
-| WeatherSensor                | sensor                  |
-| WindSensor                   | sensor                  |
-| Window                       | cover                   |
-| WindowHandle                 | binary_sensor           |
 
 ## Advanced
 
@@ -95,17 +45,26 @@ logger:
     custom_components.tahoma: debug
 ```
 
-### Device not supported / working correctly
+### Device not supported
 
-If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging). Copy the debug string and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose)
+If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging). Copy the debug string from your log and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose)
 
 `DEBUG (MainThread) [custom_components.tahoma] Unsupported TaHoma device (io:DimmableLightIOComponent - Light - DimmableLight).`
 
-If your device is listed in the device list, copy the firmware and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose). (e.g. io:DimmableLightIOComponent)
+### Device not working correctly
+
+If your device is listed in the device list, create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose) and fill in all details of the issue template.
+
+In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor app (e.g. TaHoma) and capture the commands.
+
+```
+2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 21:30:00: off executed via Home Assistant on io://xxxx, with [].
+2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 16:23:29: setIntensity executed via Home Assistant on io://xxxx, with [70].
+```
 
 ### Exclude devices
 
-The previous component had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this functionality is now offered by default in Home Assistant core. You can now disable entities via the interface.
+The previous version had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this functionality is now offered by default in Home Assistant core. You can now disable entities via the interface.
 
 ### Retrieve HomeKit code
 
