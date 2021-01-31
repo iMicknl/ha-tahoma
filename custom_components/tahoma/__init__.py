@@ -319,11 +319,6 @@ def print_homekit_setup_code(device: Device):
             _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
 
 
-def beautify_name(name: str):
-    """Return human readable string."""
-    return name.replace("_", " ").title()
-
-
 async def write_execution_history_to_log(client: TahomaClient):
     """Retrieve execution history and write output to log."""
     history = await client.get_execution_history()
