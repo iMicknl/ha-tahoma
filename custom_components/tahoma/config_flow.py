@@ -41,11 +41,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
-    def __init__(self):
-        """Initialize a ConfigFlow."""
-        self._reauth = False
-        super().__init__()
-
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
@@ -67,15 +62,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data=user_input,
             )
 
-    async def async_step_user(self, user_input=None):
+    async def cleasync_step_user(self, user_input=None):
         """Handle the initial step via config flow."""
         errors = {}
 
         if user_input:
             await self.async_set_unique_id(user_input.get(CONF_USERNAME))
 
-            if not self._reauth:
-                self._abort_if_unique_id_configured()
+            self._abort_if_unique_id_configured()
 
             try:
                 return await self.async_validate_input(user_input)
@@ -120,7 +114,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_reauth(self, entry_data):
         """Handle a reauthorization flow request."""
-        self._reauth = True
         return await self.async_step_user(entry_data)
 
 

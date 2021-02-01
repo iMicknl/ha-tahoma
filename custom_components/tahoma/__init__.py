@@ -8,7 +8,13 @@ import logging
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, SOURCE_REAUTH, ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
+from homeassistant.const import (
+    CONF_EXCLUDE,
+    CONF_PASSWORD,
+    CONF_SOURCE,
+    CONF_UNIQUE_ID,
+    CONF_USERNAME,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -115,7 +121,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_create_task(
             hass.config_entries.flow.async_init(
                 DOMAIN,
-                context={CONF_SOURCE: SOURCE_REAUTH},
+                context={CONF_SOURCE: SOURCE_REAUTH, CONF_UNIQUE_ID: entry.unique_id},
                 data=entry.data,
             )
         )
