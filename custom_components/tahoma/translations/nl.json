@@ -5,7 +5,8 @@
         "description": "Voer uw TaHoma inloggegevens in voor de TaHoma-app of het tahomalink.com platform.",
         "data": {
           "username": "E-mailadres",
-          "password": "Wachtwoord"
+          "password": "Wachtwoord",
+          "hub": "Hub"
         }
       }
     },

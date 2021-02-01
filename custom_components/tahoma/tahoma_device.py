@@ -1,5 +1,6 @@
 """Parent class for every TaHoma device."""
 import logging
+import re
 from typing import Any, Dict, Optional
 
 from homeassistant.const import ATTR_BATTERY_LEVEL
@@ -115,6 +116,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
             "name": self.name,
             "model": model,
             "sw_version": self.device.controllable_name,
+            "via_device": self.get_gateway_id(self.device_url),
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
@@ -169,3 +171,12 @@ class TahomaDevice(CoordinatorEntity, Entity):
     async def async_cancel_command(self, exec_id: str):
         """Cancel device command in async context."""
         await self.coordinator.client.cancel_command(exec_id)
+
+    def get_gateway_id(self, device_url: str):
+        """Retrieve gateway id from device url."""
+        result = re.search(r":\/\/(.*)\/", device_url)
+
+        if result:
+            return result.group(1)
+        else:
+            return None

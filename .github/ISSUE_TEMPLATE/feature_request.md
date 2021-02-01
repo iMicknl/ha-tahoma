@@ -6,7 +6,7 @@ labels: enhancement
 assignees: ''
 
 ---
-- [ ] **I have read the [Readme](https://github.com/iMicknl/ha-tahoma/blob/master/README.md), including the [Advanced](https://github.com/iMicknl/ha-tahoma/blob/master/README.md#advanced) section regarding debugging.**
+- [ ] **I have read the [README](https://github.com/iMicknl/ha-tahoma/blob/master/README.md), including the [Advanced](https://github.com/iMicknl/ha-tahoma/blob/master/README.md#advanced) section regarding debugging.**
 
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
