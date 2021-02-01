@@ -8,6 +8,12 @@
           "password": "Password",
           "hub": "Hub"
         }
+      },
+      "reauth": {
+        "description": "Enter your TaHoma credentials for the TaHoma App or the tahomalink.com platform.",
+        "data": {
+          "password": "Password"
+        }
       }
     },
     "error": {

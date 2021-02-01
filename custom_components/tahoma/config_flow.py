@@ -1,5 +1,6 @@
 """Config flow for TaHoma integration."""
 import logging
+from typing import Optional
 
 from aiohttp import ClientError
 from homeassistant import config_entries
@@ -112,9 +113,42 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception(exception)
             return self.async_abort(reason="unknown")
 
-    async def async_step_reauth(self, entry_data):
+    async def async_step_reauth(self, user_input: Optional[dict] = None):
         """Handle a reauthorization flow request."""
-        return await self.async_step_user(entry_data)
+        errors = {}
+
+        if user_input is not None:
+            try:
+                return await self.async_validate_input(user_input)
+            except TooManyRequestsException:
+                errors["base"] = "too_many_requests"
+            except BadCredentialsException:
+                errors["base"] = "invalid_auth"
+            except (TimeoutError, ClientError):
+                errors["base"] = "cannot_connect"
+            except MaintenanceException:
+                errors["base"] = "server_in_maintenance"
+            except Exception as exception:  # pylint: disable=broad-except
+                errors["base"] = "unknown"
+                _LOGGER.exception(exception)
+
+            if errors is None:
+                for entry in self._async_current_entries():
+                    if entry.unique_id == self.unique_id:
+                        self.hass.config_entries.async_update_entry(
+                            entry, data=user_input
+                        )
+
+                        return self.async_abort(reason="reauth_successful")
+
+            if errors:
+                return self.async_abort(reason=errors["base"])
+
+        return self.async_show_form(
+            step_id="reauth",
+            data_schema=DATA_SCHEMA,
+            errors=errors,
+        )
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
