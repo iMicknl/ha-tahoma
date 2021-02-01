@@ -34,3 +34,6 @@ execute_command:
     args:
       description: List of arguments to pass to the command if necessary
       example: 100
+
+get_execution_history:
+  description: Retrieve execution history and write output to log.

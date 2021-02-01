@@ -70,6 +70,8 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("too_many_requests") from exception
         except MaintenanceException as exception:
             raise UpdateFailed("server_in_maintenance") from exception
+        except TimeoutError as exception:
+            raise UpdateFailed("cannot_connect") from exception
         except (ServerDisconnectedError, NotAuthenticatedException) as exception:
             _LOGGER.debug(exception)
             self.executions = {}
