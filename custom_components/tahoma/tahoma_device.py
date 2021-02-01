@@ -177,6 +177,9 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
     def get_base_device_url(self):
         """Return base device url."""
+        if "#" not in self.device.device_url:
+            return self.device.device_url
+
         device_url, _ = self.device.deviceurl.split("#")
         return device_url
 
