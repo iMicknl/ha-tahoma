@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "pyhoma==0.5.5"
+    "git+https://github.com/iMicknl/python-tahoma-api.git@fix/make_gateway_params_optional#pyhoma==0.5.5"
   ],
   "codeowners": [
     "@philklei",
