@@ -62,7 +62,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data=user_input,
             )
 
-    async def cleasync_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None):
         """Handle the initial step via config flow."""
         errors = {}
 
