@@ -17,7 +17,7 @@ A clear and concise description of the device, together with specific usecases t
 
 **Device details**
 
-- **Hub**: [e.g. Cozytouch, eedoums, Hi Kumo, Regl, Somfy Connexoon, Somfy TaHoma]
+- **Hub**: [e.g. Cozytouch, eedoums, Hi Kumo, Rexel, Somfy Connexoon, Somfy TaHoma]
 
 <!--
 Enable debug logging (https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste the Unsupported device string here.

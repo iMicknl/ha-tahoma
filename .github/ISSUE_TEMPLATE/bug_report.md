@@ -26,7 +26,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
 
-- **Hub**: [e.g. Cozytouch, eedoums, Hi Kumo, Regl, Somfy Connexoon, Somfy TaHoma]
+- **Hub**: [e.g. Cozytouch, eedoums, Hi Kumo, Rexel, Somfy Connexoon, Somfy TaHoma]
 - **ha-tahoma version:** [e.g. 2.0.0]
 - **Home Assistant version:** [e.g. 0.110.4]
 - **Platform**: [e.g. cover, sensor, binary_sensor]
