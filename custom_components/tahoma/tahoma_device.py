@@ -38,6 +38,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
+        self.base_device_url = self.get_base_device_url
 
     @property
     def device(self) -> Device:
@@ -105,24 +106,23 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Return device registry information for this entity."""
         # Some devices, such as the Smart Thermostat have several devices in one physical device,
         # with same device url, terminated by '#' and a number.
-        # We use the base device url as the device identifier.
+        # In this case, we use the base device url as the device identifier.
         if "#" in self.device_url and not self.device_url.endswith("#1"):
-
-            # Only return the url of the base device, to use main device name and model.
+            # Only return the url of the base device, to inherit device name and model from parent device.
             return {
-                "identifiers": {(DOMAIN, self.get_base_device_url())},
+                "identifiers": {(DOMAIN, self.base_device_url)},
             }
 
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
         model = self.select_state(CORE_MODEL_STATE) or self.device.widget
 
         return {
-            "identifiers": {(DOMAIN, self.device_url)},
+            "identifiers": {(DOMAIN, self.base_device_url)},
             "name": self.name,
             "manufacturer": manufacturer,
             "model": model,
             "sw_version": self.device.controllable_name,
-            "via_device": self.get_gateway_id(self.device_url),
+            "via_device": self.get_gateway_id(),
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
@@ -180,9 +180,9 @@ class TahomaDevice(CoordinatorEntity, Entity):
         device_url, _ = self.device.deviceurl.split("#")
         return device_url
 
-    def get_gateway_id(self, device_url: str):
+    def get_gateway_id(self):
         """Retrieve gateway id from device url."""
-        result = re.search(r":\/\/(.*)\/", device_url)
+        result = re.search(r":\/\/(.*)\/", self.device_url)
 
         if result:
             return result.group(1)
