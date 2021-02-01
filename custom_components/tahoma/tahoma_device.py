@@ -38,7 +38,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
-        self.base_device_url = self.get_base_device_url
+        self.base_device_url = self.get_base_device_url()
 
     @property
     def device(self) -> Device:
@@ -177,10 +177,10 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
     def get_base_device_url(self):
         """Return base device url."""
-        if "#" not in self.device.device_url:
-            return self.device.device_url
+        if "#" not in self.device_url:
+            return self.device_url
 
-        device_url, _ = self.device.deviceurl.split("#")
+        device_url, _ = self.device_url.split("#")
         return device_url
 
     def get_gateway_id(self):
