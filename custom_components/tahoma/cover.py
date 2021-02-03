@@ -392,6 +392,4 @@ class TahomaCover(TahomaDevice, CoverEntity):
 
     def _reversed_position_device(self):
         """Return true if the device need a reversed position that can not be obtained via the API."""
-        return (
-            "Horizontal" in self.device.widget or self.device.widget == "AwningValance"
-        )
+        return "Horizontal" in self.device.widget
