@@ -131,7 +131,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
-        name="TaHoma Event Fetcher",
+        name="events",
         client=client,
         devices=devices,
         update_interval=timedelta(seconds=update_interval),

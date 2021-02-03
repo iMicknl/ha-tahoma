@@ -11,6 +11,7 @@ from homeassistant.const import (
     ELECTRICAL_CURRENT_AMPERE,
     ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
+    PERCENTAGE,
     POWER_KILO_WATT,
     POWER_WATT,
     SPEED_METERS_PER_SECOND,
@@ -25,12 +26,6 @@ from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
 from .tahoma_device import TahomaDevice
-
-try:  # TODO: Remove for core PR. This ensures compatibility with <0.115
-    from homeassistant.const import PERCENTAGE
-except Exception:  # pylint: disable=broad-except
-    from homeassistant.const import UNIT_PERCENTAGE as PERCENTAGE
-
 
 _LOGGER = logging.getLogger(__name__)
 

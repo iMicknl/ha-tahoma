@@ -38,6 +38,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
+        self.base_device_url = self.get_base_device_url()
 
     @property
     def device(self) -> Device:
@@ -67,11 +68,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
-        attr = {
-            "ui_class": self.device.ui_class,
-            "widget": self.device.widget,
-            "controllable_name": self.device.controllable_name,
-        }
+        attr = {}
 
         if self.has_state(CORE_RSSI_LEVEL_STATE):
             attr[ATTR_RSSI_LEVEL] = self.select_state(CORE_RSSI_LEVEL_STATE)
@@ -107,16 +104,25 @@ class TahomaDevice(CoordinatorEntity, Entity):
     @property
     def device_info(self) -> Dict[str, Any]:
         """Return device registry information for this entity."""
+        # Some devices, such as the Smart Thermostat have several devices in one physical device,
+        # with same device url, terminated by '#' and a number.
+        # In this case, we use the base device url as the device identifier.
+        if "#" in self.device_url and not self.device_url.endswith("#1"):
+            # Only return the url of the base device, to inherit device name and model from parent device.
+            return {
+                "identifiers": {(DOMAIN, self.base_device_url)},
+            }
+
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
         model = self.select_state(CORE_MODEL_STATE) or self.device.widget
 
         return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "manufacturer": manufacturer,
+            "identifiers": {(DOMAIN, self.base_device_url)},
             "name": self.name,
+            "manufacturer": manufacturer,
             "model": model,
             "sw_version": self.device.controllable_name,
-            "via_device": self.get_gateway_id(self.device_url),
+            "via_device": self.get_gateway_id(),
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
@@ -169,9 +175,17 @@ class TahomaDevice(CoordinatorEntity, Entity):
         """Cancel device command in async context."""
         await self.coordinator.client.cancel_command(exec_id)
 
-    def get_gateway_id(self, device_url: str):
+    def get_base_device_url(self):
+        """Return base device url."""
+        if "#" not in self.device_url:
+            return self.device_url
+
+        device_url, _ = self.device_url.split("#")
+        return device_url
+
+    def get_gateway_id(self):
         """Retrieve gateway id from device url."""
-        result = re.search(r":\/\/(.*)\/", device_url)
+        result = re.search(r":\/\/(.*)\/", self.device_url)
 
         if result:
             return result.group(1)
