@@ -1,4 +1,5 @@
 """Support for HitachiAirToAirHeatPump."""
+import logging
 from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import ClimateEntity
@@ -18,6 +19,8 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 
@@ -50,11 +53,17 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         """Init method."""
         super().__init__(device_url, coordinator)
 
-        self._fan_modes = self.select_state_definition(FAN_SPEED_STATE)
-        self._swing_modes = self.select_state_definition(SWING_STATE)
-        self._preset_modes = self.select_state_definition(
-            HLINK_VIRTUAL_OPERATING_MODE_STATE
-        )
+        _LOGGER.debug("Initialized HitachiAirToAirHeatPump")
+
+        _LOGGER.debug(self.device.definition.states)
+
+        _LOGGER.debug(self.device)
+
+        # self._fan_modes = self.select_state_definition(FAN_SPEED_STATE)
+        # self._swing_modes = self.select_state_definition(SWING_STATE)
+        # self._preset_modes = self.select_state_definition(
+        #     HLINK_VIRTUAL_OPERATING_MODE_STATE
+        # )
 
     @property
     def temperature_unit(self) -> str:
@@ -87,7 +96,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return self._fan_modes
+        return ["Auto FAN", "Hi FAN", "Lo FAN", "Med FAN", "silent"]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
@@ -109,7 +118,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def swing_modes(self) -> Optional[List[str]]:
         """Return the list of available swing modes."""
-        return self._swing_modes
+        return ["NOT_IMPLEMENTED"]
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set new target swing operation."""
