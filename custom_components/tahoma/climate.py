@@ -3,6 +3,9 @@
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
+from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
+    AtlanticPassAPCHeatingAndCoolingZone,
+)
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.somfy_thermostat import SomfyThermostat
@@ -11,6 +14,7 @@ from .const import DOMAIN
 
 TYPE = {
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
+    "AtlanticPassAPCHeatingAndCoolingZone": AtlanticPassAPCHeatingAndCoolingZone,
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,
     "StatelessExteriorHeating": StatelessExteriorHeating,
