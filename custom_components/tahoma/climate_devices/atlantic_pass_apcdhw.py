@@ -1,4 +1,4 @@
-"""Support for AtlanticPassAPCDHWComponement."""
+"""Support for AtlanticPassAPCDHW."""
 from typing import List, Optional
 
 from homeassistant.components.climate import (

@@ -2,6 +2,10 @@
 
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
+from custom_components.tahoma.climate_devices.atlantic_heat_recovery_ventilation import (
+    AtlanticHeatRecoveryVentilation,
+)
+
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
@@ -11,6 +15,7 @@ from .const import DOMAIN
 
 TYPE = {
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
+    "AtlanticHeatRecoveryVentilation": AtlanticHeatRecoveryVentilation,
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,
     "StatelessExteriorHeating": StatelessExteriorHeating,
