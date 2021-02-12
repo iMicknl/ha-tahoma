@@ -17,9 +17,19 @@ from ..tahoma_device import TahomaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
+COMMAND_SET_AUTO_MANU_MODE = "setAutoManuMode"
 COMMAND_SET_TARGET_MODE = "setTargetMode"
+COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1 = (
+    "setRoomAmbientTemperatureControlZone1"
+)
 
 MODBUS_YUTAKI_TARGET_MODE_STATE = "modbus:YutakiTargetModeState"
+MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE = (
+    "modbus:RoomAmbientTemperatureStatusZone1State"
+)
+MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE = (
+    "modbus:ThermostatSettingStatusZone1State"
+)
 
 PRESET_STATE_ECO = "eco"
 PRESET_STATE_COMFORT = "comfort"
@@ -73,7 +83,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         await self.async_execute_command(
-            "setAutoManuMode", TAHOMA_TO_HVAC_MODE[hvac_mode]
+            COMMAND_SET_AUTO_MANU_MODE, TAHOMA_TO_HVAC_MODE[hvac_mode]
         )
 
     @property
@@ -95,7 +105,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
-        return self.select_state("modbus:RoomAmbientTemperatureStatusZone1State")
+        return self.select_state(MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE)
 
     @property
     def min_temp(self) -> float:
@@ -110,12 +120,12 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state("modbus:ThermostatSettingStatusZone1State")
+        return self.select_state(MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
         await self.async_execute_command(
-            "setRoomAmbientTemperatureControlZone1", temperature
+            COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1, temperature
         )
