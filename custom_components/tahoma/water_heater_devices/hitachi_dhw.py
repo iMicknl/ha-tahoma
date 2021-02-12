@@ -9,13 +9,7 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..tahoma_device import TahomaDevice
 
-CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
-CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeState"
-CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
-
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
-IO_MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
 
 STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
