@@ -56,7 +56,6 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         _LOGGER.debug("Initialized HitachiAirToAirHeatPump")
 
         _LOGGER.debug(self.device.definition.states)
-
         _LOGGER.debug(self.device)
 
         # self._fan_modes = self.select_state_definition(FAN_SPEED_STATE)
@@ -191,13 +190,16 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return a list of available preset modes."""
-        return self._preset_modes
+        return ["auto", "manu"]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
 
         if preset_mode == "auto":
             await self.async_execute_command("setAutoManu", "auto")
+
+        if preset_mode == "manu":
+            await self.async_execute_command("setAutoManu", "manu")
 
         if preset_mode == "holidays":
             await self.async_execute_command("setHolidays", "on")
