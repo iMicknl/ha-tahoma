@@ -1,4 +1,4 @@
-"""Support for HitachiAirToWaterMainComponent."""
+"""Support for HitachiAirToWaterHeatingZone."""
 import logging
 from typing import Any, Dict, List
 
@@ -30,8 +30,8 @@ TAHOMA_TO_HVAC_MODES = {
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
-class HitachiAirToWaterMainComponent(TahomaDevice, ClimateEntity):
-    """Representation of HitachiAirToWaterMainComponent."""
+class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
+    """Representation of HitachiAirToWaterHeatingZone."""
 
     @property
     def temperature_unit(self) -> str:

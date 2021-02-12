@@ -56,6 +56,7 @@ TAHOMA_TYPES = {
     "Gate": COVER,
     "GenericSensor": SENSOR,
     "HitachiAirToWaterMainComponent": CLIMATE,
+    "HitachiAirToWaterHeatingZone": CLIMATE,
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,
