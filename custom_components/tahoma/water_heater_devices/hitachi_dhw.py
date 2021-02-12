@@ -2,6 +2,7 @@
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
     STATE_HIGH_DEMAND,
+    SUPPORT_AWAY_MODE,
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
@@ -12,11 +13,15 @@ from ..tahoma_device import TahomaDevice
 CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
 MODBUS_STATUS_DHW_SETTING_TEMPERATURE_STATE = "modbus:StatusDHWSettingTemperatureState"
+MODBUS_CONTROL_DHW_STATE = "modbus:ControlDHWState"
 
 COMMAND_SET_DHW_MODE = "setDHWMode"
+COMMAND_SET_CONTROL_DHW = "setControlDHW"
 COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE = "setControlDHWSettingTemperature"
 
 STATE_STANDARD = "standard"
+STATE_STOP = "stop"
+STATE_RUN = "run"
 
 MODE_STANDARD = "standard"
 MODE_HIGH_DEMAND = "high demand"
@@ -35,7 +40,7 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
     @property
     def supported_features(self):
         """Return the list of supported features."""
-        return SUPPORT_OPERATION_MODE | SUPPORT_TARGET_TEMPERATURE
+        return SUPPORT_OPERATION_MODE | SUPPORT_TARGET_TEMPERATURE | SUPPORT_AWAY_MODE
 
     @property
     def temperature_unit(self) -> str:
@@ -84,3 +89,17 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
         await self.async_execute_command(
             COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, target_temperature
         )
+
+    @property
+    def is_away_mode_on(self):
+        """Return true if away mode is on."""
+        control_dhw_state = self.select_state(MODBUS_CONTROL_DHW_STATE)
+        return True if control_dhw_state == STATE_STOP else False
+
+    async def async_turn_away_mode_on(self):
+        """Turn away mode on."""
+        await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_STOP)
+
+    async def async_turn_away_mode_off(self):
+        """Turn away mode off."""
+        await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_RUN)
