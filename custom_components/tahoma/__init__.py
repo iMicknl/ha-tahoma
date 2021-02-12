@@ -206,7 +206,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
             model=gateway_model,
-            default_manufacturer="Overkiz",
             manufacturer=HUB_MANUFACTURER[hub],
             name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
