@@ -55,8 +55,7 @@ TAHOMA_TYPES = {
     "GasSensor": SENSOR,
     "Gate": COVER,
     "GenericSensor": SENSOR,
-    "HitachiAirToWaterMainComponent": CLIMATE,
-    "HitachiAirToWaterHeatingZone": CLIMATE,
+    "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,

@@ -8,16 +8,12 @@ from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
 )
-from .climate_devices.hitachi_air_to_water_main_component import (
-    HitachiAirToWaterMainComponent,
-)
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
-    "HitachiAirToWaterMainComponent": HitachiAirToWaterMainComponent,
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,
