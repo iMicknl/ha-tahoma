@@ -9,22 +9,20 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..tahoma_device import TahomaDevice
 
+CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
+MODBUS_STATUS_DHW_SETTING_TEMPERATURE_STATE = "modbus:StatusDHWSettingTemperatureState"
 
-STATE_MANUAL = "manual"
-STATE_AUTO = "auto"
-STATE_ABSENCE = "absence"
-STATE_RELAUNCH = "relaunch"
-
-COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_DHW_MODE = "setDHWMode"
-COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
+COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE = "setControlDHWSettingTemperature"
+
+STATE_STANDARD = "standard"
 
 MODE_STANDARD = "standard"
 MODE_HIGH_DEMAND = "high demand"
 
 TAHOMA_TO_OPERATION_MODE = {
-    MODE_STANDARD: "standard",
+    MODE_STANDARD: STATE_STANDARD,
     MODE_HIGH_DEMAND: STATE_HIGH_DEMAND,
 }
 
@@ -73,16 +71,16 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.select_state("core:DHWTemperatureState")
+        return self.select_state(CORE_DHW_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state("modbus:StatusDHWSettingTemperatureState")
+        return self.select_state(MODBUS_STATUS_DHW_SETTING_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
         await self.async_execute_command(
-            "setControlDHWSettingTemperature", target_temperature
+            COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, target_temperature
         )
