@@ -5,9 +5,11 @@ from .const import DOMAIN
 from .water_heater_devices.domestic_hot_water_production import (
     DomesticHotWaterProduction,
 )
+from .water_heater_devices.hitachi_dhw import HitachiDHW
 
 TYPE = {
     "DomesticHotWaterProduction": DomesticHotWaterProduction,
+    "HitachiDHW": HitachiDHW,
 }
 
 
