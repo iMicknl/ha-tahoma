@@ -26,7 +26,7 @@ from homeassistant.helpers import entity_platform
 import voluptuous as vol
 
 from .const import DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_device import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     )
 
 
-class TahomaCover(TahomaDevice, CoverEntity):
+class TahomaCover(TahomaEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
 
     @property

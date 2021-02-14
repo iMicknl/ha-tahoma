@@ -10,7 +10,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_device import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ COMMAND_ON = "on"
 PRESET_MY = "My"
 
 
-class StatelessExteriorHeating(TahomaDevice, ClimateEntity):
+class StatelessExteriorHeating(TahomaEntity, ClimateEntity):
     """Representation of TaHoma Stateless Exterior Heating device."""
 
     @property

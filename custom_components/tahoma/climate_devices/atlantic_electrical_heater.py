@@ -14,7 +14,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_device import TahomaEntity
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
@@ -36,7 +36,7 @@ MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 MAP_HVAC_MODES = {HVAC_MODE_HEAT: PRESET_COMFORT, HVAC_MODE_OFF: PRESET_OFF}
 
 
-class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
+class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
     @property
