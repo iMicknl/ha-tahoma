@@ -94,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
-    hub = entry.data.get(CONF_HUB) or DEFAULT_HUB
+    hub = entry.data.get(CONF_HUB, DEFAULT_HUB)
     endpoint = SUPPORTED_ENDPOINTS[hub]
 
     session = async_get_clientsession(hass)
@@ -111,30 +111,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         scenarios = await client.get_scenarios()
         gateways = await client.get_gateways()
     except BadCredentialsException:
-        _LOGGER.error("invalid_auth")
+        _LOGGER.error("Invalid authentication.")
         return False
     except TooManyRequestsException as exception:
-        _LOGGER.error("too_many_requests")
+        _LOGGER.error("Too many requests, try again later.")
         raise ConfigEntryNotReady from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
-        _LOGGER.error("cannot_connect")
+        _LOGGER.error("Failed to connect.")
         raise ConfigEntryNotReady from exception
     except MaintenanceException as exception:
-        _LOGGER.error("server_in_maintenance")
+        _LOGGER.error("Server is down for maintenance.")
         raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
 
-    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    update_interval = timedelta(
+        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    )
 
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
-        name="events",
+        name="device events",
         client=client,
         devices=devices,
-        update_interval=timedelta(seconds=update_interval),
+        update_interval=update_interval,
+    )
+
+    _LOGGER.debug(
+        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
     )
 
     await tahoma_coordinator.async_refresh()
