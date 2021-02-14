@@ -20,7 +20,7 @@ from homeassistant.const import (
 )
 
 from .const import DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 COMMAND_ALARM_OFF = "alarmOff"
 COMMAND_ALARM_ON = "alarmOn"

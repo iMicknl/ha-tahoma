@@ -25,7 +25,7 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 

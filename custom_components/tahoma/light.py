@@ -16,7 +16,7 @@ from homeassistant.helpers import entity_platform
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 

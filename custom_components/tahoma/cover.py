@@ -26,7 +26,7 @@ from homeassistant.helpers import entity_platform
 import voluptuous as vol
 
 from .const import DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ from homeassistant.components.switch import (
 from homeassistant.const import STATE_OFF, STATE_ON
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 

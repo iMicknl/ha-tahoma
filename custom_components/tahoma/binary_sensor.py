@@ -11,7 +11,7 @@ from homeassistant.components.binary_sensor import (
 )
 
 from .const import DOMAIN
-from .tahoma_device import TahomaEntity
+from .tahoma_entity import TahomaEntity
 
 CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
