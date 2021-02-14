@@ -43,7 +43,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaLight(device.deviceurl, coordinator)
-        for device in data["entities"].get(LIGHT)
+        for device in data["platforms"].get(LIGHT)
     ]
 
     async_add_entities(entities)

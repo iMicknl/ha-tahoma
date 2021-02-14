@@ -35,7 +35,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaSwitch(device.deviceurl, coordinator)
-        for device in data["entities"].get(SWITCH)
+        for device in data["platforms"].get(SWITCH)
     ]
 
     async_add_entities(entities)

@@ -81,7 +81,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaAlarmControlPanel(device.deviceurl, coordinator)
-        for device in data["entities"].get(ALARM_CONTROL_PANEL)
+        for device in data["platforms"].get(ALARM_CONTROL_PANEL)
     ]
     async_add_entities(entities)
 

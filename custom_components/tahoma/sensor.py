@@ -101,7 +101,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
-        for device in data["entities"].get(SENSOR)
+        for device in data["platforms"].get(SENSOR)
         if device.states
     ]
 

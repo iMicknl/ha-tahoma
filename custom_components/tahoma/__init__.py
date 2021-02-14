@@ -145,11 +145,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     await tahoma_coordinator.async_refresh()
 
-    entities = defaultdict(list)
-    entities[SCENE] = scenarios
+    platforms = defaultdict(list)
+    platforms[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
-        "entities": entities,
+        "platforms": platforms,
         "coordinator": tahoma_coordinator,
         "update_listener": entry.add_update_listener(update_listener),
     }
@@ -159,7 +159,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             device.widget
         ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
-            entities[platform].append(device)
+            platforms[platform].append(device)
             _LOGGER.debug(
                 "Added device (%s - %s - %s - %s)",
                 device.controllable_name,
@@ -182,7 +182,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
 
-    for platform in entities:
+    for platform in platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
@@ -259,7 +259,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
+    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
     unload_ok = all(
         await asyncio.gather(

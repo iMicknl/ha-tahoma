@@ -23,7 +23,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaLock(device.deviceurl, coordinator)
-        for device in data["entities"].get(LOCK)
+        for device in data["platforms"].get(LOCK)
     ]
 
     async_add_entities(entities)

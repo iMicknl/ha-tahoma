@@ -116,7 +116,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaCover(device.deviceurl, coordinator)
-        for device in data["entities"].get(COVER)
+        for device in data["platforms"].get(COVER)
     ]
 
     async_add_entities(entities)
