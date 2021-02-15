@@ -19,9 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_AUTO_MANU_MODE = "setAutoManuMode"
 COMMAND_SET_TARGET_MODE = "setTargetMode"
-COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1 = (
-    "setRoomAmbientTemperatureControlZone1"
-)
+COMMAND_SET_THERMOSTAT_SETTING_CONTROL_ZONE_1 = "setThermostatSettingControlZone1"
 
 MODBUS_YUTAKI_TARGET_MODE_STATE = "modbus:YutakiTargetModeState"
 MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE = (
@@ -31,6 +29,9 @@ MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE = (
     "modbus:ThermostatSettingStatusZone1State"
 )
 MODBUS_AUTO_MANU_MODE_ZONE_1_STATE = "modbus:AutoManuModeZone1State"
+MODBUS_THERMOSTAT_SETTING_CONTROL_ZONE_1_STATE = (
+    "modbus:ThermostatSettingControlZone1State"
+)
 
 PRESET_STATE_ECO = "eco"
 PRESET_STATE_COMFORT = "comfort"
@@ -128,12 +129,12 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE)
+        return self.select_state(MODBUS_THERMOSTAT_SETTING_CONTROL_ZONE_1_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
         await self.async_execute_command(
-            COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1, int(temperature)
+            COMMAND_SET_THERMOSTAT_SETTING_CONTROL_ZONE_1, int(temperature)
         )
