@@ -83,7 +83,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         await self.async_execute_command(
-            COMMAND_SET_AUTO_MANU_MODE, TAHOMA_TO_HVAC_MODE[hvac_mode]
+            COMMAND_SET_AUTO_MANU_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
 
     @property
@@ -99,7 +99,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         await self.async_execute_command(
-            COMMAND_SET_TARGET_MODE, TAHOMA_TO_PRESET_MODE[preset_mode]
+            COMMAND_SET_TARGET_MODE, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
 
     @property
