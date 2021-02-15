@@ -30,6 +30,7 @@ MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE = (
 MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE = (
     "modbus:ThermostatSettingStatusZone1State"
 )
+MODBUS_AUTO_MANU_MODE_ZONE_1_STATE = "modbus:AutoManuModeZone1State"
 
 PRESET_STATE_ECO = "eco"
 PRESET_STATE_COMFORT = "comfort"
@@ -73,7 +74,9 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODE[self.select_state("modbus:AutoManuModeZone1State")]
+        return TAHOMA_TO_HVAC_MODE[
+            self.select_state(MODBUS_AUTO_MANU_MODE_ZONE_1_STATE)
+        ]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -94,7 +97,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODE[self.select_state(MODBUS_YUTAKI_TARGET_MODE_STATE)]
+        return TAHOMA_TO_PRESET_MODE[self.select_state("modbus:YutakiModeState")]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
