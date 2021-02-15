@@ -72,7 +72,6 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-
         # Turn water heater off
         if operation_mode == STATE_OFF:
             return await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_STOP)
