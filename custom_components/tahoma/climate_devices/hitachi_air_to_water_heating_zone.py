@@ -127,5 +127,5 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
         await self.async_execute_command(
-            COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1, temperature
+            COMMAND_SET_ROOM_AMBIENT_TEMPERATURE_CONTROL_ZONE_1, int(temperature)
         )
