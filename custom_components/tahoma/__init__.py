@@ -199,14 +199,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         gateway_name = (
             f"{beautify_name(gateway.type.name)} hub"
             if isinstance(gateway.type, Enum)
-            else HUB_MANUFACTURER[hub]
+            else gateway.type
         )
 
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
             model=gateway_model,
-            default_manufacturer="Overkiz",
             manufacturer=HUB_MANUFACTURER[hub],
             name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
