@@ -120,7 +120,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def target_temperature_step(self) -> Optional[float]:
         """Return the supported step of target temperature."""
-        return 1
+        return 1.0
     
     @property
     def target_temperature(self):
