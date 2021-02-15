@@ -5,14 +5,21 @@ from homeassistant.components.water_heater import (
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
-from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, TEMP_CELSIUS
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    PRECISION_WHOLE,
+    STATE_OFF,
+    TEMP_CELSIUS,
+)
 
 from ..tahoma_device import TahomaDevice
 
 CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
-MODBUS_STATUS_DHW_SETTING_TEMPERATURE_STATE = "modbus:StatusDHWSettingTemperatureState"
 MODBUS_CONTROL_DHW_STATE = "modbus:ControlDHWState"
+MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE = (
+    "modbus:ControlDHWSettingTemperatureState"
+)
 
 COMMAND_SET_DHW_MODE = "setDHWMode"
 COMMAND_SET_CONTROL_DHW = "setControlDHW"
@@ -58,6 +65,28 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
         return 70.0
 
     @property
+    def precision(self):
+        """Return the precision of the system."""
+        return PRECISION_WHOLE
+
+    @property
+    def current_temperature(self):
+        """Return the current temperature."""
+        return self.select_state(CORE_DHW_TEMPERATURE_STATE)
+
+    @property
+    def target_temperature(self):
+        """Return the temperature we try to reach."""
+        return self.select_state(MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE)
+
+    async def async_set_temperature(self, **kwargs):
+        """Set new target temperature."""
+        temperature = kwargs.get(ATTR_TEMPERATURE)
+        await self.async_execute_command(
+            COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, int(temperature)
+        )
+
+    @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
         if self.select_state(MODBUS_CONTROL_DHW_STATE) == STATE_STOP:
@@ -83,21 +112,4 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
         # Change operation mode
         await self.async_execute_command(
             COMMAND_SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
-        )
-
-    @property
-    def current_temperature(self):
-        """Return the current temperature."""
-        return self.select_state(CORE_DHW_TEMPERATURE_STATE)
-
-    @property
-    def target_temperature(self):
-        """Return the temperature we try to reach."""
-        return self.select_state(MODBUS_STATUS_DHW_SETTING_TEMPERATURE_STATE)
-
-    async def async_set_temperature(self, **kwargs):
-        """Set new target temperature."""
-        target_temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
-            COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, target_temperature
         )
