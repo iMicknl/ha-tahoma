@@ -118,6 +118,11 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
         return 35.0
 
     @property
+    def target_temperature_step(self) -> Optional[float]:
+        """Return the supported step of target temperature."""
+        return 1
+    
+    @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
         return self.select_state(MODBUS_THERMOSTAT_SETTING_STATUS_ZONE_1_STATE)
