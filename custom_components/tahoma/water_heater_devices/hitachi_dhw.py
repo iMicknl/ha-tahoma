@@ -102,17 +102,3 @@ class HitachiDHW(TahomaDevice, WaterHeaterEntity):
         await self.async_execute_command(
             COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, target_temperature
         )
-
-    # @property
-    # def is_away_mode_on(self):
-    #     """Return true if away mode is on."""
-    #     control_dhw_state = self.select_state(MODBUS_CONTROL_DHW_STATE)
-    #     return True if control_dhw_state == STATE_STOP else False
-
-    # async def async_turn_away_mode_on(self):
-    #     """Turn away mode on."""
-    #     await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_STOP)
-
-    # async def async_turn_away_mode_off(self):
-    #     """Turn away mode off."""
-    #     await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_RUN)
