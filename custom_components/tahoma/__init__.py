@@ -32,6 +32,7 @@ from .const import (
     DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
+    HUB_MANUFACTURER,
     IGNORED_TAHOMA_TYPES,
     SUPPORTED_ENDPOINTS,
     TAHOMA_TYPES,
@@ -194,17 +195,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             if isinstance(gateway.sub_type, Enum)
             else None
         )
+
         gateway_name = (
             f"{beautify_name(gateway.type.name)} hub"
             if isinstance(gateway.type, Enum)
-            else None
+            else gateway.type
         )
 
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
             model=gateway_model,
-            manufacturer="Somfy",
+            manufacturer=HUB_MANUFACTURER[hub],
             name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
         )

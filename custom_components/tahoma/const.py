@@ -23,6 +23,16 @@ SUPPORTED_ENDPOINTS = {
     "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
 }
 
+HUB_MANUFACTURER = {
+    "Cozytouch": "Cozytouch",
+    "eedomus": "eedomus",
+    "Hi Kumo": "Hitachi",
+    "Rexel Energeasy Connect": "Rexel",
+    "Somfy Connexoon IO": "Somfy",
+    "Somfy Connexoon RTS": "Somfy",
+    "Somfy TaHoma": "Somfy",
+}
+
 MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
