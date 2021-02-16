@@ -146,7 +146,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     @staticmethod
     def _get_state(
         state: State,
-    ) -> Union[Dict[Any], List[Any], float, int, bool, str, None]:
+    ) -> Union[Dict[Any, Any], List[Any], float, int, bool, str, None]:
         """Cast string value to the right type."""
         if state.type in [DataType.JSON_ARRAY, DataType.JSON_OBJECT]:
             return json.loads(state.value)
