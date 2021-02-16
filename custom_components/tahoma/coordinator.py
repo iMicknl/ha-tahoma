@@ -25,6 +25,8 @@ TYPES = {
     DataType.STRING: str,
     DataType.FLOAT: float,
     DataType.BOOLEAN: bool,
+    DataType.JSON_ARRAY: json.loads,
+    DataType.JSON_OBJECT: json.loads,
 }
 
 _LOGGER = logging.getLogger(__name__)
@@ -148,9 +150,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         state: State,
     ) -> Union[Dict[Any, Any], List[Any], float, int, bool, str, None]:
         """Cast string value to the right type."""
-        if state.type in [DataType.JSON_ARRAY, DataType.JSON_OBJECT]:
-            return json.loads(state.value)
-        elif state.type != DataType.NONE:
+        if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)
         return state.value
