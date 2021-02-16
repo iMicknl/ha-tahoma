@@ -2,7 +2,7 @@
 from datetime import timedelta
 import json
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
@@ -144,7 +144,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
-    def _get_state(state: State) -> Union[float, int, bool, str, None]:
+    def _get_state(state: State) -> Union[Dict[Any], List[Any], float, int, bool, str, None]:
         """Cast string value to the right type."""
         if state.type in [DataType.JSON_ARRAY, DataType.JSON_OBJECT]:
             return json.loads(state.value)
