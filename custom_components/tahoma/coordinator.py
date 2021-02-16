@@ -1,5 +1,6 @@
 """Helpers to help coordinate updates."""
 from datetime import timedelta
+import json
 import logging
 from typing import Dict, List, Optional, Union
 
@@ -145,7 +146,9 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
     @staticmethod
     def _get_state(state: State) -> Union[float, int, bool, str, None]:
         """Cast string value to the right type."""
-        if state.type != DataType.NONE:
+        if state.type in [DataType.JSON_ARRAY, DataType.JSON_OBJECT]:
+            return json.loads(state.value)
+        elif state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)
         return state.value
