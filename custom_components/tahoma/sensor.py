@@ -4,6 +4,7 @@ from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
+    CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -49,8 +50,8 @@ DEVICE_CLASS_CO2 = "co2"
 DEVICE_CLASS_SUN_ENERGY = "sun_energy"
 DEVICE_CLASS_WIND_SPEED = "wind_speed"
 
-ICON_AIR_FILTER = "mdi:air-filter"
-ICON_PERIODIC_TABLE_CO2 = "mdi:periodic-table-co2"
+ICON_MOLECULE_CO = "mdi:molecule-co"
+ICON_MOLECULE_CO2 = "mdi:molecule-co2"
 ICON_SOLAR_POWER = "mdi:solar-power"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
@@ -91,6 +92,11 @@ UNITS = {
     "core:FossilEnergyInKWh": ENERGY_KILO_WATT_HOUR,
     "core:FossilEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
     "meters_seconds": SPEED_METERS_PER_SECOND,
+}
+
+UNITS_BY_DEVICE_CLASS = {
+    DEVICE_CLASS_CO2: CONCENTRATION_PARTS_PER_MILLION,
+    DEVICE_CLASS_CO: CONCENTRATION_PARTS_PER_MILLION,
 }
 
 
@@ -134,6 +140,8 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
+        if self.device_class in UNITS_BY_DEVICE_CLASS:
+            return UNITS_BY_DEVICE_CLASS.get(self.device_class)
         if self.device.attributes:
             attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
             return UNITS.get(attribute.value)
@@ -143,8 +151,8 @@ class TahomaSensor(TahomaDevice, Entity):
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
         icons = {
-            DEVICE_CLASS_CO: ICON_AIR_FILTER,
-            DEVICE_CLASS_CO2: ICON_PERIODIC_TABLE_CO2,
+            DEVICE_CLASS_CO: ICON_MOLECULE_CO,
+            DEVICE_CLASS_CO2: ICON_MOLECULE_CO2,
             DEVICE_CLASS_WIND_SPEED: ICON_WEATHER_WINDY,
             DEVICE_CLASS_SUN_ENERGY: ICON_SOLAR_POWER,
         }
