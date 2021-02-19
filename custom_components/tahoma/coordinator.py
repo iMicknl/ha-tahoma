@@ -59,24 +59,19 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
 
-        _LOGGER.debug(
-            "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
-        )
-
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
-            raise UpdateFailed("invalid_auth") from exception
+            raise UpdateFailed("Invalid authentication.") from exception
         except TooManyRequestsException as exception:
-            raise UpdateFailed("too_many_requests") from exception
+            raise UpdateFailed("Too many requests, try again later.") from exception
         except MaintenanceException as exception:
-            raise UpdateFailed("server_in_maintenance") from exception
+            raise UpdateFailed("Server is down for maintenance.") from exception
         except TimeoutError as exception:
-            raise UpdateFailed("cannot_connect") from exception
-        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
-            _LOGGER.debug(exception)
+            raise UpdateFailed("Failed to connect.") from exception
+        except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
             await self.client.login()
             self.devices = await self._get_devices()

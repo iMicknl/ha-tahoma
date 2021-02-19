@@ -33,9 +33,9 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     HUB_MANUFACTURER,
-    IGNORED_TAHOMA_TYPES,
+    IGNORED_TAHOMA_DEVICES,
     SUPPORTED_ENDPOINTS,
-    TAHOMA_TYPES,
+    TAHOMA_DEVICE_TO_PLATFORM,
 )
 from .coordinator import TahomaDataUpdateCoordinator
 
@@ -95,7 +95,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
-    hub = entry.data.get(CONF_HUB) or DEFAULT_HUB
+    hub = entry.data.get(CONF_HUB, DEFAULT_HUB)
     endpoint = SUPPORTED_ENDPOINTS[hub]
 
     session = async_get_clientsession(hass)
@@ -112,47 +112,55 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         scenarios = await client.get_scenarios()
         gateways = await client.get_gateways()
     except BadCredentialsException:
-        _LOGGER.error("invalid_auth")
+        _LOGGER.error("Invalid authentication.")
         return False
     except TooManyRequestsException as exception:
-        _LOGGER.error("too_many_requests")
+        _LOGGER.error("Too many requests, try again later.")
         raise ConfigEntryNotReady from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
-        _LOGGER.error("cannot_connect")
+        _LOGGER.error("Failed to connect.")
         raise ConfigEntryNotReady from exception
     except MaintenanceException as exception:
-        _LOGGER.error("server_in_maintenance")
+        _LOGGER.error("Server is down for maintenance.")
         raise ConfigEntryNotReady from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
 
-    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    update_interval = timedelta(
+        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    )
 
     tahoma_coordinator = TahomaDataUpdateCoordinator(
         hass,
         _LOGGER,
-        name="events",
+        name="device events",
         client=client,
         devices=devices,
-        update_interval=timedelta(seconds=update_interval),
+        update_interval=update_interval,
+    )
+
+    _LOGGER.debug(
+        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
     )
 
     await tahoma_coordinator.async_refresh()
 
-    entities = defaultdict(list)
-    entities[SCENE] = scenarios
+    platforms = defaultdict(list)
+    platforms[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
-        "entities": entities,
+        "platforms": platforms,
         "coordinator": tahoma_coordinator,
         "update_listener": entry.add_update_listener(update_listener),
     }
 
     for device in tahoma_coordinator.data.values():
-        platform = TAHOMA_TYPES.get(device.widget) or TAHOMA_TYPES.get(device.ui_class)
+        platform = TAHOMA_DEVICE_TO_PLATFORM.get(
+            device.widget
+        ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
-            entities[platform].append(device)
+            platforms[platform].append(device)
             _LOGGER.debug(
                 "Added device (%s - %s - %s - %s)",
                 device.controllable_name,
@@ -161,8 +169,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 device.deviceurl,
             )
         elif (
-            device.widget not in IGNORED_TAHOMA_TYPES
-            and device.ui_class not in IGNORED_TAHOMA_TYPES
+            device.widget not in IGNORED_TAHOMA_DEVICES
+            and device.ui_class not in IGNORED_TAHOMA_DEVICES
         ):
             _LOGGER.debug(
                 "Unsupported device detected (%s - %s - %s - %s)",
@@ -175,7 +183,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
 
-    for platform in entities:
+    for platform in platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
@@ -253,7 +261,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["entities"]
+    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
     unload_ok = all(
         await asyncio.gather(

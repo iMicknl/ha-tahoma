@@ -8,7 +8,7 @@ from homeassistant.components.water_heater import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_device import TahomaEntity
 
 CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
 CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeState"
@@ -40,7 +40,7 @@ MAP_OPERATION_MODES = {
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
 
 
-class DomesticHotWaterProduction(TahomaDevice, WaterHeaterEntity):
+class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
     @property

@@ -26,7 +26,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    climate_devices = [device for device in data["entities"].get(CLIMATE)]
+    climate_devices = [device for device in data["platforms"].get(CLIMATE)]
 
     entities = [
         TYPE[device.widget](device.deviceurl, coordinator)

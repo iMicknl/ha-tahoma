@@ -16,7 +16,7 @@ from homeassistant.helpers import entity_platform
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaLight(device.deviceurl, coordinator)
-        for device in data["entities"].get(LIGHT)
+        for device in data["platforms"].get(LIGHT)
     ]
 
     async_add_entities(entities)
@@ -54,7 +54,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     )
 
 
-class TahomaLight(TahomaDevice, LightEntity):
+class TahomaLight(TahomaEntity, LightEntity):
     """Representation of a TaHoma Light."""
 
     def __init__(self, tahoma_device, controller):

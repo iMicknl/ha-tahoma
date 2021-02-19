@@ -24,7 +24,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_device import TahomaDevice
+from ..tahoma_device import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ MAP_PRESET_TEMPERATURES = {
 }
 
 
-class SomfyThermostat(TahomaDevice, ClimateEntity):
+class SomfyThermostat(TahomaEntity, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
