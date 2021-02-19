@@ -1,7 +1,8 @@
 """Helpers to help coordinate updates."""
 from datetime import timedelta
+import json
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
@@ -24,6 +25,8 @@ TYPES = {
     DataType.STRING: str,
     DataType.FLOAT: float,
     DataType.BOOLEAN: bool,
+    DataType.JSON_ARRAY: json.loads,
+    DataType.JSON_OBJECT: json.loads,
 }
 
 _LOGGER = logging.getLogger(__name__)
@@ -138,7 +141,9 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
-    def _get_state(state: State) -> Union[float, int, bool, str, None]:
+    def _get_state(
+        state: State,
+    ) -> Union[Dict[Any, Any], List[Any], float, int, bool, str, None]:
         """Cast string value to the right type."""
         if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))
