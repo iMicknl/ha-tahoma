@@ -11,7 +11,7 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_device import TahomaEntity
+from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 

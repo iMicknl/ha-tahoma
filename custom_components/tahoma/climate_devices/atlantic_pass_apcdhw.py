@@ -15,7 +15,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_device import TahomaEntity
+from ..tahoma_entity import TahomaEntity
 
 BOOST_ON_STATE = "on"
 BOOST_OFF_STATE = "off"

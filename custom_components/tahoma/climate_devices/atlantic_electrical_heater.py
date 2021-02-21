@@ -14,7 +14,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_device import TahomaEntity
+from ..tahoma_entity import TahomaEntity
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
