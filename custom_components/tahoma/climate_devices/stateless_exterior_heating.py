@@ -10,7 +10,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_device import TahomaEntity
+from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
