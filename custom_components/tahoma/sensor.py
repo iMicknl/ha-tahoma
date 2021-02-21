@@ -25,7 +25,7 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -101,14 +101,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
-        for device in data["entities"].get(SENSOR)
+        for device in data["platforms"].get(SENSOR)
         if device.states
     ]
 
     async_add_entities(entities)
 
 
-class TahomaSensor(TahomaDevice, Entity):
+class TahomaSensor(TahomaEntity, Entity):
     """Representation of a TaHoma Sensor."""
 
     @property

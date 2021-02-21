@@ -36,13 +36,13 @@ HUB_MANUFACTURER = {
 MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
-IGNORED_TAHOMA_TYPES = [
+IGNORED_TAHOMA_DEVICES = [
     "ProtocolGateway",
     "Pod",
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
-TAHOMA_TYPES = {
+TAHOMA_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,

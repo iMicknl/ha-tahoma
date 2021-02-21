@@ -1,7 +1,8 @@
 """Helpers to help coordinate updates."""
 from datetime import timedelta
+import json
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
@@ -24,6 +25,8 @@ TYPES = {
     DataType.STRING: str,
     DataType.FLOAT: float,
     DataType.BOOLEAN: bool,
+    DataType.JSON_ARRAY: json.loads,
+    DataType.JSON_OBJECT: json.loads,
 }
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,24 +59,19 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
 
-        _LOGGER.debug(
-            "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
-        )
-
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
-            raise UpdateFailed("invalid_auth") from exception
+            raise UpdateFailed("Invalid authentication.") from exception
         except TooManyRequestsException as exception:
-            raise UpdateFailed("too_many_requests") from exception
+            raise UpdateFailed("Too many requests, try again later.") from exception
         except MaintenanceException as exception:
-            raise UpdateFailed("server_in_maintenance") from exception
+            raise UpdateFailed("Server is down for maintenance.") from exception
         except TimeoutError as exception:
-            raise UpdateFailed("cannot_connect") from exception
-        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
-            _LOGGER.debug(exception)
+            raise UpdateFailed("Failed to connect.") from exception
+        except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
             await self.client.login()
             self.devices = await self._get_devices()
@@ -143,7 +141,9 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
-    def _get_state(state: State) -> Union[float, int, bool, str, None]:
+    def _get_state(
+        state: State,
+    ) -> Union[Dict[Any, Any], List[Any], float, int, bool, str, None]:
         """Cast string value to the right type."""
         if state.type != DataType.NONE:
             caster = TYPES.get(DataType(state.type))

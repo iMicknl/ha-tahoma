@@ -15,7 +15,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_device import TahomaEntity
 
 BOOST_ON_STATE = "on"
 BOOST_OFF_STATE = "off"
@@ -70,7 +70,7 @@ MAP_PRESET_MODES = {
 MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 
 
-class AtlanticPassAPCDHW(TahomaDevice, ClimateEntity):
+class AtlanticPassAPCDHW(TahomaEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
     @property
