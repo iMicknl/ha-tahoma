@@ -33,12 +33,15 @@ MODBUS_THERMOSTAT_SETTING_CONTROL_ZONE_1_STATE = (
     "modbus:ThermostatSettingControlZone1State"
 )
 
+HVAC_STATE_MANU = "manu"
+HVAC_STATE_AUTO = "auto"
+
 PRESET_STATE_ECO = "eco"
 PRESET_STATE_COMFORT = "comfort"
 
 TAHOMA_TO_HVAC_MODE = {
-    "manu": HVAC_MODE_HEAT,
-    "auto": HVAC_MODE_AUTO,
+    HVAC_STATE_MANU: HVAC_MODE_HEAT,
+    HVAC_STATE_AUTO: HVAC_MODE_AUTO,
 }
 
 HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
