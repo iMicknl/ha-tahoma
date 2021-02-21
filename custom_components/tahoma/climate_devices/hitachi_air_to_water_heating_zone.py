@@ -98,7 +98,7 @@ class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODE[self.select_state("modbus:YutakiModeState")]
+        return TAHOMA_TO_PRESET_MODE[self.select_state(MODBUS_YUTAKI_TARGET_MODE_STATE)]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
