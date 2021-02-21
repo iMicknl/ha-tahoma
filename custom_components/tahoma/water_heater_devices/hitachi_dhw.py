@@ -12,7 +12,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
@@ -41,7 +41,7 @@ TAHOMA_TO_OPERATION_MODE = {
 OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
 
 
-class HitachiDHW(TahomaDevice, WaterHeaterEntity):
+class HitachiDHW(TahomaEntity, WaterHeaterEntity):
     """Representation of a HitachiDHW Water Heater."""
 
     @property

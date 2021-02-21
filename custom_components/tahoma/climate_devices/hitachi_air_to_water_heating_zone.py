@@ -13,7 +13,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ TAHOMA_TO_PRESET_MODE = {
 PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
 
 
-class HitachiAirToWaterHeatingZone(TahomaDevice, ClimateEntity):
+class HitachiAirToWaterHeatingZone(TahomaEntity, ClimateEntity):
     """Representation of HitachiAirToWaterHeatingZone."""
 
     @property
