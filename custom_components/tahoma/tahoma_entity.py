@@ -123,6 +123,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
             "model": model,
             "sw_version": self.device.controllable_name,
             "via_device": self.get_gateway_id(),
+            "suggested_area": self.coordinator.areas[self.device.placeoid],
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
