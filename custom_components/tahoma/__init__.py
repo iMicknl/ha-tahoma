@@ -111,6 +111,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         devices = await client.get_devices()
         scenarios = await client.get_scenarios()
         gateways = await client.get_gateways()
+        places = await client.get_places()
     except BadCredentialsException:
         _LOGGER.error("Invalid authentication.")
         return False
@@ -137,6 +138,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         name="device events",
         client=client,
         devices=devices,
+        places=places,
         update_interval=update_interval,
     )
 
