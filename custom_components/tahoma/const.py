@@ -64,8 +64,9 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "GarageDoor": COVER,
     "GasSensor": SENSOR,
     "Gate": COVER,
-    "Generic": COVER,
     "GenericSensor": SENSOR,
+    "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,
