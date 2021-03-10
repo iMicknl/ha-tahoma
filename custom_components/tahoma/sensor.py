@@ -134,7 +134,7 @@ class TahomaSensor(TahomaDevice, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-        if self.device.attributes:
+        if self.device.attributes and self.device.attributes[CORE_MEASURED_VALUE_TYPE]:
             attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
             return UNITS.get(attribute.value)
         return None
