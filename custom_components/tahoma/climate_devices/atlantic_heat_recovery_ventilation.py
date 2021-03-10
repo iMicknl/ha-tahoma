@@ -16,8 +16,11 @@ from homeassistant.components.climate.const import (
     PRESET_COMFORT,
     PRESET_ECO,
 )
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.const import EVENT_HOMEASSISTANT_START, STATE_UNKNOWN, TEMP_CELSIUS
+from homeassistant.core import callback
+from homeassistant.helpers.event import async_track_state_change
 
+from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
 
 FAN_BOOST = "boost"
@@ -49,10 +52,78 @@ _LOGGER = logging.getLogger(__name__)
 class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     """Representation of a AtlanticHeatRecoveryVentilation device."""
 
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+        """Init method."""
+        super().__init__(device_url, coordinator)
+
+        self._temp_sensor_entity_id = None
+        self._current_temperature = None
+
+    async def async_added_to_hass(self):
+        """Register temperature sensor after added to hass."""
+        await super().async_added_to_hass()
+
+        base_url = self.get_base_device_url()
+        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        self._temp_sensor_entity_id = next(
+            (
+                entity_id
+                for entity_id, entry in entity_registry.entities.items()
+                if entry.unique_id == f"{base_url}#4"
+            ),
+            None,
+        )
+
+        if self._temp_sensor_entity_id:
+            async_track_state_change(
+                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
+            )
+
+        else:
+            _LOGGER.warning(
+                "Temperature sensor could not be found for entity %s", self.name
+            )
+
+        @callback
+        def _async_startup(event):
+            """Init on startup."""
+            if self._temp_sensor_entity_id:
+                temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
+                if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
+                    self.update_temp(temp_sensor_state)
+
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
+
+        self.schedule_update_ha_state(True)
+
+    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state) -> None:
+        """Handle temperature changes."""
+        if new_state is None or old_state == new_state:
+            return
+
+        self.update_temp(new_state)
+        self.schedule_update_ha_state()
+
+    @callback
+    def update_temp(self, state):
+        """Update thermostat with latest state from sensor."""
+        if state is None or state.state == STATE_UNKNOWN:
+            return
+
+        try:
+            self._current_temperature = float(state.state)
+        except ValueError as ex:
+            _LOGGER.error("Unable to update from sensor: %s", ex)
+
+    @property
+    def current_temperature(self) -> Optional[float]:
+        """Return the current temperature."""
+        return self._current_temperature
+
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS  # TODO Investigate why this is required..
+        return TEMP_CELSIUS
 
     @property
     def supported_features(self) -> int:
