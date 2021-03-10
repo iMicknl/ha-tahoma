@@ -20,7 +20,7 @@ from homeassistant.const import (
 )
 
 from .const import DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_entity import TahomaEntity
 
 COMMAND_ALARM_OFF = "alarmOff"
 COMMAND_ALARM_ON = "alarmOn"
@@ -81,12 +81,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaAlarmControlPanel(device.deviceurl, coordinator)
-        for device in data["entities"].get(ALARM_CONTROL_PANEL)
+        for device in data["platforms"].get(ALARM_CONTROL_PANEL)
     ]
     async_add_entities(entities)
 
 
-class TahomaAlarmControlPanel(TahomaDevice, AlarmControlPanelEntity):
+class TahomaAlarmControlPanel(TahomaEntity, AlarmControlPanelEntity):
     """Representation of a TaHoma Alarm Control Panel."""
 
     @property
