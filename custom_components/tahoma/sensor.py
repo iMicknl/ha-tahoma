@@ -4,6 +4,7 @@ from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
+    CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -27,6 +28,12 @@ from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
 
+try:
+    from homeassistant.const import DEVICE_CLASS_CO, DEVICE_CLASS_CO2  # Added in 2021.4
+except ImportError:
+    DEVICE_CLASS_CO = "carbon_monoxide"
+    DEVICE_CLASS_CO2 = "carbon_dioxide"
+
 _LOGGER = logging.getLogger(__name__)
 
 CORE_CO2_CONCENTRATION_STATE = "core:CO2ConcentrationState"
@@ -44,13 +51,12 @@ CORE_THERMAL_ENERGY_CONSUMPTION_STATE = "core:ThermalEnergyConsumptionState"
 CORE_WATER_CONSUMPTION_STATE = "core:WaterConsumptionState"
 CORE_WINDSPEED_STATE = "core:WindSpeedState"
 
-DEVICE_CLASS_CO = "co"
-DEVICE_CLASS_CO2 = "co2"
+
 DEVICE_CLASS_SUN_ENERGY = "sun_energy"
 DEVICE_CLASS_WIND_SPEED = "wind_speed"
 
-ICON_AIR_FILTER = "mdi:air-filter"
-ICON_PERIODIC_TABLE_CO2 = "mdi:periodic-table-co2"
+ICON_MOLECULE_CO = "mdi:molecule-co"
+ICON_MOLECULE_CO2 = "mdi:molecule-co2"
 ICON_SOLAR_POWER = "mdi:solar-power"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
@@ -91,6 +97,11 @@ UNITS = {
     "core:FossilEnergyInKWh": ENERGY_KILO_WATT_HOUR,
     "core:FossilEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
     "meters_seconds": SPEED_METERS_PER_SECOND,
+}
+
+UNITS_BY_DEVICE_CLASS = {  # Remove after 2021.4 release
+    DEVICE_CLASS_CO2: CONCENTRATION_PARTS_PER_MILLION,
+    DEVICE_CLASS_CO: CONCENTRATION_PARTS_PER_MILLION,
 }
 
 
@@ -134,17 +145,24 @@ class TahomaSensor(TahomaEntity, Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement of this entity, if any."""
-        if self.device.attributes:
+        if (
+            self.device.attributes
+            and CORE_MEASURED_VALUE_TYPE in self.device.attributes
+        ):
             attribute = self.device.attributes[CORE_MEASURED_VALUE_TYPE]
             return UNITS.get(attribute.value)
+
+        if self.device_class in UNITS_BY_DEVICE_CLASS:
+            return UNITS_BY_DEVICE_CLASS.get(self.device_class)
+
         return None
 
     @property
     def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend, if any."""
         icons = {
-            DEVICE_CLASS_CO: ICON_AIR_FILTER,
-            DEVICE_CLASS_CO2: ICON_PERIODIC_TABLE_CO2,
+            DEVICE_CLASS_CO: ICON_MOLECULE_CO,
+            DEVICE_CLASS_CO2: ICON_MOLECULE_CO2,
             DEVICE_CLASS_WIND_SPEED: ICON_WEATHER_WINDY,
             DEVICE_CLASS_SUN_ENERGY: ICON_SOLAR_POWER,
         }
