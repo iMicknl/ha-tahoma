@@ -18,7 +18,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 FAN_BOOST = "boost"
 FAN_AWAY = "away"
@@ -46,7 +46,7 @@ PRESET_MODES = [PRESET_COMFORT, PRESET_ECO, PRESET_PROG, PRESET_MANUAL]
 _LOGGER = logging.getLogger(__name__)
 
 
-class AtlanticHeatRecoveryVentilation(TahomaDevice, ClimateEntity):
+class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     """Representation of a AtlanticHeatRecoveryVentilation device."""
 
     @property
