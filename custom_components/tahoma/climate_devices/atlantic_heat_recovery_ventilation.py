@@ -16,6 +16,7 @@ from homeassistant.components.climate.const import (
     PRESET_COMFORT,
     PRESET_ECO,
 )
+from homeassistant.const import TEMP_CELSIUS
 
 from ..tahoma_device import TahomaDevice
 
@@ -47,6 +48,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class AtlanticHeatRecoveryVentilation(TahomaDevice, ClimateEntity):
     """Representation of a AtlanticHeatRecoveryVentilation device."""
+
+    @property
+    def temperature_unit(self) -> str:
+        """Return the unit of measurement used by the platform."""
+        return TEMP_CELSIUS  # TODO Investigate why this is required..
 
     @property
     def supported_features(self) -> int:
@@ -153,7 +159,7 @@ class AtlanticHeatRecoveryVentilation(TahomaDevice, ClimateEntity):
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        raise [*TAHOMA_TO_FAN_MODE]
+        return [*FAN_MODE_TO_TAHOMA]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
