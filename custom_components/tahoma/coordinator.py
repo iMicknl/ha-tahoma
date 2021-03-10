@@ -16,7 +16,7 @@ from pyhoma.exceptions import (
     NotAuthenticatedException,
     TooManyRequestsException,
 )
-from pyhoma.models import DataType, Device, State
+from pyhoma.models import DataType, Device, Place, State
 
 TYPES = {
     DataType.NONE: None,
@@ -43,6 +43,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         name: str,
         client: TahomaClient,
         devices: List[Device],
+        places: Place,
         update_interval: Optional[timedelta] = None,
     ):
         """Initialize global data updater."""
@@ -58,25 +59,21 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
-
-        _LOGGER.debug(
-            "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
-        )
+        self.areas = self.places_to_area(places)
 
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
-            raise UpdateFailed("invalid_auth") from exception
+            raise UpdateFailed("Invalid authentication.") from exception
         except TooManyRequestsException as exception:
-            raise UpdateFailed("too_many_requests") from exception
+            raise UpdateFailed("Too many requests, try again later.") from exception
         except MaintenanceException as exception:
-            raise UpdateFailed("server_in_maintenance") from exception
+            raise UpdateFailed("Server is down for maintenance.") from exception
         except TimeoutError as exception:
-            raise UpdateFailed("cannot_connect") from exception
-        except (ServerDisconnectedError, NotAuthenticatedException) as exception:
-            _LOGGER.debug(exception)
+            raise UpdateFailed("Failed to connect.") from exception
+        except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
             await self.client.login()
             self.devices = await self._get_devices()
@@ -154,3 +151,15 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             caster = TYPES.get(DataType(state.type))
             return caster(state.value)
         return state.value
+
+    def places_to_area(self, place):
+        """Convert places with sub_places to a flat dictionary."""
+        areas = {}
+        if isinstance(place, Place):
+            areas[place.oid] = place.label
+
+        if isinstance(place.sub_places, list):
+            for sub_place in place.sub_places:
+                areas.update(self.places_to_area(sub_place))
+
+        return areas

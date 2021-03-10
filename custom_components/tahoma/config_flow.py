@@ -36,7 +36,7 @@ DATA_SCHEMA = vol.Schema(
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for TaHoma."""
+    """Handle a config flow for Somfy TaHoma."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
@@ -52,7 +52,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
 
-        hub = user_input.get(CONF_HUB) or DEFAULT_HUB
+        hub = user_input.get(CONF_HUB, DEFAULT_HUB)
         endpoint = SUPPORTED_ENDPOINTS[hub]
 
         async with TahomaClient(username, password, api_url=endpoint) as client:
@@ -113,15 +113,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
-    """Handle a option flow for TaHoma."""
+    """Handle a option flow for Somfy TaHoma."""
 
     def __init__(self, config_entry):
         """Initialize options flow."""
         self.config_entry = config_entry
-        self.options = dict(config_entry.options)
-
-        if self.options.get(CONF_UPDATE_INTERVAL) is None:
-            self.options[CONF_UPDATE_INTERVAL] = DEFAULT_UPDATE_INTERVAL
 
     async def async_step_init(self, user_input=None):
         """Manage the Somfy TaHoma options."""
@@ -130,8 +126,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_update_interval(self, user_input=None):
         """Manage the options regarding interval updates."""
         if user_input is not None:
-            self.options[CONF_UPDATE_INTERVAL] = user_input[CONF_UPDATE_INTERVAL]
-            return self.async_create_entry(title="", data=self.options)
+            return self.async_create_entry(title="", data=user_input)
 
         return self.async_show_form(
             step_id="update_interval",
@@ -139,7 +134,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         CONF_UPDATE_INTERVAL,
-                        default=self.options.get(CONF_UPDATE_INTERVAL),
+                        default=self.config_entry.options.get(
+                            CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
+                        ),
                     ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL))
                 }
             ),

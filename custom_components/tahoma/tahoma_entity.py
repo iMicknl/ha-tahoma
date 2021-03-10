@@ -31,7 +31,7 @@ STATE_DEAD = "dead"
 _LOGGER = logging.getLogger(__name__)
 
 
-class TahomaDevice(CoordinatorEntity, Entity):
+class TahomaEntity(CoordinatorEntity, Entity):
     """Representation of a TaHoma device entity."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
@@ -123,6 +123,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
             "model": model,
             "sw_version": self.device.controllable_name,
             "via_device": self.get_gateway_id(),
+            "suggested_area": self.coordinator.areas[self.device.placeoid],
         }
 
     def select_command(self, *commands: str) -> Optional[str]:

@@ -5,7 +5,7 @@ from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
 from homeassistant.const import STATE_LOCKED
 
 from .const import DOMAIN
-from .tahoma_device import TahomaDevice
+from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,13 +23,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entities = [
         TahomaLock(device.deviceurl, coordinator)
-        for device in data["entities"].get(LOCK)
+        for device in data["platforms"].get(LOCK)
     ]
 
     async_add_entities(entities)
 
 
-class TahomaLock(TahomaDevice, LockEntity):
+class TahomaLock(TahomaEntity, LockEntity):
     """Representation of a TaHoma Lock."""
 
     async def async_unlock(self, **_):

@@ -36,13 +36,13 @@ HUB_MANUFACTURER = {
 MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
-IGNORED_TAHOMA_TYPES = [
+IGNORED_TAHOMA_DEVICES = [
     "ProtocolGateway",
     "Pod",
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
-TAHOMA_TYPES = {
+TAHOMA_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
@@ -64,8 +64,9 @@ TAHOMA_TYPES = {
     "GarageDoor": COVER,
     "GasSensor": SENSOR,
     "Gate": COVER,
-    "Generic": COVER,
     "GenericSensor": SENSOR,
+    "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,
