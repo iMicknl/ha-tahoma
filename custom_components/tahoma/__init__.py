@@ -151,6 +151,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
+    platforms["sensor"] = []
 
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
