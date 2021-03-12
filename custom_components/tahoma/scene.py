@@ -17,7 +17,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaScene(scene, coordinator.client) for scene in data["entities"].get(SCENE)
+        TahomaScene(scene, coordinator.client) for scene in data["platforms"].get(SCENE)
     ]
     async_add_entities(entities)
 
