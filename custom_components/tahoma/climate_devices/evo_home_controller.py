@@ -85,13 +85,22 @@ class EvoHomeController(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        tomorrow = dt_util.now() + timedelta(days=1)
-        # until_end_of_day = datetime.combine(tomorrow, time.min) - dt_util.now()
+        if preset_mode == PRESET_DAY_OFF:
+            today_end_of_day = dt_util.now().replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ) + timedelta(days=1)
+            time_interval = today_end_of_day
+
+        if preset_mode == PRESET_HOLIDAYS:
+            one_week_from_now = dt_util.now().replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ) + timedelta(days=7)
+            time_interval = one_week_from_now
 
         await self.async_execute_command(
             COMMAND_SET_OPERATING_MODE,
             PRESET_MODES_TO_TAHOMA[preset_mode],
-            tomorrow.strftime("%Y/%m/%d %H:%M"),
+            time_interval.strftime("%Y/%m/%d %H:%M"),
         )
 
     @property
