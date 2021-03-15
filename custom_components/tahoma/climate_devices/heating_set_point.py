@@ -1,5 +1,5 @@
-"""Support for Atlantic Electrical Heater IO controller."""
-from typing import List, Optional
+"""Support for EvoHome HeatingSetPoint."""
+from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import SUPPORT_TARGET_TEMPERATURE, ClimateEntity
 from homeassistant.components.climate.const import HVAC_MODE_HEAT
@@ -14,11 +14,11 @@ from ..tahoma_entity import TahomaEntity
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 
-CORE_TEMPERATURE_STATE = "core:TemperatureState"
-CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_MAX_SETTABLE_VALUE = "core:MaxSettableValue"
-CORE_MIN_SETTABLE_VALUE = "core:MinSettableValue"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
+CORE_MIN_SETTABLE_VALUE = "core:MinSettableValue"
+CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+CORE_TEMPERATURE_STATE = "core:TemperatureState"
 
 UNITS = {
     "core:TemperatureInCelcius": TEMP_CELSIUS,
@@ -89,3 +89,11 @@ class HeatingSetPoint(TahomaEntity, ClimateEntity):
         await self.async_execute_command(
             COMMAND_SET_TARGET_TEMPERATURE, float(temperature)
         )
+
+    @property
+    def device_info(self) -> Dict[str, Any]:
+        """Return the device state attributes."""
+        device_info = super().device_info or {}
+        device_info["manufacturer"] = "EvoHome"
+
+        return device_info
