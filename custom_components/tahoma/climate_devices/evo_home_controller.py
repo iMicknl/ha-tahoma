@@ -7,14 +7,15 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
-    PRESET_AWAY,
-    PRESET_ECO,
     PRESET_NONE,
 )
 from homeassistant.const import TEMP_CELSIUS
 import homeassistant.util.dt as dt_util
 
 from ..tahoma_entity import TahomaEntity
+
+PRESET_DAY_OFF = "day-off"
+PRESET_HOLIDAYS = "holidays"
 
 COMMAND_SET_OPERATING_MODE = "setOperatingMode"
 
@@ -24,8 +25,8 @@ TAHOMA_TO_HVAC_MODES = {"auto": HVAC_MODE_AUTO, "off": HVAC_MODE_OFF}
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 TAHOMA_TO_PRESET_MODES = {
-    "day-off": PRESET_ECO,
-    "holidays": PRESET_AWAY,
+    "day-off": PRESET_DAY_OFF,
+    "holidays": PRESET_HOLIDAYS,
 }
 PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
 
