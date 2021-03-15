@@ -119,14 +119,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         gateways = await client.get_gateways()
         places = await client.get_places()
     except BadCredentialsException:
-        _LOGGER.error("invalid_auth")
         hass.async_create_task(
             hass.config_entries.flow.async_init(
                 DOMAIN,
                 context={CONF_SOURCE: SOURCE_REAUTH, CONF_UNIQUE_ID: entry.unique_id},
-                data=entry.data,
+                data={"entry": entry},
             )
         )
+
         _LOGGER.error("Invalid authentication.")
         return False
     except TooManyRequestsException as exception:

@@ -1,6 +1,6 @@
 """Config flow for TaHoma integration."""
 import logging
-from typing import Optional
+from typing import Any, Dict
 
 from aiohttp import ClientError
 from homeassistant import config_entries
@@ -113,13 +113,20 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception(exception)
             return self.async_abort(reason="unknown")
 
-    async def async_step_reauth(self, user_input: Optional[dict] = None):
-        """Handle a reauthorization flow request."""
-        errors = {}
+    async def async_step_reauth(self, data=Dict[str, Any]) -> Dict[str, Any]:
+        """Handle initiation of re-authentication with Somfy TaHoma."""
+        self.entry = data["entry"]
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Handle re-authentication with Somfy TaHoma."""
+        errors: Dict[str, str] = {}
 
         if user_input is not None:
             try:
-                return await self.async_validate_input(user_input)
+                await self.async_validate_input(user_input)
             except TooManyRequestsException:
                 errors["base"] = "too_many_requests"
             except BadCredentialsException:
@@ -131,22 +138,34 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.exception(exception)
-
-            if errors is None:
-                for entry in self._async_current_entries():
-                    if entry.unique_id == self.unique_id:
-                        self.hass.config_entries.async_update_entry(
-                            entry, data=user_input
-                        )
-
-                        return self.async_abort(reason="reauth_successful")
-
-            if errors:
-                return self.async_abort(reason=errors["base"])
+            else:
+                data = self.entry.data.copy()
+                self.hass.config_entries.async_update_entry(
+                    self.entry,
+                    data={
+                        **data,
+                        CONF_USERNAME: user_input[CONF_USERNAME],
+                        CONF_PASSWORD: user_input[CONF_PASSWORD],
+                    },
+                )
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.entry.entry_id)
+                )
+                return self.async_abort(reason="reauth_successful")
 
         return self.async_show_form(
-            step_id="reauth",
-            data_schema=DATA_SCHEMA,
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_USERNAME, default=self.entry.data[CONF_USERNAME]
+                    ): str,
+                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_HUB, default=DEFAULT_HUB): vol.In(
+                        SUPPORTED_ENDPOINTS.keys()
+                    ),
+                }
+            ),
             errors=errors,
         )
 
