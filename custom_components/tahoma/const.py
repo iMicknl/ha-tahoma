@@ -65,6 +65,7 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "GasSensor": SENSOR,
     "Gate": COVER,
     "GenericSensor": SENSOR,
+    "HeatingSetPoint": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
     "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,

@@ -152,6 +152,19 @@ class TahomaEntity(CoordinatorEntity, Entity):
         """Return True if a state exists in self."""
         return self.select_state(*states) is not None
 
+    def select_attribute(self, *attributes) -> Optional[str]:
+        """Select first existing active state in a list of states."""
+        if self.device.attributes:
+            return next(
+                (
+                    attribute.value
+                    for attribute in self.device.attributes
+                    if attribute.name in list(attributes)
+                ),
+                None,
+            )
+        return None
+
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
         try:
