@@ -11,6 +11,7 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     PRESET_NONE,
 )
+import homeassistant.util.dt as dt_util
 
 from ..tahoma_entity import TahomaEntity
 
@@ -77,7 +78,7 @@ class EvoHomeController(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        date_until = datetime.now() + datetime.timedelta(days=1)
+        date_until = dt_util.now() + datetime.timedelta(days=1)
 
         await self.async_execute_command(
             COMMAND_SET_OPERATING_MODE,
