@@ -1,5 +1,5 @@
 """Support for EvoHomeController."""
-from datetime import datetime
+from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import SUPPORT_PRESET_MODE, ClimateEntity
@@ -11,6 +11,7 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     PRESET_NONE,
 )
+from homeassistant.const import TEMP_CELSIUS
 import homeassistant.util.dt as dt_util
 
 from ..tahoma_entity import TahomaEntity
@@ -31,6 +32,11 @@ PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
 
 class EvoHomeController(TahomaEntity, ClimateEntity):
     """Representation of EvoHomeController device."""
+
+    @property
+    def temperature_unit(self) -> str:
+        """Return the unit of measurement used by the platform."""
+        return TEMP_CELSIUS
 
     @property
     def supported_features(self) -> int:
@@ -78,12 +84,13 @@ class EvoHomeController(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        date_until = dt_util.now() + datetime.timedelta(days=1)
+        tomorrow = dt_util.now() + timedelta(days=1)
+        # until_end_of_day = datetime.combine(tomorrow, time.min) - dt_util.now()
 
         await self.async_execute_command(
             COMMAND_SET_OPERATING_MODE,
             PRESET_MODES_TO_TAHOMA[preset_mode],
-            date_until.strftime("%Y/%m/%d %H:%M"),
+            tomorrow.strftime("%Y/%m/%d %H:%M"),
         )
 
     @property
