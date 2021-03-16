@@ -17,6 +17,7 @@ CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 
 IO_DHW_MODE_STATE = "io:DHWModeState"
+IO_DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
 IO_MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
 
 STATE_MANUAL = "manual"
@@ -27,19 +28,22 @@ STATE_RELAUNCH = "relaunch"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_DHW_MODE = "setDHWMode"
 COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
+COMMAND_SET_BOOST_MODE_DURATION = "setBoostModeDuration"
+COMMAND_SET_AWAY_MODE_DURATION = "setAwayModeDuration"
 
 MODE_AUTO = "autoMode"
+MODE_BOOST = "boost"
 MODE_MANUAL_ECO_ACTIVE = "manualEcoActive"
 MODE_MANUAL_ECO_INACTIVE = "manualEcoInactive"
 
-MAP_OPERATION_MODES = {
+TAHOMA_TO_OPERATION_MODE = {
     MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
     MODE_MANUAL_ECO_INACTIVE: STATE_MANUAL,
     MODE_AUTO: STATE_AUTO,
-    "boost": STATE_HIGH_DEMAND,
+    MODE_BOOST: STATE_HIGH_DEMAND,
 }
 
-MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
+OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
 
 
 class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
@@ -63,15 +67,15 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        if self.select_state("io:DHWBoostModeState") == STATE_ON:
+        if self.select_state(IO_DHW_BOOST_MODE_STATE) == STATE_ON:
             return STATE_HIGH_DEMAND
 
-        return MAP_OPERATION_MODES[self.select_state(IO_DHW_MODE_STATE)]
+        return TAHOMA_TO_OPERATION_MODE[self.select_state(IO_DHW_MODE_STATE)]
 
     @property
     def operation_list(self):
         """Return the list of available operation modes."""
-        return [*MAP_REVERSE_OPERATION_MODES]
+        return [*OPERATION_MODE_TO_TAHOMA]
 
     @property
     def current_temperature(self):
@@ -102,6 +106,18 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
+        if (
+            self.current_operation == STATE_HIGH_DEMAND
+            and operation_mode != STATE_HIGH_DEMAND
+        ):
+            await self.async_execute_command(
+                COMMAND_SET_CURRENT_OPERATING_MODE,
+                {
+                    STATE_RELAUNCH: STATE_OFF,
+                    STATE_ABSENCE: STATE_OFF,
+                },
+            )
+
         if operation_mode == STATE_HIGH_DEMAND:
             await self.async_execute_command(
                 COMMAND_SET_CURRENT_OPERATING_MODE,
@@ -110,20 +126,10 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
                     STATE_ABSENCE: STATE_OFF,
                 },
             )
-            await self.async_execute_command("setBoostModeDuration", 1)
+            await self.async_execute_command(COMMAND_SET_BOOST_MODE_DURATION, 1)
         else:
-            # Turn boost mode off
-            if self.current_operation == STATE_HIGH_DEMAND:
-                await self.async_execute_command(
-                    COMMAND_SET_CURRENT_OPERATING_MODE,
-                    {
-                        STATE_RELAUNCH: STATE_OFF,
-                        STATE_ABSENCE: STATE_OFF,
-                    },
-                )
-
             await self.async_execute_command(
-                COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
+                COMMAND_SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
             )
 
     @property
@@ -148,7 +154,7 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
             },
         )
 
-        await self.async_execute_command("setAwayModeDuration", 2)
+        await self.async_execute_command(COMMAND_SET_AWAY_MODE_DURATION, 2)
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
@@ -160,4 +166,4 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
             },
         )
 
-        await self.async_execute_command("setAwayModeDuration", 0)
+        await self.async_execute_command(COMMAND_SET_AWAY_MODE_DURATION, 0)
