@@ -2,6 +2,7 @@
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
     STATE_ECO,
+    STATE_HIGH_DEMAND,
     SUPPORT_AWAY_MODE,
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
@@ -35,6 +36,7 @@ MAP_OPERATION_MODES = {
     MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
     MODE_MANUAL_ECO_INACTIVE: STATE_MANUAL,
     MODE_AUTO: STATE_AUTO,
+    "boost": STATE_HIGH_DEMAND,
 }
 
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
@@ -61,6 +63,9 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
+        if self.select_state("io:DHWBoostModeState") == STATE_ON:
+            return STATE_HIGH_DEMAND
+
         return MAP_OPERATION_MODES[self.select_state(IO_DHW_MODE_STATE)]
 
     @property
@@ -97,9 +102,29 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-        await self.async_execute_command(
-            COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
-        )
+        if operation_mode == STATE_HIGH_DEMAND:
+            await self.async_execute_command(
+                COMMAND_SET_CURRENT_OPERATING_MODE,
+                {
+                    STATE_RELAUNCH: STATE_ON,
+                    STATE_ABSENCE: STATE_OFF,
+                },
+            )
+            await self.async_execute_command("setBoostModeDuration", 1)
+        else:
+            # Turn boost mode off
+            if self.current_operation == STATE_HIGH_DEMAND:
+                await self.async_execute_command(
+                    COMMAND_SET_CURRENT_OPERATING_MODE,
+                    {
+                        STATE_RELAUNCH: STATE_OFF,
+                        STATE_ABSENCE: STATE_OFF,
+                    },
+                )
+
+            await self.async_execute_command(
+                COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
+            )
 
     @property
     def supported_features(self):
@@ -123,6 +148,8 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
             },
         )
 
+        await self.async_execute_command("setAwayModeDuration", 2)
+
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
         await self.async_execute_command(
@@ -132,3 +159,5 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
                 STATE_ABSENCE: STATE_OFF,
             },
         )
+
+        await self.async_execute_command("setAwayModeDuration", 0)
