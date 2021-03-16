@@ -43,16 +43,20 @@ execute_command:
       integration: tahoma
       domain: cover
   fields:
-    commands:
+    command:
       name: Command
       description: Name of the command
       required: true
       example: "setIntensity"
+      selector:
+        text:
     args:
       name: Arguments
       description: List of arguments
       required: false
       example: [30]
+      selector:
+        object:
 
 get_execution_history:
   name: Get execution history
