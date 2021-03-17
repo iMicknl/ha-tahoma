@@ -35,11 +35,12 @@ COMMAND_SET_OPERATING_MODE = "setOperatingMode"
 
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
-PRESET_BOOST = "boost"
-PRESET_COMFORT1 = "comfort 1"
-PRESET_COMFORT2 = "comfort 2"
+PRESET_BOOST = "Boost"
+PRESET_COMFORT1 = "Comfort -1"
+PRESET_COMFORT2 = "Comfort -2"
 PRESET_FROST_PROTECTION = "Frost Protection"
 PRESET_SECURED = "Secured"
 
@@ -66,11 +67,12 @@ TAHOMA_TO_PRESET_MODE = {v: k for k, v in PRESET_MODE_TO_TAHOMA.items()}
 
 # Map TaHoma HVAC modes to Home Assistant HVAC modes
 TAHOMA_TO_HVAC_MODE = {
+    "on": HVAC_MODE_HEAT,
+    "off": HVAC_MODE_OFF,
     "auto": HVAC_MODE_AUTO,
     "basic": HVAC_MODE_HEAT,
     "standby": HVAC_MODE_OFF,
     "internal": HVAC_MODE_AUTO,
-    "off": HVAC_MODE_OFF,
 }
 
 HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
@@ -175,7 +177,10 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
+        if CORE_OPERATING_MODE_STATE in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
+        if CORE_ON_OFF_STATE in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -196,7 +201,7 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         await self.async_execute_command(
-            COMMAND_SET_HEATING_LEVEL, TAHOMA_TO_PRESET_MODE[preset_mode]
+            COMMAND_SET_HEATING_LEVEL, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
 
     async def async_turn_on(self) -> None:
@@ -210,7 +215,8 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
     @property
     def target_temperature(self) -> None:
         """Return the temperature."""
-        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        if CORE_TARGET_TEMPERATURE_STATE in self.device.states:
+            return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):
