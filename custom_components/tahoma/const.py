@@ -9,18 +9,20 @@ from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
-CONF_HUB = "hub"
 DOMAIN = "tahoma"
 
-DEFAULT_HUB = "Somfy TaHoma"
+CONF_HUB = "hub"
+DEFAULT_HUB = "Somfy TaHoma (Europe)"
+
 SUPPORTED_ENDPOINTS = {
     "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "eedomus": "https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Hi Kumo": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Rexel Energeasy Connect": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Somfy Connexoon IO": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
-    "Somfy Connexoon RTS": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy Connexoon (Europe)": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy Connexoon (Australia)": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Somfy TaHoma (Europe)": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy TaHoma (North America)": "https://ha401-1.overkiz.com/enduser-mobile-web/enduserAPI/",
 }
 
 HUB_MANUFACTURER = {
@@ -28,9 +30,10 @@ HUB_MANUFACTURER = {
     "eedomus": "eedomus",
     "Hi Kumo": "Hitachi",
     "Rexel Energeasy Connect": "Rexel",
-    "Somfy Connexoon IO": "Somfy",
-    "Somfy Connexoon RTS": "Somfy",
-    "Somfy TaHoma": "Somfy",
+    "Somfy Connexoon (Europe)": "Somfy",
+    "Somfy Connexoon (Australia)": "Somfy",
+    "Somfy TaHoma (Europe)": "Somfy",
+    "Somfy TaHoma (North America)": "Somfy",
 }
 
 MIN_UPDATE_INTERVAL = 30
