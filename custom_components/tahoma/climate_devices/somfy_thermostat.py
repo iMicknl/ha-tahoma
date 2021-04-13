@@ -142,7 +142,11 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
     @callback
     def update_temp(self, state):
         """Update thermostat with latest state from sensor."""
-        if state is None or state.state == STATE_UNKNOWN or state.state == STATE_UNAVAILABLE:
+        if (
+            state is None
+            or state.state == STATE_UNKNOWN
+            or state.state == STATE_UNAVAILABLE
+        ):
             return
 
         try:
