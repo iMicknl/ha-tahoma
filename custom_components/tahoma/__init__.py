@@ -108,10 +108,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     try:
         await client.login()
-        devices = await client.get_devices()
-        scenarios = await client.get_scenarios()
-        gateways = await client.get_gateways()
-        places = await client.get_places()
+
+        tasks = [
+            client.get_devices(),
+            client.get_scenarios(),
+            client.get_gateways(),
+            client.get_places(),
+        ]
+        devices, scenarios, gateways, places = await asyncio.gather(*tasks)
     except BadCredentialsException:
         _LOGGER.error("Invalid authentication.")
         return False
