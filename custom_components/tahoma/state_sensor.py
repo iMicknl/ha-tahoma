@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional, Union
 
 from homeassistant.components import sensor
-from homeassistant.const import PERCENTAGE, SIGNAL_STRENGTH_DECIBELS
+from homeassistant.const import PERCENTAGE, SIGNAL_STRENGTH_DECIBELS, VOLUME_LITERS
 from homeassistant.helpers.entity import Entity
 
 from .coordinator import TahomaDataUpdateCoordinator
@@ -41,8 +41,15 @@ supported_states = {
     "core:ExpectedNumberOfShowerState": StateDescription(
         key="core:ExpectedNumberOfShowerState",
         name="Expected Number Of Shower",
-        icon="mdi-shower-head",
+        icon="mdi:shower-head",
         value=lambda value: round(value),
+    ),
+    "core:WaterConsumptionState": StateDescription(
+        key="core:WaterConsumptionState",
+        name="Water Consumption",
+        icon="mdi:water",
+        value=lambda value: round(value),
+        unit=VOLUME_LITERS,
     ),
 }
 
