@@ -41,7 +41,6 @@ execute_command:
   target:
     entity:
       integration: tahoma
-      domain: cover
   fields:
     command:
       name: Command
