@@ -28,6 +28,13 @@ STATE_BATTERY_LOW = "low"
 STATE_BATTERY_VERY_LOW = "verylow"
 STATE_DEAD = "dead"
 
+BATTERY_MAP = {
+    STATE_BATTERY_FULL: 100,
+    STATE_BATTERY_NORMAL: 75,
+    STATE_BATTERY_LOW: 25,
+    STATE_BATTERY_VERY_LOW: 10,
+}
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -75,17 +82,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
 
         if self.has_state(CORE_BATTERY_STATE):
             battery_state = self.select_state(CORE_BATTERY_STATE)
-
-            if battery_state == STATE_BATTERY_FULL:
-                battery_state = 100
-            elif battery_state == STATE_BATTERY_NORMAL:
-                battery_state = 75
-            elif battery_state == STATE_BATTERY_LOW:
-                battery_state = 25
-            elif battery_state == STATE_BATTERY_VERY_LOW:
-                battery_state = 10
-
-            attr[ATTR_BATTERY_LEVEL] = battery_state
+            attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
 
         if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
