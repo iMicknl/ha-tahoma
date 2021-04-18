@@ -224,12 +224,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     async def handle_execute_command(call):
         """Handle execute command service."""
         entity_registry = await hass.helpers.entity_registry.async_get_registry()
-        entity = entity_registry.entities.get(call.data.get("entity_id"))
-        await tahoma_coordinator.client.execute_command(
-            entity.unique_id,
-            Command(call.data.get("command"), call.data.get("args")),
-            "Home Assistant Service",
-        )
+
+        for entity_id in call.data.get("entity_id"):
+            entity = entity_registry.entities.get(entity_id)
+            await tahoma_coordinator.client.execute_command(
+                entity.unique_id,
+                Command(call.data.get("command"), call.data.get("args")),
+                "Home Assistant Service",
+            )
 
     service.async_register_admin_service(
         hass,
@@ -238,12 +240,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         handle_execute_command,
         vol.Schema(
             {
-                vol.Required("entity_id"): cv.string,
+                vol.Required("entity_id"): [cv.entity_id],
                 vol.Required("command"): cv.string,
                 vol.Optional("args", default=[]): vol.All(
                     cv.ensure_list, [vol.Any(str, int)]
                 ),
-            }
+            },
         ),
     )
 
