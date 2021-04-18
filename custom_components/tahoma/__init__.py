@@ -9,7 +9,7 @@ from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import (
     config_validation as cv,
@@ -20,6 +20,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
     BadCredentialsException,
+    InvalidCommandException,
     MaintenanceException,
     TooManyRequestsException,
 )
@@ -221,17 +222,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             sw_version=gateway.connectivity.protocol_version,
         )
 
-    async def handle_execute_command(call):
+    async def handle_execute_command(call: ServiceCall):
         """Handle execute command service."""
         entity_registry = await hass.helpers.entity_registry.async_get_registry()
 
         for entity_id in call.data.get("entity_id"):
             entity = entity_registry.entities.get(entity_id)
-            await tahoma_coordinator.client.execute_command(
-                entity.unique_id,
-                Command(call.data.get("command"), call.data.get("args")),
-                "Home Assistant Service",
-            )
+
+            try:
+                await tahoma_coordinator.client.execute_command(
+                    entity.unique_id,
+                    Command(call.data.get("command"), call.data.get("args")),
+                    "Home Assistant Service",
+                )
+            except InvalidCommandException as exception:
+                _LOGGER.error(exception)
 
     service.async_register_admin_service(
         hass,
