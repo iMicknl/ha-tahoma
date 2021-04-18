@@ -7,16 +7,10 @@ import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import SOURCE_IMPORT, SOURCE_REAUTH, ConfigEntry
-from homeassistant.const import (
-    CONF_EXCLUDE,
-    CONF_PASSWORD,
-    CONF_SOURCE,
-    CONF_UNIQUE_ID,
-    CONF_USERNAME,
-)
+from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
+from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
@@ -118,17 +112,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         scenarios = await client.get_scenarios()
         gateways = await client.get_gateways()
         places = await client.get_places()
-    except BadCredentialsException:
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                DOMAIN,
-                context={CONF_SOURCE: SOURCE_REAUTH, CONF_UNIQUE_ID: entry.unique_id},
-                data={"entry": entry},
-            )
-        )
-
+    except BadCredentialsException as exception:
         _LOGGER.error("Invalid authentication.")
-        return False
+        raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
         _LOGGER.error("Too many requests, try again later.")
         raise ConfigEntryNotReady from exception

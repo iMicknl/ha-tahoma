@@ -1,6 +1,5 @@
 """Config flow for TaHoma integration."""
 import logging
-from typing import Any, Dict
 
 from aiohttp import ClientError
 from homeassistant import config_entries
@@ -27,20 +26,19 @@ from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
-DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_USERNAME): str,
-        vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_HUB, default=DEFAULT_HUB): vol.In(SUPPORTED_ENDPOINTS.keys()),
-    }
-)
-
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Somfy TaHoma."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+
+    def __init__(self):
+        """Start the Somfy TaHoma config flow."""
+        self._reauth_entry = None
+        self._username = None
+        self._password = None
+        self._hub = DEFAULT_HUB
 
     @staticmethod
     @callback
@@ -58,19 +56,37 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         async with TahomaClient(username, password, api_url=endpoint) as client:
             await client.login()
-            return self.async_create_entry(
-                title=username,
+
+            if not self._reauth_entry:
+                return self.async_create_entry(
+                    title=username,
+                    data=user_input,
+                )
+
+            self.hass.config_entries.async_update_entry(
+                self._reauth_entry,
                 data=user_input,
+                unique_id=user_input.get(CONF_USERNAME),
             )
+
+            # Reload the config entry otherwise devices will remain unavailable
+            self.hass.async_create_task(
+                self.hass.config_entries.async_reload(self._reauth_entry.entry_id)
+            )
+            return self.async_abort(reason="reauth_successful")
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step via config flow."""
         errors = {}
 
         if user_input:
+            self._username = user_input[CONF_USERNAME]
+            self._hub = user_input[CONF_HUB]
+
             await self.async_set_unique_id(user_input.get(CONF_USERNAME))
 
-            self._abort_if_unique_id_configured()
+            if not self._reauth_entry:
+                self._abort_if_unique_id_configured()
 
             try:
                 return await self.async_validate_input(user_input)
@@ -87,7 +103,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception(exception)
 
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA, errors=errors
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_USERNAME, default=self._username): str,
+                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_HUB, default=self._hub): vol.In(
+                        SUPPORTED_ENDPOINTS.keys()
+                    ),
+                }
+            ),
+            errors=errors,
         )
 
     async def async_step_import(self, import_config: dict):
@@ -113,61 +139,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception(exception)
             return self.async_abort(reason="unknown")
 
-    async def async_step_reauth(self, data=Dict[str, Any]) -> Dict[str, Any]:
-        """Handle initiation of re-authentication with Somfy TaHoma."""
-        self.entry = data["entry"]
-        return await self.async_step_reauth_confirm()
-
-    async def async_step_reauth_confirm(
-        self, user_input: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Handle re-authentication with Somfy TaHoma."""
-        errors: Dict[str, str] = {}
-
-        if user_input is not None:
-            try:
-                await self.async_validate_input(user_input)
-            except TooManyRequestsException:
-                errors["base"] = "too_many_requests"
-            except BadCredentialsException:
-                errors["base"] = "invalid_auth"
-            except (TimeoutError, ClientError):
-                errors["base"] = "cannot_connect"
-            except MaintenanceException:
-                errors["base"] = "server_in_maintenance"
-            except Exception as exception:  # pylint: disable=broad-except
-                errors["base"] = "unknown"
-                _LOGGER.exception(exception)
-            else:
-                data = self.entry.data.copy()
-                self.hass.config_entries.async_update_entry(
-                    self.entry,
-                    data={
-                        **data,
-                        CONF_USERNAME: user_input[CONF_USERNAME],
-                        CONF_PASSWORD: user_input[CONF_PASSWORD],
-                    },
-                )
-                self.hass.async_create_task(
-                    self.hass.config_entries.async_reload(self.entry.entry_id)
-                )
-                return self.async_abort(reason="reauth_successful")
-
-        return self.async_show_form(
-            step_id="reauth_confirm",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_USERNAME, default=self.entry.data[CONF_USERNAME]
-                    ): str,
-                    vol.Required(CONF_PASSWORD): str,
-                    vol.Required(CONF_HUB, default=DEFAULT_HUB): vol.In(
-                        SUPPORTED_ENDPOINTS.keys()
-                    ),
-                }
-            ),
-            errors=errors,
+    async def async_step_reauth(self, user_input=None):
+        """Perform reauth if the user credentials have changed."""
+        self._reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
         )
+        self._username = user_input[CONF_USERNAME]
+        self._hub = user_input[CONF_HUB]
+
+        return await self.async_step_user()
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):

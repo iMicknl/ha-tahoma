@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from pyhoma.client import TahomaClient
@@ -66,13 +67,13 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
-            raise UpdateFailed("Invalid authentication.") from exception
+            raise ConfigEntryAuthFailed("Invalid authentication") from exception
         except TooManyRequestsException as exception:
-            raise UpdateFailed("Too many requests, try again later.") from exception
+            raise UpdateFailed("Too many requests, try again later") from exception
         except MaintenanceException as exception:
-            raise UpdateFailed("Server is down for maintenance.") from exception
+            raise UpdateFailed("Server is down for maintenance") from exception
         except TimeoutError as exception:
-            raise UpdateFailed("Failed to connect.") from exception
+            raise UpdateFailed("Failed to connect") from exception
         except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
             await self.client.login()
