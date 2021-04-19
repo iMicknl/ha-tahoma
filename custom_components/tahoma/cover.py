@@ -152,7 +152,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         None is unknown, 0 is closed, 100 is fully open.
         """
 
-        if self._is_horizontal():
+        if self.has_state(CORE_DEPLOYMENT_STATE):
             position = self.select_state(CORE_DEPLOYMENT_STATE)
         else:
             position = 100 - self.select_state(
@@ -181,7 +181,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        if self._is_horizontal():
+        if self.has_command(COMMAND_SET_DEPLOYMENT):
             position = kwargs.get(ATTR_POSITION, 0)
             await self.async_execute_command(COMMAND_SET_DEPLOYMENT, position)
         else:
@@ -252,7 +252,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        if self._is_horizontal():
+        if self.has_command(COMMAND_DEPLOY):
             await self.async_execute_command(COMMAND_DEPLOY)
         else:
             await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
@@ -263,7 +263,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        if self._is_horizontal():
+        if self.has_command(COMMAND_UNDEPLOY):
             await self.async_execute_command(COMMAND_UNDEPLOY)
         else:
             await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
@@ -397,7 +397,3 @@ class TahomaCover(TahomaEntity, CoverEntity):
             supported_features |= SUPPORT_MY
 
         return supported_features
-
-    def _is_horizontal(self):
-        """Return true if the device need a reversed position that can not be obtained via the API."""
-        return "Horizontal" in self.device.widget
