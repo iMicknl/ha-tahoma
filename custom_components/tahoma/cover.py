@@ -36,16 +36,19 @@ COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
 COMMAND_CLOSE_SLATS = "closeSlats"
 COMMAND_DOWN = "down"
+COMMAND_DEPLOY = "deploy"
 COMMAND_MY = "my"
 COMMAND_OPEN = "open"
 COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
+COMMAND_SET_DEPLOYMENT = "setDeployment"
 COMMAND_SET_ORIENTATION = "setOrientation"
 COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 COMMAND_SET_POSITION = "setPosition"
 COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
+COMMAND_UNDEPLOY = "undeploy"
 COMMAND_UP = "up"
 
 COMMANDS_STOP = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
@@ -148,20 +151,20 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = self.select_state(
-            CORE_CLOSURE_STATE,
-            CORE_DEPLOYMENT_STATE,
-            CORE_PEDESTRIAN_POSITION_STATE,
-            CORE_TARGET_CLOSURE_STATE,
-            CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
-        )
+
+        if self._is_horizontal():
+            position = self.select_state(CORE_DEPLOYMENT_STATE)
+        else:
+            position = 100 - self.select_state(
+                CORE_CLOSURE_STATE,
+                CORE_PEDESTRIAN_POSITION_STATE,
+                CORE_TARGET_CLOSURE_STATE,
+                CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
+            )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
         if position is None or position < 0 or position > 100:
             return None
-
-        if not self._reversed_position_device():
-            position = 100 - position
 
         return position
 
@@ -178,21 +181,18 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        position = 100 - kwargs.get(ATTR_POSITION, 0)
-
-        if self._reversed_position_device():
+        if self._is_horizontal():
             position = kwargs.get(ATTR_POSITION, 0)
-
-        await self.async_execute_command(
-            self.select_command(*COMMANDS_SET_POSITION), position
-        )
+            await self.async_execute_command(COMMAND_SET_DEPLOYMENT, position)
+        else:
+            position = 100 - kwargs.get(ATTR_POSITION, 0)
+            await self.async_execute_command(
+                self.select_command(*COMMANDS_SET_POSITION), position
+            )
 
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
-
-        if self._reversed_position_device():
-            position = kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
             COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
@@ -252,7 +252,10 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
+        if self._is_horizontal():
+            await self.async_execute_command(COMMAND_DEPLOY)
+        else:
+            await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
@@ -260,7 +263,10 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
+        if self._is_horizontal():
+            await self.async_execute_command(COMMAND_UNDEPLOY)
+        else:
+            await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
 
     async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
@@ -390,6 +396,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
         return supported_features
 
-    def _reversed_position_device(self):
+    def _is_horizontal(self):
         """Return true if the device need a reversed position that can not be obtained via the API."""
         return "Horizontal" in self.device.widget
