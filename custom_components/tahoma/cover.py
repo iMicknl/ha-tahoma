@@ -376,16 +376,18 @@ class TahomaCover(TahomaEntity, CoverEntity):
         if self.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.has_command(*COMMANDS_SET_POSITION):
+        if self.has_command(*COMMANDS_SET_POSITION) or self.has_command(
+            COMMAND_SET_DEPLOYMENT
+        ):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(*COMMANDS_OPEN):
+        if self.has_command(*COMMANDS_OPEN) or self.has_command(COMMAND_DEPLOY):
             supported_features |= SUPPORT_OPEN
 
             if self.has_command(*COMMANDS_STOP):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(*COMMANDS_CLOSE):
+        if self.has_command(*COMMANDS_CLOSE) or self.has_command(COMMAND_UNDEPLOY):
             supported_features |= SUPPORT_CLOSE
 
         if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
