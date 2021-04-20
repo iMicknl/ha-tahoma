@@ -211,7 +211,8 @@ class TahomaCover(TahomaEntity, CoverEntity):
         """Return if the cover is closed."""
 
         if self.has_state(CORE_DEPLOYMENT_STATE):
-            return self.select_state(CORE_DEPLOYMENT_STATE) == STATE_OPENED
+            # Logic for horizontal devices is reversed
+            return self.select_state(CORE_OPEN_CLOSED_STATE) == STATE_OPENED
 
         state = self.select_state(
             CORE_OPEN_CLOSED_STATE,
@@ -221,7 +222,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
             CORE_OPEN_CLOSED_UNKNOWN_STATE,
             MYFOX_SHUTTER_STATUS_STATE,
         )
-
         if state is not None:
             return state == STATE_CLOSED
 
