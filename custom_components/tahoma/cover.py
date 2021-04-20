@@ -210,10 +210,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
-        if self.has_state(CORE_DEPLOYMENT_STATE):
-            # Logic for horizontal devices is reversed
-            return self.select_state(CORE_OPEN_CLOSED_STATE) == STATE_OPENED
-
         state = self.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
