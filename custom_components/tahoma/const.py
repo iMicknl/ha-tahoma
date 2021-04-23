@@ -79,6 +79,7 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "Pergola": COVER,
     "RainSensor": BINARY_SENSOR,
     "RollerShutter": COVER,
+    "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
