@@ -17,6 +17,7 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import (
     ATTR_TEMPERATURE,
     EVENT_HOMEASSISTANT_START,
+    STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
@@ -24,7 +25,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ MAP_PRESET_TEMPERATURES = {
 }
 
 
-class SomfyThermostat(TahomaDevice, ClimateEntity):
+class SomfyThermostat(TahomaEntity, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
@@ -141,7 +142,7 @@ class SomfyThermostat(TahomaDevice, ClimateEntity):
     @callback
     def update_temp(self, state):
         """Update thermostat with latest state from sensor."""
-        if state is None or state.state == STATE_UNKNOWN:
+        if state is None or state.state in [STATE_UNKNOWN, STATE_UNAVAILABLE]:
             return
 
         try:

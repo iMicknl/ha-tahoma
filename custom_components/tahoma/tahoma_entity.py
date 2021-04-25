@@ -28,10 +28,17 @@ STATE_BATTERY_LOW = "low"
 STATE_BATTERY_VERY_LOW = "verylow"
 STATE_DEAD = "dead"
 
+BATTERY_MAP = {
+    STATE_BATTERY_FULL: 100,
+    STATE_BATTERY_NORMAL: 75,
+    STATE_BATTERY_LOW: 25,
+    STATE_BATTERY_VERY_LOW: 10,
+}
+
 _LOGGER = logging.getLogger(__name__)
 
 
-class TahomaDevice(CoordinatorEntity, Entity):
+class TahomaEntity(CoordinatorEntity, Entity):
     """Representation of a TaHoma device entity."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
@@ -75,17 +82,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
 
         if self.has_state(CORE_BATTERY_STATE):
             battery_state = self.select_state(CORE_BATTERY_STATE)
-
-            if battery_state == STATE_BATTERY_FULL:
-                battery_state = 100
-            elif battery_state == STATE_BATTERY_NORMAL:
-                battery_state = 75
-            elif battery_state == STATE_BATTERY_LOW:
-                battery_state = 25
-            elif battery_state == STATE_BATTERY_VERY_LOW:
-                battery_state = 10
-
-            attr[ATTR_BATTERY_LEVEL] = battery_state
+            attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
 
         if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
@@ -123,6 +120,7 @@ class TahomaDevice(CoordinatorEntity, Entity):
             "model": model,
             "sw_version": self.device.controllable_name,
             "via_device": self.get_gateway_id(),
+            "suggested_area": self.coordinator.areas[self.device.placeoid],
         }
 
     def select_command(self, *commands: str) -> Optional[str]:
@@ -150,6 +148,19 @@ class TahomaDevice(CoordinatorEntity, Entity):
     def has_state(self, *states: str) -> bool:
         """Return True if a state exists in self."""
         return self.select_state(*states) is not None
+
+    def select_attribute(self, *attributes) -> Optional[str]:
+        """Select first existing active state in a list of states."""
+        if self.device.attributes:
+            return next(
+                (
+                    attribute.value
+                    for attribute in self.device.attributes
+                    if attribute.name in list(attributes)
+                ),
+                None,
+            )
+        return None
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""

@@ -23,16 +23,26 @@ SUPPORTED_ENDPOINTS = {
     "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
 }
 
+HUB_MANUFACTURER = {
+    "Cozytouch": "Cozytouch",
+    "eedomus": "eedomus",
+    "Hi Kumo": "Hitachi",
+    "Rexel Energeasy Connect": "Rexel",
+    "Somfy Connexoon IO": "Somfy",
+    "Somfy Connexoon RTS": "Somfy",
+    "Somfy TaHoma": "Somfy",
+}
+
 MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
-IGNORED_TAHOMA_TYPES = [
+IGNORED_TAHOMA_DEVICES = [
     "ProtocolGateway",
     "Pod",
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
-TAHOMA_TYPES = {
+TAHOMA_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
     "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "AirSensor": SENSOR,
@@ -50,13 +60,16 @@ TAHOMA_TYPES = {
     "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
+    "EvoHomeController": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
     "ExteriorScreen": COVER,
     "ExteriorVenetianBlind": COVER,
     "GarageDoor": COVER,
     "GasSensor": SENSOR,
     "Gate": COVER,
-    "Generic": COVER,
     "GenericSensor": SENSOR,
+    "HeatingSetPoint": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
+    "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,
@@ -67,6 +80,7 @@ TAHOMA_TYPES = {
     "Pergola": COVER,
     "RainSensor": BINARY_SENSOR,
     "RollerShutter": COVER,
+    "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
