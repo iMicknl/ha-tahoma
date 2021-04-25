@@ -74,8 +74,6 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
             None,
         )
 
-        print(f"{base_url}#{str(new_subsystem_id)}")
-
         if self._temp_sensor_entity_id:
             async_track_state_change(
                 self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
@@ -116,6 +114,16 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
             self._current_temperature = float(state.state)
         except ValueError as ex:
             _LOGGER.error("Unable to update from sensor: %s", ex)
+
+    @property
+    def min_temp(self) -> float:
+        """Return the minimum temperature."""
+        return self.select_state("core:MinimumHeatingTargetTemperatureState")
+
+    @property
+    def max_temp(self) -> float:
+        """Return the maximum temperature."""
+        return self.select_state("core:MaximumHeatingTargetTemperatureState")
 
     @property
     def current_temperature(self) -> Optional[float]:
