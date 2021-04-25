@@ -6,6 +6,7 @@ from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
     AtlanticPassAPCHeatingAndCoolingZone,
 )
+from .climate_devices.atlantic_pass_apc_zone_control import AtlanticPassAPCZoneControl
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.evo_home_controller import EvoHomeController
@@ -20,6 +21,7 @@ from .const import DOMAIN
 TYPE = {
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
     "AtlanticPassAPCHeatingAndCoolingZone": AtlanticPassAPCHeatingAndCoolingZone,
+    "AtlanticPassAPCZoneControl": AtlanticPassAPCZoneControl,
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
     "SomfyThermostat": SomfyThermostat,
     "DimmerExteriorHeating": DimmerExteriorHeating,

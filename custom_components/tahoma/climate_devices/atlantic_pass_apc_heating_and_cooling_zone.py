@@ -15,7 +15,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 PRESET_PROG = "prog"
 PRESET_MANUAL = "manual"
@@ -27,7 +27,7 @@ PRESET_MODES = [PRESET_COMFORT, PRESET_ECO, PRESET_PROG, PRESET_MANUAL]
 # (io:AtlanticPassAPCZoneControlZoneComponent and io:AtlanticPassAPCHeatingAndCoolingZoneComponent)
 
 
-class AtlanticPassAPCHeatingAndCoolingZone(TahomaDevice, ClimateEntity):
+class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
     @property
