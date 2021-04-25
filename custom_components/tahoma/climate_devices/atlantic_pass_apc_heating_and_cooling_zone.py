@@ -1,34 +1,63 @@
-"""Support for AtlanticPassAPCHeatingAndCoolingZone."""
+"""Support for Atlantic Pass APC Heating And Cooling Zone."""
+import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
-    HVAC_MODE_HEAT,
-    HVAC_MODE_OFF,
     SUPPORT_PRESET_MODE,
     SUPPORT_TARGET_TEMPERATURE,
     ClimateEntity,
 )
 from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
-    PRESET_COMFORT,
-    PRESET_ECO,
+    HVAC_MODE_HEAT,
+    HVAC_MODE_OFF,
+    PRESET_NONE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..tahoma_entity import TahomaEntity
 
-PRESET_PROG = "prog"
-PRESET_MANUAL = "manual"
+_LOGGER = logging.getLogger(__name__)
 
-HVAC_MODES = [HVAC_MODE_OFF, HVAC_MODE_HEAT, HVAC_MODE_AUTO]
-PRESET_MODES = [PRESET_COMFORT, PRESET_ECO, PRESET_PROG, PRESET_MANUAL]
+COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
+COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
+COMMAND_SET_OPERATING_MODE = "setOperatingMode"
 
-# AtlanticPassAPCHeatingAndCoolingZone comes in minimal two flavours with slightly different commands.
-# (io:AtlanticPassAPCZoneControlZoneComponent and io:AtlanticPassAPCHeatingAndCoolingZoneComponent)
+CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
+CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+CORE_ON_OFF_STATE = "core:OnOffState"
+IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
+
+PRESET_HOLIDAYS = "holidays"
+
+PRESET_STATE_FROST_PROTECTION = "frostprotection"
+PRESET_STATE_OFF = "off"
+PRESET_STATE_ECO = "eco"
+PRESET_STATE_BOOST = "boost"
+PRESET_STATE_COMFORT = "comfort"
+PRESET_STATE_COMFORT1 = "comfort-1"
+PRESET_STATE_COMFORT2 = "comfort-2"
+
+# Map Home Assistant presets to TaHoma presets
+PRESET_MODE_TO_TAHOMA = {
+    PRESET_HOLIDAYS: "holidays",
+    PRESET_NONE: "off",
+}
+
+TAHOMA_TO_PRESET_MODE = {v: k for k, v in PRESET_MODE_TO_TAHOMA.items()}
+
+# Map TaHoma HVAC modes to Home Assistant HVAC modes
+TAHOMA_TO_HVAC_MODE = {
+    "off": HVAC_MODE_OFF,
+    "manu": HVAC_MODE_HEAT,
+    "internalScheduling": HVAC_MODE_AUTO,  # prog
+}
+
+HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
 class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
-    """Representation of TaHoma IO Atlantic Electrical Heater."""
+    """Representation of Atlantic Electrical Towel Dryer."""
 
     @property
     def temperature_unit(self) -> str:
@@ -38,79 +67,80 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+        supported_features = 0
 
-    @property
-    def hvac_mode(self) -> str:
-        """Return hvac operation ie. heat, cool mode."""
-        if self.select_state("core:DerogationOnOffState") == "on":
-            return HVAC_MODE_HEAT
-        else:
-            return HVAC_MODE_OFF
+        supported_features |= SUPPORT_PRESET_MODE
+        supported_features |= SUPPORT_TARGET_TEMPERATURE
+
+        return supported_features
 
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return [HVAC_MODES]
+        return [*HVAC_MODE_TO_TAHOMA]
+
+    @property
+    def hvac_mode(self) -> str:
+        """Return hvac operation ie. heat, cool mode."""
+        if CORE_OPERATING_MODE_STATE in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
+        if CORE_ON_OFF_STATE in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        if hvac_mode == HVAC_MODE_HEAT:
-            await self.async_execute_command("setDerogationOnOffState", "on")
+        await self.async_execute_command(
+            "setPassAPCHeatingMode", HVAC_MODE_TO_TAHOMA[hvac_mode]
+        )
 
-        if hvac_mode == HVAC_MODE_OFF:
-            await self.async_execute_command("setPassAPCHeatingMode", "stop")
-            await self.async_execute_command("setDerogationOnOffState", "off")
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes."""
+        return [*PRESET_MODE_TO_TAHOMA]
+
+    @property
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp."""
+        return None
+        # # io:TowelDryerTemporaryStateState
+        # return TAHOMA_TO_PRESET_MODE[
+        #     self.select_state("io:TowelDryerTemporaryStateState")
+        # ]
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
+        await self.async_execute_command(
+            "setTowelDryerTemporaryState", PRESET_MODE_TO_TAHOMA[preset_mode]
+        )
+
+    @property
+    def target_temperature(self) -> None:
+        """Return the temperature."""
+
+        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+
+        if self.hvac_mode == HVAC_MODE_AUTO:
+            return self.select_state("io:EffectiveTemperatureSetpointState")
+        else:
+            return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):
         """Return current temperature."""
         return None
-
-    @property
-    def target_temperature(self) -> None:
-        """Return the temperature corresponding to the PRESET."""
-        return self.select_state("core:DerogatedTargetTemperatureState")
-
-        # if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
-        #     return self.select_state(CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE)
-
-        # return self.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
+        # return self.select_state("core:ComfortRoomTemperatureState")
 
     async def async_set_temperature(self, **kwargs) -> None:
-        """Set new temperature for current preset."""
+        """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        # if self.preset_mode == PRESET_ECO:
+
+        await self.async_execute_command(COMMAND_SET_TARGET_TEMPERATURE, temperature)
+
+        # if self.hvac_mode == HVAC_MODE_AUTO:
         #     await self.async_execute_command(
-        #         COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
+        #         "setDerogatedTargetTemperature", temperature
         #     )
-
-        # if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
+        # else:
         #     await self.async_execute_command(
-        #         COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
+        #         COMMAND_SET_TARGET_TEMPERATURE, temperature
         #     )
-
-        await self.async_execute_command("setDerogatedTargetTemperature", temperature)
-
-    @property
-    def preset_mode(self) -> Optional[str]:
-        """Return the current preset mode, e.g., auto, smart, interval, favorite."""
-        state_pass_apc_heating_mode = self.select_state("io:PassAPCHeatingModeState")
-
-        if state_pass_apc_heating_mode == "internalScheduling":
-            return PRESET_PROG
-
-        return None
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return PRESET_MODES
-
-    async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set the preset mode."""
-        if preset_mode == PRESET_PROG:
-            await self.async_execute_command(
-                "setPassAPCHeatingMode", "internalScheduling"
-            )
-            await self.async_execute_command("setDerogationOnOffState", "off")
