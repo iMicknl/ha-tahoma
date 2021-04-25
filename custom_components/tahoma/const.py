@@ -60,12 +60,14 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
     "DoorLock": LOCK,
     "ElectricitySensor": SENSOR,
+    "EvoHomeController": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
     "ExteriorScreen": COVER,
     "ExteriorVenetianBlind": COVER,
     "GarageDoor": COVER,
     "GasSensor": SENSOR,
     "Gate": COVER,
     "GenericSensor": SENSOR,
+    "HeatingSetPoint": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
     "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
@@ -78,6 +80,7 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "Pergola": COVER,
     "RainSensor": BINARY_SENSOR,
     "RollerShutter": COVER,
+    "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
