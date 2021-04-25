@@ -173,9 +173,20 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
-            "setPassAPCHeatingMode", HVAC_MODE_TO_TAHOMA[hvac_mode]
-        )
+
+        if hvac_mode == HVAC_MODE_OFF:
+            await self.async_execute_command("setHeatingOnOffState", "off")
+        else:
+            if self.hvac_mode == HVAC_MODE_OFF:
+                await self.async_execute_command("setHeatingOnOffState", "on")
+
+            await self.async_execute_command(
+                "setPassAPCHeatingMode", HVAC_MODE_TO_TAHOMA[hvac_mode]
+            )
+
+        await self.async_execute_command("refreshPassAPCHeatingProfile")
+
+        await self.async_execute_command("refreshOperatingMode")
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -193,7 +204,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-
+        return None
         # await self.async_execute_command(
         #     "setTowelDryerTemporaryState", PRESET_MODE_TO_TAHOMA[preset_mode]
         # )
@@ -202,7 +213,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     def target_temperature(self) -> None:
         """Return the temperature."""
 
-        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.select_state("core:HeatingTargetTemperatureState")
 
         if self.hvac_mode == HVAC_MODE_AUTO:
             return self.select_state("io:EffectiveTemperatureSetpointState")
@@ -213,7 +224,10 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command(COMMAND_SET_TARGET_TEMPERATURE, temperature)
+        await self.async_execute_command("setHeatingTargetTemperature", temperature)
+        await self.async_execute_command("refreshTargetTemperature")
+
+        # refreshTargetTemperature
 
         # if self.hvac_mode == HVAC_MODE_AUTO:
         #     await self.async_execute_command(
@@ -223,3 +237,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
         #     await self.async_execute_command(
         #         COMMAND_SET_TARGET_TEMPERATURE, temperature
         #     )
+
+
+# TODO
+# setHeatingOnOffState -> off / on
