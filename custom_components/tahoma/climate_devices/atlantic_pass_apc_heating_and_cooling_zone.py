@@ -49,8 +49,10 @@ TAHOMA_TO_PRESET_MODE = {v: k for k, v in PRESET_MODE_TO_TAHOMA.items()}
 # Map TaHoma HVAC modes to Home Assistant HVAC modes
 TAHOMA_TO_HVAC_MODE = {
     "off": HVAC_MODE_OFF,
+    "stop": HVAC_MODE_OFF,
     "manu": HVAC_MODE_HEAT,
     "internalScheduling": HVAC_MODE_AUTO,  # prog
+    "auto": HVAC_MODE_AUTO,  # prog
 }
 
 HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
@@ -82,10 +84,10 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if CORE_OPERATING_MODE_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
-        if CORE_ON_OFF_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
+        return TAHOMA_TO_HVAC_MODE[self.select_state("io:PassAPCHeatingModeState")]
+
+        # if CORE_ON_OFF_STATE in self.device.states:
+        #     return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -109,9 +111,10 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
-            "setTowelDryerTemporaryState", PRESET_MODE_TO_TAHOMA[preset_mode]
-        )
+
+        # await self.async_execute_command(
+        #     "setTowelDryerTemporaryState", PRESET_MODE_TO_TAHOMA[preset_mode]
+        # )
 
     @property
     def target_temperature(self) -> None:
