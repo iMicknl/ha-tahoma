@@ -166,6 +166,10 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
+
+        if self.select_state("core:HeatingOnOffState") == "off":
+            return HVAC_MODE_OFF
+
         return TAHOMA_TO_HVAC_MODE[self.select_state("io:PassAPCHeatingModeState")]
 
         # if CORE_ON_OFF_STATE in self.device.states:
