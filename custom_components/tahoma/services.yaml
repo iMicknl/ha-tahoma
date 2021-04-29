@@ -1,39 +1,62 @@
 set_cover_my_position:
+  name: My position (cover)
   description: Move to preset position, simulating the "my" button.
-  fields:
-    entity_id:
-      description: Name(s) of cover(s) that will be set to preset position.
-      example: "cover.living_room"
+  target:
+    entity:
+      integration: tahoma
+      domain: cover
 
 set_light_my_position:
+  name: My position (light)
   description: Move to preset position, simulating the "my" button.
-  fields:
-    entity_id:
-      description: Name(s) of lights that will be set to preset position.
-      example: "light.living_room"
+  target:
+    entity:
+      integration: tahoma
+      domain: light
 
 set_cover_position_low_speed:
+  name: Set cover position with low speed
   description: Move cover to specific position with a low speed.
+  target:
+    entity:
+      integration: tahoma
+      domain: cover
   fields:
-    entity_id:
-      description: Name(s) of cover(s) to set cover position with a low speed.
-      example: "cover.living_room"
     position:
-      description: Position of the cover (0 to 100).
+      name: Position
+      description: Position of the cover
+      required: true
       example: 30
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
 
 execute_command:
-  description: Send a command to tahomalink endpoint through the API.
+  name: Execute command
+  description: Execute a specific command on the chosen device
+  target:
+    entity:
+      integration: tahoma
   fields:
-    entity_id:
-      description: Name of entity that will be set to preset position.
-      example: "light.living_room"
     command:
-      description: Command to send
+      name: Command
+      description: Name of the command
+      required: true
       example: "setIntensity"
+      selector:
+        text:
     args:
-      description: List of arguments to pass to the command if necessary
-      example: 100
+      name: Arguments
+      description: List of arguments
+      required: false
+      example: [30]
+      selector:
+        object:
 
 get_execution_history:
+  name: Get execution history
   description: Retrieve execution history and write output to log.
