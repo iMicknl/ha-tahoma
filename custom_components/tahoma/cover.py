@@ -87,7 +87,6 @@ IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
 
 STATE_CLOSED = "closed"
-STATE_OPENED = "open"
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
@@ -209,9 +208,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
     @property
     def is_closed(self):
         """Return if the cover is closed."""
-
-        if self.device.widget == "AwningValance":
-            return self.select_state(CORE_OPEN_CLOSED_STATE) == STATE_OPENED
 
         state = self.select_state(
             CORE_OPEN_CLOSED_STATE,
