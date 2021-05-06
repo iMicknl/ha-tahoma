@@ -32,6 +32,7 @@ _LOGGER = logging.getLogger(__name__)
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_OPERATING_MODE = "setOperatingMode"
+COMMAND_OFF = "off"
 
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
@@ -42,7 +43,8 @@ PRESET_BOOST = "Boost"
 PRESET_COMFORT1 = "Comfort -1"
 PRESET_COMFORT2 = "Comfort -2"
 PRESET_FROST_PROTECTION = "Frost Protection"
-PRESET_SECURED = "Secured"
+PRESET_AUTO = "Auto"
+PRESET_PROG = "Prog"
 
 PRESET_STATE_FROST_PROTECTION = "frostprotection"
 PRESET_STATE_OFF = "off"
@@ -51,6 +53,8 @@ PRESET_STATE_BOOST = "boost"
 PRESET_STATE_COMFORT = "comfort"
 PRESET_STATE_COMFORT1 = "comfort-1"
 PRESET_STATE_COMFORT2 = "comfort-2"
+PRESET_STATE_AUTO = "auto"
+PRESET_STATE_PROG = "internal"
 
 # Map Home Assistant presets to TaHoma presets
 PRESET_MODE_TO_TAHOMA = {
@@ -61,6 +65,8 @@ PRESET_MODE_TO_TAHOMA = {
     PRESET_ECO: PRESET_STATE_ECO,
     PRESET_FROST_PROTECTION: PRESET_STATE_FROST_PROTECTION,
     PRESET_NONE: PRESET_STATE_OFF,
+    PRESET_AUTO: PRESET_STATE_AUTO,
+    PRESET_PROG: PRESET_STATE_PROG,
 }
 
 TAHOMA_TO_PRESET_MODE = {v: k for k, v in PRESET_MODE_TO_TAHOMA.items()}
@@ -184,9 +190,19 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
-            COMMAND_SET_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
-        )
+        if CORE_OPERATING_MODE_STATE in self.device.states:
+            await self.async_execute_command(
+                COMMAND_SET_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
+            )
+        else:
+            if hvac_mode == HVAC_MODE_OFF:
+                await self.async_execute_command(
+                    COMMAND_OFF,
+                )
+            else:
+                await self.async_execute_command(
+                    COMMAND_SET_HEATING_LEVEL, "comfort"
+                )
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -200,9 +216,14 @@ class AtlanticElectricalHeater(TahomaDevice, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
-            COMMAND_SET_HEATING_LEVEL, PRESET_MODE_TO_TAHOMA[preset_mode]
-        )
+        if (preset_mode == PRESET_AUTO or preset_mode == PRESET_PROG):
+            await self.async_execute_command(
+                COMMAND_SET_OPERATING_MODE, PRESET_MODE_TO_TAHOMA[preset_mode]
+            )
+        else:
+            await self.async_execute_command(
+                COMMAND_SET_HEATING_LEVEL, PRESET_MODE_TO_TAHOMA[preset_mode]
+            )
 
     async def async_turn_on(self) -> None:
         """Turn on the device."""
