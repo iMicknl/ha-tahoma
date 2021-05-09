@@ -152,7 +152,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         None is unknown, 0 is closed, 100 is fully open.
         """
 
-        if self.has_state(CORE_DEPLOYMENT_STATE):
+        if self.is_awning():
             return self.select_state(CORE_DEPLOYMENT_STATE)
 
         position = self.select_state(
@@ -181,7 +181,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        if self.has_command(COMMAND_SET_DEPLOYMENT):
+        if self.is_awning():
             position = kwargs.get(ATTR_POSITION, 0)
             await self.async_execute_command(COMMAND_SET_DEPLOYMENT, position)
         else:
@@ -252,7 +252,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        if self.has_command(COMMAND_DEPLOY):
+        if self.is_awning():
             await self.async_execute_command(COMMAND_DEPLOY)
         else:
             await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
@@ -263,7 +263,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        if self.has_command(COMMAND_UNDEPLOY):
+        if self.is_awning():
             await self.async_execute_command(COMMAND_UNDEPLOY)
         else:
             await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
@@ -397,3 +397,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
             supported_features |= SUPPORT_MY
 
         return supported_features
+
+    def is_awning(self):
+        return self.device.ui_class == "Awning"
