@@ -399,4 +399,5 @@ class TahomaCover(TahomaEntity, CoverEntity):
         return supported_features
 
     def is_awning(self):
+        """Test if the device is an awning."""
         return self.device.ui_class == "Awning"
