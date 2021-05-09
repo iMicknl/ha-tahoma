@@ -153,20 +153,20 @@ class TahomaCover(TahomaEntity, CoverEntity):
         """
 
         if self.has_state(CORE_DEPLOYMENT_STATE):
-            position = self.select_state(CORE_DEPLOYMENT_STATE)
-        else:
-            position = 100 - self.select_state(
-                CORE_CLOSURE_STATE,
-                CORE_PEDESTRIAN_POSITION_STATE,
-                CORE_TARGET_CLOSURE_STATE,
-                CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
-            )
+            return self.select_state(CORE_DEPLOYMENT_STATE)
+
+        position = self.select_state(
+            CORE_CLOSURE_STATE,
+            CORE_PEDESTRIAN_POSITION_STATE,
+            CORE_TARGET_CLOSURE_STATE,
+            CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
+        )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
         if position is None or position < 0 or position > 100:
             return None
 
-        return position
+        return 100 - position
 
     @property
     def current_cover_tilt_position(self):
