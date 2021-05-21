@@ -18,6 +18,7 @@
 		"editor.tabSize": 4,
 		"terminal.integrated.shell.linux": "/bin/bash",
 		"python.pythonPath": "/usr/bin/python3",
+		"python.testing.pytestEnabled": true,
 		"python.analysis.autoSearchPaths": false,
 		"python.linting.pylintEnabled": true,
 		"python.linting.enabled": true,
