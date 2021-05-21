@@ -14,7 +14,7 @@ TEST_PASSWORD = "test-password"
 DEFAULT_HUB = "Somfy TaHoma"
 
 
-async def test_form(hass):
+async def test_form(hass, enable_custom_integrations):
     """Test we get the form."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
@@ -50,7 +50,7 @@ async def test_form(hass):
         (Exception, "unknown"),
     ],
 )
-async def test_form_invalid(hass, side_effect, error):
+async def test_form_invalid(hass, side_effect, error, enable_custom_integrations):
     """Test we handle invalid auth."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
@@ -66,7 +66,7 @@ async def test_form_invalid(hass, side_effect, error):
     assert result2["errors"] == {"base": error}
 
 
-async def test_abort_on_duplicate_entry(hass):
+async def test_abort_on_duplicate_entry(hass, enable_custom_integrations):
     """Test config flow aborts Config Flow on duplicate entries."""
     MockConfigEntry(
         domain=DOMAIN,
@@ -92,7 +92,7 @@ async def test_abort_on_duplicate_entry(hass):
     assert result2["reason"] == "already_configured"
 
 
-async def test_allow_multiple_unique_entries(hass):
+async def test_allow_multiple_unique_entries(hass, enable_custom_integrations):
     """Test config flow allows Config Flow unique entries."""
     MockConfigEntry(
         domain=DOMAIN,
@@ -127,7 +127,7 @@ async def test_allow_multiple_unique_entries(hass):
     }
 
 
-async def test_import(hass):
+async def test_import(hass, enable_custom_integrations):
     """Test config flow using configuration.yaml."""
     with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
         "custom_components.tahoma.async_setup", return_value=True
@@ -167,7 +167,7 @@ async def test_import(hass):
         (Exception, "unknown"),
     ],
 )
-async def test_import_failing(hass, side_effect, error):
+async def test_import_failing(hass, side_effect, error, enable_custom_integrations):
     """Test failing config flow using configuration.yaml."""
     with patch("pyhoma.client.TahomaClient.login", side_effect=side_effect):
         await hass.config_entries.flow.async_init(
@@ -183,7 +183,7 @@ async def test_import_failing(hass, side_effect, error):
     # Should write Exception to the log
 
 
-async def test_options_flow(hass):
+async def test_options_flow(hass, enable_custom_integrations):
     """Test options flow."""
 
     entry = MockConfigEntry(
