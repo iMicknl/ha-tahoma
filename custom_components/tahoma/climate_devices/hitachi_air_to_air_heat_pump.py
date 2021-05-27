@@ -14,6 +14,10 @@ from homeassistant.components.climate.const import (
     SUPPORT_PRESET_MODE,
     SUPPORT_SWING_MODE,
     SUPPORT_TARGET_TEMPERATURE,
+    SWING_BOTH,
+    SWING_HORIZONTAL,
+    SWING_OFF,
+    SWING_VERTICAL,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
@@ -29,10 +33,11 @@ FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
 MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
 SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
 ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
-HLINK_VIRTUAL_OPERATING_MODE_STATE = [
+VIRTUAL_OPERATING_MODE_STATE = [
     "ovp:HLinkVirtualOperatingModeState",
     "hlrrwifi:HLinkVirtualOperatingModeState",
 ]
+LEAVE_HOME_STATE = ["ovp::LeaveHomeState", "hlrrwifi:LeaveHomeState"]
 
 TAHOMA_TO_HVAC_MODES = {
     "heating": HVAC_MODE_HEAT,
@@ -44,6 +49,25 @@ TAHOMA_TO_HVAC_MODES = {
 }
 
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
+
+TAHOMA_TO_SWING_MODES = {
+    "both": SWING_BOTH,
+    "horizontal": SWING_HORIZONTAL,
+    "stop": SWING_OFF,
+    "vertical": SWING_VERTICAL,
+}
+
+SWING_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_SWING_MODES.items()}
+
+TAHOMA_TO_FAN_MODES = {
+    "auto": SWING_BOTH,
+    "high": SWING_BOTH,
+    "low": SWING_BOTH,
+    "medium": SWING_BOTH,
+    "silent": SWING_BOTH,
+}
+
+FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
 
 
 class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
@@ -95,41 +119,25 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return ["Auto FAN", "Hi FAN", "Lo FAN", "Med FAN", "silent"]
+        return ["auto", "high", "low", "medium", "silent"]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
-        await self.async_execute_command(
-            "globalControl",
-            None,  # Power State
-            None,  # Target Temperature
-            fan_mode,  # Fan Mode
-            None,  # Mode
-            None,  # Swing Mode
-            None,
-        )
+        await self._global_control(fan_mode=fan_mode)
 
     @property
     def swing_mode(self) -> Optional[str]:
         """Return the swing setting."""
-        return self.select_state(*SWING_STATE)
+        return TAHOMA_TO_SWING_MODES[self.select_state(*SWING_STATE)]
 
     @property
     def swing_modes(self) -> Optional[List[str]]:
         """Return the list of available swing modes."""
-        return ["NOT_IMPLEMENTED"]
+        return [*SWING_MODES_TO_TAHOMA]
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set new target swing operation."""
-        await self.async_execute_command(
-            "globalControl",
-            None,  # Power State
-            None,  # Target Temperature
-            None,  # Fan Mode
-            None,  # Mode
-            swing_mode,  # Swing Mode
-            None,
-        )
+        await self._global_control(swing_mode=SWING_MODES_TO_TAHOMA[swing_mode])
 
     @property
     def hvac_mode(self) -> str:
@@ -143,15 +151,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
-            "globalControl",
-            None,  # Power State
-            None,  # Target Temperature
-            None,  # Fan Mode
-            HVAC_MODES_TO_TAHOMA[hvac_mode],  # Mode
-            None,  # Swing Mode
-            None,
-        )
+        await self._global_control(hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode])
 
     @property
     def target_temperature(self) -> None:
@@ -166,15 +166,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
-            "globalControl",
-            None,  # Power State
-            temperature,  # Target Temperature
-            None,  # Fan Mode
-            None,  # Mode
-            None,  # Swing Mode
-            None,
-        )
+        await self._global_control(target_temperature=temperature)
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -211,3 +203,24 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         device_info["manufacturer"] = "Hitachi"
 
         return device_info
+
+    async def _global_control(
+        self,
+        main_operation=None,
+        target_temperature=None,
+        fan_mode=None,
+        hvac_mode=None,
+        swing_mode=None,
+        leave_home=None,
+    ):
+        await self.async_execute_command(
+            "globalControl",
+            main_operation
+            or self.select_state(*MAIN_OPERATION_STATE),  # Main Operation
+            target_temperature
+            or self.select_state(CORE_TARGET_TEMPERATURE_STATE),  # Target Temperature
+            fan_mode or self.select_state(*FAN_SPEED_STATE),  # Fan Mode
+            hvac_mode or self.select_state(*MODE_CHANGE_STATE),  # Mode
+            swing_mode or self.select_state(*SWING_STATE),  # Swing Mode
+            leave_home or self.select_state(*LEAVE_HOME_STATE),  # Leave Home
+        )
