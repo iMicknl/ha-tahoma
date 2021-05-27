@@ -126,6 +126,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
         existing_commands = self.device.definition.commands
+
         return next((c for c in commands if c in existing_commands), None)
 
     def has_command(self, *commands: str) -> bool:
@@ -160,6 +161,20 @@ class TahomaEntity(CoordinatorEntity, Entity):
                 ),
                 None,
             )
+
+    def select_state_definition(self, *states) -> Optional[str]:
+        """Select first existing active state definition in a list of states."""
+
+        if self.device.definition.states:
+            return next(
+                (
+                    state.values
+                    for state in self.device.definition.states
+                    if state.qualified_name in list(states)
+                ),
+                None,
+            )
+
         return None
 
     async def async_execute_command(self, command_name: str, *args: Any):
