@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "pyhoma==0.5.12"
+    "pyhoma==0.5.15"
   ],
   "codeowners": [
     "@philklei",
