@@ -2,7 +2,16 @@
 from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
-from homeassistant.components.climate.const import SUPPORT_FAN_MODE, SUPPORT_SWING_MODE
+from homeassistant.components.climate.const import (
+    HVAC_MODE_AUTO,
+    HVAC_MODE_COOL,
+    HVAC_MODE_DRY,
+    HVAC_MODE_FAN_ONLY,
+    HVAC_MODE_HEAT,
+    HVAC_MODE_OFF,
+    SUPPORT_FAN_MODE,
+    SUPPORT_SWING_MODE,
+)
 from homeassistant.const import TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
@@ -24,6 +33,18 @@ TAHOMA_TO_PRESET_MODE = {
 }
 
 PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
+
+
+TAHOMA_TO_HVAC_MODES = {
+    "heating": HVAC_MODE_HEAT,
+    "off": HVAC_MODE_OFF,
+    "fan": HVAC_MODE_FAN_ONLY,
+    "dehumidify": HVAC_MODE_DRY,
+    "cooling": HVAC_MODE_COOL,
+    "auto": HVAC_MODE_AUTO,
+}
+
+HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
 class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
@@ -95,5 +116,27 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             None,  # Fan Mode
             None,  # Mode
             swing_mode,  # Swing Mode?
+            None,
+        )
+
+    @property
+    def hvac_mode(self) -> str:
+        """Return hvac operation ie. heat, cool mode."""
+        return TAHOMA_TO_HVAC_MODES[self.select_state(MODE_CHANGE_STATE)]
+
+    @property
+    def hvac_modes(self) -> List[str]:
+        """Return the list of available hvac operation modes."""
+        return [*TAHOMA_TO_HVAC_MODES]
+
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
+        """Set new target hvac mode."""
+        await self.async_execute_command(
+            "globalControl",
+            None,  # Power State
+            None,  # Target Temperature
+            None,  # Fan Mode
+            HVAC_MODES_TO_TAHOMA[hvac_mode],  # Mode
+            None,  # Swing Mode?
             None,
         )
