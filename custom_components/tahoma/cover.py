@@ -43,7 +43,6 @@ COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
 COMMAND_SET_ORIENTATION = "setOrientation"
-COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 COMMAND_SET_POSITION = "setPosition"
 COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
@@ -60,7 +59,6 @@ COMMANDS_CLOSE_TILT = [COMMAND_CLOSE_SLATS]
 COMMANDS_SET_POSITION = [
     COMMAND_SET_POSITION,
     COMMAND_SET_CLOSURE,
-    COMMAND_SET_PEDESTRIAN_POSITION,
 ]
 COMMANDS_SET_TILT_POSITION = [COMMAND_SET_ORIENTATION]
 
@@ -69,10 +67,8 @@ CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
-CORE_OPEN_CLOSED_PEDESTRIAN_STATE = "core:OpenClosedPedestrianState"
 CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
 CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
-CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
 CORE_SLATE_ORIENTATION_STATE = "core:SlateOrientationState"
@@ -157,7 +153,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
         position = self.select_state(
             CORE_CLOSURE_STATE,
-            CORE_PEDESTRIAN_POSITION_STATE,
             CORE_TARGET_CLOSURE_STATE,
             CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
         )
@@ -213,7 +208,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
             CORE_OPEN_CLOSED_PARTIAL_STATE,
-            CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
             CORE_OPEN_CLOSED_UNKNOWN_STATE,
             MYFOX_SHUTTER_STATUS_STATE,
         )
