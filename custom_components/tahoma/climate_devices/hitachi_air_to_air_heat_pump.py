@@ -9,6 +9,7 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_DRY,
     HVAC_MODE_FAN_ONLY,
     HVAC_MODE_HEAT,
+    HVAC_MODE_OFF,
     SUPPORT_FAN_MODE,
     SUPPORT_SWING_MODE,
     SUPPORT_TARGET_TEMPERATURE,
@@ -38,13 +39,14 @@ VIRTUAL_OPERATING_MODE_STATE = [
 LEAVE_HOME_STATE = ["ovp::LeaveHomeState", "hlrrwifi:LeaveHomeState"]
 
 TAHOMA_TO_HVAC_MODES = {
+    "off": HVAC_MODE_OFF,
     "heating": HVAC_MODE_HEAT,
     "fan": HVAC_MODE_FAN_ONLY,
     "dehumidify": HVAC_MODE_DRY,
     "cooling": HVAC_MODE_COOL,
     "auto": HVAC_MODE_AUTO,
-    "auto cooling": HVAC_MODE_AUTO,
-    "auto heating": HVAC_MODE_AUTO,
+    "autoCooling": HVAC_MODE_AUTO,
+    "autoHeating": HVAC_MODE_AUTO,
 }
 
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
@@ -60,11 +62,11 @@ SWING_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_SWING_MODES.items()}
 
 # TODO it seems that the same widget has different fan names
 TAHOMA_TO_FAN_MODES = {
-    "auto": SWING_BOTH,
-    "high": SWING_BOTH,
-    "low": SWING_BOTH,
-    "medium": SWING_BOTH,
-    "silent": SWING_BOTH,
+    "auto": "auto",
+    "high": "high",
+    "low": "low",
+    "medium": "medium",
+    "silent": "silent",
 }
 
 FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
@@ -92,27 +94,28 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             # | SUPPORT_PRESET_MODE
         )
 
-    async def async_turn_on(self) -> None:
-        """Turn on the device."""
-        await self._global_control(main_operation="on")
-
-    async def async_turn_off(self) -> None:
-        """Turn off the device."""
-        await self._global_control(main_operation="off")
-
-    @property
-    def hvac_mode(self) -> str:
-        """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.select_state(*MODE_CHANGE_STATE)]
-
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
         return [*HVAC_MODES_TO_TAHOMA]
 
+    @property
+    def hvac_mode(self) -> str:
+        """Return hvac operation ie. heat, cool mode."""
+        if self.select_state(*MAIN_OPERATION_STATE) == "off":
+            return HVAC_MODE_OFF
+
+        return TAHOMA_TO_HVAC_MODES[self.select_state(*MODE_CHANGE_STATE)]
+
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self._global_control(hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode])
+
+        if hvac_mode == HVAC_MODE_OFF:
+            await self._global_control(main_operation="off")
+        else:
+            await self._global_control(
+                main_operation="on", hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode]
+            )
 
     @property
     def fan_mode(self) -> Optional[str]:
