@@ -111,7 +111,10 @@ class TahomaEntity(CoordinatorEntity, Entity):
             }
 
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
-        model = self.select_state(CORE_MODEL_STATE) or self.device.widget
+        model = (
+            self.select_state(CORE_MODEL_STATE, "core:ProductModelNameState")
+            or self.device.widget
+        )
 
         return {
             "identifiers": {(DOMAIN, self.base_device_url)},

@@ -90,7 +90,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        return self.select_state(FAN_SPEED_STATE)
+        return self.select_state(*FAN_SPEED_STATE)
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
@@ -112,7 +112,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def swing_mode(self) -> Optional[str]:
         """Return the swing setting."""
-        return self.select_state(SWING_STATE)
+        return self.select_state(*SWING_STATE)
 
     @property
     def swing_modes(self) -> Optional[List[str]]:
@@ -134,7 +134,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.select_state(MODE_CHANGE_STATE)]
+        return TAHOMA_TO_HVAC_MODES[self.select_state(*MODE_CHANGE_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -161,7 +161,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def current_temperature(self) -> None:
         """Return current temperature."""
-        return self.select_state(ROOM_TEMPERATURE_STATE)
+        return self.select_state(*ROOM_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
