@@ -4,13 +4,19 @@ from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
+    FAN_AUTO,
+    FAN_HIGH,
+    FAN_LOW,
+    FAN_MEDIUM,
     HVAC_MODE_AUTO,
     HVAC_MODE_COOL,
     HVAC_MODE_DRY,
     HVAC_MODE_FAN_ONLY,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
+    PRESET_NONE,
     SUPPORT_FAN_MODE,
+    SUPPORT_PRESET_MODE,
     SUPPORT_SWING_MODE,
     SUPPORT_TARGET_TEMPERATURE,
     SWING_BOTH,
@@ -62,10 +68,10 @@ SWING_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_SWING_MODES.items()}
 
 # TODO it seems that the same widget has different fan names
 TAHOMA_TO_FAN_MODES = {
-    "auto": "auto",
-    "high": "high",
-    "low": "low",
-    "medium": "medium",
+    "auto": FAN_AUTO,
+    "high": FAN_HIGH,
+    "low": FAN_LOW,
+    "medium": FAN_MEDIUM,
     "silent": "silent",
 }
 
@@ -91,7 +97,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             SUPPORT_TARGET_TEMPERATURE
             | SUPPORT_FAN_MODE
             | SUPPORT_SWING_MODE
-            # | SUPPORT_PRESET_MODE
+            | SUPPORT_PRESET_MODE
         )
 
     @property
@@ -160,33 +166,30 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
         await self._global_control(target_temperature=temperature)
 
-    # @property
-    # def preset_mode(self) -> Optional[str]:
-    #     """Return the current preset mode, e.g., home, away, temp."""
-    #     if self.select_state("core:AutoManuModeState") == "on":
-    #         return "auto"
+    @property
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp."""
+        if self.select_state(*LEAVE_HOME_STATE) == "on":
+            return "holiday_mode"
 
-    #     if self.select_state("core:AutoManuModeState") == "manu":
-    #         return "manu"
+        if self.select_state(*LEAVE_HOME_STATE) == "off":
+            return PRESET_NONE
 
-    #     return None
+        return None
 
-    # @property
-    # def preset_modes(self) -> Optional[List[str]]:
-    #     """Return a list of available preset modes."""
-    #     return ["auto", "manu"]
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes."""
+        return [PRESET_NONE, "holiday_mode"]
 
-    # async def async_set_preset_mode(self, preset_mode: str) -> None:
-    #     """Set new preset mode."""
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set new preset mode."""
 
-    #     if preset_mode == "auto":
-    #         await self.async_execute_command("setAutoManu", "auto")
+        if preset_mode == "holiday_mode":
+            await self._global_control(leave_home="on")
 
-    #     if preset_mode == "manu":
-    #         await self.async_execute_command("setAutoManu", "manu")
-
-    #     if preset_mode == "holidays":
-    #         await self.async_execute_command("setHolidays", "on")
+        if preset_mode == PRESET_NONE:
+            await self._global_control(leave_home="off")
 
     @property
     def device_info(self) -> Dict[str, Any]:
