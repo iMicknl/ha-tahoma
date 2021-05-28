@@ -146,6 +146,11 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         await self._global_control(swing_mode=SWING_MODES_TO_TAHOMA[swing_mode])
 
     @property
+    def target_temperature_step(self) -> Optional[float]:
+        """Return the supported step of target temperature."""
+        return 1.0
+
+    @property
     def target_temperature(self) -> None:
         """Return the temperature."""
         return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
@@ -158,7 +163,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self._global_control(target_temperature=temperature)
+        await self._global_control(target_temperature=int(temperature))
 
     @property
     def preset_mode(self) -> Optional[str]:
