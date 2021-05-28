@@ -41,13 +41,12 @@ TAHOMA_TO_FAN_MODES = {
     "away": FAN_BOOST,
     "boost": FAN_KITCHEN,
     "high": FAN_AWAY,
+    None: FAN_BYPASS,
 }
 
 FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
 
-HVAC_MODES = [HVAC_MODE_FAN_ONLY]
 PRESET_MODES = [PRESET_AUTO, PRESET_PROG, PRESET_MANUAL]
-FAN_MODES = [FAN_AUTO, FAN_BOOST, FAN_KITCHEN, FAN_AWAY]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -141,7 +140,7 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return HVAC_MODES
+        return HVAC_MODE_FAN_ONLY
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -214,7 +213,7 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return FAN_MODES
+        return [*FAN_MODES_TO_TAHOMA]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
