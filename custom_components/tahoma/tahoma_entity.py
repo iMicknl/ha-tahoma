@@ -17,6 +17,7 @@ CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
+CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
@@ -112,7 +113,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
 
         manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
         model = (
-            self.select_state(CORE_MODEL_STATE, "core:ProductModelNameState")
+            self.select_state(CORE_MODEL_STATE, CORE_PRODUCT_MODEL_NAME_STATE)
             or self.device.widget
         )
 
