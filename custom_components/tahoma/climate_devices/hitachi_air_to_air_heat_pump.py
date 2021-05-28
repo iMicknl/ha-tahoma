@@ -26,23 +26,21 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 
-MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
-MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
-SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
-ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
-VIRTUAL_OPERATING_MODE_STATE = [
-    "ovp:HLinkVirtualOperatingModeState",
-    "hlrrwifi:HLinkVirtualOperatingModeState",
-]
 LEAVE_HOME_STATE = ["ovp::LeaveHomeState", "hlrrwifi:LeaveHomeState"]
+MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
+MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
+ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
+SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
+
+STATE_ON = "on"
+STATE_OFF = "off"
 
 TAHOMA_TO_HVAC_MODES = {
     "off": HVAC_MODE_OFF,
@@ -66,7 +64,6 @@ TAHOMA_TO_SWING_MODES = {
 
 SWING_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_SWING_MODES.items()}
 
-# TODO it seems that the same widget has different fan names
 TAHOMA_TO_FAN_MODES = {
     "auto": FAN_AUTO,
     "high": FAN_HIGH,
@@ -80,10 +77,6 @@ FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
 
 class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     """Representation of HitachiAirToAirHeatPump."""
-
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
-        """Init method."""
-        super().__init__(device_url, coordinator)
 
     @property
     def temperature_unit(self) -> str:
@@ -108,7 +101,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if self.select_state(*MAIN_OPERATION_STATE) == "off":
+        if self.select_state(*MAIN_OPERATION_STATE) == STATE_OFF:
             return HVAC_MODE_OFF
 
         return TAHOMA_TO_HVAC_MODES[self.select_state(*MODE_CHANGE_STATE)]
@@ -117,10 +110,10 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         """Set new target hvac mode."""
 
         if hvac_mode == HVAC_MODE_OFF:
-            await self._global_control(main_operation="off")
+            await self._global_control(main_operation=STATE_OFF)
         else:
             await self._global_control(
-                main_operation="on", hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode]
+                main_operation=STATE_ON, hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode]
             )
 
     @property
@@ -131,7 +124,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return ["auto", "high", "low", "medium", "silent"]
+        return [*FAN_MODES_TO_TAHOMA]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
@@ -169,10 +162,10 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        if self.select_state(*LEAVE_HOME_STATE) == "on":
+        if self.select_state(*LEAVE_HOME_STATE) == STATE_ON:
             return "holiday_mode"
 
-        if self.select_state(*LEAVE_HOME_STATE) == "off":
+        if self.select_state(*LEAVE_HOME_STATE) == STATE_OFF:
             return PRESET_NONE
 
         return None
@@ -184,12 +177,11 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-
         if preset_mode == "holiday_mode":
-            await self._global_control(leave_home="on")
+            await self._global_control(leave_home=STATE_ON)
 
         if preset_mode == PRESET_NONE:
-            await self._global_control(leave_home="off")
+            await self._global_control(leave_home=STATE_OFF)
 
     @property
     def device_info(self) -> Dict[str, Any]:
@@ -208,6 +200,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         swing_mode=None,
         leave_home=None,
     ):
+        """Execute globalControl command with all parameters."""
         await self.async_execute_command(
             "globalControl",
             main_operation
