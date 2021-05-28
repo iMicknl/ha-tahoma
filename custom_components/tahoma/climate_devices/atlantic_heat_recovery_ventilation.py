@@ -1,5 +1,4 @@
 """Support for AtlanticHeatRecoveryVentilation."""
-import asyncio
 import logging
 from typing import List, Optional
 
@@ -140,10 +139,10 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     @property
     def hvac_modes(self) -> List[str]:
         """Return the list of available hvac operation modes."""
-        return HVAC_MODE_FAN_ONLY
+        return [HVAC_MODE_FAN_ONLY]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
-        """Set new target hvac mode."""
+        """Not implemented since there is only one hvac_mode."""
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -190,8 +189,6 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
             )
             await self._set_ventilation_mode(prog="off")
 
-        # TODO Get rid of sleep command
-        asyncio.sleep(0.5)
         await self.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
@@ -224,8 +221,6 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
                 COMMAND_SET_AIR_DEMAND_MODE, FAN_MODES_TO_TAHOMA[fan_mode]
             )
 
-        # TODO Get rid of sleep command
-        asyncio.sleep(0.5)
         await self.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
