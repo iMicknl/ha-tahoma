@@ -1,8 +1,6 @@
 """Support for AtlanticHeatRecoveryVentilation."""
-
+import asyncio
 import logging
-import time
-from datetime import date
 from typing import List, Optional
 
 from homeassistant.components.climate import ClimateEntity
@@ -19,14 +17,14 @@ from homeassistant.helpers.event import async_track_state_change
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..tahoma_entity import TahomaEntity
 
-FAN_BOOST = "Home Boost"
-FAN_KITCHEN = "Kitchen Boost"
-FAN_AWAY = "Away"
-FAN_BYPASS = "Bypass Boost"
+FAN_BOOST = "home_boost"
+FAN_KITCHEN = "kitchen_boost"
+FAN_AWAY = "away"
+FAN_BYPASS = "bypass_boost"
 
-PRESET_AUTO = "Auto"
-PRESET_PROG = "Prog"
-PRESET_MANUAL = "Manual"
+PRESET_AUTO = "auto"
+PRESET_PROG = "prog"
+PRESET_MANUAL = "manual"
 
 COMMAND_SET_AIR_DEMAND_MODE = "setAirDemandMode"
 COMMAND_SET_VENTILATION_CONFIGURATION_MODE = "setVentilationConfigurationMode"
@@ -35,25 +33,21 @@ COMMAND_REFRESH_VENTILATION_STATE = "refreshVentilationState"
 COMMAND_REFRESH_VENTILATION_CONFIGURATION_MODE = "refreshVentilationConfigurationMode"
 
 IO_AIR_DEMAND_MODE_STATE = "io:AirDemandModeState"
+IO_VENTILATION_MODE_STATE = "io:VentilationModeState"
+IO_VENTILATION_CONFIGURATION_MODE_STATE = "io:VentilationConfigurationModeState"
 
-FAN_MODE_TO_TAHOMA = {
-    FAN_AUTO: "auto",
-    FAN_BOOST: "boost",
-    FAN_KITCHEN: "high",
-    FAN_AWAY: "away",
+TAHOMA_TO_FAN_MODES = {
+    "auto": FAN_AUTO,
+    "away": FAN_BOOST,
+    "boost": FAN_KITCHEN,
+    "high": FAN_AWAY,
 }
 
-TAHOMA_TO_FAN_MODE = {v: k for k, v in FAN_MODE_TO_TAHOMA.items()}
+FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
 
 HVAC_MODES = [HVAC_MODE_FAN_ONLY]
 PRESET_MODES = [PRESET_AUTO, PRESET_PROG, PRESET_MANUAL]
-FAN_MODES = [FAN_AUTO, FAN_BOOST, FAN_KITCHEN, FAN_AWAY, FAN_BYPASS]
-
-date=date.today()
-DAY=date.day
-MONTH=date.month
-
-VENTILATION_MODE_STATE = {"dayNight": "night","month": MONTH,"test": "off","endOfLineTest": "off","leapYear": "off","day": DAY,"cooling": "off","prog": "off"}
+FAN_MODES = [FAN_AUTO, FAN_BOOST, FAN_KITCHEN, FAN_AWAY]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -156,9 +150,9 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., auto, smart, interval, favorite."""
         state_ventilation_configuration = self.select_state(
-            "io:VentilationConfigurationModeState"
+            IO_VENTILATION_CONFIGURATION_MODE_STATE
         )
-        state_ventilation_mode = self.select_state("io:VentilationModeState")
+        state_ventilation_mode = self.select_state(IO_VENTILATION_MODE_STATE)
         state_prog = state_ventilation_mode.get("prog")
 
         if state_prog == "on":
@@ -179,34 +173,26 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the preset mode of the fan."""
-
         if preset_mode == PRESET_AUTO:
             await self.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "comfort"
             )
-            VENTILATION_MODE_STATE["prog"] = "off"
-            await self.async_execute_command(
-                COMMAND_SET_VENTILATION_MODE, VENTILATION_MODE_STATE
-            )
+            await self._set_ventilation_mode(prog="off")
 
         if preset_mode == PRESET_PROG:
             await self.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "standard"
             )
-            VENTILATION_MODE_STATE["prog"] = "on"
-            await self.async_execute_command(
-                COMMAND_SET_VENTILATION_MODE, VENTILATION_MODE_STATE
-            )
+            await self._set_ventilation_mode(prog="on")
 
         if preset_mode == PRESET_MANUAL:
             await self.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "standard"
             )
-            VENTILATION_MODE_STATE["prog"] = "off"
-            await self.async_execute_command(
-                COMMAND_SET_VENTILATION_MODE, VENTILATION_MODE_STATE
-            )
-        time.sleep(0.5)
+            await self._set_ventilation_mode(prog="off")
+
+        # TODO Get rid of sleep command
+        asyncio.sleep(0.5)
         await self.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
@@ -217,12 +203,13 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        state = self.select_state("io:VentilationModeState")
-        cooling = state.get("cooling")
+        ventilation_mode_state = self.select_state(IO_VENTILATION_MODE_STATE)
+        cooling = ventilation_mode_state.get("cooling")
+
         if cooling == "on":
             return FAN_BYPASS
         else:
-            return TAHOMA_TO_FAN_MODE[self.select_state(IO_AIR_DEMAND_MODE_STATE)]
+            return TAHOMA_TO_FAN_MODES[self.select_state(IO_AIR_DEMAND_MODE_STATE)]
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
@@ -232,26 +219,35 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
         if fan_mode == FAN_BYPASS:
-            await self.async_execute_command(
-                COMMAND_SET_AIR_DEMAND_MODE, "auto"
-            )
-            VENTILATION_MODE_STATE["cooling"] = "on"
-            await self.async_execute_command(
-                COMMAND_SET_VENTILATION_MODE, VENTILATION_MODE_STATE
-            )
+            await self.async_execute_command(COMMAND_SET_AIR_DEMAND_MODE, "auto")
         else:
-            if VENTILATION_MODE_STATE["cooling"] == "on":
-                VENTILATION_MODE_STATE["cooling"] = "off"
-                await self.async_execute_command(
-                    COMMAND_SET_VENTILATION_MODE, VENTILATION_MODE_STATE
-                )
             await self.async_execute_command(
-                COMMAND_SET_AIR_DEMAND_MODE, FAN_MODE_TO_TAHOMA[fan_mode]
+                COMMAND_SET_AIR_DEMAND_MODE, FAN_MODES_TO_TAHOMA[fan_mode]
             )
-        time.sleep(0.5)
+
+        # TODO Get rid of sleep command
+        asyncio.sleep(0.5)
         await self.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
         await self.async_execute_command(
             COMMAND_REFRESH_VENTILATION_CONFIGURATION_MODE,
+        )
+
+    async def _set_ventilation_mode(
+        self,
+        cooling=None,
+        prog=None,
+    ):
+        """Execute ventilation mode command with all parameters."""
+        ventilation_mode_state = self.select_state(IO_VENTILATION_MODE_STATE)
+
+        if cooling:
+            ventilation_mode_state["cooling"] = cooling
+
+        if prog:
+            ventilation_mode_state["prog"] = prog
+
+        await self.async_execute_command(
+            COMMAND_SET_VENTILATION_MODE, ventilation_mode_state
         )
