@@ -108,7 +108,6 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-
         if hvac_mode == HVAC_MODE_OFF:
             await self._global_control(main_operation=STATE_OFF)
         else:
