@@ -25,7 +25,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_device import TahomaDevice
+from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
 class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
-    TahomaDevice, ClimateEntity
+    TahomaEntity, ClimateEntity
 ):
     """Representation of Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
 
