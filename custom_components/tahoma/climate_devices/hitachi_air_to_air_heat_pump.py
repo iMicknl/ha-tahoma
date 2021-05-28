@@ -45,14 +45,14 @@ STATE_ON = "on"
 STATE_OFF = "off"
 
 TAHOMA_TO_HVAC_MODES = {
+    "autoCooling": HVAC_MODE_AUTO,
+    "autoHeating": HVAC_MODE_AUTO,
     "off": HVAC_MODE_OFF,
     "heating": HVAC_MODE_HEAT,
     "fan": HVAC_MODE_FAN_ONLY,
     "dehumidify": HVAC_MODE_DRY,
     "cooling": HVAC_MODE_COOL,
     "auto": HVAC_MODE_AUTO,
-    "autoCooling": HVAC_MODE_AUTO,
-    "autoHeating": HVAC_MODE_AUTO,
 }
 
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
