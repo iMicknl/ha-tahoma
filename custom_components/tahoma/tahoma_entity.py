@@ -166,21 +166,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
                 None,
             )
 
-    def select_state_definition(self, *states) -> Optional[str]:
-        """Select first existing active state definition in a list of states."""
-
-        if self.device.definition.states:
-            return next(
-                (
-                    state.values
-                    for state in self.device.definition.states
-                    if state.qualified_name in list(states)
-                ),
-                None,
-            )
-
-        return None
-
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
         try:

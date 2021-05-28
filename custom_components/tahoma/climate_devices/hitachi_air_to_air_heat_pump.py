@@ -30,6 +30,8 @@ from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
+COMMAND_GLOBAL_CONTROL = "globalControl"
+
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
@@ -201,7 +203,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     ):
         """Execute globalControl command with all parameters."""
         await self.async_execute_command(
-            "globalControl",
+            COMMAND_GLOBAL_CONTROL,
             main_operation
             or self.select_state(*MAIN_OPERATION_STATE),  # Main Operation
             target_temperature
