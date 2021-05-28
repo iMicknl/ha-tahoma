@@ -19,14 +19,17 @@ from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
-COMMAND_SET_OPERATING_MODE = "setOperatingMode"
+COMMAND_SET_TOWEL_DRYER_OPERATING_MODE = "setTowelDryerOperatingMode"
+COMMAND_SET_TOWEL_DRYER_TEMPORARY_STATE = "setTowelDryerTemporaryState"
 
+CORE_COMFORT_ROOM_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
+IO_TOWEL_DRYER_TEMPORARY_STATE_STATE = "io:TowelDryerTemporaryStateState"
+IO_EFFECTIVE_TEMPERATURE_SETPOINT_STATE = "io:EffectiveTemperatureSetpointState"
 
 PRESET_BOOST = "boost"
 PRESET_DRYING = "drying"
@@ -70,12 +73,7 @@ class AtlanticElectricalTowelDryer(TahomaEntity, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        supported_features = 0
-
-        supported_features |= SUPPORT_PRESET_MODE
-        supported_features |= SUPPORT_TARGET_TEMPERATURE
-
-        return supported_features
+        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -87,13 +85,14 @@ class AtlanticElectricalTowelDryer(TahomaEntity, ClimateEntity):
         """Return hvac operation ie. heat, cool mode."""
         if CORE_OPERATING_MODE_STATE in self.device.states:
             return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
+
         if CORE_ON_OFF_STATE in self.device.states:
             return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         await self.async_execute_command(
-            "setTowelDryerOperatingMode", HVAC_MODE_TO_TAHOMA[hvac_mode]
+            COMMAND_SET_TOWEL_DRYER_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
 
     @property
@@ -104,40 +103,28 @@ class AtlanticElectricalTowelDryer(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        # io:TowelDryerTemporaryStateState
         return TAHOMA_TO_PRESET_MODE[
-            self.select_state("io:TowelDryerTemporaryStateState")
+            self.select_state(IO_TOWEL_DRYER_TEMPORARY_STATE_STATE)
         ]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         await self.async_execute_command(
-            "setTowelDryerTemporaryState", PRESET_MODE_TO_TAHOMA[preset_mode]
+            COMMAND_SET_TOWEL_DRYER_TEMPORARY_STATE, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
-
-    # async def async_turn_on(self) -> None:
-    #     """Turn on the device."""
-    #     await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "on")
-
-    # async def async_turn_off(self) -> None:
-    #     """Turn off the device."""
-    #     await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "off")
 
     @property
     def target_temperature(self) -> None:
         """Return the temperature."""
-
-        # return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
-
         if self.hvac_mode == HVAC_MODE_AUTO:
-            return self.select_state("io:EffectiveTemperatureSetpointState")
+            return self.select_state(IO_EFFECTIVE_TEMPERATURE_SETPOINT_STATE)
         else:
             return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):
         """Return current temperature."""
-        return self.select_state("core:ComfortRoomTemperatureState")
+        return self.select_state(CORE_COMFORT_ROOM_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
