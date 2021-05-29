@@ -45,8 +45,8 @@ STATE_ON = "on"
 STATE_OFF = "off"
 
 TAHOMA_TO_HVAC_MODES = {
-    "autoCooling": HVAC_MODE_AUTO,
-    "autoHeating": HVAC_MODE_AUTO,
+    "autocooling": HVAC_MODE_AUTO,
+    "autoheating": HVAC_MODE_AUTO,
     "off": HVAC_MODE_OFF,
     "heating": HVAC_MODE_HEAT,
     "fan": HVAC_MODE_FAN_ONLY,
@@ -88,12 +88,15 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
-        return (
-            SUPPORT_TARGET_TEMPERATURE
-            | SUPPORT_FAN_MODE
-            | SUPPORT_SWING_MODE
-            | SUPPORT_PRESET_MODE
+
+        supported_features = (
+            SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE | SUPPORT_PRESET_MODE
         )
+
+        if self.has_state(*SWING_STATE):
+            supported_features |= SUPPORT_SWING_MODE
+
+        return supported_features
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -103,10 +106,10 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if self.select_state(*MAIN_OPERATION_STATE) == STATE_OFF:
+        if self._select_state(*MAIN_OPERATION_STATE) == STATE_OFF:
             return HVAC_MODE_OFF
 
-        return TAHOMA_TO_HVAC_MODES[self.select_state(*MODE_CHANGE_STATE)]
+        return TAHOMA_TO_HVAC_MODES[self._select_state(*MODE_CHANGE_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -120,7 +123,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        return self.select_state(*FAN_SPEED_STATE)
+        return self._select_state(*FAN_SPEED_STATE)
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
@@ -134,7 +137,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def swing_mode(self) -> Optional[str]:
         """Return the swing setting."""
-        return TAHOMA_TO_SWING_MODES[self.select_state(*SWING_STATE)]
+        return TAHOMA_TO_SWING_MODES[self._select_state(*SWING_STATE)]
 
     @property
     def swing_modes(self) -> Optional[List[str]]:
@@ -153,12 +156,12 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def target_temperature(self) -> None:
         """Return the temperature."""
-        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self._select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self) -> None:
         """Return current temperature."""
-        return self.select_state(*ROOM_TEMPERATURE_STATE)
+        return self._select_state(*ROOM_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
@@ -168,10 +171,10 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        if self.select_state(*LEAVE_HOME_STATE) == STATE_ON:
+        if self._select_state(*LEAVE_HOME_STATE) == STATE_ON:
             return "holiday_mode"
 
-        if self.select_state(*LEAVE_HOME_STATE) == STATE_OFF:
+        if self._select_state(*LEAVE_HOME_STATE) == STATE_OFF:
             return PRESET_NONE
 
         return None
@@ -210,11 +213,20 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         await self.async_execute_command(
             COMMAND_GLOBAL_CONTROL,
             main_operation
-            or self.select_state(*MAIN_OPERATION_STATE),  # Main Operation
+            or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
             target_temperature
-            or self.select_state(CORE_TARGET_TEMPERATURE_STATE),  # Target Temperature
-            fan_mode or self.select_state(*FAN_SPEED_STATE),  # Fan Mode
-            hvac_mode or self.select_state(*MODE_CHANGE_STATE),  # Mode
-            swing_mode or self.select_state(*SWING_STATE),  # Swing Mode
-            leave_home or self.select_state(*LEAVE_HOME_STATE),  # Leave Home
+            or self._select_state(CORE_TARGET_TEMPERATURE_STATE),  # Target Temperature
+            fan_mode or self._select_state(*FAN_SPEED_STATE),  # Fan Mode
+            hvac_mode or self._select_state(*MODE_CHANGE_STATE),  # Mode
+            swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
+            leave_home or self._select_state(*LEAVE_HOME_STATE),  # Leave Home
         )
+
+    def _select_state(self, *states) -> Optional[str]:
+        """Make all strings lowercase, since Hi Kumo server returns capitalized strings for some devices."""
+        state = self.select_state(*states)
+
+        if state and isinstance(state, str):
+            return state.lower()
+
+        return state
