@@ -1,6 +1,4 @@
 """Support for TaHoma cover - shutters etc."""
-import logging
-
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -27,8 +25,6 @@ import voluptuous as vol
 
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
