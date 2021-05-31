@@ -41,9 +41,9 @@ COMMAND_MY = "my"
 COMMAND_OPEN = "open"
 COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
+COMMAND_SET_CLOSURE_AND_LINEAR_SPEED = "setClosureAndLinearSpeed"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
 COMMAND_SET_ORIENTATION = "setOrientation"
-COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UNDEPLOY = "undeploy"
@@ -184,7 +184,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
-            COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
+            COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
         )
 
     async def async_set_cover_tilt_position(self, **kwargs):
@@ -378,7 +378,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         if self.has_command(*COMMANDS_CLOSE) or self.has_command(COMMAND_UNDEPLOY):
             supported_features |= SUPPORT_CLOSE
 
-        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
+        if self.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
 
         if self.has_command(COMMAND_MY):
