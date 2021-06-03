@@ -21,6 +21,7 @@ SUPPORTED_ENDPOINTS = {
     "Somfy Connexoon IO": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
     "Somfy Connexoon RTS": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
     "Somfy TaHoma": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy TaHoma switch": "https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/",
 }
 
 HUB_MANUFACTURER = {
@@ -31,6 +32,7 @@ HUB_MANUFACTURER = {
     "Somfy Connexoon IO": "Somfy",
     "Somfy Connexoon RTS": "Somfy",
     "Somfy TaHoma": "Somfy",
+    "Somfy TaHoma switch": "Somfy",
 }
 
 MIN_UPDATE_INTERVAL = 30

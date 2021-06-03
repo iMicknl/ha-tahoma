@@ -11,6 +11,7 @@ Custom component for Home Assistant to interact with smart devices via the Somfy
 ## Supported hubs
 
 - Somfy TaHoma Box
+- Somfy TaHoma switch
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
 - Cozytouch
