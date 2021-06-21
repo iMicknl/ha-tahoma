@@ -58,6 +58,7 @@ CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
+CORE_MOVING_STATE = "core:MovingState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
 CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
 CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
@@ -145,7 +146,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
         position = self.select_state(
             CORE_CLOSURE_STATE,
-            CORE_TARGET_CLOSURE_STATE,
             CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
         )
 
@@ -317,19 +317,41 @@ class TahomaCover(TahomaEntity, CoverEntity):
     @property
     def is_opening(self):
         """Return if the cover is opening or not."""
-        return any(
+        if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
             for execution in self.coordinator.executions.values()
+        ):
+            return True
+
+        is_moving = self.device.states[CORE_MOVING_STATE].value
+        current_closure = self.device.states[CORE_CLOSURE_STATE]
+        target_closure = self.device.states[CORE_TARGET_CLOSURE_STATE]
+        return (
+            is_moving
+            and current_closure
+            and target_closure
+            and current_closure.value > target_closure.value
         )
 
     @property
     def is_closing(self):
         """Return if the cover is closing or not."""
-        return any(
+        if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
             for execution in self.coordinator.executions.values()
+        ):
+            return True
+
+        is_moving = self.device.states.get(CORE_MOVING_STATE).value
+        current_closure = self.device.states[CORE_CLOSURE_STATE]
+        target_closure = self.device.states[CORE_TARGET_CLOSURE_STATE]
+        return (
+            is_moving
+            and current_closure
+            and target_closure
+            and current_closure.value < target_closure.value
         )
 
     @property
