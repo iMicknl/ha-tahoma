@@ -324,11 +324,12 @@ class TahomaCover(TahomaEntity, CoverEntity):
         ):
             return True
 
-        is_moving = self.device.states[CORE_MOVING_STATE].value
-        current_closure = self.device.states[CORE_CLOSURE_STATE]
-        target_closure = self.device.states[CORE_TARGET_CLOSURE_STATE]
+        is_moving = self.device.states.get(CORE_MOVING_STATE)
+        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
+        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
         return (
             is_moving
+            and is_moving.value
             and current_closure
             and target_closure
             and current_closure.value > target_closure.value
@@ -344,11 +345,12 @@ class TahomaCover(TahomaEntity, CoverEntity):
         ):
             return True
 
-        is_moving = self.device.states.get(CORE_MOVING_STATE).value
-        current_closure = self.device.states[CORE_CLOSURE_STATE]
-        target_closure = self.device.states[CORE_TARGET_CLOSURE_STATE]
+        is_moving = self.device.states.get(CORE_MOVING_STATE)
+        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
+        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
         return (
             is_moving
+            and is_moving.value
             and current_closure
             and target_closure
             and current_closure.value < target_closure.value
