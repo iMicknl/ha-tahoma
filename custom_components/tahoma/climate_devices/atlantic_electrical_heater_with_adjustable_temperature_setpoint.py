@@ -202,7 +202,9 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
                     COMMAND_OFF,
                 )
             else:
-                await self.async_execute_command(COMMAND_SET_HEATING_LEVEL, "comfort")
+                await self.async_execute_command(
+                    COMMAND_SET_HEATING_LEVEL, PRESET_STATE_COMFORT
+                )
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -224,14 +226,6 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
             await self.async_execute_command(
                 COMMAND_SET_HEATING_LEVEL, PRESET_MODE_TO_TAHOMA[preset_mode]
             )
-
-    async def async_turn_on(self) -> None:
-        """Turn on the device."""
-        await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "on")
-
-    async def async_turn_off(self) -> None:
-        """Turn off the device."""
-        await self.async_execute_command(COMMAND_SET_OPERATING_MODE, "off")
 
     @property
     def target_temperature(self) -> None:
