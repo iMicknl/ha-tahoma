@@ -139,6 +139,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
     def select_command(self, *commands: str) -> Optional[str]:
         """Select first existing command in a list of commands."""
         existing_commands = self.device.definition.commands
+
         return next((c for c in commands if c in existing_commands), None)
 
     def has_command(self, *commands: str) -> bool:
@@ -173,7 +174,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
                 ),
                 None,
             )
-        return None
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
