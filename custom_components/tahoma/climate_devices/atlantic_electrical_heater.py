@@ -21,6 +21,8 @@ COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
+PRESET_COMFORT1 = "comfort-1"
+PRESET_COMFORT2 = "comfort-2"
 PRESET_FREEZE = "freeze"
 
 TAHOMA_TO_PRESET_MODES = {
@@ -28,6 +30,8 @@ TAHOMA_TO_PRESET_MODES = {
     "frostprotection": PRESET_FREEZE,
     "eco": PRESET_ECO,
     "comfort": PRESET_COMFORT,
+    "comfort-1": PRESET_COMFORT1,
+    "comfort-2": PRESET_COMFORT2,
 }
 
 PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
