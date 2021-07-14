@@ -11,6 +11,7 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
+    PRESET_BOOST,
     PRESET_COMFORT,
     PRESET_ECO,
     PRESET_NONE,
@@ -39,37 +40,31 @@ CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
-PRESET_BOOST = "Boost"
-PRESET_COMFORT1 = "Comfort -1"
-PRESET_COMFORT2 = "Comfort -2"
-PRESET_FROST_PROTECTION = "Frost Protection"
-PRESET_AUTO = "Auto"
-PRESET_PROG = "Prog"
+PRESET_AUTO = "auto"
+PRESET_COMFORT1 = "comfort-1"
+PRESET_COMFORT2 = "comfort-2"
+PRESET_FROST_PROTECTION = "frost_protection"
+PRESET_PROG = "prog"
 
-PRESET_STATE_FROST_PROTECTION = "frostprotection"
-PRESET_STATE_OFF = "off"
 PRESET_STATE_ECO = "eco"
 PRESET_STATE_BOOST = "boost"
 PRESET_STATE_COMFORT = "comfort"
-PRESET_STATE_COMFORT1 = "comfort-1"
-PRESET_STATE_COMFORT2 = "comfort-2"
-PRESET_STATE_AUTO = "auto"
-PRESET_STATE_PROG = "internal"
 
-# Map Home Assistant presets to TaHoma presets
-PRESET_MODE_TO_TAHOMA = {
-    PRESET_BOOST: PRESET_STATE_BOOST,
-    PRESET_COMFORT1: PRESET_STATE_COMFORT1,
-    PRESET_COMFORT2: PRESET_STATE_COMFORT2,
-    PRESET_COMFORT: PRESET_STATE_COMFORT,
-    PRESET_ECO: PRESET_STATE_ECO,
-    PRESET_FROST_PROTECTION: PRESET_STATE_FROST_PROTECTION,
-    PRESET_NONE: PRESET_STATE_OFF,
-    PRESET_AUTO: PRESET_STATE_AUTO,
-    PRESET_PROG: PRESET_STATE_PROG,
+
+# Map TaHoma presets to Home Assistant presets
+TAHOMA_TO_PRESET_MODE = {
+    "off": PRESET_NONE,
+    "frostprotection": PRESET_FROST_PROTECTION,
+    "eco": PRESET_ECO,
+    "comfort": PRESET_COMFORT,
+    "comfort-1": PRESET_COMFORT1,
+    "comfort-2": PRESET_COMFORT2,
+    "auto": PRESET_AUTO,
+    "boost": PRESET_BOOST,
+    "internal": PRESET_PROG,
 }
 
-TAHOMA_TO_PRESET_MODE = {v: k for k, v in PRESET_MODE_TO_TAHOMA.items()}
+PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
 
 # Map TaHoma HVAC modes to Home Assistant HVAC modes
 TAHOMA_TO_HVAC_MODE = {

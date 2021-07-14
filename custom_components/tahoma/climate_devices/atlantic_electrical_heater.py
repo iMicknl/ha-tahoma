@@ -23,11 +23,11 @@ IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 PRESET_COMFORT1 = "comfort-1"
 PRESET_COMFORT2 = "comfort-2"
-PRESET_FREEZE = "freeze"
+PRESET_FROST_PROTECTION = "frost_protection"
 
 TAHOMA_TO_PRESET_MODES = {
     "off": PRESET_NONE,
-    "frostprotection": PRESET_FREEZE,
+    "frostprotection": PRESET_FROST_PROTECTION,
     "eco": PRESET_ECO,
     "comfort": PRESET_COMFORT,
     "comfort-1": PRESET_COMFORT1,
