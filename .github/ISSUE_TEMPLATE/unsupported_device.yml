@@ -1,4 +1,4 @@
-name: Unsupported device
+name: Unsupported Device
 description: Let's have a look if we can support your device
 title: "Add support for ModelName (io:SomfySensorName)"
 labels: [new-device]
