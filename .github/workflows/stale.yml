@@ -23,6 +23,6 @@ jobs:
             This issue now has been marked as stale and will be closed if no further
             activity occurs. Thank you for your contributions.'
           days-before-stale: 30
-          days-before-close: 5
+          days-before-close: 30
           stale-issue-label: 'no-issue-activity'
           exempt-issue-labels: 'work-in-progress,blocked,help wanted,under investigation'
