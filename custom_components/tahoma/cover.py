@@ -317,6 +317,10 @@ class TahomaCover(TahomaEntity, CoverEntity):
     @property
     def is_opening(self):
         """Return if the cover is opening or not."""
+
+        if self.assumed_state:
+            return None
+
         if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
@@ -338,6 +342,10 @@ class TahomaCover(TahomaEntity, CoverEntity):
     @property
     def is_closing(self):
         """Return if the cover is closing or not."""
+
+        if self.assumed_state:
+            return None
+
         if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
