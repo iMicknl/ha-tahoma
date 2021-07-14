@@ -13,7 +13,7 @@ from .common import MockConfigEntry
 
 TEST_EMAIL = "test@testdomain.com"
 TEST_PASSWORD = "test-password"
-DEFAULT_HUB = "Somfy (Europe))"
+DEFAULT_HUB = "Somfy (Europe)"
 
 
 async def test_form(hass):
