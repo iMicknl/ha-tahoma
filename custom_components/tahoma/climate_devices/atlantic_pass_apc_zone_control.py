@@ -31,7 +31,7 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
 class AtlanticPassAPCZoneControl(TahomaEntity, ClimateEntity):
-    """Representation of Atlantic Electrical Towel Dryer."""
+    """Representation of Atlantic Pass APC Zone Control."""
 
     @property
     def temperature_unit(self) -> str:

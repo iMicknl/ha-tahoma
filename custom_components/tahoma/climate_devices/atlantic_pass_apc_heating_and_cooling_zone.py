@@ -23,30 +23,45 @@ from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
+COMMAND_REFRESH_OPERATING_MODE = "refreshOperatingMode"
+COMMAND_REFRESH_PASS_APC_HEATING_PROFILE = "refreshPassAPCHeatingProfile"
+COMMAND_REFRESH_TARGET_TEMPERATURE = "refreshTargetTemperature"
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
-COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
+COMMAND_SET_HEATING_ON_OFF_STATE = "setHeatingOnOffState"
+COMMAND_SET_HEATING_TARGET_TEMPERATURE = "setHeatingTargetTemperature"
 COMMAND_SET_OPERATING_MODE = "setOperatingMode"
+COMMAND_SET_PASS_APC_HEATING_MODE = "setPassAPCHeatingMode"
+COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 
+CORE_HEATING_ON_OFF_STATE = "core:HeatingOnOffState"
+CORE_HEATING_TARGET_TEMPERATURE_STATE = "core:HeatingTargetTemperatureState"
+CORE_MINIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
+    "core:MinimumHeatingTargetTemperatureState"
+)
+CORE_MAXIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
+    "core:MaximumHeatingTargetTemperatureState"
+)
+CORE_ON_OFF_STATE = "core:OnOffState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-CORE_ON_OFF_STATE = "core:OnOffState"
-IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
+IO_PASS_APC_HEATING_MODE_STATE = "io:PassAPCHeatingModeState"
+IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 # Map TaHoma HVAC modes to Home Assistant HVAC modes
 TAHOMA_TO_HVAC_MODE = {
-    "off": HVAC_MODE_OFF,
     "stop": HVAC_MODE_OFF,  # fallback
+    "off": HVAC_MODE_OFF,
     "manu": HVAC_MODE_HEAT,
-    "internalScheduling": HVAC_MODE_AUTO,  # prog
     "auto": HVAC_MODE_AUTO,  # fallback
+    "internalScheduling": HVAC_MODE_AUTO,  # prog
 }
 
 HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
 class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
-    """Representation of Atlantic Electrical Towel Dryer."""
+    """Representation of Atlantic Pass APC Heating and Cooling Zone."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Init method."""
@@ -118,12 +133,12 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     @property
     def min_temp(self) -> float:
         """Return the minimum temperature."""
-        return self.select_state("core:MinimumHeatingTargetTemperatureState")
+        return self.select_state(CORE_MINIMUM_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
     def max_temp(self) -> float:
         """Return the maximum temperature."""
-        return self.select_state("core:MaximumHeatingTargetTemperatureState")
+        return self.select_state(CORE_MAXIMUM_HEATING_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self) -> Optional[float]:
@@ -152,36 +167,37 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
 
-        if self.select_state("core:HeatingOnOffState") == "off":
+        if self.select_state(CORE_HEATING_ON_OFF_STATE) == "off":
             return HVAC_MODE_OFF
 
-        return TAHOMA_TO_HVAC_MODE[self.select_state("io:PassAPCHeatingModeState")]
+        return TAHOMA_TO_HVAC_MODE[self.select_state(IO_PASS_APC_HEATING_MODE_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
 
         if hvac_mode == HVAC_MODE_OFF:
-            await self.async_execute_command("setHeatingOnOffState", "off")
+            await self.async_execute_command(COMMAND_SET_HEATING_ON_OFF_STATE, "off")
         else:
             if self.hvac_mode == HVAC_MODE_OFF:
-                await self.async_execute_command("setHeatingOnOffState", "on")
+                await self.async_execute_command(COMMAND_SET_HEATING_ON_OFF_STATE, "on")
 
             await self.async_execute_command(
-                "setPassAPCHeatingMode", HVAC_MODE_TO_TAHOMA[hvac_mode]
+                COMMAND_SET_PASS_APC_HEATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
             )
 
-        await self.async_execute_command("refreshPassAPCHeatingProfile")
-
-        await self.async_execute_command("refreshOperatingMode")
+        await self.async_execute_command(COMMAND_REFRESH_PASS_APC_HEATING_PROFILE)
+        await self.async_execute_command(COMMAND_REFRESH_OPERATING_MODE)
 
     @property
     def target_temperature(self) -> None:
         """Return the temperature."""
-        return self.select_state("core:HeatingTargetTemperatureState")
+        return self.select_state(CORE_HEATING_TARGET_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command("setHeatingTargetTemperature", temperature)
-        await self.async_execute_command("refreshTargetTemperature")
+        await self.async_execute_command(
+            COMMAND_SET_HEATING_TARGET_TEMPERATURE, temperature
+        )
+        await self.async_execute_command(COMMAND_REFRESH_TARGET_TEMPERATURE)
