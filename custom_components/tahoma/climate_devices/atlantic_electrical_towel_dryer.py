@@ -20,6 +20,7 @@ from ..tahoma_entity import TahomaEntity
 _LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
+COMMAND_SET_DEROGATED_TARGET_TEMPERATURE = "setDerogatedTargetTemperature"
 COMMAND_SET_TOWEL_DRYER_OPERATING_MODE = "setTowelDryerOperatingMode"
 COMMAND_SET_TOWEL_DRYER_TEMPORARY_STATE = "setTowelDryerTemporaryState"
 
@@ -130,13 +131,11 @@ class AtlanticElectricalTowelDryer(TahomaEntity, ClimateEntity):
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command(COMMAND_SET_TARGET_TEMPERATURE, temperature)
-
-        # if self.hvac_mode == HVAC_MODE_AUTO:
-        #     await self.async_execute_command(
-        #         "setDerogatedTargetTemperature", temperature
-        #     )
-        # else:
-        #     await self.async_execute_command(
-        #         COMMAND_SET_TARGET_TEMPERATURE, temperature
-        #     )
+        if self.hvac_mode == HVAC_MODE_AUTO:
+            await self.async_execute_command(
+                COMMAND_SET_DEROGATED_TARGET_TEMPERATURE, temperature
+            )
+        else:
+            await self.async_execute_command(
+                COMMAND_SET_TARGET_TEMPERATURE, temperature
+            )
