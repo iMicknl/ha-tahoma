@@ -70,7 +70,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
     @property
     def assumed_state(self) -> bool:
         """Return True if unable to access real state of the entity."""
-        return self.device.states is None or len(self.device.states) == 0
+        return not self.device.states
 
     @property
     def device_state_attributes(self) -> Dict[str, Any]:
