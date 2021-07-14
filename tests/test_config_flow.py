@@ -2,17 +2,13 @@ from unittest.mock import Mock, patch
 
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
-from homeassistant.components.dhcp import HOSTNAME, IP_ADDRESS, MAC_ADDRESS
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
     TooManyRequestsException,
 )
 import pytest
-from pytest_homeassistant_custom_component.common import (
-    MockConfigEntry,
-    mock_device_registry,
-)
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.tahoma import config_flow
 
