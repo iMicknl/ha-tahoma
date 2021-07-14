@@ -115,7 +115,8 @@ class TahomaEntity(CoordinatorEntity, Entity):
             }
 
         manufacturer = (
-            self.select_state(CORE_MANUFACTURER, CORE_MANUFACTURER_NAME_STATE)
+            self.select_attribute(CORE_MANUFACTURER)
+            or self.select_state(CORE_MANUFACTURER_NAME_STATE)
             or "Somfy"
         )
         model = (
