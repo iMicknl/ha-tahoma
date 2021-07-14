@@ -25,9 +25,9 @@ from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
+    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
     "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
-    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
     "AtlanticPassAPCHeatingAndCoolingZone": AtlanticPassAPCHeatingAndCoolingZone,
