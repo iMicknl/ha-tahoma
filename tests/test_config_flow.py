@@ -182,6 +182,8 @@ async def test_reauth_success(hass):
 async def test_import(hass):
     """Test config flow using configuration.yaml."""
     with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
+        "pyhoma.client.TahomaClient.get_gateways", return_value=MOCK_GATEWAY_RESPONSE
+    ), patch(
         "custom_components.tahoma.async_setup", return_value=True
     ) as mock_setup, patch(
         "custom_components.tahoma.async_setup_entry", return_value=True
