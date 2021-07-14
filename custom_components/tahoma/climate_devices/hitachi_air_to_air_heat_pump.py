@@ -66,7 +66,7 @@ TAHOMA_TO_SWING_MODES = {
 
 SWING_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_SWING_MODES.items()}
 
-TAHOMA_TO_FAN_MODES = {
+HLRRWIFI_TAHOMA_TO_FAN_MODES = {
     "auto": FAN_AUTO,
     "high": FAN_HIGH,
     "low": FAN_LOW,
@@ -74,7 +74,16 @@ TAHOMA_TO_FAN_MODES = {
     "silent": "silent",
 }
 
-FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
+OVP_TAHOMA_TO_FAN_MODES = {
+    "auto": FAN_AUTO,
+    "hi": FAN_HIGH,
+    "lo": FAN_LOW,
+    "med": FAN_MEDIUM,
+    "silent": "silent",
+}
+
+FAN_MODES_TO_HLRRWIFI_TAHOMA = {v: k for k, v in HLRRWIFI_TAHOMA_TO_FAN_MODES.items()}
+FAN_MODES_TO_OVP_TAHOMA = {v: k for k, v in OVP_TAHOMA_TO_FAN_MODES.items()}
 
 
 class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
@@ -123,16 +132,25 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        return self._select_state(*FAN_SPEED_STATE)
+        if self.device.controllable_name == "ovp:HLinkMainController":
+            return HLRRWIFI_TAHOMA_TO_FAN_MODES[self._select_state(*FAN_SPEED_STATE)]
+
+        return HLRRWIFI_TAHOMA_TO_FAN_MODES[self._select_state(*FAN_SPEED_STATE)]
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return [*FAN_MODES_TO_TAHOMA]
+        if self.device.controllable_name == "ovp:HLinkMainController":
+            return [*FAN_MODES_TO_OVP_TAHOMA]
+
+        return [*FAN_MODES_TO_HLRRWIFI_TAHOMA]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
-        await self._global_control(fan_mode=fan_mode)
+        if self.device.controllable_name == "ovp:HLinkMainController":
+            await self._global_control(fan_mode=FAN_MODES_TO_OVP_TAHOMA[fan_mode])
+        else:
+            await self._global_control(fan_mode=FAN_MODES_TO_HLRRWIFI_TAHOMA[fan_mode])
 
     @property
     def swing_mode(self) -> Optional[str]:
@@ -210,17 +228,35 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         leave_home=None,
     ):
         """Execute globalControl command with all parameters."""
-        await self.async_execute_command(
-            COMMAND_GLOBAL_CONTROL,
-            main_operation
-            or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
-            target_temperature
-            or self._select_state(CORE_TARGET_TEMPERATURE_STATE),  # Target Temperature
-            fan_mode or self._select_state(*FAN_SPEED_STATE),  # Fan Mode
-            hvac_mode or self._select_state(*MODE_CHANGE_STATE),  # Mode
-            swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
-            leave_home or self._select_state(*LEAVE_HOME_STATE),  # Leave Home
-        )
+        print(self.device.controllable_name)
+
+        if self.device.controllable_name == "ovp:HLinkMainController":
+            await self.async_execute_command(
+                COMMAND_GLOBAL_CONTROL,
+                main_operation
+                or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
+                target_temperature
+                or self._select_state(
+                    CORE_TARGET_TEMPERATURE_STATE
+                ),  # Target Temperature
+                fan_mode or self._select_state(*FAN_SPEED_STATE),  # Fan Mode
+                hvac_mode or self._select_state(*MODE_CHANGE_STATE),  # Mode
+                swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
+            )
+        else:
+            await self.async_execute_command(
+                COMMAND_GLOBAL_CONTROL,
+                main_operation
+                or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
+                target_temperature
+                or self._select_state(
+                    CORE_TARGET_TEMPERATURE_STATE
+                ),  # Target Temperature
+                fan_mode or self._select_state(*FAN_SPEED_STATE),  # Fan Mode
+                hvac_mode or self._select_state(*MODE_CHANGE_STATE),  # Mode
+                swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
+                leave_home or self._select_state(*LEAVE_HOME_STATE),  # Leave Home
+            )
 
     def _select_state(self, *states) -> Optional[str]:
         """Make all strings lowercase, since Hi Kumo server returns capitalized strings for some devices."""
