@@ -1,8 +1,10 @@
 """Support for TaHoma climate devices."""
-
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
+from .climate_devices.atlantic_electrical_towel_dryer import (
+    AtlanticElectricalTowelDryer,
+)
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.evo_home_controller import EvoHomeController
@@ -15,6 +17,7 @@ from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
+    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
     "SomfyThermostat": SomfyThermostat,
