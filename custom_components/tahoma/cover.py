@@ -1,6 +1,4 @@
 """Support for TaHoma cover - shutters etc."""
-import logging
-
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -28,8 +26,6 @@ import voluptuous as vol
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
 
-_LOGGER = logging.getLogger(__name__)
-
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
 COMMAND_CYCLE = "cycle"
@@ -41,10 +37,9 @@ COMMAND_MY = "my"
 COMMAND_OPEN = "open"
 COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
+COMMAND_SET_CLOSURE_AND_LINEAR_SPEED = "setClosureAndLinearSpeed"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
 COMMAND_SET_ORIENTATION = "setOrientation"
-COMMAND_SET_POSITION = "setPosition"
-COMMAND_SET_POSITION_AND_LINEAR_SPEED = "setPositionAndLinearSpeed"
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UNDEPLOY = "undeploy"
@@ -56,16 +51,14 @@ COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
 COMMANDS_OPEN_TILT = [COMMAND_OPEN_SLATS]
 COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
 COMMANDS_CLOSE_TILT = [COMMAND_CLOSE_SLATS]
-COMMANDS_SET_POSITION = [
-    COMMAND_SET_POSITION,
-    COMMAND_SET_CLOSURE,
-]
+
 COMMANDS_SET_TILT_POSITION = [COMMAND_SET_ORIENTATION]
 
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
+CORE_MOVING_STATE = "core:MovingState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
 CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
 CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
@@ -153,7 +146,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
 
         position = self.select_state(
             CORE_CLOSURE_STATE,
-            CORE_TARGET_CLOSURE_STATE,
             CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
         )
 
@@ -181,16 +173,14 @@ class TahomaCover(TahomaEntity, CoverEntity):
             await self.async_execute_command(COMMAND_SET_DEPLOYMENT, position)
         else:
             position = 100 - kwargs.get(ATTR_POSITION, 0)
-            await self.async_execute_command(
-                self.select_command(*COMMANDS_SET_POSITION), position
-            )
+            await self.async_execute_command(COMMAND_SET_CLOSURE, position)
 
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         await self.async_execute_command(
-            COMMAND_SET_POSITION_AND_LINEAR_SPEED, position, "lowspeed"
+            COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
         )
 
     async def async_set_cover_tilt_position(self, **kwargs):
@@ -269,7 +259,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
     async def async_stop_cover(self, **_):
         """Stop the cover."""
         await self.async_cancel_or_stop_cover(
-            COMMANDS_OPEN + COMMANDS_SET_POSITION + COMMANDS_CLOSE,
+            COMMANDS_OPEN + [COMMAND_SET_CLOSURE] + COMMANDS_CLOSE,
             COMMANDS_STOP,
         )
 
@@ -327,19 +317,43 @@ class TahomaCover(TahomaEntity, CoverEntity):
     @property
     def is_opening(self):
         """Return if the cover is opening or not."""
-        return any(
+        if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
             for execution in self.coordinator.executions.values()
+        ):
+            return True
+
+        is_moving = self.device.states.get(CORE_MOVING_STATE)
+        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
+        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
+        return (
+            is_moving
+            and is_moving.value
+            and current_closure
+            and target_closure
+            and current_closure.value > target_closure.value
         )
 
     @property
     def is_closing(self):
         """Return if the cover is closing or not."""
-        return any(
+        if any(
             execution.get("deviceurl") == self.device.deviceurl
             and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
             for execution in self.coordinator.executions.values()
+        ):
+            return True
+
+        is_moving = self.device.states.get(CORE_MOVING_STATE)
+        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
+        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
+        return (
+            is_moving
+            and is_moving.value
+            and current_closure
+            and target_closure
+            and current_closure.value < target_closure.value
         )
 
     @property
@@ -370,7 +384,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         if self.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.has_command(*COMMANDS_SET_POSITION) or self.has_command(
+        if self.has_command(COMMAND_SET_CLOSURE) or self.has_command(
             COMMAND_SET_DEPLOYMENT
         ):
             supported_features |= SUPPORT_SET_POSITION
@@ -384,7 +398,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         if self.has_command(*COMMANDS_CLOSE) or self.has_command(COMMAND_UNDEPLOY):
             supported_features |= SUPPORT_CLOSE
 
-        if self.has_command(COMMAND_SET_POSITION_AND_LINEAR_SPEED):
+        if self.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
 
         if self.has_command(COMMAND_MY):
