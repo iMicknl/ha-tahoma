@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional, Union
 
 from homeassistant.components import sensor
-from homeassistant.const import PERCENTAGE, SIGNAL_STRENGTH_DECIBELS, VOLUME_LITERS
+from homeassistant.const import (
+    PERCENTAGE,
+    SIGNAL_STRENGTH_DECIBELS,
+    VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
+    VOLUME_LITERS,
+)
 from homeassistant.helpers.entity import Entity
 
 from .coordinator import TahomaDataUpdateCoordinator
@@ -50,6 +55,26 @@ supported_states = {
         icon="mdi:water",
         value=lambda value: round(value),
         unit=VOLUME_LITERS,
+    ),
+    "io:OutletEngineState": StateDescription(
+        key="io:OutletEngineState",
+        name="Outlet Engine",
+        icon="mdi:fan-chevron-down",
+        value=lambda value: round(value),
+        unit=VOLUME_LITERS,
+    ),
+    "io:InletEngineState": StateDescription(
+        key="io:InletEngineState",
+        name="Inlet Engine",
+        icon="mdi:fan-chevron-up",
+        value=lambda value: round(value),
+        unit=VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
+    ),
+    "hlrrwifi:RoomTemperatureState": StateDescription(
+        key="hlrrwifi:RoomTemperatureState",
+        name="Room Temperature",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
 }
 
