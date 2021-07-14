@@ -1,0 +1,65 @@
+name: Unsupported Device
+description: Let's have a look if we can support your device
+title: "Add support for ModelName (io:SomfySensorName)"
+labels: [new-device]
+body:
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Did you read the instructions?
+      description: We have a high load of issue reports, thus we would like to ask you to read a few instructions first.
+      options:
+        - label: I have read the [README](https://github.com/iMicknl/ha-tahoma/blob/master/README.md), including the [advanced debugging](https://github.com/iMicknl/ha-tahoma/blob/master/README.md#advanced) section.
+          required: true
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Device information
+      description: >-
+        Try to add a clear and concise description of the device, together with specific usecases that you would like to have supported.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Device
+
+  - type: textarea
+    id: unsupported_device_log
+    attributes:
+      label: Unsupported device log
+      description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste the Unsupported device string here. If your device already shows up in Home Assistant, share the firwmare (e.g. `io:DimmableLightIOComponent`), which can be gathered from device detail page.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: device_command_log
+    attributes:
+      label: Device commands
+      description: In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor app (e.g. TaHoma) and capture the commands. [Read more](https://github.com/iMicknl/ha-tahoma#device-not-working-correctly).
+      render: shell
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Details
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: If you have any additional information for us, use the field below. Please note, you can attach screenshots or screen recordings here, by dragging and dropping files in the field below.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this request!
