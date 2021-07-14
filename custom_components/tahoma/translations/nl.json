@@ -11,14 +11,14 @@
       }
     },
     "error": {
-      "too_many_requests": "Te veel verzoeken, probeer het later opnieuw.",
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "too_many_requests": "Te veel verzoeken, probeer het later opnieuw",
+      "cannot_connect": "Kan geen verbinding maken",
+      "invalid_auth": "Ongeldige authenticatie",
       "server_in_maintenance": "De server is offline voor onderhoud",
-      "unknown": "[%key:common::config_flow::error::unknown%]"
+      "unknown": "Onverwachte fout"
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "already_configured": "Account is al geconfigureerd"
     }
   },
   "options": {
