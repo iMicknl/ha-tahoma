@@ -17,6 +17,7 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import (
     ATTR_TEMPERATURE,
     EVENT_HOMEASSISTANT_START,
+    STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_CELSIUS,
 )
@@ -141,7 +142,7 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
     @callback
     def update_temp(self, state):
         """Update thermostat with latest state from sensor."""
-        if state is None or state.state == STATE_UNKNOWN:
+        if state is None or state.state in [STATE_UNKNOWN, STATE_UNAVAILABLE]:
             return
 
         try:

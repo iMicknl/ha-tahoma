@@ -1,1 +1,1 @@
-pre-commit==2.5.0
+pyhoma==0.5.16

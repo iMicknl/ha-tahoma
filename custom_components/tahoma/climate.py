@@ -5,6 +5,7 @@ from homeassistant.components.climate import DOMAIN as CLIMATE
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
+from .climate_devices.evo_home_controller import EvoHomeController
 from .climate_devices.heating_set_point import HeatingSetPoint
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
@@ -20,6 +21,7 @@ TYPE = {
     "DimmerExteriorHeating": DimmerExteriorHeating,
     "StatelessExteriorHeating": StatelessExteriorHeating,
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
+    "EvoHomeController": EvoHomeController,
     "HeatingSetPoint": HeatingSetPoint,
 }
 

@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.2
+    rev: v2.14.0
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.4b2
     hooks:
       - id: black
         args:
@@ -13,7 +13,7 @@ repos:
           - --quiet
         files: ^((custom_components)/.+)?[^/]+\.py$
   - repo: https://github.com/codespell-project/codespell
-    rev: v1.17.1
+    rev: v2.0.0
     hooks:
       - id: codespell
         args:
@@ -22,7 +22,7 @@ repos:
           - --quiet-level=2
         exclude_types: [csv, json]
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+    rev: 3.9.1
     hooks:
       - id: flake8
         additional_dependencies:
@@ -30,10 +30,10 @@ repos:
           - pydocstyle==5.1.1
         files: ^(custom_components)/.+\.py$
   - repo: https://github.com/PyCQA/isort
-    rev: 5.5.3
+    rev: 5.8.0
     hooks:
       - id: isort
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.24.2
+    rev: v1.26.1
     hooks:
       - id: yamllint
