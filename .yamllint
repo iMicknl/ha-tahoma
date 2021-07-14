@@ -1,5 +1,5 @@
 ignore: |
-  azure-*.yml
+  .github
 rules:
   braces:
     level: error
@@ -58,4 +58,4 @@ rules:
   trailing-spaces:
     level: error
   truthy:
-    level: error
+    level: warning

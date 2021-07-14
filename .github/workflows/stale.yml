@@ -1,4 +1,3 @@
- # yamllint disable rule:line-length
 name: Mark stale issues and pull requests
 
 on:
