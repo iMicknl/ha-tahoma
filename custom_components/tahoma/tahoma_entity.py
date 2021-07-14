@@ -15,11 +15,15 @@ ATTR_RSSI_LEVEL = "rssi_level"
 
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
+CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
+CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
 CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
+
+IO_MODEL_STATE = "io:ModelState"
 
 STATE_AVAILABLE = "available"
 STATE_BATTERY_FULL = "full"
@@ -110,8 +114,17 @@ class TahomaEntity(CoordinatorEntity, Entity):
                 "identifiers": {(DOMAIN, self.base_device_url)},
             }
 
-        manufacturer = self.select_state(CORE_MANUFACTURER_NAME_STATE) or "Somfy"
-        model = self.select_state(CORE_MODEL_STATE) or self.device.widget
+        manufacturer = (
+            self.select_attribute(CORE_MANUFACTURER)
+            or self.select_state(CORE_MANUFACTURER_NAME_STATE)
+            or "Somfy"
+        )
+        model = (
+            self.select_state(
+                CORE_MODEL_STATE, CORE_PRODUCT_MODEL_NAME_STATE, IO_MODEL_STATE
+            )
+            or self.device.widget
+        )
 
         return {
             "identifiers": {(DOMAIN, self.base_device_url)},
