@@ -32,7 +32,11 @@ TAHOMA_TO_PRESET_MODES = {
 
 PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
 
-TAHOMA_TO_HVAC_MODES = {"on": HVAC_MODE_HEAT, "off": HVAC_MODE_OFF}
+TAHOMA_TO_HVAC_MODES = {
+    "on": HVAC_MODE_HEAT,
+    "comfort": HVAC_MODE_HEAT,
+    "off": HVAC_MODE_OFF,
+}
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
