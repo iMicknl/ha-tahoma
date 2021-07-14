@@ -48,7 +48,11 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "AirSensor": SENSOR,
     "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "AtlanticElectricalTowelDryer": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "AtlanticPassAPCDHW": CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    "AtlanticPassAPCHeatingAndCoolingZone": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "AtlanticPassAPCZoneControl": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
     "ConsumptionSensor": SENSOR,
