@@ -2,6 +2,9 @@
 from homeassistant.components.climate import DOMAIN as CLIMATE
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
+from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
+    AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
+)
 from .climate_devices.atlantic_electrical_towel_dryer import (
     AtlanticElectricalTowelDryer,
 )
@@ -19,13 +22,15 @@ from .const import DOMAIN
 TYPE = {
     "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
-    "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
-    "SomfyThermostat": SomfyThermostat,
-    "DimmerExteriorHeating": DimmerExteriorHeating,
-    "StatelessExteriorHeating": StatelessExteriorHeating,
+    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
+    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
+    "DimmerExteriorHeating": DimmerExteriorHeating,
     "EvoHomeController": EvoHomeController,
     "HeatingSetPoint": HeatingSetPoint,
+    "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
+    "SomfyThermostat": SomfyThermostat,
+    "StatelessExteriorHeating": StatelessExteriorHeating,
 }
 
 SERVICE_CLIMATE_MY_POSITION = "set_climate_my_position"

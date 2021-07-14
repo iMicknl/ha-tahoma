@@ -1,4 +1,4 @@
-"""Support for Atlantic Electrical Heater IO controller."""
+"""Support for Atlantic Electrical Heater."""
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -23,11 +23,11 @@ IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 PRESET_COMFORT1 = "comfort-1"
 PRESET_COMFORT2 = "comfort-2"
-PRESET_FREEZE = "freeze"
+PRESET_FROST_PROTECTION = "frost_protection"
 
 TAHOMA_TO_PRESET_MODES = {
     "off": PRESET_NONE,
-    "frostprotection": PRESET_FREEZE,
+    "frostprotection": PRESET_FROST_PROTECTION,
     "eco": PRESET_ECO,
     "comfort": PRESET_COMFORT,
     "comfort-1": PRESET_COMFORT1,
@@ -45,7 +45,7 @@ HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
 class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
-    """Representation of TaHoma IO Atlantic Electrical Heater."""
+    """Representation of Atlantic Electrical Heater."""
 
     @property
     def temperature_unit(self) -> str:
