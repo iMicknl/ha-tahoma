@@ -15,22 +15,26 @@ CONF_HUB = "hub"
 DEFAULT_HUB = "Somfy (Europe)"
 
 SUPPORTED_ENDPOINTS = {
-    "Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "eedomus": "https://ha101-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Hi Kumo": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Atlantic Cozytouch": "https://ha110-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Hitachi Hi Kumo (Asia)": "https://ha203-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Hitachi Hi Kumo (Europe)": "https://ha117-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Hitachi Hi Kumo (Oceania)": "https://ha203-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Nexity Eugénie": "https://ha106-1.overkiz.com/enduser-mobile-web/enduserAPI",
     "Rexel Energeasy Connect": "https://ha112-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Somfy (Australia)": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
-    "Somfy (Europe)": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",
+    "Somfy (Europe)": "https://tahomalink.com/enduser-mobile-web/enduserAPI/",  # uses https://ha101-1.overkiz.com
     "Somfy (North America)": "https://ha401-1.overkiz.com/enduser-mobile-web/enduserAPI/",
+    "Somfy (Oceania)": "https://ha201-1.overkiz.com/enduser-mobile-web/enduserAPI/",
 }
 
 HUB_MANUFACTURER = {
     "Cozytouch": "Cozytouch",
-    "eedomus": "eedomus",
-    "Hi Kumo": "Hitachi",
+    "Hitachi Hi Kumo (Asia)": "Hitachi",
+    "Hitachi Hi Kumo (Europe)": "Hitachi",
+    "Hitachi Hi Kumo (Oceania)": "Hitachi",
+    "Nexity Eugénie": "Nexity",
     "Rexel Energeasy Connect": "Rexel",
     "Somfy (Europe)": "Somfy",
-    "Somfy (Australia)": "Somfy",
+    "Somfy (Oceania)": "Somfy",
     "Somfy (North America)": "Somfy",
 }
 
