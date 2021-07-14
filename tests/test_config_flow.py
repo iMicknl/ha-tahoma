@@ -254,7 +254,7 @@ async def test_options_flow(hass, enable_custom_integrations):
         await hass.async_block_till_done()
 
     assert len(hass.config_entries.async_entries(config_flow.DOMAIN)) == 1
-    assert entry.state == config_entries.ENTRY_STATE_LOADED
+    assert entry.state == config_entries.ConfigEntryState.LOADED
 
     result = await hass.config_entries.options.async_init(
         entry.entry_id, context={"source": "test"}, data=None
