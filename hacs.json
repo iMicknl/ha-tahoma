@@ -1,7 +1,14 @@
 {
   "name": "Somfy TaHoma",
-  "domains": ["cover", "light", "lock", "sensor", "switch", "climate"],
-  "homeassistant": "0.115.0",
+  "domains": [
+    "cover",
+    "light",
+    "lock",
+    "sensor",
+    "switch",
+    "climate"
+  ],
+  "homeassistant": "2021.7.0",
   "render_readme": "true",
   "iot_class": "Cloud Polling"
 }
