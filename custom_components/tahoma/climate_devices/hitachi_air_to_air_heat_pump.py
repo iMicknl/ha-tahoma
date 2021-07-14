@@ -34,6 +34,8 @@ COMMAND_GLOBAL_CONTROL = "globalControl"
 
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 
+PRESET_HOLIDAY_MODE = "holiday_mode"
+
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
 LEAVE_HOME_STATE = ["ovp::LeaveHomeState", "hlrrwifi:LeaveHomeState"]
 MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
@@ -190,7 +192,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
         if self._select_state(*LEAVE_HOME_STATE) == STATE_ON:
-            return "holiday_mode"
+            return PRESET_HOLIDAY_MODE
 
         if self._select_state(*LEAVE_HOME_STATE) == STATE_OFF:
             return PRESET_NONE
@@ -200,11 +202,11 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return a list of available preset modes."""
-        return [PRESET_NONE, "holiday_mode"]
+        return [PRESET_NONE, PRESET_HOLIDAY_MODE]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        if preset_mode == "holiday_mode":
+        if preset_mode == PRESET_HOLIDAY_MODE:
             await self._global_control(leave_home=STATE_ON)
 
         if preset_mode == PRESET_NONE:
@@ -228,8 +230,6 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
         leave_home=None,
     ):
         """Execute globalControl command with all parameters."""
-        print(self.device.controllable_name)
-
         if self.device.controllable_name == "ovp:HLinkMainController":
             await self.async_execute_command(
                 COMMAND_GLOBAL_CONTROL,
