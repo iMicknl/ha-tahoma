@@ -49,6 +49,21 @@ supported_states = {
         icon="mdi:shower-head",
         value=lambda value: round(value),
     ),
+    "core:NumberOfShowerRemainingState": StateDescription(
+        key="core:NumberOfShowerRemainingState",
+        name="Number of Shower Remaining",
+        icon="mdi:shower-head",
+        value=lambda value: round(value),
+    ),
+    # V40 is measured in litres (L) and shows the amount of warm (mixed) water with a temperature of 40 C, which can be drained from a switched off electric water heater.
+    "core:V40WaterVolumeEstimationState": StateDescription(
+        key="core:V40WaterVolumeEstimationState",
+        name="Water Volume Estimation at 40 °C",
+        icon="mdi:water",
+        value=lambda value: round(value),
+        unit=VOLUME_LITERS,
+        default_enabled=False,
+    ),
     "core:WaterConsumptionState": StateDescription(
         key="core:WaterConsumptionState",
         name="Water Consumption",
@@ -73,6 +88,12 @@ supported_states = {
     "hlrrwifi:RoomTemperatureState": StateDescription(
         key="hlrrwifi:RoomTemperatureState",
         name="Room Temperature",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+    ),
+    "io:MiddleWaterTemperatureState": StateDescription(
+        key="io:MiddleWaterTemperatureState",
+        name="Middle Water Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
