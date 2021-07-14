@@ -177,3 +177,59 @@ async def test_reauth_success(hass):
         assert result["reason"] == "reauth_successful"
         assert mock_entry.data["username"] == TEST_EMAIL
         assert mock_entry.data["password"] == TEST_PASSWORD2
+
+
+async def test_import(hass):
+    """Test config flow using configuration.yaml."""
+    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
+        "custom_components.tahoma.async_setup", return_value=True
+    ) as mock_setup, patch(
+        "custom_components.tahoma.async_setup_entry", return_value=True
+    ) as mock_setup_entry:
+        result = await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN,
+            context={"source": config_entries.SOURCE_IMPORT},
+            data={
+                "username": TEST_EMAIL,
+                "password": TEST_PASSWORD,
+                "hub": TEST_HUB,
+            },
+        )
+        assert result["type"] == "create_entry"
+        assert result["title"] == TEST_EMAIL
+        assert result["data"] == {
+            "username": TEST_EMAIL,
+            "password": TEST_PASSWORD,
+            "hub": TEST_HUB,
+        }
+
+        await hass.async_block_till_done()
+
+        assert len(mock_setup.mock_calls) == 1
+        assert len(mock_setup_entry.mock_calls) == 1
+
+
+@pytest.mark.parametrize(
+    "side_effect, error",
+    [
+        (BadCredentialsException, "invalid_auth"),
+        (TooManyRequestsException, "too_many_requests"),
+        (TimeoutError, "cannot_connect"),
+        (ClientError, "cannot_connect"),
+        (Exception, "unknown"),
+    ],
+)
+async def test_import_failing(hass, side_effect, error, enable_custom_integrations):
+    """Test failing config flow using configuration.yaml."""
+    with patch("pyhoma.client.TahomaClient.login", side_effect=side_effect):
+        await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN,
+            context={"source": config_entries.SOURCE_IMPORT},
+            data={
+                "username": TEST_EMAIL,
+                "password": TEST_PASSWORD,
+                "hub": TEST_HUB,
+            },
+        )
+
+    # Should write Exception to the log
