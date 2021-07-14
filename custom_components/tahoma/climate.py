@@ -8,6 +8,10 @@ from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_set
 from .climate_devices.atlantic_electrical_towel_dryer import (
     AtlanticElectricalTowelDryer,
 )
+from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
+    AtlanticPassAPCHeatingAndCoolingZone,
+)
+from .climate_devices.atlantic_pass_apc_zone_control import AtlanticPassAPCZoneControl
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
 from .climate_devices.evo_home_controller import EvoHomeController
@@ -25,6 +29,8 @@ TYPE = {
     "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
     "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
+    "AtlanticPassAPCHeatingAndCoolingZone": AtlanticPassAPCHeatingAndCoolingZone,
+    "AtlanticPassAPCZoneControl": AtlanticPassAPCZoneControl,
     "DimmerExteriorHeating": DimmerExteriorHeating,
     "EvoHomeController": EvoHomeController,
     "HeatingSetPoint": HeatingSetPoint,
