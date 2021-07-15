@@ -60,7 +60,7 @@ class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.select_state(*CORE_ON_OFF_STATE)]
+        return TAHOMA_TO_HVAC_MODES[self.select_state(CORE_ON_OFF_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
