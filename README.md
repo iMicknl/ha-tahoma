@@ -22,7 +22,7 @@ Custom component for Home Assistant to interact with smart devices via the Somfy
 
 This integration doesn't rely on a hardcoded list of devices anymore, but relies on the characteristics of every device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
 
-## Tahoma services
+## TaHoma services
 
 After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
 
