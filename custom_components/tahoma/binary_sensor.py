@@ -9,6 +9,9 @@ from homeassistant.components.binary_sensor import (
     DOMAIN as BINARY_SENSOR,
     BinarySensorEntity,
 )
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
@@ -58,14 +61,18 @@ TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
 }
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaBinarySensor(device.deviceurl, coordinator)
-        for device in data["platforms"].get(BINARY_SENSOR)
+        for device in data["platforms"][BINARY_SENSOR]
     ]
     async_add_entities(entities)
 

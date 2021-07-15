@@ -84,13 +84,13 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma sensors from a config entry."""
+    """Set up the TaHoma alarm control panels from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaAlarmControlPanel(device.deviceurl, coordinator)
-        for device in data["platforms"].get(ALARM_CONTROL_PANEL)
+        for device in data["platforms"][ALARM_CONTROL_PANEL]
     ]
     async_add_entities(entities)
 

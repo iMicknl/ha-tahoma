@@ -1,5 +1,8 @@
 """Support for TaHoma climate devices."""
 from homeassistant.components.climate import DOMAIN as CLIMATE
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
@@ -25,7 +28,6 @@ from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
-    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
     "AtlanticElectricalHeater": AtlanticElectricalHeater,
     "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
     "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
@@ -41,16 +43,17 @@ TYPE = {
     "StatelessExteriorHeating": StatelessExteriorHeating,
 }
 
-SERVICE_CLIMATE_MY_POSITION = "set_climate_my_position"
 
-
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma climate from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    climate_devices = [device for device in data["platforms"].get(CLIMATE)]
+    climate_devices = [device for device in data["platforms"][CLIMATE]]
 
     entities = [
         TYPE[device.widget](device.deviceurl, coordinator)
