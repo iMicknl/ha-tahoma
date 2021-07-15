@@ -1,11 +1,14 @@
 """Config flow for TaHoma integration."""
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import AbortFlow
+from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.helpers import config_validation as cv
 from pyhoma.client import TahomaClient
 from pyhoma.exceptions import (
@@ -32,7 +35,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Somfy TaHoma."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     @staticmethod
     @callback
@@ -40,13 +42,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the flow."""
         return OptionsFlowHandler(config_entry)
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Start the Overkiz config flow."""
         self._reauth_entry = None
         self._default_username = None
         self._default_hub = DEFAULT_HUB
 
-    async def async_validate_input(self, user_input):
+    async def async_validate_input(self, user_input: dict[str, Any]) -> FlowResult:
         """Validate user credentials."""
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
@@ -80,7 +82,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             return self.async_abort(reason="reauth_successful")
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Handle the initial step via config flow."""
         errors = {}
 
@@ -118,7 +122,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_reauth(self, user_input=None):
+    async def async_step_reauth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Perform reauth if the user credentials have changed."""
         self._reauth_entry = self.hass.config_entries.async_get_entry(
             self.context["entry_id"]
