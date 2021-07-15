@@ -22,6 +22,17 @@ Custom component for Home Assistant to interact with smart devices via the Somfy
 
 This integration doesn't rely on a hardcoded list of devices anymore, but relies on the characteristics of every device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
 
+## TaHoma services
+
+After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
+
++ Somfy TaHoma: Set cover position with low speed (tahoma.set_cover_position_low_speed, only added if supported by the device)
++ Somfy TaHoma: My position (cover) (tahoma.set_cover_my_position)
++ Somfy TaHoma: Execute command (tahoma.execute_command)
++ Somfy TaHoma: Get execution history (tahoma.get_execution_history)
+
+If you want to move your covers always with low speed create [templates](https://www.home-assistant.io/integrations/cover.template/) for each cover which calls the first service.
+
 ## Installation
 
 ### Manual
