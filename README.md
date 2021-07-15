@@ -24,7 +24,7 @@ This integration doesn't rely on a hardcoded list of devices anymore, but relies
 
 ## Tahoma services
 
-After installation this integration adds new services to Home-Assistant which can be used in automations. The new services are:
+After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
 
 + Somfy TaHoma: Set cover position with low speed (tahoma.set_cover_position_low_speed, only added if supported by the device)
 + Somfy TaHoma: My position (cover) (tahoma.set_cover_my_position)
