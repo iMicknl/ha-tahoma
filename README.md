@@ -46,7 +46,7 @@ This integration is included in HACS. Search for the `Somfy TaHoma` integration 
 ## Advanced
 
 ### Examples
-#### Using a template_cover
+#### Use a template cover to control your cover with low speed
 If your cover supports the slow moving mode you can create template_covers to move the cover always in the slow mode. Add in `configuration.yaml` the following code, replacing the `cover.your_cover` with your entity name:
 ```yml
 cover:
