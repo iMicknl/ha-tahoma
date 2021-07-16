@@ -65,7 +65,7 @@ cover:
           target:
             entity_id: cover.your_cover
           data:
-            position: 20
+            position: 0
 ```
 Then add in your UI a button card calling the entity `cover.your_cover_slow`.
 
