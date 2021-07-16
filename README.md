@@ -78,7 +78,7 @@ tap_action:
   action: call-service
   service: tahoma.set_cover_my_position
   service_data:
-    entity_id: cover.gaestezimmer_1
+    entity_id: cover.gaestezimmer_1 # add your entity id here.
 ``` 
 This will move the cover with normal speed to the "My Position" (if supported).
 
