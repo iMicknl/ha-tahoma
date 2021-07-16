@@ -45,6 +45,43 @@ This integration is included in HACS. Search for the `Somfy TaHoma` integration 
 
 ## Advanced
 
+### Examples
+#### Using a template_cover
+If your cover supports the slow moving mode you can create template_covers to move the cover always in the slow mode. Add in `configuration.yaml` the following code, replacing the `cover.your_cover` with your entity name:
+```yml
+cover:
+  - platform: template
+    covers:
+      your_cover_slow:
+        friendly_name: "Your cover slow"
+        open_cover:
+          service: tahoma.set_cover_position_low_speed
+          target:
+            entity_id: cover.your_cover
+          data:
+            position: 100
+        close_cover:    
+          service: tahoma.set_cover_position_low_speed
+          target:
+            entity_id: cover.your_cover
+          data:
+            position: 20
+```
+Then add in your UI a button card calling the entity `cover.your_cover_slow`.
+
+#### Using the custom:button-card
+If you have HACS installed you can use the [button-card](https://github.com/custom-cards/button-card) to open and close your covers calling the new services. Create a new `button-card` in your UI and add the following code:
+```yml
+type: custom:button-card
+icon: mdi:window-open
+tap_action:
+  action: call-service
+  service: tahoma.set_cover_my_position
+  service_data:
+    entity_id: cover.gaestezimmer_1
+``` 
+This will move the cover with normal speed to the "My Position" (if supported).
+
 ### Enable debug logging
 
 The [logger](https://www.home-assistant.io/integrations/logger/) integration lets you define the level of logging activities in Home Assistant. Turning on debug mode will show more information about unsupported devices in your logbook.
