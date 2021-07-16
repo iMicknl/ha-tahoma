@@ -69,7 +69,7 @@ cover:
 ```
 Then add in your UI a button card calling the entity `cover.your_cover_slow`.
 
-#### Using the custom:button-card
+#### Map the 'my button' to a Home Assistant button
 If you have HACS installed you can use the [button-card](https://github.com/custom-cards/button-card) to open and close your covers calling the new services. Create a new `button-card` in your UI and add the following code:
 ```yml
 type: custom:button-card
