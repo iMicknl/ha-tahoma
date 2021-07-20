@@ -40,6 +40,9 @@ COMMAND_SET_CLOSURE = "setClosure"
 COMMAND_SET_CLOSURE_AND_LINEAR_SPEED = "setClosureAndLinearSpeed"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
 COMMAND_SET_ORIENTATION = "setOrientation"
+# io:DiscreteGateOpenerIOComponent
+COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
+
 COMMAND_STOP = "stop"
 COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UNDEPLOY = "undeploy"
@@ -60,8 +63,12 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_MOVING_STATE = "core:MovingState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
+# io:DiscreteGateOpenerIOComponent
+CORE_OPEN_CLOSED_PEDESTRIAN_STATE = "core:OpenClosedPedestrianState"
 CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
 CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
+# io:DiscreteGateOpenerIOComponent
+CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
 CORE_SLATE_ORIENTATION_STATE = "core:SlateOrientationState"
@@ -147,6 +154,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
         position = self.select_state(
             CORE_CLOSURE_STATE,
             CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
+            CORE_PEDESTRIAN_POSITION_STATE,
         )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
@@ -198,6 +206,7 @@ class TahomaCover(TahomaEntity, CoverEntity):
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
             CORE_OPEN_CLOSED_PARTIAL_STATE,
+            CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
             CORE_OPEN_CLOSED_UNKNOWN_STATE,
             MYFOX_SHUTTER_STATUS_STATE,
         )
