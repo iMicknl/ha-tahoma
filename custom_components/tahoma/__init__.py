@@ -164,24 +164,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
-            _LOGGER.debug(
-                "Added device (%s - %s - %s - %s)",
-                device.controllable_name,
-                device.ui_class,
-                device.widget,
-                device.deviceurl,
-            )
+            log_device("Added device", device)
         elif (
             device.widget not in IGNORED_TAHOMA_DEVICES
             and device.ui_class not in IGNORED_TAHOMA_DEVICES
         ):
-            _LOGGER.debug(
-                "Unsupported device detected (%s - %s - %s - %s)",
-                device.controllable_name,
-                device.ui_class,
-                device.widget,
-                device.deviceurl,
-            )
+            log_device("Unsupported device detected", device)
 
         if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
@@ -332,3 +320,15 @@ async def write_execution_history_to_log(client: TahomaClient):
 def beautify_name(name: str):
     """Return human readable string."""
     return name.replace("_", " ").title()
+
+
+def log_device(message: str, device: Device) -> None:
+    """Log device information."""
+    _LOGGER.debug(
+        "%s (%s - %s - %s - %s)",
+        message,
+        device.controllable_name,
+        device.ui_class,
+        device.widget,
+        device.deviceurl,
+    )
