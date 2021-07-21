@@ -11,8 +11,11 @@ from homeassistant.components.light import (
     SUPPORT_EFFECT,
     LightEntity,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_ON
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
@@ -36,15 +39,18 @@ SERVICE_LIGHT_MY_POSITION = "set_light_my_position"
 SUPPORT_MY = 512
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma lights from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaLight(device.deviceurl, coordinator)
-        for device in data["platforms"].get(LIGHT)
+        for device in data["platforms"][LIGHT]
     ]
 
     async_add_entities(entities)

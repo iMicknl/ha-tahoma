@@ -3,8 +3,11 @@ import logging
 from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
-from homeassistant.const import (
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import (  # Added in 2021.4
     CONCENTRATION_PARTS_PER_MILLION,
+    DEVICE_CLASS_CO,
+    DEVICE_CLASS_CO2,
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
@@ -23,16 +26,12 @@ from homeassistant.const import (
     VOLUME_CUBIC_METERS,
     VOLUME_LITERS,
 )
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
-
-try:
-    from homeassistant.const import DEVICE_CLASS_CO, DEVICE_CLASS_CO2  # Added in 2021.4
-except ImportError:
-    DEVICE_CLASS_CO = "carbon_monoxide"
-    DEVICE_CLASS_CO2 = "carbon_dioxide"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -105,14 +104,18 @@ UNITS_BY_DEVICE_CLASS = {  # Remove after 2021.4 release
 }
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaSensor(device.deviceurl, coordinator)
-        for device in data["platforms"].get(SENSOR)
+        for device in data["platforms"][SENSOR]
         if device.states
     ]
 

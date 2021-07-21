@@ -1,4 +1,6 @@
 """Support for TaHoma alarm."""
+from __future__ import annotations
+
 from homeassistant.components.alarm_control_panel import (
     DOMAIN as ALARM_CONTROL_PANEL,
     AlarmControlPanelEntity,
@@ -10,6 +12,7 @@ from homeassistant.components.alarm_control_panel.const import (
     SUPPORT_ALARM_ARM_NIGHT,
     SUPPORT_ALARM_TRIGGER,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     STATE_ALARM_ARMED_AWAY,
     STATE_ALARM_ARMED_HOME,
@@ -18,6 +21,8 @@ from homeassistant.const import (
     STATE_ALARM_PENDING,
     STATE_ALARM_TRIGGERED,
 )
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
@@ -74,14 +79,18 @@ MAP_VERISURE_STATUS_STATE = {
 }
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up the TaHoma sensors from a config entry."""
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
+    """Set up the TaHoma alarm control panels from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaAlarmControlPanel(device.deviceurl, coordinator)
-        for device in data["platforms"].get(ALARM_CONTROL_PANEL)
+        for device in data["platforms"][ALARM_CONTROL_PANEL]
     ]
     async_add_entities(entities)
 

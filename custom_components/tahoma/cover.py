@@ -1,4 +1,5 @@
 """Support for TaHoma cover - shutters etc."""
+
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -20,7 +21,10 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import voluptuous as vol
 
 from .const import DOMAIN
@@ -108,14 +112,18 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma covers from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaCover(device.deviceurl, coordinator)
-        for device in data["platforms"].get(COVER)
+        for device in data["platforms"][COVER]
     ]
 
     async_add_entities(entities)

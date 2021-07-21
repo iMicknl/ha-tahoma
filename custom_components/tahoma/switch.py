@@ -7,7 +7,10 @@ from homeassistant.components.switch import (
     DOMAIN as SWITCH,
     SwitchEntity,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .tahoma_entity import TahomaEntity
@@ -28,14 +31,18 @@ ICON_BELL_RING = "mdi:bell-ring"
 ICON_BELL_OFF = "mdi:bell-off"
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
         TahomaSwitch(device.deviceurl, coordinator)
-        for device in data["platforms"].get(SWITCH)
+        for device in data["platforms"][SWITCH]
     ]
 
     async_add_entities(entities)
