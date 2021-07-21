@@ -1,5 +1,8 @@
 """Support for TaHoma water heater devices."""
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .water_heater_devices.domestic_hot_water_production import (
@@ -13,12 +16,16 @@ TYPE = {
 }
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma water heater from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    water_heater_devices = [device for device in data["platforms"].get(WATER_HEATER)]
+    water_heater_devices = [device for device in data["platforms"][WATER_HEATER]]
 
     entities = [
         TYPE[device.widget](device.deviceurl, coordinator)

@@ -10,7 +10,7 @@ from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
@@ -90,7 +90,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TaHoma from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
@@ -117,18 +117,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             client.get_places(),
         ]
         devices, scenarios, gateways, places = await asyncio.gather(*tasks)
-    except BadCredentialsException:
-        _LOGGER.error("Invalid authentication.")
-        return False
+    except BadCredentialsException as exception:
+        raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
-        _LOGGER.error("Too many requests, try again later.")
-        raise ConfigEntryNotReady from exception
+        raise ConfigEntryNotReady("Too many requests, try again later") from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
-        _LOGGER.error("Failed to connect.")
-        raise ConfigEntryNotReady from exception
+        raise ConfigEntryNotReady("Failed to connect") from exception
     except MaintenanceException as exception:
-        _LOGGER.error("Server is down for maintenance.")
-        raise ConfigEntryNotReady from exception
+        raise ConfigEntryNotReady("Server is down for maintenance") from exception
     except Exception as exception:  # pylint: disable=broad-except
         _LOGGER.exception(exception)
         return False
@@ -168,24 +164,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
-            _LOGGER.debug(
-                "Added device (%s - %s - %s - %s)",
-                device.controllable_name,
-                device.ui_class,
-                device.widget,
-                device.deviceurl,
-            )
+            log_device("Added device", device)
         elif (
             device.widget not in IGNORED_TAHOMA_DEVICES
             and device.ui_class not in IGNORED_TAHOMA_DEVICES
         ):
-            _LOGGER.debug(
-                "Unsupported device detected (%s - %s - %s - %s)",
-                device.controllable_name,
-                device.ui_class,
-                device.widget,
-                device.deviceurl,
-            )
+            log_device("Unsupported device detected", device)
 
         if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
@@ -272,7 +256,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
@@ -336,3 +320,15 @@ async def write_execution_history_to_log(client: TahomaClient):
 def beautify_name(name: str):
     """Return human readable string."""
     return name.replace("_", " ").title()
+
+
+def log_device(message: str, device: Device) -> None:
+    """Log device information."""
+    _LOGGER.debug(
+        "%s (%s - %s - %s - %s)",
+        message,
+        device.controllable_name,
+        device.ui_class,
+        device.widget,
+        device.deviceurl,
+    )
