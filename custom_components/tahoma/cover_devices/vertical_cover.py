@@ -28,11 +28,6 @@ CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 # io:DiscreteGateOpenerIOComponent
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
 
-
-SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
-
-SUPPORT_COVER_POSITION_LOW_SPEED = 1024
-
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Blind": DEVICE_CLASS_BLIND,
     "Curtain": DEVICE_CLASS_CURTAIN,
