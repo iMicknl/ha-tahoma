@@ -6,7 +6,7 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import voluptuous as vol
 
-from custom_components.tahoma.cover_devices.horizontal_cover import (
+from custom_components.tahoma.cover_devices.awning import (
     TahomaAwning,
 )
 from custom_components.tahoma.cover_devices.vertical_cover import TahomaVerticalCover
