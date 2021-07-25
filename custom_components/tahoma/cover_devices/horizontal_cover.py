@@ -10,7 +10,7 @@ COMMAND_UNDEPLOY = "undeploy"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 
 
-class TahomaHorizontalCover(TahomaCover):
+class TahomaAwning(TahomaCover):
     """Representation of a TaHoma Cover."""
 
     @property
