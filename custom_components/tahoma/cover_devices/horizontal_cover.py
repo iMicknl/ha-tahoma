@@ -1,7 +1,17 @@
 """Support for TaHoma cover - shutters etc."""
-from homeassistant.components.cover import ATTR_POSITION, DEVICE_CLASS_AWNING
+from homeassistant.components.cover import (
+    ATTR_POSITION,
+    DEVICE_CLASS_AWNING,
+    SUPPORT_CLOSE,
+    SUPPORT_OPEN,
+    SUPPORT_SET_POSITION,
+    SUPPORT_STOP,
+)
 
-from custom_components.tahoma.cover_devices.tahoma_cover import TahomaCover
+from custom_components.tahoma.cover_devices.tahoma_cover import (
+    COMMANDS_STOP,
+    TahomaCover,
+)
 
 COMMAND_DEPLOY = "deploy"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
@@ -12,6 +22,25 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 
 class TahomaAwning(TahomaCover):
     """Representation of a TaHoma Cover."""
+
+    @property
+    def supported_features(self):
+        """Flag supported features."""
+        supported_features = super().supported_features
+
+        if self.has_command(COMMAND_SET_DEPLOYMENT):
+            supported_features |= SUPPORT_SET_POSITION
+
+        if self.has_command(COMMAND_DEPLOY):
+            supported_features |= SUPPORT_OPEN
+
+            if self.has_command(*COMMANDS_STOP):
+                supported_features |= SUPPORT_STOP
+
+        if self.has_command(COMMAND_UNDEPLOY):
+            supported_features |= SUPPORT_CLOSE
+
+        return supported_features
 
     @property
     def device_class(self):
