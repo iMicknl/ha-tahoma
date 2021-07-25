@@ -1,5 +1,5 @@
 """Support for TaHoma cover - shutters etc."""
-from homeassistant.components.cover import ATTR_POSITION
+from homeassistant.components.cover import ATTR_POSITION, DEVICE_CLASS_AWNING
 
 from custom_components.tahoma.cover_devices.tahoma_cover import TahomaCover
 
@@ -12,6 +12,11 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 
 class TahomaHorizontalCover(TahomaCover):
     """Representation of a TaHoma Cover."""
+
+    @property
+    def device_class(self):
+        """Return the class of the device."""
+        return DEVICE_CLASS_AWNING
 
     @property
     def current_cover_position(self):

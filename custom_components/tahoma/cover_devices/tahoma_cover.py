@@ -2,13 +2,6 @@
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
-    DEVICE_CLASS_AWNING,
-    DEVICE_CLASS_BLIND,
-    DEVICE_CLASS_CURTAIN,
-    DEVICE_CLASS_GARAGE,
-    DEVICE_CLASS_GATE,
-    DEVICE_CLASS_SHUTTER,
-    DEVICE_CLASS_WINDOW,
     SUPPORT_CLOSE,
     SUPPORT_CLOSE_TILT,
     SUPPORT_OPEN,
@@ -87,23 +80,6 @@ SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
-TAHOMA_COVER_DEVICE_CLASSES = {
-    "Awning": DEVICE_CLASS_AWNING,
-    "Blind": DEVICE_CLASS_BLIND,
-    "Curtain": DEVICE_CLASS_CURTAIN,
-    "ExteriorScreen": DEVICE_CLASS_BLIND,
-    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "GarageDoor": DEVICE_CLASS_GARAGE,
-    "Gate": DEVICE_CLASS_GATE,
-    "MyFoxSecurityCamera": DEVICE_CLASS_SHUTTER,
-    "Pergola": DEVICE_CLASS_AWNING,
-    "RollerShutter": DEVICE_CLASS_SHUTTER,
-    "SwingingShutter": DEVICE_CLASS_SHUTTER,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
-    "Window": DEVICE_CLASS_WINDOW,
-}
-
-
 class TahomaCover(TahomaEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
 
@@ -155,15 +131,6 @@ class TahomaCover(TahomaEntity, CoverEntity):
             return self.current_cover_tilt_position == 0
 
         return None
-
-    @property
-    def device_class(self):
-        """Return the class of the device."""
-        return (
-            TAHOMA_COVER_DEVICE_CLASSES.get(self.device.widget)
-            or TAHOMA_COVER_DEVICE_CLASSES.get(self.device.ui_class)
-            or DEVICE_CLASS_BLIND
-        )
 
     @property
     def icon(self):
