@@ -145,7 +145,7 @@ class TahomaLowSpeedSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         """Initialize the low speed switch."""
         super().__init__(device_url, coordinator)
         self._attr_name = f"{super().name} low speed"
-        self.attr_assumed_state = True
+        self._attr_assumed_state = True
         self._is_on = False
 
     async def async_added_to_hass(self):
