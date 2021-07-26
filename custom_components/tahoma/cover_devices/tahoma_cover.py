@@ -1,4 +1,5 @@
 """Base class for TaHoma covers, shutters, awnings, etc."""
+import logging
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -75,6 +76,8 @@ SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class TahomaGenericCover(OverkizEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
@@ -92,6 +95,10 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
 
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
+        _LOGGER.warning(
+            "This service will removed in the next releases. Use instead the low speed switch."
+        )
+
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         await self.executor.async_execute_command(
