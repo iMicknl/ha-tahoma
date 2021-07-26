@@ -1,5 +1,6 @@
 """Base class for TaHoma covers, shutters, awnings, etc."""
 import logging
+
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
