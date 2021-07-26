@@ -6,7 +6,7 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import voluptuous as vol
 
-from custom_components.tahoma.cover_devices.awning import TahomaAwning
+from custom_components.tahoma.cover_devices.awning import Awning
 from custom_components.tahoma.cover_devices.vertical_cover import TahomaVerticalCover
 
 from .const import DOMAIN
@@ -26,7 +26,7 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaAwning(device.deviceurl, coordinator)
+        Awning(device.deviceurl, coordinator)
         for device in data["platforms"].get(COVER)
         if device.ui_class == "Awning"
     ]
