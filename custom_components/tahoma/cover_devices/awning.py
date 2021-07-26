@@ -10,7 +10,7 @@ from homeassistant.components.cover import (
 
 from custom_components.tahoma.cover_devices.tahoma_cover import (
     COMMANDS_STOP,
-    TahomaCover,
+    TahomaGenericCover,
 )
 
 COMMAND_DEPLOY = "deploy"
@@ -20,8 +20,8 @@ COMMAND_UNDEPLOY = "undeploy"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 
 
-class Awning(TahomaCover):
-    """Representation of a TaHoma Cover."""
+class Awning(TahomaGenericCover):
+    """Representation of a TaHoma Awning."""
 
     @property
     def supported_features(self):

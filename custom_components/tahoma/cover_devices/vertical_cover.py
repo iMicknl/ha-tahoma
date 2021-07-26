@@ -51,8 +51,8 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 
-class TahomaVerticalCover(TahomaCover):
-    """Representation of a TaHoma Cover."""
+class VerticalCover(TahomaGenericCover):
+    """Representation of a TaHoma Vertical Cover."""
 
     @property
     def supported_features(self):

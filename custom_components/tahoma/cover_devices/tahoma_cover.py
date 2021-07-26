@@ -1,4 +1,4 @@
-"""Support for TaHoma cover - shutters etc."""
+"""Base class for TaHoma covers, shutters, awnings, etc."""
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
@@ -76,7 +76,7 @@ SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
-class TahomaCover(TahomaEntity, CoverEntity):
+class TahomaGenericCover(TahomaEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
 
     @property
