@@ -56,7 +56,7 @@ async def async_setup_entry(
         [
             TahomaLowSpeedSwitch(device.deviceurl, coordinator)
             for device in data["platforms"].get(COVER)
-            if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED not in device.definition.commands
+            if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )
 
