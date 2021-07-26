@@ -2,13 +2,9 @@
 from homeassistant.components.cover import (
     ATTR_POSITION,
     ATTR_TILT_POSITION,
-    SUPPORT_CLOSE,
     SUPPORT_CLOSE_TILT,
-    SUPPORT_OPEN,
     SUPPORT_OPEN_TILT,
-    SUPPORT_SET_POSITION,
     SUPPORT_SET_TILT_POSITION,
-    SUPPORT_STOP,
     SUPPORT_STOP_TILT,
     CoverEntity,
 )

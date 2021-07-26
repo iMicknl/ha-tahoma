@@ -6,9 +6,7 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import voluptuous as vol
 
-from custom_components.tahoma.cover_devices.awning import (
-    TahomaAwning,
-)
+from custom_components.tahoma.cover_devices.awning import TahomaAwning
 from custom_components.tahoma.cover_devices.vertical_cover import TahomaVerticalCover
 
 from .const import DOMAIN
@@ -20,7 +18,9 @@ SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+):
     """Set up the TaHoma covers from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
