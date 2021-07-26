@@ -1,4 +1,4 @@
-"""Support for TaHoma cover - shutters etc."""
+"""Support for TaHoma Vertical Covers."""
 from homeassistant.components.cover import (
     ATTR_POSITION,
     DEVICE_CLASS_AWNING,
@@ -16,7 +16,7 @@ from homeassistant.components.cover import (
 
 from custom_components.tahoma.cover_devices.tahoma_cover import (
     COMMANDS_STOP,
-    TahomaCover,
+    TahomaGenericCover,
 )
 
 COMMAND_CYCLE = "cycle"
