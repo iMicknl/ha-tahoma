@@ -1,4 +1,4 @@
-"""Support for TaHoma cover - shutters etc."""
+"""Support for TaHoma Awnings."""
 from homeassistant.components.cover import (
     ATTR_POSITION,
     DEVICE_CLASS_AWNING,
