@@ -23,7 +23,21 @@ Custom component for Home Assistant to interact with smart devices via the Somfy
 
 This integration doesn't rely on a hardcoded list of devices anymore, but relies on the characteristics of every device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
 
-## TaHoma services
+## Installation
+
+### Manual
+
+Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+
+### HACS
+
+This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tahoma)
+
+## Advanced
+
+### TaHoma services
 
 After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
 
@@ -33,18 +47,6 @@ After installation this integration adds new services to Home Assistant which ca
 + Somfy TaHoma: Get execution history (tahoma.get_execution_history)
 
 If you want to move your covers always with low speed create [templates](https://www.home-assistant.io/integrations/cover.template/) for each cover which calls the first service.
-
-## Installation
-
-### Manual
-
-Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page.
-
-### HACS
-
-This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Tahoma integration via the integrations page.
-
-## Advanced
 
 ### Enable debug logging
 
