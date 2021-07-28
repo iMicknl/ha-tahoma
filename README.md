@@ -3,15 +3,16 @@
 [![GitHub release](https://img.shields.io/github/release/iMicknl/ha-tahoma.svg)](https://GitHub.com/iMicknl/ha-tahoma/releases/)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/iMicknl/ha-tahoma/)
 
-# Somfy TaHoma - Home Assistant
+# Overkiz (by Somfy) - Home Assistant
 
-Custom component for Home Assistant to interact with smart devices via the Somfy TaHoma platform. Despite the name of this integration, many other platforms sharing the same OverKiz API structure are supported as well. Have a look at all [supported hubs](#supported-hubs).
+Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
 
 >This component builds upon the work of [@philklei](https://github.com/philklei) and is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of eventually merging into core. The installation of this component will replace the original TaHoma integration and thus allows you to beta-test [all changes](https://github.com/iMicknl/ha-tahoma/releases).
 
 ## Supported hubs
 
-- Somfy TaHoma Box
+- Somfy TaHoma
+- Somfy Tahoma Switch
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
 - Cozytouch
