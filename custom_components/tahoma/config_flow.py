@@ -25,6 +25,7 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
     SUPPORTED_ENDPOINTS,
+    SUPPORTED_HUBS,
 )
 from .const import DOMAIN  # pylint: disable=unused-import
 
@@ -47,6 +48,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._reauth_entry = None
         self._default_username = None
         self._default_hub = DEFAULT_HUB
+
+        print([{key: hub.name} for key, hub in SUPPORTED_HUBS.items()])
+
+        print({key: hub.name for key, hub in SUPPORTED_HUBS.items()})
 
     async def async_validate_input(self, user_input: dict[str, Any]) -> FlowResult:
         """Validate user credentials."""
@@ -115,7 +120,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_USERNAME, default=self._default_username): str,
                     vol.Required(CONF_PASSWORD): str,
                     vol.Required(CONF_HUB, default=self._default_hub): vol.In(
-                        SUPPORTED_ENDPOINTS.keys()
+                        {hub.name for hub in SUPPORTED_HUBS.values()}
                     ),
                 }
             ),
