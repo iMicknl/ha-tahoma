@@ -23,7 +23,6 @@ from ..tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-COMMAND_REFRESH_OPERATING_MODE = "refreshOperatingMode"
 COMMAND_REFRESH_PASS_APC_HEATING_PROFILE = "refreshPassAPCHeatingProfile"
 COMMAND_REFRESH_TARGET_TEMPERATURE = "refreshTargetTemperature"
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
@@ -186,7 +185,6 @@ class AtlanticPassAPCHeatingAndCoolingZone(TahomaEntity, ClimateEntity):
             )
 
         await self.async_execute_command(COMMAND_REFRESH_PASS_APC_HEATING_PROFILE)
-        await self.async_execute_command(COMMAND_REFRESH_OPERATING_MODE)
 
     @property
     def target_temperature(self) -> None:
