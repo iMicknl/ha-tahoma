@@ -49,7 +49,11 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "AtlanticHeatRecoveryVentilation": CLIMATE,  # widgetName, uiClass is VentilationSystem (not supported)
+    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "AtlanticElectricalTowelDryer": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "AtlanticPassAPCDHW": CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    "AtlanticPassAPCHeatingAndCoolingZone": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    "AtlanticPassAPCZoneControl": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
     "CarButtonSensor": BINARY_SENSOR,
     "ConsumptionSensor": SENSOR,
@@ -70,6 +74,7 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "HeatingSetPoint": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
     "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    "HitachiAirToAirHeatPump": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
     "LightSensor": SENSOR,

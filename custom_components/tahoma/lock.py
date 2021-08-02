@@ -2,7 +2,10 @@
 import logging
 
 from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_LOCKED
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .tahoma_entity import TahomaEntity
@@ -15,15 +18,17 @@ COMMAND_UNLOCK = "unlock"
 CORE_LOCKED_UNLOCKED_STATE = "core:LockedUnlockedState"
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+):
     """Set up the TaHoma locks from a config entry."""
-
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaLock(device.deviceurl, coordinator)
-        for device in data["platforms"].get(LOCK)
+        TahomaLock(device.deviceurl, coordinator) for device in data["platforms"][LOCK]
     ]
 
     async_add_entities(entities)
