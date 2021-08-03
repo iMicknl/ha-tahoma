@@ -7,6 +7,7 @@ import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -151,7 +152,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
-    platforms["sensor"] = []
 
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
@@ -175,7 +175,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if device.widget == HOMEKIT_STACK:
             print_homekit_setup_code(device)
 
-    for platform in platforms:
+    supported_platforms = set(platforms.keys())
+    supported_platforms.add(SENSOR)
+    for platform in supported_platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
