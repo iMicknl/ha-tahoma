@@ -128,7 +128,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
 
         return {
             "identifiers": {(DOMAIN, self.base_device_url)},
-            "name": self.name,
+            "name": self.device.label,
             "manufacturer": manufacturer,
             "model": model,
             "sw_version": self.device.controllable_name,
