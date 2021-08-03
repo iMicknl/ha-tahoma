@@ -49,7 +49,12 @@ class TahomaEntity(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
-        self.base_device_url = self.get_base_device_url()
+
+        if "#" in self.device_url:
+            self.base_device_url, self.index = self.device_url.split("#")
+        else:
+            self.base_device_url = self.device_url
+            self.index = None
 
     @property
     def device(self) -> Device:
@@ -198,14 +203,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
     async def async_cancel_command(self, exec_id: str):
         """Cancel device command in async context."""
         await self.coordinator.client.cancel_command(exec_id)
-
-    def get_base_device_url(self):
-        """Return base device url."""
-        if "#" not in self.device_url:
-            return self.device_url
-
-        device_url, _ = self.device_url.split("#")
-        return device_url
 
     def get_gateway_id(self):
         """Retrieve gateway id from device url."""

@@ -128,6 +128,8 @@ class TahomaStateSensor(TahomaEntity, Entity):
     @property
     def name(self) -> str:
         """Return the name of the device."""
+        if self.index:
+            return f"{self._state_description.name} {self.index}"
         return self._state_description.name
 
     @property
