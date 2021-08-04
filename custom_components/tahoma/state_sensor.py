@@ -6,14 +6,13 @@ from typing import Any, Callable, Optional, Union
 from homeassistant.components import sensor
 from homeassistant.const import (
     DEVICE_CLASS_ILLUMINANCE,
+    LIGHT_LUX,
     PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
 from homeassistant.helpers.entity import Entity
-
-from custom_components.tahoma.sensor import UNIT_LX
 
 from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_entity import TahomaEntity
@@ -105,7 +104,12 @@ SUPPORTED_STATES = [
         name="Luminance",
         value=lambda value: round(value),
         device_class=DEVICE_CLASS_ILLUMINANCE,
-        unit=UNIT_LX,
+        unit=LIGHT_LUX,
+    ),
+    StateDescription(
+        key="io:PriorityLockOriginatorState",
+        name="Priority Lock Originator",
+        value=lambda value: value,
     ),
 ]
 

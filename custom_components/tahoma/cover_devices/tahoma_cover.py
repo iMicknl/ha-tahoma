@@ -64,9 +64,6 @@ MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 ICON_LOCK_ALERT = "mdi:lock-alert"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
-IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
-IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
-
 STATE_CLOSED = "closed"
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
@@ -125,19 +122,6 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
-
-        return None
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend, if any."""
-        if (
-            self.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
-            and self.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
-        ):
-            if self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
-                return ICON_WEATHER_WINDY
-            return ICON_LOCK_ALERT
 
         return None
 
@@ -256,17 +240,6 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
             and target_closure
             and current_closure.value < target_closure.value
         )
-
-    @property
-    def device_state_attributes(self):
-        """Return the device state attributes."""
-        attr = super().device_state_attributes or {}
-
-        # Obstruction Detected attribute is used by HomeKit
-        if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
-            attr[ATTR_OBSTRUCTION_DETECTED] = True
-
-        return attr
 
     @property
     def supported_features(self):

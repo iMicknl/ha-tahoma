@@ -13,6 +13,7 @@ from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE,
     ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
+    LIGHT_LUX,
     PERCENTAGE,
     POWER_KILO_WATT,
     POWER_WATT,
@@ -67,8 +68,6 @@ ICON_MOLECULE_CO2 = "mdi:molecule-co2"
 ICON_SOLAR_POWER = "mdi:solar-power"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
-UNIT_LX = "lx"
-
 TAHOMA_SENSOR_DEVICE_CLASSES = {
     "CO2Sensor": DEVICE_CLASS_CO2,
     "COSensor": DEVICE_CLASS_CO,
@@ -85,7 +84,7 @@ UNITS = {
     "core:TemperatureInCelsius": TEMP_CELSIUS,
     "core:TemperatureInKelvin": TEMP_KELVIN,
     "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
-    "core:LuminanceInLux": UNIT_LX,
+    "core:LuminanceInLux": LIGHT_LUX,
     "core:ElectricCurrentInAmpere": ELECTRIC_CURRENT_AMPERE,
     "core:VoltageInVolt": ELECTRIC_POTENTIAL_VOLT,
     "core:ElectricalEnergyInWh": ENERGY_WATT_HOUR,
