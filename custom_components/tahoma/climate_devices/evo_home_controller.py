@@ -12,7 +12,7 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import TEMP_CELSIUS
 import homeassistant.util.dt as dt_util
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 PRESET_DAY_OFF = "day-off"
 PRESET_HOLIDAYS = "holidays"
@@ -31,7 +31,7 @@ TAHOMA_TO_PRESET_MODES = {
 PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
 
 
-class EvoHomeController(TahomaEntity, ClimateEntity):
+class EvoHomeController(OverkizEntity, ClimateEntity):
     """Representation of EvoHomeController device."""
 
     @property
@@ -47,7 +47,7 @@ class EvoHomeController(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        operating_mode = self.select_state(RAMSES_RAMSES_OPERATING_MODE_STATE)
+        operating_mode = self.executor.select_state(RAMSES_RAMSES_OPERATING_MODE_STATE)
 
         if operating_mode in TAHOMA_TO_HVAC_MODES:
             return TAHOMA_TO_HVAC_MODES[operating_mode]
@@ -71,7 +71,7 @@ class EvoHomeController(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        operating_mode = self.select_state(RAMSES_RAMSES_OPERATING_MODE_STATE)
+        operating_mode = self.executor.select_state(RAMSES_RAMSES_OPERATING_MODE_STATE)
 
         if operating_mode in TAHOMA_TO_PRESET_MODES:
             return TAHOMA_TO_PRESET_MODES[operating_mode]

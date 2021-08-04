@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .tahoma_entity import TahomaEntity
+from .entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaSwitch(TahomaEntity, SwitchEntity):
+class TahomaSwitch(OverkizEntity, SwitchEntity):
     """Representation a TaHoma Switch."""
 
     @property
@@ -111,4 +111,7 @@ class TahomaSwitch(TahomaEntity, SwitchEntity):
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
-        return self.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE) == STATE_ON
+        return (
+            self.executor.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE)
+            == STATE_ON
+        )

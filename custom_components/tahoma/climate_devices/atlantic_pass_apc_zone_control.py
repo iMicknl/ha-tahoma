@@ -11,7 +11,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ TAHOMA_TO_HVAC_MODE = {
 HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
-class AtlanticPassAPCZoneControl(TahomaEntity, ClimateEntity):
+class AtlanticPassAPCZoneControl(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Pass APC Zone Control."""
 
     @property
@@ -53,7 +53,9 @@ class AtlanticPassAPCZoneControl(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODE[self.select_state(IO_PASS_APC_OPERATING_MODE_STATE)]
+        return TAHOMA_TO_HVAC_MODE[
+            self.executor.select_state(IO_PASS_APC_OPERATING_MODE_STATE)
+        ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""

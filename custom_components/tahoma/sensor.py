@@ -40,7 +40,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .tahoma_entity import TahomaEntity
+from .tahoma_entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -131,13 +131,13 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaSensor(TahomaEntity, Entity):
+class TahomaSensor(OverkizEntity, Entity):
     """Representation of a TaHoma Sensor."""
 
     @property
     def state(self):
         """Return the value of the sensor."""
-        state = self.select_state(
+        state = self.executor.select_state(
             CORE_CO2_CONCENTRATION_STATE,
             CORE_CO_CONCENTRATION_STATE,
             CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE,

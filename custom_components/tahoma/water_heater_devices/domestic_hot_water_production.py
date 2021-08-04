@@ -8,7 +8,7 @@ from homeassistant.components.water_heater import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
 CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeState"
@@ -40,7 +40,7 @@ MAP_OPERATION_MODES = {
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
 
 
-class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
+class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
     @property
@@ -51,17 +51,17 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     @property
     def min_temp(self):
         """Return the minimum temperature."""
-        return self.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
-        return self.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
 
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        return MAP_OPERATION_MODES[self.select_state(IO_DHW_MODE_STATE)]
+        return MAP_OPERATION_MODES[self.executor.select_state(IO_DHW_MODE_STATE)]
 
     @property
     def operation_list(self):
@@ -71,22 +71,22 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.select_state(IO_MIDDLE_WATER_TEMPERATURE_STATE)
+        return self.executor.select_state(IO_MIDDLE_WATER_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def target_temperature_high(self):
         """Return the highbound target temperature we try to reach."""
-        return self.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
 
     @property
     def target_temperature_low(self):
         """Return the lowbound target temperature we try to reach."""
-        return self.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
@@ -110,7 +110,8 @@ class DomesticHotWaterProduction(TahomaEntity, WaterHeaterEntity):
     def is_away_mode_on(self):
         """Return true if away mode is on."""
         return (
-            self.select_state(CORE_OPERATING_MODE_STATE).get(STATE_ABSENCE) == STATE_ON
+            self.executor.select_state(CORE_OPERATING_MODE_STATE).get(STATE_ABSENCE)
+            == STATE_ON
         )
 
     async def async_turn_away_mode_on(self):

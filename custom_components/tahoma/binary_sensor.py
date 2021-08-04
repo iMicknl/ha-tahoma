@@ -14,7 +14,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .tahoma_entity import TahomaEntity
+from .tahoma_entity import OverkizEntity
 
 CORE_ASSEMBLY_STATE = "core:AssemblyState"
 CORE_BUTTON_STATE = "core:ButtonState"
@@ -77,7 +77,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaBinarySensor(TahomaEntity, BinarySensorEntity):
+class TahomaBinarySensor(OverkizEntity, BinarySensorEntity):
     """Representation of a TaHoma Binary Sensor."""
 
     @property
@@ -85,7 +85,7 @@ class TahomaBinarySensor(TahomaEntity, BinarySensorEntity):
         """Return the state of the sensor."""
 
         return (
-            self.select_state(
+            self.executor.select_state(
                 CORE_ASSEMBLY_STATE,
                 CORE_BUTTON_STATE,
                 CORE_CONTACT_STATE,

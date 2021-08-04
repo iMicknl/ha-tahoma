@@ -26,7 +26,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ FAN_MODES_TO_HLRRWIFI_TAHOMA = {v: k for k, v in HLRRWIFI_TAHOMA_TO_FAN_MODES.it
 FAN_MODES_TO_OVP_TAHOMA = {v: k for k, v in OVP_TAHOMA_TO_FAN_MODES.items()}
 
 
-class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
+class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     """Representation of HitachiAirToAirHeatPump."""
 
     @property
@@ -260,7 +260,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
     def _select_state(self, *states) -> Optional[str]:
         """Make all strings lowercase, since Hi Kumo server returns capitalized strings for some devices."""
-        state = self.select_state(*states)
+        state = self.executor.select_state(*states)
 
         if state and isinstance(state, str):
             return state.lower()

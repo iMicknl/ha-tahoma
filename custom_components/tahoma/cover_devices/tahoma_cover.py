@@ -9,7 +9,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
@@ -76,7 +76,7 @@ SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
-class TahomaGenericCover(TahomaEntity, CoverEntity):
+class TahomaGenericCover(OverkizEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
 
     @property
@@ -85,7 +85,7 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = self.select_state(
+        position = self.executor.select_state(
             CORE_SLATS_ORIENTATION_STATE, CORE_SLATE_ORIENTATION_STATE
         )
         return 100 - position if position is not None else None
@@ -101,7 +101,7 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
         await self.async_execute_command(
-            self.select_command(*COMMANDS_SET_TILT_POSITION),
+            self.executor.select_command(*COMMANDS_SET_TILT_POSITION),
             100 - kwargs.get(ATTR_TILT_POSITION, 0),
         )
 
@@ -109,7 +109,7 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
-        state = self.select_state(
+        state = self.executor.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
             CORE_OPEN_CLOSED_PARTIAL_STATE,
@@ -133,9 +133,9 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
         """Return the icon to use in the frontend, if any."""
         if (
             self.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
-            and self.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
+            and self.executor.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
         ):
-            if self.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
+            if self.executor.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
                 return ICON_WEATHER_WINDY
             return ICON_LOCK_ALERT
 
@@ -143,11 +143,15 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
-        await self.async_execute_command(self.select_command(*COMMANDS_OPEN_TILT))
+        await self.async_execute_command(
+            self.executor.select_command(*COMMANDS_OPEN_TILT)
+        )
 
     async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
-        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE_TILT))
+        await self.async_execute_command(
+            self.executor.select_command(*COMMANDS_CLOSE_TILT)
+        )
 
     async def async_stop_cover(self, **_):
         """Stop the cover."""
@@ -201,7 +205,7 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
 
         # Fallback to available stop commands when no executions are found
         # Stop commands don't work with all devices, due to a bug in Somfy service
-        await self.async_execute_command(self.select_command(*stop_commands))
+        await self.async_execute_command(self.executor.select_command(*stop_commands))
 
     async def async_my(self, **_):
         """Set cover to preset position."""

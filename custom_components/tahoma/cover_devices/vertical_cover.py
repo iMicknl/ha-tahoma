@@ -89,7 +89,7 @@ class VerticalCover(TahomaGenericCover):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = self.select_state(
+        position = self.executor.select_state(
             CORE_CLOSURE_STATE,
             CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
             CORE_PEDESTRIAN_POSITION_STATE,
@@ -108,8 +108,8 @@ class VerticalCover(TahomaGenericCover):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(self.select_command(*COMMANDS_OPEN))
+        await self.async_execute_command(self.executor.select_command(*COMMANDS_OPEN))
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.async_execute_command(self.select_command(*COMMANDS_CLOSE))
+        await self.async_execute_command(self.executor.select_command(*COMMANDS_CLOSE))

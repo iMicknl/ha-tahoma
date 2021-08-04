@@ -15,7 +15,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 BOOST_ON_STATE = "on"
 BOOST_OFF_STATE = "off"
@@ -70,7 +70,7 @@ MAP_PRESET_MODES = {
 MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 
 
-class AtlanticPassAPCDHW(TahomaEntity, ClimateEntity):
+class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
     @property
@@ -96,14 +96,16 @@ class AtlanticPassAPCDHW(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        if self.select_state(IO_PASS_APCDWH_MODE_STATE) in [
+        if self.executor.select_state(IO_PASS_APCDWH_MODE_STATE) in [
             PASS_APCDHW_MODE_ECO,
             PASS_APCDWH_MODE_INTERNAL_SCHEDULING,
             PASS_APCDHW_MODE_STOP,
         ]:
-            return MAP_PRESET_MODES[self.select_state(IO_PASS_APCDWH_MODE_STATE)]
+            return MAP_PRESET_MODES[
+                self.executor.select_state(IO_PASS_APCDWH_MODE_STATE)
+            ]
 
-        if self.select_state(CORE_BOOST_ON_OFF_STATE) == BOOST_ON_STATE:
+        if self.executor.select_state(CORE_BOOST_ON_OFF_STATE) == BOOST_ON_STATE:
             return PRESET_BOOST
 
         return PRESET_COMFORT
@@ -138,7 +140,7 @@ class AtlanticPassAPCDHW(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return MAP_HVAC_MODES[self.select_state(CORE_DWH_ON_OFF_STATE)]
+        return MAP_HVAC_MODES[self.executor.select_state(CORE_DWH_ON_OFF_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -155,12 +157,12 @@ class AtlanticPassAPCDHW(TahomaEntity, ClimateEntity):
     def target_temperature(self) -> None:
         """Return the temperature corresponding to the PRESET."""
         if self.preset_mode == PRESET_ECO:
-            return self.select_state(CORE_ECO_TARGET_DWH_TEMPERATURE_STATE)
+            return self.executor.select_state(CORE_ECO_TARGET_DWH_TEMPERATURE_STATE)
 
         if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
-            return self.select_state(CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE)
+            return self.executor.select_state(CORE_COMFORT_TARGET_DWH_TEMPERATURE_STATE)
 
-        return self.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_TARGET_DWH_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):

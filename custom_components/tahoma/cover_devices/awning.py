@@ -54,7 +54,7 @@ class Awning(TahomaGenericCover):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        return self.select_state(CORE_DEPLOYMENT_STATE)
+        return self.executor.select_state(CORE_DEPLOYMENT_STATE)
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""

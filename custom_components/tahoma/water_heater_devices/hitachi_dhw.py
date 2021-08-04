@@ -12,7 +12,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
@@ -41,7 +41,7 @@ TAHOMA_TO_OPERATION_MODE = {
 OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
 
 
-class HitachiDHW(TahomaEntity, WaterHeaterEntity):
+class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     """Representation of a HitachiDHW Water Heater."""
 
     @property
@@ -72,12 +72,12 @@ class HitachiDHW(TahomaEntity, WaterHeaterEntity):
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.select_state(CORE_DHW_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_DHW_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE)
+        return self.executor.select_state(MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
@@ -89,10 +89,12 @@ class HitachiDHW(TahomaEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        if self.select_state(MODBUS_CONTROL_DHW_STATE) == STATE_STOP:
+        if self.executor.select_state(MODBUS_CONTROL_DHW_STATE) == STATE_STOP:
             return STATE_OFF
 
-        return TAHOMA_TO_OPERATION_MODE[self.select_state(MODBUS_DHW_MODE_STATE)]
+        return TAHOMA_TO_OPERATION_MODE[
+            self.executor.select_state(MODBUS_DHW_MODE_STATE)
+        ]
 
     @property
     def operation_list(self):
