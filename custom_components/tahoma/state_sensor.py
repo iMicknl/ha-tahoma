@@ -28,6 +28,12 @@ class OverkizSensorDescription(SensorEntityDescription):
 
 SUPPORTED_STATES = [
     OverkizSensorDescription(
+        key="core:BatteryLevelState",
+        name="Battery Level",
+        unit_of_measurement=PERCENTAGE,
+        device_class=sensor.DEVICE_CLASS_BATTERY,
+    ),
+    OverkizSensorDescription(
         key="core:BatteryState",
         name="Battery",
         unit_of_measurement=PERCENTAGE,
