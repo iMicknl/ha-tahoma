@@ -11,8 +11,6 @@ from pyhoma.models import Command, Device
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
 
-ATTR_RSSI_LEVEL = "rssi_level"
-
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
 CORE_MANUFACTURER = "core:Manufacturer"
@@ -85,9 +83,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
     def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
-
-        if self.has_state(CORE_RSSI_LEVEL_STATE):
-            attr[ATTR_RSSI_LEVEL] = self.select_state(CORE_RSSI_LEVEL_STATE)
 
         if self.has_state(CORE_BATTERY_STATE):
             battery_state = self.select_state(CORE_BATTERY_STATE)
