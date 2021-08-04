@@ -5,15 +5,20 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components import sensor
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import (
+    STATE_CLASS_MEASUREMENT,
+    SensorEntity,
+    SensorEntityDescription,
+)
 from homeassistant.const import (
-    DEVICE_CLASS_ILLUMINANCE,
+    ENERGY_WATT_HOUR,
     LIGHT_LUX,
     PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
+from homeassistant.util.dt import utc_from_timestamp
 
 from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_entity import TahomaEntity
@@ -104,13 +109,23 @@ SUPPORTED_STATES = [
         key="core:LuminanceState",
         name="Luminance",
         value=lambda value: round(value),
-        device_class=DEVICE_CLASS_ILLUMINANCE,
+        device_class=sensor.DEVICE_CLASS_ILLUMINANCE,
         unit_of_measurement=LIGHT_LUX,
     ),
     OverkizSensorDescription(
         key="io:PriorityLockOriginatorState",
         name="Priority Lock Originator",
         icon="mdi:alert",
+    ),
+    # ElectricitySensor/CumulativeElectricPowerConsumptionSensor
+    OverkizSensorDescription(
+        key="core:ElectricEnergyConsumptionState",
+        name="Electric Energy Consumption",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # could read core:MeasuredValueType attribute..
+        state_class=STATE_CLASS_MEASUREMENT,  # core:MeasurementCategory attribute = electric/overall
+        last_reset=utc_from_timestamp(0),
     ),
 ]
 
