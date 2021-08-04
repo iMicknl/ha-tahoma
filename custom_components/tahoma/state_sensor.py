@@ -32,7 +32,6 @@ SUPPORTED_STATES = [
         name="Battery",
         unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
-        value=lambda value: value,
     ),
     OverkizSensorDescription(
         key="core:RSSILevelState",
@@ -105,7 +104,7 @@ SUPPORTED_STATES = [
     OverkizSensorDescription(
         key="io:PriorityLockOriginatorState",
         name="Priority Lock Originator",
-        value=lambda value: value,
+        icon="mdi:alert",
     ),
 ]
 
@@ -128,7 +127,13 @@ class TahomaStateSensor(TahomaEntity, SensorEntity):
         """Return the value of the sensor."""
         state = self.select_state(self.entity_description.key)
 
-        return self.entity_description.value(state) if state is not None else None
+        if state:
+            # Transform the value with a lambda function
+            if hasattr(self.entity_description, "value"):
+                return self.entity_description.value(state)
+            return state
+
+        return None
 
     @property
     def name(self) -> str:
