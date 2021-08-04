@@ -18,6 +18,7 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
+from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
@@ -33,9 +34,7 @@ from .const import (
     DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
-    HUB_MANUFACTURER,
     IGNORED_TAHOMA_DEVICES,
-    SUPPORTED_ENDPOINTS,
     TAHOMA_DEVICE_TO_PLATFORM,
 )
 from .coordinator import TahomaDataUpdateCoordinator
@@ -96,15 +95,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
-    hub = entry.data.get(CONF_HUB, DEFAULT_HUB)
-    endpoint = SUPPORTED_ENDPOINTS[hub]
+    server = SUPPORTED_SERVERS[entry.data.get(CONF_HUB, DEFAULT_HUB)]
 
     session = async_get_clientsession(hass)
     client = TahomaClient(
         username,
         password,
         session=session,
-        api_url=endpoint,
+        api_url=server.endpoint,
     )
 
     try:
@@ -205,7 +203,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
             model=gateway_model,
-            manufacturer=HUB_MANUFACTURER[hub],
+            manufacturer=server.manufacturer,
             name=gateway_name,
             sw_version=gateway.connectivity.protocol_version,
         )
