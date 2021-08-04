@@ -15,6 +15,7 @@ from homeassistant.const import (
     LIGHT_LUX,
     PERCENTAGE,
     SIGNAL_STRENGTH_DECIBELS,
+    TEMP_CELSIUS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
@@ -106,16 +107,17 @@ SUPPORTED_STATES = [
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
     OverkizSensorDescription(
+        key="io:PriorityLockOriginatorState",
+        name="Priority Lock Originator",
+        icon="mdi:alert",
+    ),
+    # LightSensor/LuminanceSensor
+    OverkizSensorDescription(
         key="core:LuminanceState",
         name="Luminance",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_ILLUMINANCE,
-        unit_of_measurement=LIGHT_LUX,
-    ),
-    OverkizSensorDescription(
-        key="io:PriorityLockOriginatorState",
-        name="Priority Lock Originator",
-        icon="mdi:alert",
+        unit_of_measurement=LIGHT_LUX,  # core:MeasuredValueType = core:LuminanceInLux
     ),
     # ElectricitySensor/CumulativeElectricPowerConsumptionSensor
     OverkizSensorDescription(
@@ -123,9 +125,110 @@ SUPPORTED_STATES = [
         name="Electric Energy Consumption",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_ENERGY,
-        unit_of_measurement=ENERGY_WATT_HOUR,  # could read core:MeasuredValueType attribute..
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         state_class=STATE_CLASS_MEASUREMENT,  # core:MeasurementCategory attribute = electric/overall
         last_reset=utc_from_timestamp(0),
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff1State",
+        name="Consumption Tariff 1",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff2State",
+        name="Consumption Tariff 2",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff3State",
+        name="Consumption Tariff 3",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff4State",
+        name="Consumption Tariff 4",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff5State",
+        name="Consumption Tariff 5",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff6State",
+        name="Consumption Tariff 6",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff7State",
+        name="Consumption Tariff 7",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff8State",
+        name="Consumption Tariff 8",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:ConsumptionTariff9State",
+        name="Consumption Tariff 9",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        entity_registry_enabled_default=False,
+    ),
+    # HumiditySensor/RelativeHumiditySensor
+    OverkizSensorDescription(
+        key="core:RelativeHumidityState",
+        name="Relative Humidity",
+        value=lambda value: round(value, 2),
+        device_class=sensor.DEVICE_CLASS_HUMIDITY,
+        unit_of_measurement=PERCENTAGE,  # core:MeasuredValueType = core:RelativeValueInPercentage
+    ),
+    # TemperatureSensor/TemperatureSensor
+    OverkizSensorDescription(
+        key="core:TemperatureState",
+        name="Temperature",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=TEMP_CELSIUS,  # core:MeasuredValueType = core:TemperatureInCelcius
+    ),
+    # WeatherSensor/WeatherForecastSensor
+    OverkizSensorDescription(
+        key="core:WeatherStatusState",
+        name="Weather Status",
+    ),
+    OverkizSensorDescription(
+        key="core:MinimumTemperatureState",
+        name="Minimum Temperature",
+    ),
+    OverkizSensorDescription(
+        key="core:MaximumTemperatureState",
+        name="Maximum Temperature",
     ),
 ]
 
