@@ -109,7 +109,6 @@ SUPPORTED_STATES = [
     StateDescription(
         key="io:PriorityLockOriginatorState",
         name="Priority Lock Originator",
-        value=lambda value: value,
     ),
 ]
 
