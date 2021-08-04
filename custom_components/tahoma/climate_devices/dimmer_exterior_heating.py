@@ -59,8 +59,8 @@ class DimmerExteriorHeating(OverkizEntity, ClimateEntity):
         level = kwargs.get(ATTR_TEMPERATURE)
         if level is None:
             return
-        await self.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
-        await self.async_execute_command(COMMAND_GET_LEVEL)
+        await self.executor.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
+        await self.executor.async_execute_command(COMMAND_GET_LEVEL)
 
     @property
     def hvac_mode(self) -> str:
@@ -81,5 +81,5 @@ class DimmerExteriorHeating(OverkizEntity, ClimateEntity):
             level = self._saved_level
         else:
             self._saved_level = self.target_temperature
-        await self.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
-        await self.async_execute_command(COMMAND_GET_LEVEL)
+        await self.executor.async_execute_command(COMMAND_SET_LEVEL, 100 - int(level))
+        await self.executor.async_execute_command(COMMAND_GET_LEVEL)

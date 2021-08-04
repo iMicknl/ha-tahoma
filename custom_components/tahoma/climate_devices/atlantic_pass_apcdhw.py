@@ -129,13 +129,15 @@ class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
             preset_mode_to_set = MAP_REVERSE_PRESET_MODES[PRESET_COMFORT]
             boost_mode_to_set = BOOST_ON_STATE
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_BOOST_ON_OFF_STATE, boost_mode_to_set
         )
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_PASS_APCDHW_MODE, preset_mode_to_set
         )
-        await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
+        await self.executor.async_execute_command(
+            COMMAND_REFRESH_TARGET_DWH_TEMPERATURE
+        )
 
     @property
     def hvac_mode(self) -> str:
@@ -149,7 +151,7 @@ class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DWH_ON_OFF_STATE, MAP_REVERSE_HVAC_MODES[hvac_mode]
         )
 
@@ -173,13 +175,15 @@ class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
         """Set new temperature for current preset."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
         if self.preset_mode == PRESET_ECO:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_ECO_TARGET_DWH_TEMPERATURE, temperature
             )
 
         if self.preset_mode in [PRESET_COMFORT, PRESET_BOOST]:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_COMFORT_TARGET_DWH_TEMPERATURE, temperature
             )
 
-        await self.async_execute_command(COMMAND_REFRESH_TARGET_DWH_TEMPERATURE)
+        await self.executor.async_execute_command(
+            COMMAND_REFRESH_TARGET_DWH_TEMPERATURE
+        )

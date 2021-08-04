@@ -89,7 +89,7 @@ class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_AUTO_MANU_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
 
@@ -107,7 +107,7 @@ class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TARGET_MODE, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
 
@@ -144,6 +144,6 @@ class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_THERMOSTAT_SETTING_CONTROL_ZONE_1, int(temperature)
         )

@@ -72,13 +72,15 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
     async def async_turn_on(self, **_):
         """Send the on command."""
         if self.executor.has_command(COMMAND_ON):
-            await self.async_execute_command(COMMAND_ON)
+            await self.executor.async_execute_command(COMMAND_ON)
 
         elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
-            await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_ON)
+            await self.executor.async_execute_command(
+                COMMAND_SET_FORCE_HEATING, STATE_ON
+            )
 
         elif self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
                 2 * 60 * 1000,  # 2 minutes
                 75,  # 90 seconds bip, 30 seconds silence
@@ -89,7 +91,7 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
     async def async_turn_off(self, **_):
         """Send the off command."""
         if self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 2000,
                 100,
@@ -98,15 +100,17 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
             )
 
         elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
-            await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_OFF)
+            await self.executor.async_execute_command(
+                COMMAND_SET_FORCE_HEATING, STATE_OFF
+            )
 
         elif self.executor.has_command(COMMAND_OFF):
-            await self.async_execute_command(COMMAND_OFF)
+            await self.executor.async_execute_command(COMMAND_OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
         if self.executor.has_command(COMMAND_CYCLE):
-            await self.async_execute_command(COMMAND_CYCLE)
+            await self.executor.async_execute_command(COMMAND_CYCLE)
 
     @property
     def is_on(self):

@@ -82,7 +82,7 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, int(temperature)
         )
 
@@ -105,13 +105,17 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
         """Set new target operation mode."""
         # Turn water heater off
         if operation_mode == STATE_OFF:
-            return await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_STOP)
+            return await self.executor.async_execute_command(
+                COMMAND_SET_CONTROL_DHW, STATE_STOP
+            )
 
         # Turn water heater on, when off
         if self.current_operation == STATE_OFF and operation_mode != STATE_OFF:
-            await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_RUN)
+            await self.executor.async_execute_command(
+                COMMAND_SET_CONTROL_DHW, STATE_RUN
+            )
 
         # Change operation mode
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
         )

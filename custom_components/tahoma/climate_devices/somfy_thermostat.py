@@ -236,13 +236,13 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
         elif temperature > self.max_temp:
             temperature = self.max_temp
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
         )
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
         )
-        await self.async_execute_command(COMMAND_REFRESH_STATE)
+        await self.executor.async_execute_command(COMMAND_REFRESH_STATE)
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -250,8 +250,8 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
             return
         if hvac_mode == HVAC_MODE_AUTO:
             self._saved_target_temp = self.target_temperature
-            await self.async_execute_command(COMMAND_EXIT_DEROGATION)
-            await self.async_execute_command(COMMAND_REFRESH_STATE)
+            await self.executor.async_execute_command(COMMAND_EXIT_DEROGATION)
+            await self.executor.async_execute_command(COMMAND_REFRESH_STATE)
         elif hvac_mode == HVAC_MODE_HEAT:
             await self.async_set_preset_mode(PRESET_NONE)
 
@@ -261,20 +261,20 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
             return
         if preset_mode in [PRESET_FREEZE, PRESET_NIGHT, PRESET_AWAY, PRESET_HOME]:
             self._saved_target_temp = self.target_temperature
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 MAP_REVERSE_PRESET_MODES[preset_mode],
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
         elif preset_mode == PRESET_NONE:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 self._saved_target_temp,
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_MODE_TEMPERATURE,
                 STATE_PRESET_MANUAL,
                 self._saved_target_temp,
             )
-        await self.async_execute_command(COMMAND_REFRESH_STATE)
+        await self.executor.async_execute_command(COMMAND_REFRESH_STATE)

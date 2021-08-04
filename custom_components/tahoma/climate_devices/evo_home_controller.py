@@ -64,7 +64,7 @@ class EvoHomeController(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_OPERATING_MODE, HVAC_MODES_TO_TAHOMA[hvac_mode]
         )
 
@@ -97,7 +97,7 @@ class EvoHomeController(OverkizEntity, ClimateEntity):
             ) + timedelta(days=7)
             time_interval = one_week_from_now
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_OPERATING_MODE,
             PRESET_MODES_TO_TAHOMA[preset_mode],
             time_interval.strftime("%Y/%m/%d %H:%M"),

@@ -91,13 +91,13 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TARGET_TEMPERATURE, target_temperature
         )
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
 
@@ -116,7 +116,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_CURRENT_OPERATING_MODE,
             {
                 STATE_RELAUNCH: STATE_OFF,
@@ -126,7 +126,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_CURRENT_OPERATING_MODE,
             {
                 STATE_RELAUNCH: STATE_OFF,

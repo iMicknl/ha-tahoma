@@ -94,7 +94,7 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TOWEL_DRYER_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
 
@@ -112,7 +112,7 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TOWEL_DRYER_TEMPORARY_STATE, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
 
@@ -134,10 +134,10 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
         if self.hvac_mode == HVAC_MODE_AUTO:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_DEROGATED_TARGET_TEMPERATURE, temperature
             )
         else:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_TARGET_TEMPERATURE, temperature
             )

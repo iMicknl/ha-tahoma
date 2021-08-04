@@ -47,7 +47,7 @@ class StatelessExteriorHeating(OverkizEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         if preset_mode in PRESET_MY:
-            await self.async_execute_command(COMMAND_MY)
+            await self.executor.async_execute_command(COMMAND_MY)
         else:
             _LOGGER.error(
                 "Invalid preset mode %s for device %s", preset_mode, self.name
@@ -66,6 +66,6 @@ class StatelessExteriorHeating(OverkizEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_HEAT:
-            await self.async_execute_command(COMMAND_ON)
+            await self.executor.async_execute_command(COMMAND_ON)
         else:
-            await self.async_execute_command(COMMAND_OFF)
+            await self.executor.async_execute_command(COMMAND_OFF)

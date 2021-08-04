@@ -177,16 +177,22 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
         """Set new target hvac mode."""
 
         if hvac_mode == HVAC_MODE_OFF:
-            await self.async_execute_command(COMMAND_SET_HEATING_ON_OFF_STATE, "off")
+            await self.executor.async_execute_command(
+                COMMAND_SET_HEATING_ON_OFF_STATE, "off"
+            )
         else:
             if self.hvac_mode == HVAC_MODE_OFF:
-                await self.async_execute_command(COMMAND_SET_HEATING_ON_OFF_STATE, "on")
+                await self.executor.async_execute_command(
+                    COMMAND_SET_HEATING_ON_OFF_STATE, "on"
+                )
 
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_PASS_APC_HEATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
             )
 
-        await self.async_execute_command(COMMAND_REFRESH_PASS_APC_HEATING_PROFILE)
+        await self.executor.async_execute_command(
+            COMMAND_REFRESH_PASS_APC_HEATING_PROFILE
+        )
 
     @property
     def target_temperature(self) -> None:
@@ -197,7 +203,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_HEATING_TARGET_TEMPERATURE, temperature
         )
-        await self.async_execute_command(COMMAND_REFRESH_TARGET_TEMPERATURE)
+        await self.executor.async_execute_command(COMMAND_REFRESH_TARGET_TEMPERATURE)

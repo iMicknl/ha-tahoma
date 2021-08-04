@@ -94,13 +94,13 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
         """Move the cover to a specific position with a low speed."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
         )
 
     async def async_set_cover_tilt_position(self, **kwargs):
         """Move the cover tilt to a specific position."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(*COMMANDS_SET_TILT_POSITION),
             100 - kwargs.get(ATTR_TILT_POSITION, 0),
         )
@@ -143,13 +143,13 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
 
     async def async_open_cover_tilt(self, **_):
         """Open the cover tilt."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(*COMMANDS_OPEN_TILT)
         )
 
     async def async_close_cover_tilt(self, **_):
         """Close the cover tilt."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(*COMMANDS_CLOSE_TILT)
         )
 
@@ -205,11 +205,13 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
 
         # Fallback to available stop commands when no executions are found
         # Stop commands don't work with all devices, due to a bug in Somfy service
-        await self.async_execute_command(self.executor.select_command(*stop_commands))
+        await self.executor.async_execute_command(
+            self.executor.select_command(*stop_commands)
+        )
 
     async def async_my(self, **_):
         """Set cover to preset position."""
-        await self.async_execute_command(COMMAND_MY)
+        await self.executor.async_execute_command(COMMAND_MY)
 
     @property
     def is_opening(self):

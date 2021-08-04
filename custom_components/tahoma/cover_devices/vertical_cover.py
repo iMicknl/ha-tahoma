@@ -104,12 +104,16 @@ class VerticalCover(TahomaGenericCover):
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
-        await self.async_execute_command(COMMAND_SET_CLOSURE, position)
+        await self.executor.async_execute_command(COMMAND_SET_CLOSURE, position)
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.async_execute_command(self.executor.select_command(*COMMANDS_OPEN))
+        await self.executor.async_execute_command(
+            self.executor.select_command(*COMMANDS_OPEN)
+        )
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.async_execute_command(self.executor.select_command(*COMMANDS_CLOSE))
+        await self.executor.async_execute_command(
+            self.executor.select_command(*COMMANDS_CLOSE)
+        )

@@ -86,7 +86,7 @@ class HeatingSetPoint(OverkizEntity, ClimateEntity):
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TARGET_TEMPERATURE, float(temperature)
         )
 

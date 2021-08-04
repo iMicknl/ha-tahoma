@@ -231,7 +231,7 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     ):
         """Execute globalControl command with all parameters."""
         if self.device.controllable_name == "ovp:HLinkMainController":
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_GLOBAL_CONTROL,
                 main_operation
                 or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
@@ -244,7 +244,7 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
                 swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
             )
         else:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_GLOBAL_CONTROL,
                 main_operation
                 or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation

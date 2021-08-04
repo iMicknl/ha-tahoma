@@ -161,19 +161,19 @@ class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code=None):
         """Send disarm command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
         )
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY
         )
 
     async def async_alarm_arm_night(self, code=None):
         """Send arm night command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(
                 COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
             )
@@ -181,19 +181,19 @@ class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
 
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(COMMAND_ARM, COMMAND_ALARM_ON)
         )
 
     async def async_alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
         )
 
     async def async_alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             self.executor.select_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
         )
 
