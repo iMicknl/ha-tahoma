@@ -283,6 +283,13 @@ SUPPORTED_STATES = [
         value=lambda value: round(value, 2),
         icon="mdi:weather-windy",
     ),
+    # SmokeSensor/SmokeSensor
+    OverkizSensorDescription(
+        key="io:SensorRoomState",
+        name="Sensor Room",
+        value=lambda value: str(value).capitalize(),
+        entity_registry_enabled_default=False,
+    ),
 ]
 
 
