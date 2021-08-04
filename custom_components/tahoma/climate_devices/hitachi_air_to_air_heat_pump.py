@@ -104,7 +104,7 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
             SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE | SUPPORT_PRESET_MODE
         )
 
-        if self.has_state(*SWING_STATE):
+        if self.executor.has_state(*SWING_STATE):
             supported_features |= SUPPORT_SWING_MODE
 
         return supported_features

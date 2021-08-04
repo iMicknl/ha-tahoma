@@ -101,7 +101,9 @@ class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
     @property
     def state(self):
         """Return the state of the device."""
-        if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
+        if self.executor.has_state(
+            CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
+        ):
             state = self.executor.select_state(
                 CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
             )
@@ -111,24 +113,24 @@ class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
                 return STATE_ALARM_PENDING
 
         if (
-            self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
-            and self.has_state(INTERNAL_TARGET_ALARM_MODE_STATE)
+            self.executor.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            and self.executor.has_state(INTERNAL_TARGET_ALARM_MODE_STATE)
             and self.executor.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
             != self.executor.select_state(INTERNAL_TARGET_ALARM_MODE_STATE)
         ):
             return STATE_ALARM_PENDING
 
-        if self.has_state(MYFOX_ALARM_STATUS_STATE):
+        if self.executor.has_state(MYFOX_ALARM_STATUS_STATE):
             return MAP_MYFOX_STATUS_STATE[
                 self.executor.select_state(MYFOX_ALARM_STATUS_STATE)
             ]
 
-        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
+        if self.executor.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
             return MAP_INTERNAL_STATUS_STATE[
                 self.executor.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
             ]
 
-        if self.has_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE):
+        if self.executor.has_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE):
             return MAP_VERISURE_STATUS_STATE[
                 self.executor.select_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE)
             ]
@@ -140,18 +142,18 @@ class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
         """Return the list of supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
+        if self.executor.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
             supported_features |= SUPPORT_ALARM_ARM_AWAY
 
-        if self.has_command(COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY):
+        if self.executor.has_command(COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY):
             supported_features |= SUPPORT_ALARM_ARM_HOME
 
-        if self.has_command(
+        if self.executor.has_command(
             COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
         ):
             supported_features |= SUPPORT_ALARM_ARM_NIGHT
 
-        if self.has_command(COMMAND_SET_ALARM_STATUS):
+        if self.executor.has_command(COMMAND_SET_ALARM_STATUS):
             supported_features |= SUPPORT_ALARM_TRIGGER
             supported_features |= SUPPORT_ALARM_ARM_CUSTOM_BYPASS
 

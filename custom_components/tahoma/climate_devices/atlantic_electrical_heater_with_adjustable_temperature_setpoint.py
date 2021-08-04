@@ -164,10 +164,10 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
         """Return the list of supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_SET_HEATING_LEVEL):
+        if self.executor.has_command(COMMAND_SET_HEATING_LEVEL):
             supported_features |= SUPPORT_PRESET_MODE
 
-        if self.has_command(COMMAND_SET_TARGET_TEMPERATURE):
+        if self.executor.has_command(COMMAND_SET_TARGET_TEMPERATURE):
             supported_features |= SUPPORT_TARGET_TEMPERATURE
 
         return supported_features

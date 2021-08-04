@@ -59,16 +59,16 @@ class VerticalCover(TahomaGenericCover):
         """Flag supported features."""
         supported_features = super().supported_features
 
-        if self.has_command(COMMAND_SET_CLOSURE):
+        if self.executor.has_command(COMMAND_SET_CLOSURE):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(*COMMANDS_OPEN):
+        if self.executor.has_command(*COMMANDS_OPEN):
             supported_features |= SUPPORT_OPEN
 
-            if self.has_command(*COMMANDS_STOP):
+            if self.executor.has_command(*COMMANDS_STOP):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(*COMMANDS_CLOSE):
+        if self.executor.has_command(*COMMANDS_CLOSE):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features

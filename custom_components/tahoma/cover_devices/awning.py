@@ -28,16 +28,16 @@ class Awning(TahomaGenericCover):
         """Flag supported features."""
         supported_features = super().supported_features
 
-        if self.has_command(COMMAND_SET_DEPLOYMENT):
+        if self.executor.has_command(COMMAND_SET_DEPLOYMENT):
             supported_features |= SUPPORT_SET_POSITION
 
-        if self.has_command(COMMAND_DEPLOY):
+        if self.executor.has_command(COMMAND_DEPLOY):
             supported_features |= SUPPORT_OPEN
 
-            if self.has_command(*COMMANDS_STOP):
+            if self.executor.has_command(*COMMANDS_STOP):
                 supported_features |= SUPPORT_STOP
 
-        if self.has_command(COMMAND_UNDEPLOY):
+        if self.executor.has_command(COMMAND_UNDEPLOY):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features

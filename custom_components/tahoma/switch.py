@@ -71,13 +71,13 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
 
     async def async_turn_on(self, **_):
         """Send the on command."""
-        if self.has_command(COMMAND_ON):
+        if self.executor.has_command(COMMAND_ON):
             await self.async_execute_command(COMMAND_ON)
 
-        elif self.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_ON)
 
-        elif self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        elif self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
                 2 * 60 * 1000,  # 2 minutes
@@ -88,7 +88,7 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
 
     async def async_turn_off(self, **_):
         """Send the off command."""
-        if self.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        if self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.async_execute_command(
                 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 2000,
@@ -97,15 +97,15 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
                 COMMAND_STANDARD,
             )
 
-        elif self.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.async_execute_command(COMMAND_SET_FORCE_HEATING, STATE_OFF)
 
-        elif self.has_command(COMMAND_OFF):
+        elif self.executor.has_command(COMMAND_OFF):
             await self.async_execute_command(COMMAND_OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
-        if self.has_command(COMMAND_CYCLE):
+        if self.executor.has_command(COMMAND_CYCLE):
             await self.async_execute_command(COMMAND_CYCLE)
 
     @property

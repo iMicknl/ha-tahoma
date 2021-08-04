@@ -132,7 +132,7 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
     def icon(self):
         """Return the icon to use in the frontend, if any."""
         if (
-            self.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
+            self.executor.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
             and self.executor.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
         ):
             if self.executor.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
@@ -267,7 +267,7 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
         attr = super().device_state_attributes or {}
 
         # Obstruction Detected attribute is used by HomeKit
-        if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
+        if self.executor.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
             attr[ATTR_OBSTRUCTION_DETECTED] = True
 
         return attr
@@ -277,22 +277,22 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.has_command(*COMMANDS_OPEN_TILT):
+        if self.executor.has_command(*COMMANDS_OPEN_TILT):
             supported_features |= SUPPORT_OPEN_TILT
 
-            if self.has_command(*COMMANDS_STOP_TILT):
+            if self.executor.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if self.has_command(*COMMANDS_CLOSE_TILT):
+        if self.executor.has_command(*COMMANDS_CLOSE_TILT):
             supported_features |= SUPPORT_CLOSE_TILT
 
-        if self.has_command(*COMMANDS_SET_TILT_POSITION):
+        if self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
+        if self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
 
-        if self.has_command(COMMAND_MY):
+        if self.executor.has_command(COMMAND_MY):
             supported_features |= SUPPORT_MY
 
         return supported_features
