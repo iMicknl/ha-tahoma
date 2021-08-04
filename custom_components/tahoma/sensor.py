@@ -40,7 +40,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .state_sensor import TahomaStateSensor, supported_states
+from .state_sensor import TahomaStateSensor, SUPPORTED_STATES
 from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -133,17 +133,20 @@ async def async_setup_entry(
         if platform == "scene":
             continue
 
+        key_supported_states = {
+            description.key: description for description in SUPPORTED_STATES
+        }
         for device in devices:
-            if device.states:
-                for state in device.states:
-                    if state.name in supported_states:
-                        entities.append(
-                            TahomaStateSensor(
-                                device.deviceurl,
-                                coordinator,
-                                supported_states[state.name],
-                            )
+            for state in device.states:
+                description = key_supported_states.get(state.name)
+                if description:
+                    entities.append(
+                        TahomaStateSensor(
+                            device.deviceurl,
+                            coordinator,
+                            description,
                         )
+                    )
 
     async_add_entities(entities)
 

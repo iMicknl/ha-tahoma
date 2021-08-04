@@ -29,34 +29,34 @@ class StateDescription:
     default_enabled: bool = True
 
 
-supported_states = {
-    "core:BatteryState": StateDescription(
+SUPPORTED_STATES = [
+    StateDescription(
         key="core:BatteryState",
         name="Battery",
         unit=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
     ),
-    "core:RSSILevelState": StateDescription(
+    StateDescription(
         key="core:RSSILevelState",
         name="RSSI Level",
         value=lambda value: round(value),
         unit=SIGNAL_STRENGTH_DECIBELS,
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
     ),
-    "core:ExpectedNumberOfShowerState": StateDescription(
+    StateDescription(
         key="core:ExpectedNumberOfShowerState",
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
         value=lambda value: round(value),
     ),
-    "core:NumberOfShowerRemainingState": StateDescription(
+    StateDescription(
         key="core:NumberOfShowerRemainingState",
         name="Number of Shower Remaining",
         icon="mdi:shower-head",
         value=lambda value: round(value),
     ),
     # V40 is measured in litres (L) and shows the amount of warm (mixed) water with a temperature of 40 C, which can be drained from a switched off electric water heater.
-    "core:V40WaterVolumeEstimationState": StateDescription(
+    StateDescription(
         key="core:V40WaterVolumeEstimationState",
         name="Water Volume Estimation at 40 °C",
         icon="mdi:water",
@@ -64,40 +64,40 @@ supported_states = {
         unit=VOLUME_LITERS,
         default_enabled=False,
     ),
-    "core:WaterConsumptionState": StateDescription(
+    StateDescription(
         key="core:WaterConsumptionState",
         name="Water Consumption",
         icon="mdi:water",
         value=lambda value: round(value),
         unit=VOLUME_LITERS,
     ),
-    "io:OutletEngineState": StateDescription(
+    StateDescription(
         key="io:OutletEngineState",
         name="Outlet Engine",
         icon="mdi:fan-chevron-down",
         value=lambda value: round(value),
         unit=VOLUME_LITERS,
     ),
-    "io:InletEngineState": StateDescription(
+    StateDescription(
         key="io:InletEngineState",
         name="Inlet Engine",
         icon="mdi:fan-chevron-up",
         value=lambda value: round(value),
         unit=VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     ),
-    "hlrrwifi:RoomTemperatureState": StateDescription(
+    StateDescription(
         key="hlrrwifi:RoomTemperatureState",
         name="Room Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
-    "io:MiddleWaterTemperatureState": StateDescription(
+    StateDescription(
         key="io:MiddleWaterTemperatureState",
         name="Middle Water Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
-}
+]
 
 
 class TahomaStateSensor(TahomaEntity, Entity):
