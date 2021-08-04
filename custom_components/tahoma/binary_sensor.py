@@ -14,9 +14,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from custom_components.tahoma.coordinator import TahomaDataUpdateCoordinator
-
 from .const import DOMAIN
+from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_entity import TahomaEntity
 
 STATE_OPEN = "open"
