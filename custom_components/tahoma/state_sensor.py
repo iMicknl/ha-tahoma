@@ -31,7 +31,7 @@ from .tahoma_entity import TahomaEntity
 class OverkizSensorDescription(SensorEntityDescription):
     """Class to describe a Overkiz sensor."""
 
-    value: Callable[[Any], Any] = lambda val: val
+    value: Callable[[Any], Any] | None = lambda val: val
 
 
 SUPPORTED_STATES = [
