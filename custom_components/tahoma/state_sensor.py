@@ -14,6 +14,7 @@ from homeassistant.const import (
     ENERGY_WATT_HOUR,
     LIGHT_LUX,
     PERCENTAGE,
+    POWER_WATT,
     SIGNAL_STRENGTH_DECIBELS,
     TEMP_CELSIUS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
@@ -125,9 +126,16 @@ SUPPORTED_STATES = [
         name="Electric Energy Consumption",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_ENERGY,
-        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
+        unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh (not for modbus:YutakiV2DHWElectricalEnergyConsumptionComponent)
         state_class=STATE_CLASS_MEASUREMENT,  # core:MeasurementCategory attribute = electric/overall
         last_reset=utc_from_timestamp(0),
+    ),
+    OverkizSensorDescription(
+        key="core:ElectricPowerConsumptionState",
+        name="Electric Power Consumption",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_POWER,
+        unit_of_measurement=POWER_WATT,  # core:MeasuredValueType = core:ElectricalEnergyInWh (not for modbus:YutakiV2DHWElectricalEnergyConsumptionComponent)
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff1State",
