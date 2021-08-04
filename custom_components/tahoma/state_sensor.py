@@ -1,9 +1,11 @@
 """Support for TaHoma sensors."""
+from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 from homeassistant.components import sensor
+from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import (
     DEVICE_CLASS_ILLUMINANCE,
     LIGHT_LUX,
@@ -12,155 +14,130 @@ from homeassistant.const import (
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
-from homeassistant.helpers.entity import Entity
 
 from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_entity import TahomaEntity
 
 
 @dataclass
-class StateDescription:
-    """Class to describe a sensor."""
+class OverkizSensorDescription(SensorEntityDescription):
+    """Class to describe a Overkiz sensor."""
 
-    key: str
-    name: str
-    icon: Optional[str] = None
-    unit: Union[None, str, Callable[[dict], str]] = None
     value: Callable[[Any], Any] = lambda val: val
-    device_class: Optional[str] = None
-    default_enabled: bool = True
 
 
 SUPPORTED_STATES = [
-    StateDescription(
+    OverkizSensorDescription(
         key="core:BatteryState",
         name="Battery",
-        unit=PERCENTAGE,
+        unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
+        value=lambda value: value,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="core:RSSILevelState",
         name="RSSI Level",
         value=lambda value: round(value),
-        unit=SIGNAL_STRENGTH_DECIBELS,
+        unit_of_measurement=SIGNAL_STRENGTH_DECIBELS,
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="core:ExpectedNumberOfShowerState",
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
         value=lambda value: round(value),
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="core:NumberOfShowerRemainingState",
         name="Number of Shower Remaining",
         icon="mdi:shower-head",
         value=lambda value: round(value),
     ),
     # V40 is measured in litres (L) and shows the amount of warm (mixed) water with a temperature of 40 C, which can be drained from a switched off electric water heater.
-    StateDescription(
+    OverkizSensorDescription(
         key="core:V40WaterVolumeEstimationState",
         name="Water Volume Estimation at 40 °C",
         icon="mdi:water",
         value=lambda value: round(value),
-        unit=VOLUME_LITERS,
-        default_enabled=False,
+        unit_of_measurement=VOLUME_LITERS,
+        entity_registry_enabled_default=False,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="core:WaterConsumptionState",
         name="Water Consumption",
         icon="mdi:water",
         value=lambda value: round(value),
-        unit=VOLUME_LITERS,
+        unit_of_measurement=VOLUME_LITERS,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="io:OutletEngineState",
         name="Outlet Engine",
         icon="mdi:fan-chevron-down",
         value=lambda value: round(value),
-        unit=VOLUME_LITERS,
+        unit_of_measurement=VOLUME_LITERS,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="io:InletEngineState",
         name="Inlet Engine",
         icon="mdi:fan-chevron-up",
         value=lambda value: round(value),
-        unit=VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
+        unit_of_measurement=VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="hlrrwifi:RoomTemperatureState",
         name="Room Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="io:MiddleWaterTemperatureState",
         name="Middle Water Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="core:LuminanceState",
         name="Luminance",
         value=lambda value: round(value),
         device_class=DEVICE_CLASS_ILLUMINANCE,
-        unit=LIGHT_LUX,
+        unit_of_measurement=LIGHT_LUX,
     ),
-    StateDescription(
+    OverkizSensorDescription(
         key="io:PriorityLockOriginatorState",
         name="Priority Lock Originator",
+        value=lambda value: value,
     ),
 ]
 
 
-class TahomaStateSensor(TahomaEntity, Entity):
+class TahomaStateSensor(TahomaEntity, SensorEntity):
     """Representation of a TaHoma Sensor, based on a secondary device."""
 
     def __init__(
         self,
         device_url: str,
         coordinator: TahomaDataUpdateCoordinator,
-        state_description: StateDescription,
+        description: OverkizSensorDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
-        self._state_description = state_description
+        self.entity_description = description
 
     @property
     def state(self):
         """Return the value of the sensor."""
-        state = self.select_state(self._state_description.key)
+        state = self.select_state(self.entity_description.key)
 
-        return self._state_description.value(state) if state is not None else None
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement of this entity, if any."""
-        return self._state_description.unit
+        return self.entity_description.value(state) if state is not None else None
 
     @property
     def name(self) -> str:
         """Return the name of the device."""
         if self.index:
-            return f"{self._state_description.name} {self.index}"
-        return self._state_description.name
-
-    @property
-    def icon(self) -> Optional[str]:
-        """Return the icon to use in the frontend, if any."""
-        return self._state_description.icon
-
-    @property
-    def device_class(self) -> Optional[str]:
-        """Return the device class of this entity if any."""
-        return self._state_description.device_class
-
-    @property
-    def entity_registry_enabled_default(self) -> bool:
-        """Return if the entity should be enabled when first added to the entity registry."""
-        return self._state_description.default_enabled
+            return f"{self.entity_description.name} {self.index}"
+        return self.entity_description.name
 
     @property
     def unique_id(self) -> str:
         """Return a unique ID."""
-        return f"{super().unique_id}-{self._state_description.key}"
+        return f"{super().unique_id}-{self.entity_description.key}"
