@@ -4,7 +4,7 @@ from typing import Optional
 
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (  # Added in 2021.4
+from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_CO,
     DEVICE_CLASS_CO2,
@@ -12,7 +12,6 @@ from homeassistant.const import (  # Added in 2021.4
     DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
-    ELECTRICAL_CURRENT_AMPERE,
     ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
     PERCENTAGE,
@@ -22,10 +21,20 @@ from homeassistant.const import (  # Added in 2021.4
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
     TEMP_KELVIN,
-    VOLT,
     VOLUME_CUBIC_METERS,
     VOLUME_LITERS,
 )
+
+try:  # Breaking change in 2021.8
+    from homeassistant.const import ELECTRIC_CURRENT_AMPERE
+except ImportError:
+    from homeassistant.const import ELECTRICAL_CURRENT_AMPERE as ELECTRIC_CURRENT_AMPERE
+
+try:  # Breaking change in 2021.8
+    from homeassistant.const import ELECTRIC_POTENTIAL_VOLT
+except ImportError:
+    from homeassistant.const import VOLT as ELECTRIC_POTENTIAL_VOLT
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -79,8 +88,8 @@ UNITS = {
     "core:TemperatureInKelvin": TEMP_KELVIN,
     "core:TemperatureInFahrenheit": TEMP_FAHRENHEIT,
     "core:LuminanceInLux": UNIT_LX,
-    "core:ElectricCurrentInAmpere": ELECTRICAL_CURRENT_AMPERE,
-    "core:VoltageInVolt": VOLT,
+    "core:ElectricCurrentInAmpere": ELECTRIC_CURRENT_AMPERE,
+    "core:VoltageInVolt": ELECTRIC_POTENTIAL_VOLT,
     "core:ElectricalEnergyInWh": ENERGY_WATT_HOUR,
     "core:ElectricalEnergyInKWh": ENERGY_KILO_WATT_HOUR,
     "core:ElectricalEnergyInMWh": f"M{ENERGY_WATT_HOUR}",
@@ -98,7 +107,7 @@ UNITS = {
     "meters_seconds": SPEED_METERS_PER_SECOND,
 }
 
-UNITS_BY_DEVICE_CLASS = {  # Remove after 2021.4 release
+UNITS_BY_DEVICE_CLASS = {
     DEVICE_CLASS_CO2: CONCENTRATION_PARTS_PER_MILLION,
     DEVICE_CLASS_CO: CONCENTRATION_PARTS_PER_MILLION,
 }
