@@ -11,6 +11,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.const import (
+    CONCENTRATION_PARTS_PER_MILLION,
     ENERGY_WATT_HOUR,
     LIGHT_LUX,
     PERCENTAGE,
@@ -111,6 +112,19 @@ SUPPORTED_STATES = [
         key="io:PriorityLockOriginatorState",
         name="Priority Lock Originator",
         icon="mdi:alert",
+    ),
+    OverkizSensorDescription(
+        key="core:FossilEnergyConsumptionState",
+        name="Fossil Energy Consumption",
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+    ),
+    OverkizSensorDescription(
+        key="core:GasConsumptionState",
+        name="Gas Consumption",
+    ),
+    OverkizSensorDescription(
+        key="core:ThermalEnergyConsumptionState",
+        name="Thermal Energy Consumption",
     ),
     # LightSensor/LuminanceSensor
     OverkizSensorDescription(
@@ -237,6 +251,37 @@ SUPPORTED_STATES = [
     OverkizSensorDescription(
         key="core:MaximumTemperatureState",
         name="Maximum Temperature",
+    ),
+    # AirSensor/COSensor
+    OverkizSensorDescription(
+        key="core:COConcentrationState",
+        name="CO Concentration",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_CO,
+        unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+    ),
+    # AirSensor/CO2Sensor
+    OverkizSensorDescription(
+        key="core:CO2ConcentrationState",
+        name="CO2 Concentration",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_CO2,
+        unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+    ),
+    # SunSensor/SunEnergySensor
+    OverkizSensorDescription(
+        key="core:SunEnergyState",
+        name="Sun Energy",
+        value=lambda value: round(value, 2),
+        device_class=sensor.DEVICE_CLASS_ENERGY,
+        icon="mdi:solar-power",
+    ),
+    # WindSensor/WindSpeedSensor
+    OverkizSensorDescription(
+        key="core:WindSpeedState",
+        name="Wind Speed",
+        value=lambda value: round(value, 2),
+        icon="mdi:weather-windy",
     ),
 ]
 
