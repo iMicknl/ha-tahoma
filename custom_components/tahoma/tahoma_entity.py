@@ -3,7 +3,6 @@ import logging
 import re
 from typing import Any, Dict, Optional
 
-from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Command, Device
@@ -11,31 +10,12 @@ from pyhoma.models import Command, Device
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
 
-CORE_AVAILABILITY_STATE = "core:AvailabilityState"
-CORE_BATTERY_STATE = "core:BatteryState"
 CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
 CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
-CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
-CORE_STATUS_STATE = "core:StatusState"
 
 IO_MODEL_STATE = "io:ModelState"
-
-STATE_AVAILABLE = "available"
-STATE_BATTERY_FULL = "full"
-STATE_BATTERY_NORMAL = "normal"
-STATE_BATTERY_LOW = "low"
-STATE_BATTERY_VERY_LOW = "verylow"
-STATE_DEAD = "dead"
-
-BATTERY_MAP = {
-    STATE_BATTERY_FULL: 100,
-    STATE_BATTERY_NORMAL: 75,
-    STATE_BATTERY_LOW: 25,
-    STATE_BATTERY_VERY_LOW: 10,
-}
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,13 +63,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
     def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
-
-        if self.has_state(CORE_BATTERY_STATE):
-            battery_state = self.select_state(CORE_BATTERY_STATE)
-            attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
-
-        if self.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
-            attr[ATTR_BATTERY_LEVEL] = 0
 
         if self.device.attributes:
             for attribute in self.device.attributes:
