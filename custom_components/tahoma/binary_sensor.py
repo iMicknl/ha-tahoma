@@ -43,28 +43,28 @@ BINARY_SENSOR_DESCRIPTIONS = [
         key="core:SmokeState",
         name="Smoke",
         device_class=binary_sensor.DEVICE_CLASS_SMOKE,
-        is_on=lambda value: value == STATE_DETECTED,
+        is_on=lambda state: state == STATE_DETECTED,
     ),
     # WaterSensor/WaterDetectionSensor
     OverkizBinarySensorDescription(
         key="core:WaterDetectionState",
         name="Water",
         icon="mdi:water",
-        is_on=lambda value: value == STATE_DETECTED,
+        is_on=lambda state: state == STATE_DETECTED,
     ),
     # AirSensor/AirFlowSensor
     OverkizBinarySensorDescription(
         key="core:GasDetectionState",
         name="Gas",
         device_class=binary_sensor.DEVICE_CLASS_GAS,
-        is_on=lambda value: value == STATE_DETECTED,
+        is_on=lambda state: state == STATE_DETECTED,
     ),
     # WindowHandle/ThreeWayWindowHandle
     OverkizBinarySensorDescription(
         key="core:OpenClosedState",
         name="Window",
         device_class=binary_sensor.DEVICE_CLASS_WINDOW,
-        is_on=lambda value: value == STATE_OPEN,
+        is_on=lambda state: state == STATE_OPEN,
     ),
     # OccupancySensor/OccupancySensor
     # OccupancySensor/MotionSensor
@@ -72,28 +72,28 @@ BINARY_SENSOR_DESCRIPTIONS = [
         key="core:OccupancyState",
         name="Occupancy",
         device_class=binary_sensor.DEVICE_CLASS_OCCUPANCY,
-        is_on=lambda value: value == STATE_PERSON_INSIDE,
+        is_on=lambda state: state == STATE_PERSON_INSIDE,
     ),
     # ContactSensor/WindowWithTiltSensor
     OverkizBinarySensorDescription(
         key="core:VibrationState",
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
-        is_on=lambda value: value == STATE_DETECTED,
+        is_on=lambda state: state == STATE_DETECTED,
     ),
     # ContactSensor/ContactSensor
     OverkizBinarySensorDescription(
         key="core:ContactState",
         name="Contact",
         device_class=binary_sensor.DEVICE_CLASS_DOOR,
-        is_on=lambda value: value == STATE_OPEN,
+        is_on=lambda state: state == STATE_OPEN,
     ),
     # Unknown
     OverkizBinarySensorDescription(
         key="io:VibrationDetectedState",
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
-        is_on=lambda value: value == STATE_DETECTED,
+        is_on=lambda state: state == STATE_DETECTED,
     ),
 ]
 
