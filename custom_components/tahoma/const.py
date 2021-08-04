@@ -76,7 +76,6 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "HitachiAirToAirHeatPump": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HumiditySensor": SENSOR,
     "Light": LIGHT,
-    "LightSensor": SENSOR,
     "MotionSensor": BINARY_SENSOR,
     "MyFoxSecurityCamera": COVER,  # widgetName, uiClass is Camera (not supported)
     "OccupancySensor": BINARY_SENSOR,

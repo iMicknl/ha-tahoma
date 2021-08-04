@@ -9,7 +9,6 @@ from homeassistant.const import (
     DEVICE_CLASS_CO,
     DEVICE_CLASS_CO2,
     DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_ILLUMINANCE,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
     ENERGY_KILO_WATT_HOUR,
@@ -51,7 +50,6 @@ CORE_ELECTRIC_ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState"
 CORE_ELECTRIC_POWER_CONSUMPTION_STATE = "core:ElectricPowerConsumptionState"
 CORE_FOSSIL_ENERGY_CONSUMPTION_STATE = "core:FossilEnergyConsumptionState"
 CORE_GAS_CONSUMPTION_STATE = "core:GasConsumptionState"
-CORE_LUMINANCE_STATE = "core:LuminanceState"
 CORE_MEASURED_VALUE_TYPE = "core:MeasuredValueType"
 CORE_RELATIVE_HUMIDITY_STATE = "core:RelativeHumidityState"
 CORE_SUN_ENERGY_STATE = "core:SunEnergyState"
@@ -76,7 +74,6 @@ TAHOMA_SENSOR_DEVICE_CLASSES = {
     "COSensor": DEVICE_CLASS_CO,
     "ElectricitySensor": DEVICE_CLASS_POWER,
     "HumiditySensor": DEVICE_CLASS_HUMIDITY,
-    "LightSensor": DEVICE_CLASS_ILLUMINANCE,
     "RelativeHumiditySensor": DEVICE_CLASS_HUMIDITY,
     "SunSensor": DEVICE_CLASS_SUN_ENERGY,
     "TemperatureSensor": DEVICE_CLASS_TEMPERATURE,
@@ -129,24 +126,20 @@ async def async_setup_entry(
         if device.states
     ]
 
-    for platform, devices in data["platforms"].items():
-        if platform == "scene":
-            continue
-
-        key_supported_states = {
-            description.key: description for description in SUPPORTED_STATES
-        }
-        for device in devices:
-            for state in device.states:
-                description = key_supported_states.get(state.name)
-                if description:
-                    entities.append(
-                        TahomaStateSensor(
-                            device.deviceurl,
-                            coordinator,
-                            description,
-                        )
+    key_supported_states = {
+        description.key: description for description in SUPPORTED_STATES
+    }
+    for device in coordinator.data.values():
+        for state in device.states:
+            description = key_supported_states.get(state.name)
+            if description:
+                entities.append(
+                    TahomaStateSensor(
+                        device.deviceurl,
+                        coordinator,
+                        description,
                     )
+                )
 
     async_add_entities(entities)
 
@@ -164,7 +157,6 @@ class TahomaSensor(TahomaEntity, Entity):
             CORE_ELECTRIC_POWER_CONSUMPTION_STATE,
             CORE_FOSSIL_ENERGY_CONSUMPTION_STATE,
             CORE_GAS_CONSUMPTION_STATE,
-            CORE_LUMINANCE_STATE,
             CORE_RELATIVE_HUMIDITY_STATE,
             CORE_SUN_ENERGY_STATE,
             CORE_TEMPERATURE_STATE,
