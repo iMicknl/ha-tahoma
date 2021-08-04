@@ -11,6 +11,8 @@ from homeassistant.const import (
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
+    ELECTRIC_CURRENT_AMPERE,
+    ELECTRIC_POTENTIAL_VOLT,
     ENERGY_KILO_WATT_HOUR,
     ENERGY_WATT_HOUR,
     LIGHT_LUX,
@@ -24,17 +26,6 @@ from homeassistant.const import (
     VOLUME_CUBIC_METERS,
     VOLUME_LITERS,
 )
-
-try:  # Breaking change in 2021.8
-    from homeassistant.const import ELECTRIC_CURRENT_AMPERE
-except ImportError:
-    from homeassistant.const import ELECTRICAL_CURRENT_AMPERE as ELECTRIC_CURRENT_AMPERE
-
-try:  # Breaking change in 2021.8
-    from homeassistant.const import ELECTRIC_POTENTIAL_VOLT
-except ImportError:
-    from homeassistant.const import VOLT as ELECTRIC_POTENTIAL_VOLT
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
