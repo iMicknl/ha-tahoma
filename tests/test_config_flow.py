@@ -16,12 +16,13 @@ TEST_EMAIL = "test@testdomain.com"
 TEST_EMAIL2 = "test@testdomain.nl"
 TEST_PASSWORD = "test-password"
 TEST_PASSWORD2 = "test-password2"
-TEST_HUB = "Somfy (Europe)"
-TEST_HUB2 = "Hitachi Hi Kumo (Europe)"
+TEST_HUB = "somfy_europe"
+TEST_HUB2 = "hi_kumo_europe"
 TEST_GATEWAY_ID = "1234-5678-9123"
 TEST_GATEWAY_ID2 = "4321-5678-9123"
 
 MOCK_GATEWAY_RESPONSE = [Mock(id=TEST_GATEWAY_ID)]
+
 
 async def test_form(hass):
     """Test we get the form."""
