@@ -47,12 +47,13 @@ SENSOR_DESCRIPTIONS = [
         name="Battery Level",
         unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:BatteryState",
         name="Battery",
-        unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
+        value=lambda value: str(value).capitalize(),
     ),
     OverkizSensorDescription(
         key="core:RSSILevelState",
@@ -60,18 +61,21 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         unit_of_measurement=SIGNAL_STRENGTH_DECIBELS,
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ExpectedNumberOfShowerState",
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
         value=lambda value: round(value),
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:NumberOfShowerRemainingState",
         name="Number of Shower Remaining",
         icon="mdi:shower-head",
         value=lambda value: round(value),
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # V40 is measured in litres (L) and shows the amount of warm (mixed) water with a temperature of 40 C, which can be drained from a switched off electric water heater.
     OverkizSensorDescription(
@@ -81,6 +85,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         unit_of_measurement=VOLUME_LITERS,
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:WaterConsumptionState",
@@ -88,6 +93,7 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:water",
         value=lambda value: round(value),
         unit_of_measurement=VOLUME_LITERS,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="io:OutletEngineState",
@@ -95,6 +101,7 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:fan-chevron-down",
         value=lambda value: round(value),
         unit_of_measurement=VOLUME_LITERS,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="io:InletEngineState",
@@ -102,18 +109,21 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:fan-chevron-up",
         value=lambda value: round(value),
         unit_of_measurement=VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="hlrrwifi:RoomTemperatureState",
         name="Room Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="io:MiddleWaterTemperatureState",
         name="Middle Water Temperature",
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="io:PriorityLockOriginatorState",
@@ -140,6 +150,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_ILLUMINANCE,
         unit_of_measurement=LIGHT_LUX,  # core:MeasuredValueType = core:LuminanceInLux
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # ElectricitySensor/CumulativeElectricPowerConsumptionSensor
     OverkizSensorDescription(
@@ -157,6 +168,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_POWER,
         unit_of_measurement=POWER_WATT,  # core:MeasuredValueType = core:ElectricalEnergyInWh (not for modbus:YutakiV2DHWElectricalEnergyConsumptionComponent)
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff1State",
@@ -165,6 +177,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff2State",
@@ -173,6 +186,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff3State",
@@ -181,6 +195,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff4State",
@@ -189,6 +204,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff5State",
@@ -197,6 +213,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff6State",
@@ -205,6 +222,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff7State",
@@ -213,6 +231,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff8State",
@@ -221,6 +240,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:ConsumptionTariff9State",
@@ -229,6 +249,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh
         entity_registry_enabled_default=False,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # HumiditySensor/RelativeHumiditySensor
     OverkizSensorDescription(
@@ -237,6 +258,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value, 2),
         device_class=sensor.DEVICE_CLASS_HUMIDITY,
         unit_of_measurement=PERCENTAGE,  # core:MeasuredValueType = core:RelativeValueInPercentage
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # TemperatureSensor/TemperatureSensor
     OverkizSensorDescription(
@@ -245,6 +267,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
         unit_of_measurement=TEMP_CELSIUS,  # core:MeasuredValueType = core:TemperatureInCelcius
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # WeatherSensor/WeatherForecastSensor
     OverkizSensorDescription(
@@ -254,10 +277,18 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key="core:MinimumTemperatureState",
         name="Minimum Temperature",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=TEMP_CELSIUS,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
         key="core:MaximumTemperatureState",
         name="Maximum Temperature",
+        value=lambda value: round(value),
+        device_class=sensor.DEVICE_CLASS_TEMPERATURE,
+        unit_of_measurement=TEMP_CELSIUS,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # AirSensor/COSensor
     OverkizSensorDescription(
@@ -266,6 +297,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_CO,
         unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # AirSensor/CO2Sensor
     OverkizSensorDescription(
@@ -274,6 +306,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value),
         device_class=sensor.DEVICE_CLASS_CO2,
         unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # SunSensor/SunEnergySensor
     OverkizSensorDescription(
@@ -282,6 +315,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: round(value, 2),
         device_class=sensor.DEVICE_CLASS_ENERGY,
         icon="mdi:solar-power",
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # WindSensor/WindSpeedSensor
     OverkizSensorDescription(
@@ -289,6 +323,7 @@ SENSOR_DESCRIPTIONS = [
         name="Wind Speed",
         value=lambda value: round(value, 2),
         icon="mdi:weather-windy",
+        state_class=STATE_CLASS_MEASUREMENT,
     ),
     # SmokeSensor/SmokeSensor
     OverkizSensorDescription(
