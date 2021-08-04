@@ -1,6 +1,5 @@
 """Support for TaHoma sensors."""
 
-from custom_components.tahoma.sensor import UNIT_LX
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, Union
 
@@ -13,6 +12,8 @@ from homeassistant.const import (
     VOLUME_LITERS,
 )
 from homeassistant.helpers.entity import Entity
+
+from custom_components.tahoma.sensor import UNIT_LX
 
 from .coordinator import TahomaDataUpdateCoordinator
 from .tahoma_entity import TahomaEntity

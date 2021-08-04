@@ -39,7 +39,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .state_sensor import TahomaStateSensor, SUPPORTED_STATES
+from .state_sensor import SUPPORTED_STATES, TahomaStateSensor
 from .tahoma_entity import TahomaEntity
 
 _LOGGER = logging.getLogger(__name__)
