@@ -27,12 +27,8 @@ class TahomaEntity(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
-
-        if "#" in self.device_url:
-            self.base_device_url, self.index = self.device_url.split("#")
-        else:
-            self.base_device_url = self.device_url
-            self.index = None
+        self.base_device_url, *index = self.device_url.split("#")
+        self.index = index[0] if index else None
 
     @property
     def device(self) -> Device:
