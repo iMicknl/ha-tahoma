@@ -178,7 +178,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     supported_platforms = set(platforms.keys())
 
-    # Sensor and Binary Sensor will be added dynamic, based on the device states
+    # Sensor and Binary Sensor will be added dynamically, based on the device states
     supported_platforms.add(BINARY_SENSOR)
 
     for platform in supported_platforms:
