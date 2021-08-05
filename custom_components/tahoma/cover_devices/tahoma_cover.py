@@ -64,6 +64,8 @@ MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 ICON_LOCK_ALERT = "mdi:lock-alert"
 ICON_WEATHER_WINDY = "mdi:weather-windy"
 
+IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
+
 STATE_CLOSED = "closed"
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
@@ -240,6 +242,17 @@ class TahomaGenericCover(TahomaEntity, CoverEntity):
             and target_closure
             and current_closure.value < target_closure.value
         )
+
+    @property
+    def device_state_attributes(self):
+        """Return the device state attributes."""
+        attr = super().device_state_attributes or {}
+
+        # Obstruction Detected attribute is used by HomeKit
+        if self.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
+            attr[ATTR_OBSTRUCTION_DETECTED] = True
+
+        return attr
 
     @property
     def supported_features(self):
