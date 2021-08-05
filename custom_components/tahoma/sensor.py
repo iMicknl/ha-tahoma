@@ -381,15 +381,13 @@ class TahomaStateSensor(TahomaEntity, SensorEntity):
     @property
     def state(self):
         """Return the value of the sensor."""
-        state = self.select_state(self.entity_description.key)
+        state = self.device.states[self.entity_description.key]
 
-        if state:
-            # Transform the value with a lambda function
-            if hasattr(self.entity_description, "value"):
-                return self.entity_description.value(state)
-            return state
+        # Transform the value with a lambda function
+        if hasattr(self.entity_description, "value"):
+            return self.entity_description.value(state.value)
 
-        return None
+        return state.value
 
     @property
     def name(self) -> str:
