@@ -9,6 +9,7 @@ from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.components.sensor import DOMAIN as SENSOR
+from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -208,8 +209,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     supported_platforms = set(platforms.keys())
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
+    # Required to load the low speed switch
     supported_platforms.add(BINARY_SENSOR)
     supported_platforms.add(SENSOR)
+    supported_platforms.add(SWITCH)
 
     for platform in supported_platforms:
         hass.async_create_task(
