@@ -97,7 +97,7 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
     async def async_set_cover_position_low_speed(self, **kwargs):
         """Move the cover to a specific position with a low speed."""
         _LOGGER.warning(
-            "This service will removed in the next releases. Use instead the low speed switch."
+            "This service will be removed in Setptember 2021. Use instead the low speed switch."
         )
 
         position = 100 - kwargs.get(ATTR_POSITION, 0)
