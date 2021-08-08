@@ -168,12 +168,12 @@ class TahomaLowSpeedSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         """Get whether the switch is in on state."""
         return self._is_on
 
-    def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Send the on command."""
         self._is_on = True
         self.async_write_ha_state()
 
-    def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **kwargs: Any) -> None:
         """Send the off command."""
         self._is_on = False
         self.async_write_ha_state()
