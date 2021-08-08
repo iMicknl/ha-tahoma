@@ -13,6 +13,7 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
+from homeassistant.const import STATE_ON
 
 from .tahoma.cover_devices.tahoma_cover import (
     COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
@@ -132,4 +133,4 @@ class VerticalCover(TahomaGenericCover):
         """Return if low speed mode is enabled."""
         switch_entity_id = f"{self.entity_id.replace('cover', 'switch')}_low_speed"
         low_speed_entity = self.coordinator.hass.states.get(switch_entity_id)
-        return low_speed_entity.state if low_speed_entity else False
+        return low_speed_entity.state == STATE_ON if low_speed_entity else False
