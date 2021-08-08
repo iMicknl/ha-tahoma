@@ -54,7 +54,7 @@ async def async_setup_entry(
 
     entities.extend(
         [
-            TahomaLowSpeedSwitch(device.deviceurl, coordinator)
+            TahomaLowSpeedCoverSwitch(device.deviceurl, coordinator)
             for device in data["platforms"].get(COVER)
             if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
@@ -136,7 +136,7 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
         )
 
 
-class TahomaLowSpeedSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
+class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
     """Representation of Low Speed Switch."""
 
     _attr_icon = "mdi:feather"
