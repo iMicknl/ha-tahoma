@@ -89,6 +89,36 @@ async def async_setup(hass: HomeAssistant, config: dict):
     return True
 
 
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+
+        MAPPING = {
+            "Cozytouch": "atlantic_cozytouch",
+            "eedomus": "nexity",
+            "Hi Kumo": "hi_kumo_europe",
+            "Rexel Energeasy Connect": "rexel",
+            "Somfy Connexoon IO": "somfy_europe",
+            "Somfy Connexoon RTS": "somfy_oceania",
+            "Somfy TaHoma": "somfy_europe",
+        }
+
+        entry_data = {**config_entry.data}
+        old_hub = entry_data[CONF_HUB]
+        entry_data[CONF_HUB] = MAPPING[entry_data[CONF_HUB]]
+
+        _LOGGER.info("Migrated %s to %s", old_hub, entry_data[CONF_HUB])
+
+        config_entry.data = {**entry_data}
+        config_entry.version = 2
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TaHoma from a config entry."""
     hass.data.setdefault(DOMAIN, {})

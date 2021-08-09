@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Somfy TaHoma."""
 
-    VERSION = 1
+    VERSION = 2
 
     @staticmethod
     @callback
