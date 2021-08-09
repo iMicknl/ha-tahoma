@@ -109,12 +109,12 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         old_hub = entry_data[CONF_HUB]
         entry_data[CONF_HUB] = MAPPING[entry_data[CONF_HUB]]
 
-        _LOGGER.info("Migrated %s to %s", old_hub, entry_data[CONF_HUB])
+        _LOGGER.debug("Migrated %s to %s", old_hub, entry_data[CONF_HUB])
 
         config_entry.data = {**entry_data}
         config_entry.version = 2
 
-    _LOGGER.info("Migration to version %s successful", config_entry.version)
+    _LOGGER.debug("Migration to version %s successful", config_entry.version)
 
     return True
 
