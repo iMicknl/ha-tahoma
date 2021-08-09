@@ -244,6 +244,7 @@ async def test_options_flow(hass, enable_custom_integrations):
         domain=config_flow.DOMAIN,
         unique_id=TEST_EMAIL,
         data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
+        version=2,
     )
 
     with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
