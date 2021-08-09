@@ -61,9 +61,6 @@ CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
 CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 
-ICON_LOCK_ALERT = "mdi:lock-alert"
-ICON_WEATHER_WINDY = "mdi:weather-windy"
-
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
 
 STATE_CLOSED = "closed"
