@@ -59,13 +59,6 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_GAS,
         is_on=lambda state: state == STATE_DETECTED,
     ),
-    # WindowHandle/ThreeWayWindowHandle
-    OverkizBinarySensorDescription(
-        key="core:OpenClosedState",
-        name="Window",
-        device_class=binary_sensor.DEVICE_CLASS_WINDOW,
-        is_on=lambda state: state == STATE_OPEN,
-    ),
     # OccupancySensor/OccupancySensor
     # OccupancySensor/MotionSensor
     OverkizBinarySensorDescription(
@@ -94,18 +87,6 @@ BINARY_SENSOR_DESCRIPTIONS = [
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
-    ),
-    OverkizBinarySensorDescription(
-        key="core:OpeningState",
-        name="Window",
-        device_class=binary_sensor.DEVICE_CLASS_WINDOW,
-        is_on=lambda state: state == STATE_OPEN,
-    ),
-    OverkizBinarySensorDescription(
-        key="core:OpenClosedTiltState",
-        name="Window",
-        device_class=binary_sensor.DEVICE_CLASS_WINDOW,
-        is_on=lambda state: state == STATE_OPEN,
     ),
 ]
 
