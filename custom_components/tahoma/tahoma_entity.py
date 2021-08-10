@@ -11,19 +11,16 @@ from pyhoma.models import Command, Device
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
 
-ATTR_RSSI_LEVEL = "rssi_level"
-
-CORE_AVAILABILITY_STATE = "core:AvailabilityState"
-CORE_BATTERY_STATE = "core:BatteryState"
 CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
 CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
-CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
-CORE_STATUS_STATE = "core:StatusState"
 
 IO_MODEL_STATE = "io:ModelState"
+
+# To be removed when this is implemented in sensor/binary sensor
+CORE_BATTERY_STATE = "core:BatteryState"
+CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 
 STATE_AVAILABLE = "available"
 STATE_BATTERY_FULL = "full"
@@ -49,7 +46,8 @@ class TahomaEntity(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
-        self.base_device_url = self.get_base_device_url()
+        self.base_device_url, *index = self.device_url.split("#")
+        self.index = index[0] if index else None
 
     @property
     def device(self) -> Device:
@@ -80,9 +78,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
     def device_state_attributes(self) -> Dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
-
-        if self.has_state(CORE_RSSI_LEVEL_STATE):
-            attr[ATTR_RSSI_LEVEL] = self.select_state(CORE_RSSI_LEVEL_STATE)
 
         if self.has_state(CORE_BATTERY_STATE):
             battery_state = self.select_state(CORE_BATTERY_STATE)
@@ -128,7 +123,7 @@ class TahomaEntity(CoordinatorEntity, Entity):
 
         return {
             "identifiers": {(DOMAIN, self.base_device_url)},
-            "name": self.name,
+            "name": self.device.label,
             "manufacturer": manufacturer,
             "model": model,
             "sw_version": self.device.controllable_name,
@@ -198,14 +193,6 @@ class TahomaEntity(CoordinatorEntity, Entity):
     async def async_cancel_command(self, exec_id: str):
         """Cancel device command in async context."""
         await self.coordinator.client.cancel_command(exec_id)
-
-    def get_base_device_url(self):
-        """Return base device url."""
-        if "#" not in self.device_url:
-            return self.device_url
-
-        device_url, _ = self.device_url.split("#")
-        return device_url
 
     def get_gateway_id(self):
         """Retrieve gateway id from device url."""

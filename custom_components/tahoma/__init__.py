@@ -8,6 +8,7 @@ import logging
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -208,6 +209,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
     supported_platforms.add(BINARY_SENSOR)
+    supported_platforms.add(SENSOR)
 
     for platform in supported_platforms:
         hass.async_create_task(
