@@ -16,8 +16,8 @@ TEST_EMAIL = "test@testdomain.com"
 TEST_EMAIL2 = "test@testdomain.nl"
 TEST_PASSWORD = "test-password"
 TEST_PASSWORD2 = "test-password2"
-TEST_HUB = "Somfy TaHoma"
-TEST_HUB2 = "Hi Kumo"
+TEST_HUB = "somfy_europe"
+TEST_HUB2 = "hi_kumo_europe"
 TEST_GATEWAY_ID = "1234-5678-9123"
 TEST_GATEWAY_ID2 = "4321-5678-9123"
 
@@ -244,6 +244,7 @@ async def test_options_flow(hass, enable_custom_integrations):
         domain=config_flow.DOMAIN,
         unique_id=TEST_EMAIL,
         data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
+        version=2,
     )
 
     with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
