@@ -15,7 +15,7 @@ from homeassistant.components.cover import (
 )
 from homeassistant.const import STATE_ON
 
-from .tahoma.cover_devices.tahoma_cover import (
+from .tahoma_cover import (
     COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
     COMMANDS_STOP,
     TahomaGenericCover,
@@ -121,7 +121,7 @@ class VerticalCover(TahomaGenericCover):
             )
         else:
             await self.executor.async_execute_command(
-                self.select_command(*COMMANDS_OPEN)
+                self.executor.select_command(*COMMANDS_OPEN)
             )
 
     async def async_close_cover(self, **_):
@@ -132,7 +132,7 @@ class VerticalCover(TahomaGenericCover):
             )
         else:
             await self.executor.async_execute_command(
-                self.select_command(*COMMANDS_CLOSE)
+                self.executor.select_command(*COMMANDS_CLOSE)
             )
 
     def is_low_speed_enabled(self):
