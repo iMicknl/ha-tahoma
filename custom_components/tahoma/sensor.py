@@ -61,6 +61,7 @@ SENSOR_DESCRIPTIONS = [
         unit_of_measurement=SIGNAL_STRENGTH_DECIBELS,
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
         state_class=STATE_CLASS_MEASUREMENT,
+        value=lambda value: round(value),
     ),
     OverkizSensorDescription(
         key="core:ExpectedNumberOfShowerState",
