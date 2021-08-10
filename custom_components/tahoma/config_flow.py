@@ -11,6 +11,7 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.helpers import config_validation as cv
 from pyhoma.client import TahomaClient
+from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
@@ -24,7 +25,6 @@ from .const import (
     DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     MIN_UPDATE_INTERVAL,
-    SUPPORTED_ENDPOINTS,
 )
 from .const import DOMAIN  # pylint: disable=unused-import
 
@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Somfy TaHoma."""
 
-    VERSION = 1
+    VERSION = 2
 
     @staticmethod
     @callback
@@ -53,10 +53,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         username = user_input.get(CONF_USERNAME)
         password = user_input.get(CONF_PASSWORD)
 
-        hub = user_input.get(CONF_HUB, DEFAULT_HUB)
-        endpoint = SUPPORTED_ENDPOINTS[hub]
+        server = SUPPORTED_SERVERS[user_input.get(CONF_HUB, DEFAULT_HUB)]
 
-        async with TahomaClient(username, password, api_url=endpoint) as client:
+        async with TahomaClient(username, password, api_url=server.endpoint) as client:
             await client.login()
 
             # Set first gateway as unique id
@@ -115,7 +114,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_USERNAME, default=self._default_username): str,
                     vol.Required(CONF_PASSWORD): str,
                     vol.Required(CONF_HUB, default=self._default_hub): vol.In(
-                        SUPPORTED_ENDPOINTS.keys()
+                        {key: hub.name for key, hub in SUPPORTED_SERVERS.items()}
                     ),
                 }
             ),
