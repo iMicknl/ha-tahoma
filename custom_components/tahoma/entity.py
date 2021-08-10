@@ -107,9 +107,9 @@ class OverkizEntity(CoordinatorEntity, Entity):
         )
 
         return {
-            "identifiers": {(DOMAIN, self.unique_id)},
+            "identifiers": {(DOMAIN, self.executor.base_device_url)},
             "manufacturer": manufacturer,
-            "name": self.name,
+            "name": self.device.label,
             "model": model,
             "sw_version": self.device.controllable_name,
             "suggested_area": self.coordinator.areas[self.device.placeoid],
