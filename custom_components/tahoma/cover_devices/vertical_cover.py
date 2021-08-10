@@ -107,7 +107,9 @@ class VerticalCover(TahomaGenericCover):
         """Move the cover to a specific position."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
         if self.is_low_speed_enabled():
-            await self.executor.async_execute_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed")
+            await self.executor.async_execute_command(
+                COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
+            )
         else:
             await self.executor.async_execute_command(COMMAND_SET_CLOSURE, position)
 
@@ -118,7 +120,9 @@ class VerticalCover(TahomaGenericCover):
                 COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, 0, "lowspeed"
             )
         else:
-            await self.executor.async_execute_command(self.select_command(*COMMANDS_OPEN))
+            await self.executor.async_execute_command(
+                self.select_command(*COMMANDS_OPEN)
+            )
 
     async def async_close_cover(self, **_):
         """Close the cover."""
@@ -127,7 +131,9 @@ class VerticalCover(TahomaGenericCover):
                 COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, 100, "lowspeed"
             )
         else:
-            await self.executor.async_execute_command(self.select_command(*COMMANDS_CLOSE))
+            await self.executor.async_execute_command(
+                self.select_command(*COMMANDS_CLOSE)
+            )
 
     def is_low_speed_enabled(self):
         """Return if low speed mode is enabled."""
