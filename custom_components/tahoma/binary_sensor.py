@@ -16,7 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
-from .tahoma_entity import TahomaEntity
+from .entity import OverkizEntity
 
 STATE_OPEN = "open"
 STATE_PERSON_INSIDE = "personInside"
@@ -121,7 +121,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaBinarySensor(TahomaEntity, BinarySensorEntity):
+class TahomaBinarySensor(OverkizEntity, BinarySensorEntity):
     """Representation of a TaHoma Binary Sensor."""
 
     def __init__(

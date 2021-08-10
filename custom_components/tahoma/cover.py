@@ -6,10 +6,9 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import voluptuous as vol
 
-from custom_components.tahoma.cover_devices.awning import Awning
-from custom_components.tahoma.cover_devices.vertical_cover import VerticalCover
-
 from .const import DOMAIN
+from .cover_devices.awning import Awning
+from .cover_devices.vertical_cover import VerticalCover
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"

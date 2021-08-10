@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .tahoma_entity import TahomaEntity
+from .entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,18 +34,18 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaLock(TahomaEntity, LockEntity):
+class TahomaLock(OverkizEntity, LockEntity):
     """Representation of a TaHoma Lock."""
 
     async def async_unlock(self, **_):
         """Unlock method."""
-        await self.async_execute_command(COMMAND_UNLOCK)
+        await self.executor.async_execute_command(COMMAND_UNLOCK)
 
     async def async_lock(self, **_):
         """Lock method."""
-        await self.async_execute_command(COMMAND_LOCK)
+        await self.executor.async_execute_command(COMMAND_LOCK)
 
     @property
     def is_locked(self):
         """Return True if the lock is locked."""
-        return self.select_state(CORE_LOCKED_UNLOCKED_STATE) == STATE_LOCKED
+        return self.executor.select_state(CORE_LOCKED_UNLOCKED_STATE) == STATE_LOCKED

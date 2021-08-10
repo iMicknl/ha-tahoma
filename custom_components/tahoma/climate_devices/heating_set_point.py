@@ -10,7 +10,7 @@ from homeassistant.const import (
     TEMP_KELVIN,
 )
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 
@@ -28,7 +28,7 @@ UNITS = {
 }
 
 
-class HeatingSetPoint(TahomaEntity, ClimateEntity):
+class HeatingSetPoint(OverkizEntity, ClimateEntity):
     """Representation of EvoHome HeatingSetPoint device."""
 
     @property
@@ -61,7 +61,7 @@ class HeatingSetPoint(TahomaEntity, ClimateEntity):
     @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
-        return self.select_state(CORE_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_TEMPERATURE_STATE)
 
     @property
     def target_temperature_step(self) -> Optional[float]:
@@ -81,12 +81,12 @@ class HeatingSetPoint(TahomaEntity, ClimateEntity):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TARGET_TEMPERATURE, float(temperature)
         )
 

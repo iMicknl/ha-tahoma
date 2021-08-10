@@ -26,7 +26,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ FAN_MODES_TO_HLRRWIFI_TAHOMA = {v: k for k, v in HLRRWIFI_TAHOMA_TO_FAN_MODES.it
 FAN_MODES_TO_OVP_TAHOMA = {v: k for k, v in OVP_TAHOMA_TO_FAN_MODES.items()}
 
 
-class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
+class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     """Representation of HitachiAirToAirHeatPump."""
 
     @property
@@ -104,7 +104,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
             SUPPORT_TARGET_TEMPERATURE | SUPPORT_FAN_MODE | SUPPORT_PRESET_MODE
         )
 
-        if self.has_state(*SWING_STATE):
+        if self.executor.has_state(*SWING_STATE):
             supported_features |= SUPPORT_SWING_MODE
 
         return supported_features
@@ -231,7 +231,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
     ):
         """Execute globalControl command with all parameters."""
         if self.device.controllable_name == "ovp:HLinkMainController":
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_GLOBAL_CONTROL,
                 main_operation
                 or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
@@ -244,7 +244,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
                 swing_mode or self._select_state(*SWING_STATE),  # Swing Mode
             )
         else:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_GLOBAL_CONTROL,
                 main_operation
                 or self._select_state(*MAIN_OPERATION_STATE),  # Main Operation
@@ -260,7 +260,7 @@ class HitachiAirToAirHeatPump(TahomaEntity, ClimateEntity):
 
     def _select_state(self, *states) -> Optional[str]:
         """Make all strings lowercase, since Hi Kumo server returns capitalized strings for some devices."""
-        state = self.select_state(*states)
+        state = self.executor.select_state(*states)
 
         if state and isinstance(state, str):
             return state.lower()

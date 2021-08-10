@@ -25,7 +25,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ MAP_PRESET_TEMPERATURES = {
 }
 
 
-class SomfyThermostat(TahomaEntity, ClimateEntity):
+class SomfyThermostat(OverkizEntity, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
@@ -85,11 +85,11 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
             if self.preset_mode == PRESET_NONE:
                 self._saved_target_temp = None
             else:
-                self._saved_target_temp = self.select_state(
+                self._saved_target_temp = self.executor.select_state(
                     MAP_PRESET_TEMPERATURES[self.preset_mode]
                 )
         else:
-            self._saved_target_temp = self.select_state(
+            self._saved_target_temp = self.executor.select_state(
                 CORE_DEROGATED_TARGET_TEMPERATURE_STATE
             )
         self._current_temperature = None
@@ -163,7 +163,9 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return MAP_HVAC_MODES[self.select_state(CORE_DEROGATION_ACTIVATION_STATE)]
+        return MAP_HVAC_MODES[
+            self.executor.select_state(CORE_DEROGATION_ACTIVATION_STATE)
+        ]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -183,8 +185,10 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
         if self.hvac_mode == HVAC_MODE_AUTO:
-            return MAP_PRESET_MODES[self.select_state(ST_HEATING_MODE_STATE)]
-        return MAP_PRESET_MODES[self.select_state(ST_DEROGATION_HEATING_MODE_STATE)]
+            return MAP_PRESET_MODES[self.executor.select_state(ST_HEATING_MODE_STATE)]
+        return MAP_PRESET_MODES[
+            self.executor.select_state(ST_DEROGATION_HEATING_MODE_STATE)
+        ]
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -218,8 +222,8 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
         if self.hvac_mode == HVAC_MODE_AUTO:
             if self.preset_mode == PRESET_NONE:
                 return None
-            return self.select_state(MAP_PRESET_TEMPERATURES[self.preset_mode])
-        return self.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
+            return self.executor.select_state(MAP_PRESET_TEMPERATURES[self.preset_mode])
+        return self.executor.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
@@ -232,13 +236,13 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
         elif temperature > self.max_temp:
             temperature = self.max_temp
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DEROGATION, temperature, STATE_DEROGATION_FURTHER_NOTICE
         )
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_MODE_TEMPERATURE, STATE_PRESET_MANUAL, temperature
         )
-        await self.async_execute_command(COMMAND_REFRESH_STATE)
+        await self.executor.async_execute_command(COMMAND_REFRESH_STATE)
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -246,8 +250,8 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
             return
         if hvac_mode == HVAC_MODE_AUTO:
             self._saved_target_temp = self.target_temperature
-            await self.async_execute_command(COMMAND_EXIT_DEROGATION)
-            await self.async_execute_command(COMMAND_REFRESH_STATE)
+            await self.executor.async_execute_command(COMMAND_EXIT_DEROGATION)
+            await self.executor.async_execute_command(COMMAND_REFRESH_STATE)
         elif hvac_mode == HVAC_MODE_HEAT:
             await self.async_set_preset_mode(PRESET_NONE)
 
@@ -257,20 +261,20 @@ class SomfyThermostat(TahomaEntity, ClimateEntity):
             return
         if preset_mode in [PRESET_FREEZE, PRESET_NIGHT, PRESET_AWAY, PRESET_HOME]:
             self._saved_target_temp = self.target_temperature
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 MAP_REVERSE_PRESET_MODES[preset_mode],
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
         elif preset_mode == PRESET_NONE:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_DEROGATION,
                 self._saved_target_temp,
                 STATE_DEROGATION_FURTHER_NOTICE,
             )
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_MODE_TEMPERATURE,
                 STATE_PRESET_MANUAL,
                 self._saved_target_temp,
             )
-        await self.async_execute_command(COMMAND_REFRESH_STATE)
+        await self.executor.async_execute_command(COMMAND_REFRESH_STATE)

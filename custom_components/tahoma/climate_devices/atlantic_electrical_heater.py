@@ -14,7 +14,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
@@ -44,7 +44,7 @@ TAHOMA_TO_HVAC_MODES = {
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
-class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
+class AtlanticElectricalHeater(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Electrical Heater."""
 
     @property
@@ -60,7 +60,7 @@ class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.select_state(CORE_ON_OFF_STATE)]
+        return TAHOMA_TO_HVAC_MODES[self.executor.select_state(CORE_ON_OFF_STATE)]
 
     @property
     def hvac_modes(self) -> List[str]:
@@ -69,14 +69,16 @@ class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_HEATING_LEVEL, HVAC_MODES_TO_TAHOMA[hvac_mode]
         )
 
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODES[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
+        return TAHOMA_TO_PRESET_MODES[
+            self.executor.select_state(IO_TARGET_HEATING_LEVEL_STATE)
+        ]
 
     @property
     def preset_modes(self) -> Optional[List[str]]:
@@ -85,6 +87,6 @@ class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_HEATING_LEVEL, PRESET_MODES_TO_TAHOMA[preset_mode]
         )

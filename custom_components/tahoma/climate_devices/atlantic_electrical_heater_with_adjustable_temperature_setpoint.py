@@ -26,7 +26,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 
 
 class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
-    TahomaEntity, ClimateEntity
+    OverkizEntity, ClimateEntity
 ):
     """Representation of Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
 
@@ -164,10 +164,10 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
         """Return the list of supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_SET_HEATING_LEVEL):
+        if self.executor.has_command(COMMAND_SET_HEATING_LEVEL):
             supported_features |= SUPPORT_PRESET_MODE
 
-        if self.has_command(COMMAND_SET_TARGET_TEMPERATURE):
+        if self.executor.has_command(COMMAND_SET_TARGET_TEMPERATURE):
             supported_features |= SUPPORT_TARGET_TEMPERATURE
 
         return supported_features
@@ -181,23 +181,25 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
         if CORE_OPERATING_MODE_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_OPERATING_MODE_STATE)]
+            return TAHOMA_TO_HVAC_MODE[
+                self.executor.select_state(CORE_OPERATING_MODE_STATE)
+            ]
         if CORE_ON_OFF_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.select_state(CORE_ON_OFF_STATE)]
+            return TAHOMA_TO_HVAC_MODE[self.executor.select_state(CORE_ON_OFF_STATE)]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if CORE_OPERATING_MODE_STATE in self.device.states:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
             )
         else:
             if hvac_mode == HVAC_MODE_OFF:
-                await self.async_execute_command(
+                await self.executor.async_execute_command(
                     COMMAND_OFF,
                 )
             else:
-                await self.async_execute_command(
+                await self.executor.async_execute_command(
                     COMMAND_SET_HEATING_LEVEL, PRESET_STATE_COMFORT
                 )
 
@@ -209,16 +211,18 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODE[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
+        return TAHOMA_TO_PRESET_MODE[
+            self.executor.select_state(IO_TARGET_HEATING_LEVEL_STATE)
+        ]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         if preset_mode == PRESET_AUTO or preset_mode == PRESET_PROG:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_OPERATING_MODE, PRESET_MODE_TO_TAHOMA[preset_mode]
             )
         else:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_HEATING_LEVEL, PRESET_MODE_TO_TAHOMA[preset_mode]
             )
 
@@ -226,7 +230,7 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
     def target_temperature(self) -> None:
         """Return the temperature."""
         if CORE_TARGET_TEMPERATURE_STATE in self.device.states:
-            return self.select_state(CORE_TARGET_TEMPERATURE_STATE)
+            return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
     def current_temperature(self):
@@ -236,4 +240,6 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(COMMAND_SET_TARGET_TEMPERATURE, temperature)
+        await self.executor.async_execute_command(
+            COMMAND_SET_TARGET_TEMPERATURE, temperature
+        )

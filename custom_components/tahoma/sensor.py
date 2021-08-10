@@ -29,7 +29,7 @@ from homeassistant.util.dt import utc_from_timestamp
 
 from .const import DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
-from .tahoma_entity import TahomaEntity
+from .entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -340,7 +340,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaStateSensor(TahomaEntity, SensorEntity):
+class TahomaStateSensor(OverkizEntity, SensorEntity):
     """Representation of a TaHoma Sensor."""
 
     def __init__(
@@ -367,8 +367,8 @@ class TahomaStateSensor(TahomaEntity, SensorEntity):
     @property
     def name(self) -> str:
         """Return the name of the device."""
-        if self.index:
-            return f"{self.entity_description.name} {self.index}"
+        if self.executor.index:
+            return f"{self.entity_description.name} {self.executor.index}"
         return self.entity_description.name
 
     @property

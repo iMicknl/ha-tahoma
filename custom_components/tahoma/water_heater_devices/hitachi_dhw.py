@@ -12,7 +12,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 CORE_DHW_TEMPERATURE_STATE = "core:DHWTemperatureState"
 MODBUS_DHW_MODE_STATE = "modbus:DHWModeState"
@@ -41,7 +41,7 @@ TAHOMA_TO_OPERATION_MODE = {
 OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
 
 
-class HitachiDHW(TahomaEntity, WaterHeaterEntity):
+class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     """Representation of a HitachiDHW Water Heater."""
 
     @property
@@ -72,27 +72,29 @@ class HitachiDHW(TahomaEntity, WaterHeaterEntity):
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.select_state(CORE_DHW_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_DHW_TEMPERATURE_STATE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE)
+        return self.executor.select_state(MODBUS_CONTROL_DHW_SETTING_TEMPERATURE_STATE)
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_CONTROL_DHW_SETTING_TEMPERATURE, int(temperature)
         )
 
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        if self.select_state(MODBUS_CONTROL_DHW_STATE) == STATE_STOP:
+        if self.executor.select_state(MODBUS_CONTROL_DHW_STATE) == STATE_STOP:
             return STATE_OFF
 
-        return TAHOMA_TO_OPERATION_MODE[self.select_state(MODBUS_DHW_MODE_STATE)]
+        return TAHOMA_TO_OPERATION_MODE[
+            self.executor.select_state(MODBUS_DHW_MODE_STATE)
+        ]
 
     @property
     def operation_list(self):
@@ -103,13 +105,17 @@ class HitachiDHW(TahomaEntity, WaterHeaterEntity):
         """Set new target operation mode."""
         # Turn water heater off
         if operation_mode == STATE_OFF:
-            return await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_STOP)
+            return await self.executor.async_execute_command(
+                COMMAND_SET_CONTROL_DHW, STATE_STOP
+            )
 
         # Turn water heater on, when off
         if self.current_operation == STATE_OFF and operation_mode != STATE_OFF:
-            await self.async_execute_command(COMMAND_SET_CONTROL_DHW, STATE_RUN)
+            await self.executor.async_execute_command(
+                COMMAND_SET_CONTROL_DHW, STATE_RUN
+            )
 
         # Change operation mode
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
         )

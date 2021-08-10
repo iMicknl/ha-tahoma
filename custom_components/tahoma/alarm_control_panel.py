@@ -25,7 +25,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .tahoma_entity import TahomaEntity
+from .entity import OverkizEntity
 
 COMMAND_ALARM_OFF = "alarmOff"
 COMMAND_ALARM_ON = "alarmOn"
@@ -95,14 +95,16 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaAlarmControlPanel(TahomaEntity, AlarmControlPanelEntity):
+class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
     """Representation of a TaHoma Alarm Control Panel."""
 
     @property
     def state(self):
         """Return the state of the device."""
-        if self.has_state(CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE):
-            state = self.select_state(
+        if self.executor.has_state(
+            CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
+        ):
+            state = self.executor.select_state(
                 CORE_INTRUSION_STATE, INTERNAL_INTRUSION_DETECTED_STATE
             )
             if state == STATE_DETECTED:
@@ -111,24 +113,26 @@ class TahomaAlarmControlPanel(TahomaEntity, AlarmControlPanelEntity):
                 return STATE_ALARM_PENDING
 
         if (
-            self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
-            and self.has_state(INTERNAL_TARGET_ALARM_MODE_STATE)
-            and self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
-            != self.select_state(INTERNAL_TARGET_ALARM_MODE_STATE)
+            self.executor.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            and self.executor.has_state(INTERNAL_TARGET_ALARM_MODE_STATE)
+            and self.executor.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            != self.executor.select_state(INTERNAL_TARGET_ALARM_MODE_STATE)
         ):
             return STATE_ALARM_PENDING
 
-        if self.has_state(MYFOX_ALARM_STATUS_STATE):
-            return MAP_MYFOX_STATUS_STATE[self.select_state(MYFOX_ALARM_STATUS_STATE)]
-
-        if self.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
-            return MAP_INTERNAL_STATUS_STATE[
-                self.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+        if self.executor.has_state(MYFOX_ALARM_STATUS_STATE):
+            return MAP_MYFOX_STATUS_STATE[
+                self.executor.select_state(MYFOX_ALARM_STATUS_STATE)
             ]
 
-        if self.has_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE):
+        if self.executor.has_state(INTERNAL_CURRENT_ALARM_MODE_STATE):
+            return MAP_INTERNAL_STATUS_STATE[
+                self.executor.select_state(INTERNAL_CURRENT_ALARM_MODE_STATE)
+            ]
+
+        if self.executor.has_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE):
             return MAP_VERISURE_STATUS_STATE[
-                self.select_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE)
+                self.executor.select_state(VERISURE_ALARM_PANEL_MAIN_ARM_TYPE_STATE)
             ]
 
         return None
@@ -138,18 +142,18 @@ class TahomaAlarmControlPanel(TahomaEntity, AlarmControlPanelEntity):
         """Return the list of supported features."""
         supported_features = 0
 
-        if self.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
+        if self.executor.has_command(COMMAND_ARM, COMMAND_ALARM_ON):
             supported_features |= SUPPORT_ALARM_ARM_AWAY
 
-        if self.has_command(COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY):
+        if self.executor.has_command(COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY):
             supported_features |= SUPPORT_ALARM_ARM_HOME
 
-        if self.has_command(
+        if self.executor.has_command(
             COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
         ):
             supported_features |= SUPPORT_ALARM_ARM_NIGHT
 
-        if self.has_command(COMMAND_SET_ALARM_STATUS):
+        if self.executor.has_command(COMMAND_SET_ALARM_STATUS):
             supported_features |= SUPPORT_ALARM_TRIGGER
             supported_features |= SUPPORT_ALARM_ARM_CUSTOM_BYPASS
 
@@ -157,40 +161,40 @@ class TahomaAlarmControlPanel(TahomaEntity, AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code=None):
         """Send disarm command."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
+        await self.executor.async_execute_command(
+            self.executor.select_command(COMMAND_DISARM, COMMAND_ALARM_OFF)
         )
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_ALARM_PARTIAL_1, COMMAND_ARM_PARTIAL_DAY
         )
 
     async def async_alarm_arm_night(self, code=None):
         """Send arm night command."""
-        await self.async_execute_command(
-            self.select_command(
+        await self.executor.async_execute_command(
+            self.executor.select_command(
                 COMMAND_PARTIAL, COMMAND_ALARM_PARTIAL_2, COMMAND_ARM_PARTIAL_NIGHT
             )
         )
 
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_ARM, COMMAND_ALARM_ON)
+        await self.executor.async_execute_command(
+            self.executor.select_command(COMMAND_ARM, COMMAND_ALARM_ON)
         )
 
     async def async_alarm_trigger(self, code=None) -> None:
         """Send alarm trigger command."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
+        await self.executor.async_execute_command(
+            self.executor.select_command(COMMAND_SET_ALARM_STATUS, STATE_DETECTED)
         )
 
     async def async_alarm_arm_custom_bypass(self, code=None) -> None:
         """Send arm custom bypass command."""
-        await self.async_execute_command(
-            self.select_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
+        await self.executor.async_execute_command(
+            self.executor.select_command(COMMAND_SET_ALARM_STATUS, STATE_UNDETECTED)
         )
 
     @property
