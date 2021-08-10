@@ -1,64 +1,94 @@
 """Support for TaHoma binary sensors."""
-from typing import Optional
 
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Callable
+
+from homeassistant.components import binary_sensor
 from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_MOTION,
-    DEVICE_CLASS_OCCUPANCY,
-    DEVICE_CLASS_OPENING,
-    DEVICE_CLASS_SMOKE,
-    DOMAIN as BINARY_SENSOR,
     BinarySensorEntity,
+    BinarySensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .tahoma_entity import OverkizEntity
-
-CORE_ASSEMBLY_STATE = "core:AssemblyState"
-CORE_BUTTON_STATE = "core:ButtonState"
-CORE_CONTACT_STATE = "core:ContactState"
-CORE_GAS_DETECTION_STATE = "core:GasDetectionState"
-CORE_OCCUPANCY_STATE = "core:OccupancyState"
-CORE_OPENING_STATE = "core:OpeningState"
-CORE_OPEN_CLOSED_TILT_STATE = "core:OpenClosedTiltState"
-CORE_RAIN_STATE = "core:RainState"
-CORE_SMOKE_STATE = "core:SmokeState"
-CORE_THREE_WAY_HANDLE_DIRECTION_STATE = "core:ThreeWayHandleDirectionState"
-CORE_VIBRATION_STATE = "core:VibrationState"
-CORE_WATER_DETECTION_STATE = "core:WaterDetectionState"
-
-DEVICE_CLASS_BUTTON = "button"
-DEVICE_CLASS_GAS = "gas"
-DEVICE_CLASS_RAIN = "rain"
-DEVICE_CLASS_WATER = "water"
-
-ICON_WATER = "mdi:water"
-ICON_WATER_OFF = "mdi:water-off"
-ICON_WAVES = "mdi:waves"
-ICON_WEATHER_RAINY = "mdi:weather-rainy"
-
-IO_VIBRATION_DETECTED_STATE = "io:VibrationDetectedState"
+from .coordinator import TahomaDataUpdateCoordinator
+from .entity import OverkizEntity
 
 STATE_OPEN = "open"
 STATE_PERSON_INSIDE = "personInside"
 STATE_DETECTED = "detected"
-STATE_PRESSED = "pressed"
 
-TAHOMA_BINARY_SENSOR_DEVICE_CLASSES = {
-    "AirFlowSensor": DEVICE_CLASS_GAS,
-    "CarButtonSensor": DEVICE_CLASS_BUTTON,
-    "ContactSensor": DEVICE_CLASS_OPENING,
-    "MotionSensor": DEVICE_CLASS_MOTION,
-    "OccupancySensor": DEVICE_CLASS_OCCUPANCY,
-    "RainSensor": DEVICE_CLASS_RAIN,
-    "SirenStatus": DEVICE_CLASS_OPENING,
-    "SmokeSensor": DEVICE_CLASS_SMOKE,
-    "WaterDetectionSensor": DEVICE_CLASS_WATER,
-    "WaterSensor": DEVICE_CLASS_WATER,
-    "WindowHandle": DEVICE_CLASS_OPENING,
-}
+
+@dataclass
+class OverkizBinarySensorDescription(BinarySensorEntityDescription):
+    """Class to describe a Overkiz binary sensor."""
+
+    is_on: Callable[[Any], Any] = lambda state: state
+
+
+BINARY_SENSOR_DESCRIPTIONS = [
+    # RainSensor/RainSensor
+    OverkizBinarySensorDescription(
+        key="core:RainState",
+        name="Rain",
+        icon="mdi:weather-rainy",
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # SmokeSensor/SmokeSensor
+    OverkizBinarySensorDescription(
+        key="core:SmokeState",
+        name="Smoke",
+        device_class=binary_sensor.DEVICE_CLASS_SMOKE,
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # WaterSensor/WaterDetectionSensor
+    OverkizBinarySensorDescription(
+        key="core:WaterDetectionState",
+        name="Water",
+        icon="mdi:water",
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # AirSensor/AirFlowSensor
+    OverkizBinarySensorDescription(
+        key="core:GasDetectionState",
+        name="Gas",
+        device_class=binary_sensor.DEVICE_CLASS_GAS,
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # OccupancySensor/OccupancySensor
+    # OccupancySensor/MotionSensor
+    OverkizBinarySensorDescription(
+        key="core:OccupancyState",
+        name="Occupancy",
+        device_class=binary_sensor.DEVICE_CLASS_OCCUPANCY,
+        is_on=lambda state: state == STATE_PERSON_INSIDE,
+    ),
+    # ContactSensor/WindowWithTiltSensor
+    OverkizBinarySensorDescription(
+        key="core:VibrationState",
+        name="Vibration",
+        device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # ContactSensor/ContactSensor
+    OverkizBinarySensorDescription(
+        key="core:ContactState",
+        name="Contact",
+        device_class=binary_sensor.DEVICE_CLASS_DOOR,
+        is_on=lambda state: state == STATE_OPEN,
+    ),
+    # Unknown
+    OverkizBinarySensorDescription(
+        key="io:VibrationDetectedState",
+        name="Vibration",
+        device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
+        is_on=lambda state: state == STATE_DETECTED,
+    ),
+]
 
 
 async def async_setup_entry(
@@ -69,55 +99,43 @@ async def async_setup_entry(
     """Set up the TaHoma sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
+    entities = []
 
-    entities = [
-        TahomaBinarySensor(device.deviceurl, coordinator)
-        for device in data["platforms"][BINARY_SENSOR]
-    ]
+    key_supported_states = {
+        description.key: description for description in BINARY_SENSOR_DESCRIPTIONS
+    }
+
+    for device in coordinator.data.values():
+        for state in device.states:
+            description = key_supported_states.get(state.name)
+
+            if description:
+                entities.append(
+                    TahomaBinarySensor(
+                        device.deviceurl,
+                        coordinator,
+                        description,
+                    )
+                )
+
     async_add_entities(entities)
 
 
 class TahomaBinarySensor(OverkizEntity, BinarySensorEntity):
     """Representation of a TaHoma Binary Sensor."""
 
+    def __init__(
+        self,
+        device_url: str,
+        coordinator: TahomaDataUpdateCoordinator,
+        description: OverkizBinarySensorDescription,
+    ):
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self.entity_description = description
+
     @property
     def is_on(self):
         """Return the state of the sensor."""
-
-        return (
-            self.executor.select_state(
-                CORE_ASSEMBLY_STATE,
-                CORE_BUTTON_STATE,
-                CORE_CONTACT_STATE,
-                CORE_GAS_DETECTION_STATE,
-                CORE_OCCUPANCY_STATE,
-                CORE_OPENING_STATE,
-                CORE_OPEN_CLOSED_TILT_STATE,
-                CORE_RAIN_STATE,
-                CORE_SMOKE_STATE,
-                CORE_THREE_WAY_HANDLE_DIRECTION_STATE,
-                CORE_VIBRATION_STATE,
-                CORE_WATER_DETECTION_STATE,
-                IO_VIBRATION_DETECTED_STATE,
-            )
-            in [STATE_OPEN, STATE_PERSON_INSIDE, STATE_DETECTED, STATE_PRESSED]
-        )
-
-    @property
-    def device_class(self):
-        """Return the class of the device."""
-        return TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(
-            self.device.widget
-        ) or TAHOMA_BINARY_SENSOR_DEVICE_CLASSES.get(self.device.ui_class)
-
-    @property
-    def icon(self) -> Optional[str]:
-        """Return the icon to use in the frontend, if any."""
-        if self.device_class == DEVICE_CLASS_WATER:
-            if self.is_on:
-                return ICON_WATER
-            return ICON_WATER_OFF
-
-        icons = {DEVICE_CLASS_GAS: ICON_WAVES, DEVICE_CLASS_RAIN: ICON_WEATHER_RAINY}
-
-        return icons.get(self.device_class)
+        state = self.device.states[self.entity_description.key]
+        return self.entity_description.is_on(state)

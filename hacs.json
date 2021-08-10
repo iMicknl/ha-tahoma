@@ -8,7 +8,7 @@
     "switch",
     "climate"
   ],
-  "homeassistant": "2021.7.0",
+  "homeassistant": "2021.8.0",
   "render_readme": "true",
   "iot_class": "Cloud Polling"
 }

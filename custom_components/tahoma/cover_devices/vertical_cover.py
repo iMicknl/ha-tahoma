@@ -14,10 +14,7 @@ from homeassistant.components.cover import (
     SUPPORT_STOP,
 )
 
-from custom_components.tahoma.cover_devices.tahoma_cover import (
-    COMMANDS_STOP,
-    TahomaGenericCover,
-)
+from .tahoma_cover import COMMANDS_STOP, TahomaGenericCover
 
 COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
