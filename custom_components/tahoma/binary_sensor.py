@@ -137,5 +137,5 @@ class TahomaBinarySensor(TahomaEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return the state of the sensor."""
-        state = self.select_state(self.entity_description.key)
+        state = self.device.states[self.entity_description.key]
         return self.entity_description.is_on(state)
