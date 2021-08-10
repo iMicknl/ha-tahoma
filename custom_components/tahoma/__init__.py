@@ -6,6 +6,7 @@ from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
+from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
@@ -187,6 +188,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "update_listener": entry.add_update_listener(update_listener),
     }
 
+    # Map Overkiz device to Home Assistant platform
     for device in tahoma_coordinator.data.values():
         platform = TAHOMA_DEVICE_TO_PLATFORM.get(
             device.widget
@@ -204,7 +206,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             print_homekit_setup_code(device)
 
     supported_platforms = set(platforms.keys())
+
+    # Sensor and Binary Sensor will be added dynamically, based on the device states
+    supported_platforms.add(BINARY_SENSOR)
     supported_platforms.add(SENSOR)
+
     for platform in supported_platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)

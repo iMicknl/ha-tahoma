@@ -1,6 +1,5 @@
 """Constants for the TaHoma integration."""
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
-from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.light import DOMAIN as LIGHT
@@ -34,12 +33,19 @@ IGNORED_TAHOMA_DEVICES = [
     "WaterSensor",
     "WeatherSensor",
     "WindSensor",
+    # entries mapped to Binary Sensor based on available states
+    "AirFlowSensor",  # widgetName, uiClass is AirSensor (sensor)
+    "ContactSensor",
+    "MotionSensor",
+    "OccupancySensor",
+    "RainSensor",
+    "SmokeSensor",
+    "WaterDetectionSensor",  # widgetName, uiClass is HumiditySensor (sensor)
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 TAHOMA_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
-    "AirFlowSensor": BINARY_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
     "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
@@ -48,8 +54,6 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "AtlanticPassAPCHeatingAndCoolingZone": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "AtlanticPassAPCZoneControl": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "Awning": COVER,
-    "CarButtonSensor": BINARY_SENSOR,
-    "ContactSensor": BINARY_SENSOR,
     "Curtain": COVER,
     "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
     "DomesticHotWaterProduction": WATER_HEATER,  # widgetName, uiClass is WaterHeatingSystem (not supported)
@@ -65,27 +69,21 @@ TAHOMA_DEVICE_TO_PLATFORM = {
     "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "HitachiAirToAirHeatPump": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     "Light": LIGHT,
-    "MotionSensor": BINARY_SENSOR,
     "MyFoxSecurityCamera": COVER,  # widgetName, uiClass is Camera (not supported)
-    "OccupancySensor": BINARY_SENSOR,
     "OnOff": SWITCH,
     "Pergola": COVER,
-    "RainSensor": BINARY_SENSOR,
     "RollerShutter": COVER,
     "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
-    "SirenStatus": BINARY_SENSOR,  # widgetName, uiClass is Siren (switch)
-    "SmokeSensor": BINARY_SENSOR,
+    "SirenStatus": None,  # widgetName, uiClass is Siren (switch)
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SwimmingPool": SWITCH,
     "SwingingShutter": COVER,
     "VenetianBlind": COVER,
-    "WaterDetectionSensor": BINARY_SENSOR,  # widgetName, uiClass is HumiditySensor (sensor)
     "Window": COVER,
-    "WindowHandle": BINARY_SENSOR,
 }
 
 CORE_ON_OFF_STATE = "core:OnOffState"
