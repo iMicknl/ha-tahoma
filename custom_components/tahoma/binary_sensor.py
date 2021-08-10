@@ -2,32 +2,18 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Callable
-
 from homeassistant.components import binary_sensor
-from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
-    BinarySensorEntityDescription,
-)
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
-from .entity import OverkizEntity
+from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
 
 STATE_OPEN = "open"
 STATE_PERSON_INSIDE = "personInside"
 STATE_DETECTED = "detected"
-
-
-@dataclass
-class OverkizBinarySensorDescription(BinarySensorEntityDescription):
-    """Class to describe a Overkiz binary sensor."""
-
-    is_on: Callable[[Any], Any] = lambda state: state
 
 
 BINARY_SENSOR_DESCRIPTIONS = [
@@ -121,18 +107,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaBinarySensor(OverkizEntity, BinarySensorEntity):
+class TahomaBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
     """Representation of a TaHoma Binary Sensor."""
-
-    def __init__(
-        self,
-        device_url: str,
-        coordinator: TahomaDataUpdateCoordinator,
-        description: OverkizBinarySensorDescription,
-    ):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self.entity_description = description
 
     @property
     def is_on(self):
