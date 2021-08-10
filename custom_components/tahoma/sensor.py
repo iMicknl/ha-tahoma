@@ -367,8 +367,8 @@ class TahomaStateSensor(OverkizEntity, SensorEntity):
     @property
     def name(self) -> str:
         """Return the name of the device."""
-        if self.index:
-            return f"{self.entity_description.name} {self.index}"
+        if self.executor.index:
+            return f"{self.entity_description.name} {self.executor.index}"
         return self.entity_description.name
 
     @property

@@ -17,7 +17,9 @@ class OverkizExecutor:
         """Initialize the executor."""
         self.device_url = device_url
         self.coordinator = coordinator
-        self.base_device_url = self.get_base_device_url()
+        self.device_url = device_url
+        self.base_device_url, *index = self.device_url.split("#")
+        self.index = index[0] if index else None
 
     @property
     def device(self) -> Device:
@@ -94,11 +96,3 @@ class OverkizExecutor:
         """
         url = urlparse(self.device_url)
         return url.netloc
-
-    def get_base_device_url(self):
-        """Return base device url."""
-        if "#" not in self.device_url:
-            return self.device_url
-
-        device_url, _ = self.device_url.split("#")
-        return device_url
