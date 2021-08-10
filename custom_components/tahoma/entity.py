@@ -1,7 +1,12 @@
 """Parent class for every Overkiz device."""
-import logging
-from typing import Any, Dict
+from __future__ import annotations
 
+from dataclasses import dataclass
+import logging
+from typing import Any, Callable
+
+from homeassistant.components.binary_sensor import BinarySensorEntityDescription
+from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -77,7 +82,7 @@ class OverkizEntity(CoordinatorEntity, Entity):
         return not self.device.states
 
     @property
-    def device_info(self) -> Dict[str, Any]:
+    def device_info(self) -> dict[str, Any]:
         """Return device registry information for this entity."""
         # Some devices, such as the Smart Thermostat have several devices in one physical device,
         # with same device url, terminated by '#' and a number.
@@ -112,7 +117,7 @@ class OverkizEntity(CoordinatorEntity, Entity):
         }
 
     @property
-    def device_state_attributes(self) -> Dict[str, Any]:
+    def device_state_attributes(self) -> dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
 
@@ -136,3 +141,43 @@ class OverkizEntity(CoordinatorEntity, Entity):
                     attr[state.name] = state.value
 
         return attr
+
+
+@dataclass
+class OverkizSensorDescription(SensorEntityDescription):
+    """Class to describe a Overkiz sensor."""
+
+    value: Callable[[Any], Any] | None = lambda val: val
+
+
+@dataclass
+class OverkizBinarySensorDescription(BinarySensorEntityDescription):
+    """Class to describe a Overkiz binary sensor."""
+
+    is_on: Callable[[Any], Any] = lambda state: state
+
+
+class OverkizDescriptiveEntity(OverkizEntity):
+    """Representation of a Overkiz device entity based on a description."""
+
+    def __init__(
+        self,
+        device_url: str,
+        coordinator: TahomaDataUpdateCoordinator,
+        description: OverkizSensorDescription | OverkizBinarySensorDescription,
+    ):
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self.entity_description = description
+
+    @property
+    def name(self) -> str:
+        """Return the name of the device."""
+        if self.executor.index:
+            return f"{self.entity_description.name} {self.executor.index}"
+        return self.entity_description.name
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique ID."""
+        return f"{super().unique_id}-{self.entity_description.key}"

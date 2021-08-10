@@ -1,16 +1,10 @@
 """Support for TaHoma sensors."""
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
-from typing import Any, Callable
 
 from homeassistant.components import sensor
-from homeassistant.components.sensor import (
-    STATE_CLASS_MEASUREMENT,
-    SensorEntity,
-    SensorEntityDescription,
-)
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
@@ -28,17 +22,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.dt import utc_from_timestamp
 
 from .const import DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
-from .entity import OverkizEntity
+from .entity import OverkizDescriptiveEntity, OverkizSensorDescription
 
 _LOGGER = logging.getLogger(__name__)
-
-
-@dataclass
-class OverkizSensorDescription(SensorEntityDescription):
-    """Class to describe a Overkiz sensor."""
-
-    value: Callable[[Any], Any] | None = lambda val: val
 
 
 SENSOR_DESCRIPTIONS = [
@@ -340,18 +326,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaStateSensor(OverkizEntity, SensorEntity):
+class TahomaStateSensor(OverkizDescriptiveEntity, SensorEntity):
     """Representation of a TaHoma Sensor."""
-
-    def __init__(
-        self,
-        device_url: str,
-        coordinator: TahomaDataUpdateCoordinator,
-        description: OverkizSensorDescription,
-    ):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self.entity_description = description
 
     @property
     def state(self):
@@ -363,15 +339,3 @@ class TahomaStateSensor(OverkizEntity, SensorEntity):
             return self.entity_description.value(state.value)
 
         return state.value
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        if self.executor.index:
-            return f"{self.entity_description.name} {self.executor.index}"
-        return self.entity_description.name
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return f"{super().unique_id}-{self.entity_description.key}"
