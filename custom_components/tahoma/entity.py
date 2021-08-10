@@ -145,16 +145,16 @@ class OverkizEntity(CoordinatorEntity, Entity):
 
 @dataclass
 class OverkizSensorDescription(SensorEntityDescription):
-    """Class to describe a Overkiz sensor."""
+    """Class to describe an Overkiz sensor."""
 
-    value: Callable[[Any], Any] | None = lambda val: val
+    value: Callable[[str | int | float], str | int | float] | None = lambda val: val
 
 
 @dataclass
 class OverkizBinarySensorDescription(BinarySensorEntityDescription):
-    """Class to describe a Overkiz binary sensor."""
+    """Class to describe an Overkiz binary sensor."""
 
-    is_on: Callable[[Any], Any] = lambda state: state
+    is_on: Callable[[str], bool] = lambda state: state
 
 
 class OverkizDescriptiveEntity(OverkizEntity):
