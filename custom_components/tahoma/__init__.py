@@ -210,10 +210,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
     # Required to load the low speed switch
-    supported_platforms.add(BINARY_SENSOR)
-    supported_platforms.add(SENSOR)
-    supported_platforms.add(SWITCH)
-
+    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH))
     for platform in supported_platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
