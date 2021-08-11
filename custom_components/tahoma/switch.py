@@ -159,11 +159,6 @@ class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         return f"{super().name} low speed"
 
     @property
-    def assumed_state(self) -> bool:
-        """Return True if unable to access real state of the entity."""
-        return True
-
-    @property
     def is_on(self) -> bool:
         """Get whether the switch is in on state."""
         return self._is_on
