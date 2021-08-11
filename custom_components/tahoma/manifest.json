@@ -1,6 +1,6 @@
 {
   "domain": "tahoma",
-  "name": "Somfy TaHoma",
+  "name": "Overkiz (by Somfy)",
   "iot_class": "cloud_polling",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
@@ -14,5 +14,11 @@
     "@tetienne"
   ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
-  "version": "2.4.10"
+  "version": "2.4.10",
+  "dhcp": [
+    {
+      "hostname": "gateway*",
+      "macaddress": "F8811A*"
+    }
+  ]
 }
