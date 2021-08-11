@@ -183,7 +183,7 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
         )
 
         if exec_id:
-            return await self.async_cancel_command(exec_id)
+            return await self.executor.async_cancel_command(exec_id)
 
         # Retrieve executions initiated outside Home Assistant via API
         executions = await self.coordinator.client.get_current_executions()
@@ -201,7 +201,7 @@ class TahomaGenericCover(OverkizEntity, CoverEntity):
         )
 
         if exec_id:
-            return await self.async_cancel_command(exec_id)
+            return await self.executor.async_cancel_command(exec_id)
 
         # Fallback to available stop commands when no executions are found
         # Stop commands don't work with all devices, due to a bug in Somfy service
