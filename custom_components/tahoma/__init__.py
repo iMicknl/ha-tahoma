@@ -108,7 +108,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         }
 
         entry_data = {**config_entry.data}
-        old_hub = entry_data[CONF_HUB]
+        old_hub = entry_data.get(CONF_HUB, "Somfy TaHoma")
         entry_data[CONF_HUB] = MAPPING[entry_data[CONF_HUB]]
 
         _LOGGER.debug("Migrated %s to %s", old_hub, entry_data[CONF_HUB])
