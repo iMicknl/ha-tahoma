@@ -54,6 +54,7 @@ class OverkizEntity(CoordinatorEntity, Entity):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
+        self.base_device_url, *_ = self.device_url.split("#")
         self.executor = OverkizExecutor(device_url, coordinator)
 
     @property
