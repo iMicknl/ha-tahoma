@@ -137,6 +137,9 @@ class VerticalCover(TahomaGenericCover):
 
     def is_low_speed_enabled(self):
         """Return if low speed mode is enabled."""
+        if not self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
+            return False
+        
         switch_entity_id = f"{self.entity_id.replace('cover', 'switch')}_low_speed"
         low_speed_entity = self.coordinator.hass.states.get(switch_entity_id)
         return low_speed_entity.state == STATE_ON if low_speed_entity else False
