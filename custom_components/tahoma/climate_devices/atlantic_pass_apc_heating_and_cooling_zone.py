@@ -73,7 +73,6 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
 
-        base_url = self.get_base_device_url()
         entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
 
         # The linked temperature sensor uses subsystem_id + 1
@@ -83,7 +82,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
             (
                 entity_id
                 for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{base_url}#{str(new_subsystem_id)}"
+                if entry.unique_id == f"{self.base_device_url}#{str(new_subsystem_id)}"
             ),
             None,
         )
