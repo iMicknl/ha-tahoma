@@ -2,7 +2,6 @@ from unittest.mock import Mock, patch
 
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
-from homeassistant.components.dhcp import HOSTNAME, IP_ADDRESS, MAC_ADDRESS
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
