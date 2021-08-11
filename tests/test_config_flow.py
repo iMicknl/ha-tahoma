@@ -2,13 +2,17 @@ from unittest.mock import Mock, patch
 
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
+from homeassistant.components.dhcp import HOSTNAME, IP_ADDRESS, MAC_ADDRESS
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
     TooManyRequestsException,
 )
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    mock_device_registry,
+)
 
 from custom_components.tahoma import config_flow
 
@@ -273,3 +277,48 @@ async def test_options_flow(hass, enable_custom_integrations):
     )
 
     assert entry.options == {"update_interval": 12000}
+
+
+async def test_dhcp_flow(hass):
+    """Test that DHCP discovery for new bridge works."""
+    result = await hass.config_entries.flow.async_init(
+        config_flow.DOMAIN,
+        data={
+            HOSTNAME: "gateway-1234-5678-9123",
+            IP_ADDRESS: "192.168.1.4",
+            MAC_ADDRESS: "F8811A000000",
+        },
+        context={"source": config_entries.SOURCE_DHCP},
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["step_id"] == config_entries.SOURCE_USER
+
+
+async def test_dhcp_flow_already_configured(hass):
+    """Test that DHCP doesn't setup already configured gateways."""
+    config_entry = MockConfigEntry(
+        domain=config_flow.DOMAIN,
+        unique_id=TEST_EMAIL,
+        data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
+    )
+    config_entry.add_to_hass(hass)
+
+    device_registry = mock_device_registry(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={(config_flow.DOMAIN, "1234-5678-9123")},
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        config_flow.DOMAIN,
+        data={
+            HOSTNAME: "gateway-1234-5678-9123",
+            IP_ADDRESS: "192.168.1.4",
+            MAC_ADDRESS: "F8811A000000",
+        },
+        context={"source": config_entries.SOURCE_DHCP},
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_ABORT
+    assert result["reason"] == "already_configured"
