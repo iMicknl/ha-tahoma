@@ -76,8 +76,13 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("Failed to connect.") from exception
         except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
-            await self.client.login()
-            self.devices = await self._get_devices()
+
+            try:
+                await self.client.login()
+                self.devices = await self._get_devices()
+            except BadCredentialsException as exception:
+                raise ConfigEntryAuthFailed() from exception
+
             return self.devices
         except Exception as exception:
             _LOGGER.debug(exception)
