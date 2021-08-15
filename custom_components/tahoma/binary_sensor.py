@@ -74,12 +74,6 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
     ),
-    OverkizBinarySensorDescription(
-        key="core:OpenClosedState",
-        name="Open/Closed",
-        device_class=binary_sensor.DEVICE_CLASS_DOOR,
-        is_on=lambda state: state == STATE_OPEN,
-    ),
 ]
 
 
