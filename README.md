@@ -12,7 +12,7 @@ Custom component for Home Assistant to interact with smart devices via the Overk
 ## Supported hubs
 
 - Somfy TaHoma
-- Somfy Tahoma Switch [instructions](#tahoma-switch)
+- Somfy Tahoma Switch [(instructions)](#tahoma-switch)
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
 - Cozytouch
