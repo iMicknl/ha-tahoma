@@ -230,6 +230,7 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key="core:TemperatureState",
         name="Temperature",
+        value=lambda value: round(value, 2),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
         unit_of_measurement=TEMP_CELSIUS,  # core:MeasuredValueType = core:TemperatureInCelcius
         state_class=STATE_CLASS_MEASUREMENT,
