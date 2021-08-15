@@ -107,7 +107,7 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
             (
                 entity_id
                 for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{self.base_device_url}#2"
+                if entry.unique_id == f"{self.base_device_url}#2-core:TemperatureState"
             ),
             None,
         )
