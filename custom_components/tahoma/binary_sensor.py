@@ -74,6 +74,12 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
     ),
+    OverkizBinarySensorDescription(
+        key="core:OpenClosedState",
+        name="Open/Closed",
+        device_class=binary_sensor.DEVICE_CLASS_DOOR,
+        is_on=lambda state: state == STATE_OPEN,
+    ),
 ]
 
 
@@ -114,4 +120,4 @@ class TahomaBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
     def is_on(self):
         """Return the state of the sensor."""
         state = self.device.states[self.entity_description.key]
-        return self.entity_description.is_on(state)
+        return self.entity_description.is_on(state.value)
