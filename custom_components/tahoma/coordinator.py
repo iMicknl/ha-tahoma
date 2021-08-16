@@ -19,6 +19,8 @@ from pyhoma.exceptions import (
 )
 from pyhoma.models import DataType, Device, Place, State
 
+from .const import DOMAIN
+
 TYPES = {
     DataType.NONE: None,
     DataType.INTEGER: int,
@@ -122,13 +124,13 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 return None
 
             elif event.name == EventName.DEVICE_REMOVED:
-
                 base_device_url, *_ = event.deviceurl.split("#")
+                registry = await device_registry.async_get_registry(self.hass)
 
-                if device := self._device_registry.async_get_device(
+                if device := registry.async_get_device(
                     {(DOMAIN, base_device_url)}
                 ):
-                    self._device_registry.async_remove_device(device.id)
+                    registry.async_remove_device(device.id)
 
                 del self.devices[event.deviceurl]
 
