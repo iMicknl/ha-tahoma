@@ -18,7 +18,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
 COMMAND_MY = "my"
@@ -61,7 +61,7 @@ async def async_setup_entry(
 class TahomaLight(OverkizEntity, LightEntity):
     """Representation of a TaHoma Light."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize a device."""
         super().__init__(device_url, coordinator)
         self._effect = None

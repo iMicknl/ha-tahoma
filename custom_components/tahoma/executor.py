@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from pyhoma.models import Command, Device
 
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 class OverkizExecutor:
     """Representation of an Overkiz device with execution handler."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the executor."""
         self.device_url = device_url
         self.coordinator = coordinator
