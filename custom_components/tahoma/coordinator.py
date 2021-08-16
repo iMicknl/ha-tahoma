@@ -76,8 +76,16 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("Failed to connect.") from exception
         except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
-            await self.client.login()
-            self.devices = await self._get_devices()
+
+            # During the relogin, similar exceptions can be thrown.
+            try:
+                await self.client.login()
+                self.devices = await self._get_devices()
+            except BadCredentialsException as exception:
+                raise ConfigEntryAuthFailed() from exception
+            except TooManyRequestsException as exception:
+                raise UpdateFailed("Too many requests, try again later.") from exception
+
             return self.devices
         except Exception as exception:
             _LOGGER.debug(exception)

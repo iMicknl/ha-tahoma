@@ -82,7 +82,8 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
             (
                 entity_id
                 for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{self.base_device_url}#{str(new_subsystem_id)}"
+                if entry.unique_id
+                == f"{self.base_device_url}#{str(new_subsystem_id)}-core:TemperatureState"
             ),
             None,
         )

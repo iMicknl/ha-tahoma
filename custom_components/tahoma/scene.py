@@ -1,5 +1,4 @@
 """Support for TaHoma scenes."""
-import logging
 from typing import Any
 
 from homeassistant.components.scene import DOMAIN as SCENE, Scene
@@ -10,8 +9,6 @@ from pyhoma.client import TahomaClient
 from pyhoma.models import Scenario
 
 from .const import DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -36,6 +33,7 @@ class TahomaScene(Scene):
         """Initialize the scene."""
         self.scenario = scenario
         self.client = client
+        self._attr_name = self.scenario.label
 
     async def async_activate(self, **_: Any) -> None:
         """Activate the scene."""
@@ -45,8 +43,3 @@ class TahomaScene(Scene):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return self.scenario.oid
-
-    @property
-    def name(self):
-        """Return the name of the scene."""
-        return self.scenario.label

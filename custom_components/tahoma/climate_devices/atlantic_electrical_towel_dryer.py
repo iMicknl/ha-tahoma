@@ -1,5 +1,4 @@
 """Support for Atlantic Electrical Towel Dryer."""
-import logging
 from typing import List, Optional
 
 from homeassistant.components.climate import (
@@ -16,8 +15,6 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_DEROGATED_TARGET_TEMPERATURE = "setDerogatedTargetTemperature"
