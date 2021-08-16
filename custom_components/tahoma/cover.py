@@ -1,4 +1,4 @@
-"""Support for TaHoma cover - shutters etc."""
+"""Support for Overkiz covers - shutters etc."""
 from homeassistant.components.cover import ATTR_POSITION, DOMAIN as COVER
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -20,7 +20,7 @@ SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ):
-    """Set up the TaHoma covers from a config entry."""
+    """Set up the Overkiz covers from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 

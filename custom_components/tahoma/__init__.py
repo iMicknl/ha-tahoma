@@ -1,4 +1,4 @@
-"""The TaHoma integration."""
+"""The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
 from datetime import datetime, timedelta

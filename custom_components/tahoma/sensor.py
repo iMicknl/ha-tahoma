@@ -1,4 +1,4 @@
-"""Support for TaHoma sensors."""
+"""Support for Overkiz sensors."""
 from __future__ import annotations
 
 from homeassistant.components import sensor
@@ -297,7 +297,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma sensors from a config entry."""
+    """Set up the Overkiz sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
@@ -312,7 +312,7 @@ async def async_setup_entry(
             description = key_supported_states.get(state.name)
             if description:
                 entities.append(
-                    TahomaStateSensor(
+                    OverkizStateSensor(
                         device.deviceurl,
                         coordinator,
                         description,
@@ -322,8 +322,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaStateSensor(OverkizDescriptiveEntity, SensorEntity):
-    """Representation of a TaHoma Sensor."""
+class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
+    """Representation of an Overkiz Sensor."""
 
     @property
     def state(self):

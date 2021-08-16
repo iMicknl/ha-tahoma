@@ -8,7 +8,7 @@ from homeassistant.components.cover import (
     SUPPORT_STOP,
 )
 
-from .tahoma_cover import COMMANDS_STOP, TahomaGenericCover
+from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 COMMAND_DEPLOY = "deploy"
 COMMAND_SET_DEPLOYMENT = "setDeployment"
@@ -17,7 +17,7 @@ COMMAND_UNDEPLOY = "undeploy"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 
 
-class Awning(TahomaGenericCover):
+class Awning(OverkizGenericCover):
     """Representation of a TaHoma Awning."""
 
     @property
