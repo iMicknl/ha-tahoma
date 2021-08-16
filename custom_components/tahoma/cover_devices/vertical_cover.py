@@ -14,7 +14,7 @@ from homeassistant.components.cover import (
     SUPPORT_STOP,
 )
 
-from .tahoma_cover import COMMANDS_STOP, TahomaGenericCover
+from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
@@ -48,7 +48,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 
-class VerticalCover(TahomaGenericCover):
+class VerticalCover(OverkizGenericCover):
     """Representation of a TaHoma Vertical Cover."""
 
     @property

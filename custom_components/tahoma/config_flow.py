@@ -1,4 +1,4 @@
-"""Config flow for TaHoma integration."""
+"""Config flow for Overkiz (by Somfy) integration."""
 from __future__ import annotations
 
 import logging

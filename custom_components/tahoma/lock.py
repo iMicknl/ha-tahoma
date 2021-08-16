@@ -1,4 +1,4 @@
-"""Support for TaHoma lock."""
+"""Support for Overkiz lock."""
 import logging
 
 from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
@@ -23,18 +23,18 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma locks from a config entry."""
+    """Set up the Overkiz locks from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaLock(device.deviceurl, coordinator) for device in data["platforms"][LOCK]
+        OverkizLock(device.deviceurl, coordinator) for device in data["platforms"][LOCK]
     ]
 
     async_add_entities(entities)
 
 
-class TahomaLock(OverkizEntity, LockEntity):
+class OverkizLock(OverkizEntity, LockEntity):
     """Representation of a TaHoma Lock."""
 
     async def async_unlock(self, **_):

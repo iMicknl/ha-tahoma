@@ -1,4 +1,4 @@
-"""TaHoma light platform that implements dimmable TaHoma lights."""
+"""Support for Overkiz light devices."""
 import logging
 
 from homeassistant.components.light import (
@@ -44,12 +44,12 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma lights from a config entry."""
+    """Set up the Overkiz lights from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaLight(device.deviceurl, coordinator)
+        OverkizLight(device.deviceurl, coordinator)
         for device in data["platforms"][LIGHT]
     ]
 
@@ -61,8 +61,8 @@ async def async_setup_entry(
     )
 
 
-class TahomaLight(OverkizEntity, LightEntity):
-    """Representation of a TaHoma Light."""
+class OverkizLight(OverkizEntity, LightEntity):
+    """Representation of an Overkiz Light."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
         """Initialize a device."""

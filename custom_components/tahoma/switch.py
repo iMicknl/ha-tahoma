@@ -1,4 +1,4 @@
-"""Support for TaHoma switches."""
+"""Support for Overkiz switches."""
 import logging
 from typing import Optional
 
@@ -36,20 +36,20 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma sensors from a config entry."""
+    """Set up the Overkiz sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaSwitch(device.deviceurl, coordinator)
+        OverkizSwitch(device.deviceurl, coordinator)
         for device in data["platforms"][SWITCH]
     ]
 
     async_add_entities(entities)
 
 
-class TahomaSwitch(OverkizEntity, SwitchEntity):
-    """Representation a TaHoma Switch."""
+class OverkizSwitch(OverkizEntity, SwitchEntity):
+    """Representation an Overkiz Switch."""
 
     @property
     def device_class(self):

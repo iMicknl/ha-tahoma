@@ -1,4 +1,4 @@
-"""Constants for the TaHoma integration."""
+"""Constants for the Overkiz (by Somfy) integration."""
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
