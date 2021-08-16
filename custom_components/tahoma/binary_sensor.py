@@ -114,4 +114,4 @@ class TahomaBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
     def is_on(self):
         """Return the state of the sensor."""
         state = self.device.states[self.entity_description.key]
-        return self.entity_description.is_on(state)
+        return self.entity_description.is_on(state.value)
