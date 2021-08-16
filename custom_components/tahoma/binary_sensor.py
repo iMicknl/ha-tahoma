@@ -66,6 +66,13 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_DOOR,
         is_on=lambda state: state == STATE_OPEN,
     ),
+    # Siren/SirenStatus
+    OverkizBinarySensorDescription(
+        key="core:AssemblyState",
+        name="Assembly",
+        device_class=binary_sensor.DEVICE_CLASS_PROBLEM,
+        is_on=lambda state: state == STATE_OPEN,
+    ),
     # Unknown
     OverkizBinarySensorDescription(
         key="io:VibrationDetectedState",
