@@ -30,15 +30,20 @@ This integration doesn't rely on a hardcoded list of devices anymore, but relies
 
 ## Installation
 
-### Manual
-
-Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+You can install this integration via [HACS](#hacs) or [manually](#manual).
 
 ### HACS
 
-This integration is included in HACS. Search for the `Overkiz (by Somfy)` integration and choose install. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+This integration is included in HACS. Search for the `Overkiz (by Somfy)` integration and choose install. Reboot Home Assistant and configure the 'Overkiz (by Somfy)' integration via the integrations page or press the blue button below.
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tahoma)
+
+### Manual
+
+Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and configure the 'Overkiz (by Somfy)' integration via the integrations page or press the blue button below.
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tahoma)
+
 
 ## Advanced
 
