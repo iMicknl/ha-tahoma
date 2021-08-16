@@ -1,7 +1,8 @@
 """Support for TaHoma switches."""
 import logging
-from typing import Optional
+from typing import Any, Optional
 
+from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.switch import (
     DEVICE_CLASS_SWITCH,
     DOMAIN as SWITCH,
@@ -11,6 +12,12 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_OFF, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
+
+from custom_components.tahoma.coordinator import TahomaDataUpdateCoordinator
+from custom_components.tahoma.cover_devices.tahoma_cover import (
+    COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
+)
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .entity import OverkizEntity
@@ -44,6 +51,14 @@ async def async_setup_entry(
         TahomaSwitch(device.deviceurl, coordinator)
         for device in data["platforms"][SWITCH]
     ]
+
+    entities.extend(
+        [
+            TahomaLowSpeedCoverSwitch(device.deviceurl, coordinator)
+            for device in data["platforms"].get(COVER)
+            if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
+        ]
+    )
 
     async_add_entities(entities)
 
@@ -119,3 +134,41 @@ class TahomaSwitch(OverkizEntity, SwitchEntity):
             self.executor.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE)
             == STATE_ON
         )
+
+
+class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
+    """Representation of Low Speed Switch."""
+
+    _attr_icon = "mdi:feather"
+
+    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+        """Initialize the low speed switch."""
+        super().__init__(device_url, coordinator)
+        self._is_on = False
+
+    async def async_added_to_hass(self):
+        """Run when entity about to be added."""
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        if state:
+            self._is_on = state.state == STATE_ON
+
+    @property
+    def name(self) -> str:
+        """Return the name of the device."""
+        return f"{super().name} low speed"
+
+    @property
+    def is_on(self) -> bool:
+        """Get whether the switch is in on state."""
+        return self._is_on
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Send the on command."""
+        self._is_on = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Send the off command."""
+        self._is_on = False
+        self.async_write_ha_state()
