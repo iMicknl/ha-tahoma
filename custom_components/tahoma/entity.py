@@ -2,13 +2,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import logging
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
@@ -44,10 +42,8 @@ BATTERY_MAP = {
     STATE_BATTERY_VERY_LOW: 10,
 }
 
-_LOGGER = logging.getLogger(__name__)
 
-
-class OverkizEntity(CoordinatorEntity, Entity):
+class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
@@ -57,15 +53,12 @@ class OverkizEntity(CoordinatorEntity, Entity):
         self.base_device_url, *_ = self.device_url.split("#")
         self.executor = OverkizExecutor(device_url, coordinator)
 
+        self._attr_name = self.device.label
+
     @property
     def device(self) -> Device:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        return self.device.label
 
     @property
     def available(self) -> bool:
@@ -170,11 +163,7 @@ class OverkizDescriptiveEntity(OverkizEntity):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
         self.entity_description = description
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        return f"{super().name} {self.entity_description.name}"
+        self._attr_name = f"{super().name} {self.entity_description.name}"
 
     @property
     def unique_id(self) -> str:
