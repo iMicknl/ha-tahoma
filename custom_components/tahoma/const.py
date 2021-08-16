@@ -4,6 +4,7 @@ from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
+from homeassistant.components.siren import DOMAIN as SIREN
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
@@ -76,7 +77,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,
     "Shutter": COVER,
-    "Siren": SWITCH,
+    "Siren": SIREN,
     "SirenStatus": None,  # widgetName, uiClass is Siren (switch)
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
