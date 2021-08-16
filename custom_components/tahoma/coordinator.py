@@ -46,6 +46,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         devices: List[Device],
         places: Place,
         update_interval: Optional[timedelta] = None,
+        config_entry_id: str,
     ):
         """Initialize global data updater."""
         super().__init__(
@@ -61,6 +62,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
         self.areas = self.places_to_area(places)
+        self._config_entry_id = config_entry_id
 
     async def _async_update_data(self) -> Dict[str, Device]:
         """Fetch TaHoma data via event listener."""
@@ -114,11 +116,20 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 EventName.DEVICE_CREATED,
                 EventName.DEVICE_UPDATED,
             ]:
-                self.devices = await self._get_devices()
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self._config_entry_id)
+                )
+                return None
 
             elif event.name == EventName.DEVICE_REMOVED:
-                registry = await device_registry.async_get_registry(self.hass)
-                registry.async_remove_device(event.deviceurl)
+
+                base_device_url, *_ = event.deviceurl.split("#")
+
+                if device := self._device_registry.async_get_device(
+                    {(DOMAIN, base_device_url)}
+                ):
+                    self._device_registry.async_remove_device(device.id)
+
                 del self.devices[event.deviceurl]
 
             elif event.name == EventName.DEVICE_STATE_CHANGED:
