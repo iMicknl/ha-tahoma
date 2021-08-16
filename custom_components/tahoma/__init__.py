@@ -36,8 +36,8 @@ from .const import (
     DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
-    IGNORED_TAHOMA_DEVICES,
-    TAHOMA_DEVICE_TO_PLATFORM,
+    IGNORED_OVERKIZ_DEVICES,
+    OVERKIZ_DEVICE_TO_PLATFORM,
 )
 from .coordinator import TahomaDataUpdateCoordinator
 
@@ -190,15 +190,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Map Overkiz device to Home Assistant platform
     for device in tahoma_coordinator.data.values():
-        platform = TAHOMA_DEVICE_TO_PLATFORM.get(
+        platform = OVERKIZ_DEVICE_TO_PLATFORM.get(
             device.widget
-        ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
+        ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
             log_device("Added device", device)
         elif (
-            device.widget not in IGNORED_TAHOMA_DEVICES
-            and device.ui_class not in IGNORED_TAHOMA_DEVICES
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
         ):
             log_device("Unsupported device detected", device)
 
