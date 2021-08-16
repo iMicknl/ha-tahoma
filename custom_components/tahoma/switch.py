@@ -1,5 +1,4 @@
 """Support for TaHoma switches."""
-import logging
 from typing import Any, Optional
 
 from homeassistant.components.cover import DOMAIN as COVER
@@ -21,8 +20,6 @@ from custom_components.tahoma.cover_devices.tahoma_cover import (
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_CYCLE = "cycle"
 COMMAND_MEMORIZED_VOLUME = "memorizedVolume"

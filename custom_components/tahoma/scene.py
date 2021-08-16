@@ -1,5 +1,4 @@
 """Support for TaHoma scenes."""
-import logging
 from typing import Any
 
 from homeassistant.components.scene import DOMAIN as SCENE, Scene
@@ -10,8 +9,6 @@ from pyhoma.client import TahomaClient
 from pyhoma.models import Scenario
 
 from .const import DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(

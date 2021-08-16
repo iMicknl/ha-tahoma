@@ -2,13 +2,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import logging
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
@@ -44,10 +42,8 @@ BATTERY_MAP = {
     STATE_BATTERY_VERY_LOW: 10,
 }
 
-_LOGGER = logging.getLogger(__name__)
 
-
-class OverkizEntity(CoordinatorEntity, Entity):
+class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
 
     def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):

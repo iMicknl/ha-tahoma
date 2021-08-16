@@ -1,5 +1,4 @@
 """Support for Atlantic Electrical Heater IO controller."""
-import logging
 from typing import List
 
 from homeassistant.components.climate import ClimateEntity
@@ -12,8 +11,6 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..coordinator import TahomaDataUpdateCoordinator
 from ..entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_GET_LEVEL = "getLevel"
 COMMAND_SET_LEVEL = "setLevel"

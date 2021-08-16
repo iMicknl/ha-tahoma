@@ -1,6 +1,4 @@
 """Support for TaHoma lock."""
-import logging
-
 from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_LOCKED
@@ -9,8 +7,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_LOCK = "lock"
 COMMAND_UNLOCK = "unlock"
