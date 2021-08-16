@@ -33,8 +33,8 @@ TYPES = {
 _LOGGER = logging.getLogger(__name__)
 
 
-class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching TaHoma data."""
+class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
+    """Class to manage fetching data from Overkiz platform."""
 
     def __init__(
         self,
@@ -63,7 +63,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
         self.areas = self.places_to_area(places)
 
     async def _async_update_data(self) -> Dict[str, Device]:
-        """Fetch TaHoma data via event listener."""
+        """Fetch Overkiz data via event listener."""
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
@@ -76,8 +76,16 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("Failed to connect.") from exception
         except (ServerDisconnectedError, NotAuthenticatedException):
             self.executions = {}
-            await self.client.login()
-            self.devices = await self._get_devices()
+
+            # During the relogin, similar exceptions can be thrown.
+            try:
+                await self.client.login()
+                self.devices = await self._get_devices()
+            except BadCredentialsException as exception:
+                raise ConfigEntryAuthFailed() from exception
+            except TooManyRequestsException as exception:
+                raise UpdateFailed("Too many requests, try again later.") from exception
+
             return self.devices
         except Exception as exception:
             _LOGGER.debug(exception)

@@ -6,10 +6,11 @@ from typing import Any
 
 from aiohttp import ClientError
 from homeassistant import config_entries
+from homeassistant.components.dhcp import HOSTNAME
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, device_registry as dr
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
@@ -155,6 +156,28 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.exception(exception)
             return self.async_abort(reason="unknown")
+
+    async def async_step_dhcp(self, discovery_info):
+        """Handle DHCP discovery."""
+        hostname = discovery_info[HOSTNAME]
+        gateway_id = hostname[8:22]
+
+        _LOGGER.debug("DHCP discovery detected gateway %s", gateway_id)
+
+        if self._gateway_already_configured(gateway_id):
+            _LOGGER.debug("Gateway %s is already configured", gateway_id)
+            return self.async_abort(reason="already_configured")
+
+        return await self.async_step_user()
+
+    def _gateway_already_configured(self, gateway_id: str):
+        """See if we already have a gateway matching the id."""
+        device_registry = dr.async_get(self.hass)
+        return bool(
+            device_registry.async_get_device(
+                identifiers={(DOMAIN, gateway_id)}, connections=set()
+            )
+        )
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):

@@ -1,8 +1,6 @@
 """Support for Overkiz sensors."""
 from __future__ import annotations
 
-import logging
-
 from homeassistant.components import sensor
 from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -23,9 +21,6 @@ from homeassistant.util.dt import utc_from_timestamp
 
 from .const import DOMAIN
 from .entity import OverkizDescriptiveEntity, OverkizSensorDescription
-
-_LOGGER = logging.getLogger(__name__)
-
 
 SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
@@ -230,6 +225,7 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key="core:TemperatureState",
         name="Temperature",
+        value=lambda value: round(value, 2),
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
         unit_of_measurement=TEMP_CELSIUS,  # core:MeasuredValueType = core:TemperatureInCelcius
         state_class=STATE_CLASS_MEASUREMENT,

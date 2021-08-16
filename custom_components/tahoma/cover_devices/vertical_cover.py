@@ -13,8 +13,13 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
+from homeassistant.const import STATE_ON
 
-from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
+from .tahoma_cover import (
+    COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
+    COMMANDS_STOP,
+    OverkizGenericCover,
+)
 
 COMMAND_CYCLE = "cycle"
 COMMAND_CLOSE = "close"
@@ -100,17 +105,35 @@ class VerticalCover(OverkizGenericCover):
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
-        position = 100 - kwargs.get(ATTR_POSITION, 0)
-        await self.executor.async_execute_command(COMMAND_SET_CLOSURE, position)
+        if self.is_low_speed_enabled():
+            await self.async_set_cover_position_low_speed(**kwargs)
+        else:
+            position = 100 - kwargs.get(ATTR_POSITION, 0)
+            await self.executor.async_execute_command(COMMAND_SET_CLOSURE, position)
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.executor.async_execute_command(
-            self.executor.select_command(*COMMANDS_OPEN)
-        )
+        if self.is_low_speed_enabled():
+            await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 100})
+        else:
+            await self.executor.async_execute_command(
+                self.executor.select_command(*COMMANDS_OPEN)
+            )
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.executor.async_execute_command(
-            self.executor.select_command(*COMMANDS_CLOSE)
-        )
+        if self.is_low_speed_enabled():
+            await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 0})
+        else:
+            await self.executor.async_execute_command(
+                self.executor.select_command(*COMMANDS_CLOSE)
+            )
+
+    def is_low_speed_enabled(self):
+        """Return if low speed mode is enabled."""
+        if not self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
+            return False
+
+        switch_entity_id = f"{self.entity_id.replace('cover', 'switch')}_low_speed"
+        low_speed_entity = self.coordinator.hass.states.get(switch_entity_id)
+        return low_speed_entity.state == STATE_ON if low_speed_entity else False

@@ -18,7 +18,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from ..coordinator import TahomaDataUpdateCoordinator
+from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Pass APC Heating and Cooling Zone."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
 
@@ -82,7 +82,8 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
             (
                 entity_id
                 for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{self.base_device_url}#{str(new_subsystem_id)}"
+                if entry.unique_id
+                == f"{self.base_device_url}#{str(new_subsystem_id)}-core:TemperatureState"
             ),
             None,
         )

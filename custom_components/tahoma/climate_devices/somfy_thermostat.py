@@ -24,7 +24,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from ..coordinator import TahomaDataUpdateCoordinator
+from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ MAP_PRESET_TEMPERATURES = {
 class SomfyThermostat(OverkizEntity, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
         self._temp_sensor_entity_id = None
@@ -104,7 +104,7 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
             (
                 entity_id
                 for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{self.base_device_url}#2"
+                if entry.unique_id == f"{self.base_device_url}#2-core:TemperatureState"
             ),
             None,
         )
