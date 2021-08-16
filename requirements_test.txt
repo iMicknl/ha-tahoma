@@ -1,4 +1,5 @@
 -r requirements_dev.txt
 pytest-homeassistant-custom-component==0.4.3
-# required for https://github.com/iMicknl/ha-tahoma/pull/520
+# required for DHCP discovery test
+scapy==2.4.5
 aiodiscover==1.4.2
