@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching TaHoma data."""
+    """Class to manage fetching data from Overkiz platform."""
 
     def __init__(
         self,
@@ -63,7 +63,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         self.areas = self.places_to_area(places)
 
     async def _async_update_data(self) -> Dict[str, Device]:
-        """Fetch TaHoma data via event listener."""
+        """Fetch Overkiz data via event listener."""
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
