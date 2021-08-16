@@ -13,12 +13,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from custom_components.tahoma.coordinator import TahomaDataUpdateCoordinator
-from custom_components.tahoma.cover_devices.tahoma_cover import (
-    COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
-)
-
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
+from .coordinator import OverkizDataUpdateCoordinator
+from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
 
 COMMAND_CYCLE = "cycle"
@@ -51,7 +48,7 @@ async def async_setup_entry(
 
     entities.extend(
         [
-            TahomaLowSpeedCoverSwitch(device.deviceurl, coordinator)
+            OverkizLowSpeedCoverSwitch(device.deviceurl, coordinator)
             for device in data["platforms"].get(COVER)
             if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
@@ -133,12 +130,12 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
         )
 
 
-class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
+class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
     """Representation of Low Speed Switch."""
 
     _attr_icon = "mdi:feather"
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the low speed switch."""
         super().__init__(device_url, coordinator)
         self._is_on = False
