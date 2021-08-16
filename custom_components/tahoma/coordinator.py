@@ -127,9 +127,7 @@ class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
                 base_device_url, *_ = event.deviceurl.split("#")
                 registry = await device_registry.async_get_registry(self.hass)
 
-                if device := registry.async_get_device(
-                    {(DOMAIN, base_device_url)}
-                ):
+                if device := registry.async_get_device({(DOMAIN, base_device_url)}):
                     registry.async_remove_device(device.id)
 
                 del self.devices[event.deviceurl]
