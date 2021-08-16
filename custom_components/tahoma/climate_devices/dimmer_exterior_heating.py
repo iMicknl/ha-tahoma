@@ -10,7 +10,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..coordinator import TahomaDataUpdateCoordinator
+from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ CORE_LEVEL_STATE = "core:LevelState"
 class DimmerExteriorHeating(OverkizEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
         self._saved_level = 100 - self.executor.select_state(CORE_LEVEL_STATE)

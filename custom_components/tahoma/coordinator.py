@@ -33,7 +33,7 @@ TYPES = {
 _LOGGER = logging.getLogger(__name__)
 
 
-class TahomaDataUpdateCoordinator(DataUpdateCoordinator):
+class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching TaHoma data."""
 
     def __init__(

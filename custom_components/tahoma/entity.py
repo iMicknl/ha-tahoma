@@ -13,7 +13,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
 from .const import DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 
 ATTR_RSSI_LEVEL = "rssi_level"
@@ -50,7 +50,7 @@ _LOGGER = logging.getLogger(__name__)
 class OverkizEntity(CoordinatorEntity, Entity):
     """Representation of a Overkiz device entity."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
@@ -164,7 +164,7 @@ class OverkizDescriptiveEntity(OverkizEntity):
     def __init__(
         self,
         device_url: str,
-        coordinator: TahomaDataUpdateCoordinator,
+        coordinator: OverkizDataUpdateCoordinator,
         description: OverkizSensorDescription | OverkizBinarySensorDescription,
     ):
         """Initialize the device."""

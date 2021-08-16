@@ -39,7 +39,7 @@ from .const import (
     IGNORED_TAHOMA_DEVICES,
     TAHOMA_DEVICE_TO_PLATFORM,
 )
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
     )
 
-    tahoma_coordinator = TahomaDataUpdateCoordinator(
+    tahoma_coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
         name="device events",
