@@ -145,6 +145,7 @@ class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         """Initialize the low speed switch."""
         super().__init__(device_url, coordinator)
         self._is_on = False
+        self._attr_name = f"{super().name} low speed"
 
     async def async_added_to_hass(self):
         """Run when entity about to be added."""
@@ -152,11 +153,6 @@ class TahomaLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         state = await self.async_get_last_state()
         if state:
             self._is_on = state.state == STATE_ON
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        return f"{super().name} low speed"
 
     @property
     def is_on(self) -> bool:
