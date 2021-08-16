@@ -1,5 +1,4 @@
 """Support for HitachiAirToWaterHeatingZone."""
-import logging
 from typing import Any, Dict, List, Optional
 
 from homeassistant.components.climate import ClimateEntity
@@ -14,8 +13,6 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from ..entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_AUTO_MANU_MODE = "setAutoManuMode"
 COMMAND_SET_TARGET_MODE = "setTargetMode"

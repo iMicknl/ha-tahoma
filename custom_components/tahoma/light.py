@@ -1,5 +1,4 @@
 """TaHoma light platform that implements dimmable TaHoma lights."""
-import logging
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
@@ -21,8 +20,6 @@ import homeassistant.util.color as color_util
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .coordinator import TahomaDataUpdateCoordinator
 from .entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_MY = "my"
 COMMAND_SET_INTENSITY = "setIntensity"
