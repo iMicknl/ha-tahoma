@@ -1,6 +1,4 @@
-"""TaHoma light platform that implements dimmable TaHoma lights."""
-import logging
-
+"""Support for Overkiz light devices."""
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
@@ -19,10 +17,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
 from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_MY = "my"
 COMMAND_SET_INTENSITY = "setIntensity"
@@ -44,12 +40,12 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma lights from a config entry."""
+    """Set up the Overkiz lights from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaLight(device.deviceurl, coordinator)
+        OverkizLight(device.deviceurl, coordinator)
         for device in data["platforms"][LIGHT]
     ]
 
@@ -61,10 +57,10 @@ async def async_setup_entry(
     )
 
 
-class TahomaLight(OverkizEntity, LightEntity):
-    """Representation of a TaHoma Light."""
+class OverkizLight(OverkizEntity, LightEntity):
+    """Representation of an Overkiz Light."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize a device."""
         super().__init__(device_url, coordinator)
         self._effect = None

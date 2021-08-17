@@ -76,7 +76,7 @@ SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
-class TahomaGenericCover(OverkizEntity, CoverEntity):
+class OverkizGenericCover(OverkizEntity, CoverEntity):
     """Representation of a TaHoma Cover."""
 
     @property

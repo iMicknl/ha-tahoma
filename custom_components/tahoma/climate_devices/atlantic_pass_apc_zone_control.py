@@ -1,5 +1,4 @@
 """Support for Atlantic Pass APC Zone Control."""
-import logging
 from typing import List
 
 from homeassistant.components.climate import ClimateEntity
@@ -12,8 +11,6 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import TEMP_CELSIUS
 
 from ..entity import OverkizEntity
-
-_LOGGER = logging.getLogger(__name__)
 
 COMMAND_SET_PASS_APC_OPERATING_MODE = "setPassAPCOperatingMode"
 

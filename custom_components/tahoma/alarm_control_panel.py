@@ -1,4 +1,4 @@
-"""Support for TaHoma alarm."""
+"""Support for Overkiz alarm control panels."""
 from __future__ import annotations
 
 from homeassistant.components.alarm_control_panel import (
@@ -84,19 +84,19 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma alarm control panels from a config entry."""
+    """Set up the Overkiz alarm control panels from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
     entities = [
-        TahomaAlarmControlPanel(device.deviceurl, coordinator)
+        OverkizAlarmControlPanel(device.deviceurl, coordinator)
         for device in data["platforms"][ALARM_CONTROL_PANEL]
     ]
     async_add_entities(entities)
 
 
-class TahomaAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
-    """Representation of a TaHoma Alarm Control Panel."""
+class OverkizAlarmControlPanel(OverkizEntity, AlarmControlPanelEntity):
+    """Representation of a Overkiz Alarm Control Panel."""
 
     @property
     def state(self):

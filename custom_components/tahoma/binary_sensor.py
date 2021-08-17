@@ -1,5 +1,4 @@
-"""Support for TaHoma binary sensors."""
-
+"""Support for Overkiz binary sensors."""
 from __future__ import annotations
 
 from homeassistant.components import binary_sensor
@@ -82,7 +81,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma sensors from a config entry."""
+    """Set up the Overkiz sensors from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
     entities = []
@@ -97,7 +96,7 @@ async def async_setup_entry(
 
             if description:
                 entities.append(
-                    TahomaBinarySensor(
+                    OverkizBinarySensor(
                         device.deviceurl,
                         coordinator,
                         description,
@@ -107,8 +106,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TahomaBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
-    """Representation of a TaHoma Binary Sensor."""
+class OverkizBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
+    """Representation of an Overkiz Binary Sensor."""
 
     @property
     def is_on(self):
