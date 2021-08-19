@@ -18,6 +18,7 @@ ATTR_RSSI_LEVEL = "rssi_level"
 
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
+CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
 CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
@@ -93,7 +94,7 @@ class OverkizEntity(CoordinatorEntity):
             "manufacturer": manufacturer,
             "name": self.device.label,
             "model": model,
-            "sw_version": self.device.controllable_name,
+            "sw_version": self.executor.select_attribute(CORE_FIRMWARE_REVISION),
             "suggested_area": self.coordinator.areas[self.device.placeoid],
             "via_device": self.executor.get_gateway_id(),
         }
@@ -103,24 +104,12 @@ class OverkizEntity(CoordinatorEntity):
         """Return the state attributes of the device."""
         attr = {}
 
-        if self.executor.has_state(CORE_RSSI_LEVEL_STATE):
-            attr[ATTR_RSSI_LEVEL] = self.executor.select_state(CORE_RSSI_LEVEL_STATE)
-
         if self.executor.has_state(CORE_BATTERY_STATE):
             battery_state = self.executor.select_state(CORE_BATTERY_STATE)
             attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
 
         if self.executor.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
-
-        if self.device.attributes:
-            for attribute in self.device.attributes:
-                attr[attribute.name] = attribute.value
-
-        if self.device.states:
-            for state in self.device.states:
-                if "State" in state.name:
-                    attr[state.name] = state.value
 
         return attr
 
