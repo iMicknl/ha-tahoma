@@ -1,5 +1,12 @@
 """Support for Overkiz sirens."""
 from homeassistant.components.siren import DOMAIN as SIREN, SirenEntity
+from homeassistant.components.siren.const import (
+    SUPPORT_DURATION,
+    SUPPORT_TONES,
+    SUPPORT_TURN_OFF,
+    SUPPORT_TURN_ON,
+    SUPPORT_VOLUME_SET,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -13,6 +20,8 @@ COMMAND_STANDARD = "standard"
 
 
 STATE_ON = "on"
+
+SUPPORT_FLAGS = SUPPORT_TURN_OFF | SUPPORT_TURN_ON
 
 
 async def async_setup_entry(
@@ -35,12 +44,19 @@ async def async_setup_entry(
 class OverkizSiren(OverkizEntity, SirenEntity):
     """Representation an Overkiz Switch."""
 
+    _attr_supported_features = (
+        SUPPORT_FLAGS | SUPPORT_TONES | SUPPORT_VOLUME_SET | SUPPORT_DURATION
+    )
+
     async def async_turn_on(self, **_):
         """Send the on command."""
 
+        duration = 2 * 60  # 2 minutes
+        duration_in_ms = duration * 1000
+
         await self.executor.async_execute_command(
             COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
-            2 * 60 * 1000,  # 2 minutes
+            duration_in_ms,  # 2 minutes
             75,  # 90 seconds bip, 30 seconds silence
             2,  # repeat 3 times
             COMMAND_MEMORIZED_VOLUME,
