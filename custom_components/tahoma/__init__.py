@@ -172,6 +172,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         devices=devices,
         places=places,
         update_interval=update_interval,
+        config_entry_id=entry.entry_id,
     )
 
     _LOGGER.debug(
