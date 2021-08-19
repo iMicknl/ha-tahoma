@@ -15,8 +15,6 @@ from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 
-ATTR_RSSI_LEVEL = "rssi_level"
-
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
 CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
@@ -24,7 +22,6 @@ CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
 CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
 
@@ -94,8 +91,8 @@ class OverkizEntity(CoordinatorEntity):
 
         return DeviceInfo(
             identifiers={(DOMAIN, self.executor.base_device_url)},
-            manufacturer=manufacturer,
             name=self.device.label,
+            manufacturer=manufacturer,
             model=model,
             sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
             suggested_area=self.coordinator.areas[self.device.placeoid],
