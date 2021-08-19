@@ -47,7 +47,7 @@ Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot H
 
 ## Advanced
 
-### TaHoma services
+### Available services
 
 After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
 
@@ -55,8 +55,6 @@ After installation this integration adds new services to Home Assistant which ca
 + Overkiz (by Somfy): My position (cover) (tahoma.set_cover_my_position)
 + Overkiz (by Somfy): Execute command (tahoma.execute_command)
 + Overkiz (by Somfy): Get execution history (tahoma.get_execution_history)
-
-If you want to move your covers always with low speed create [templates](https://www.home-assistant.io/integrations/cover.template/) for each cover which calls the first service.
 
 ### Enable debug logging
 

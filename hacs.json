@@ -1,12 +1,15 @@
 {
-  "name": "Somfy TaHoma",
+  "name": "Overkiz (by Somfy)",
   "domains": [
+    "alarm_control_panel",
+    "binary_sensor",
+    "climate",
     "cover",
     "light",
     "lock",
     "sensor",
     "switch",
-    "climate"
+    "water_heater"
   ],
   "homeassistant": "2021.8.0",
   "render_readme": "true",
