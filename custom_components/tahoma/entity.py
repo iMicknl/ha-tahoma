@@ -7,6 +7,7 @@ from typing import Any, Callable
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
@@ -46,6 +47,8 @@ BATTERY_MAP = {
 
 class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
+
+    coordinator: OverkizDataUpdateCoordinator
 
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
@@ -89,18 +92,18 @@ class OverkizEntity(CoordinatorEntity):
             or self.device.widget
         )
 
-        return {
-            "identifiers": {(DOMAIN, self.executor.base_device_url)},
-            "manufacturer": manufacturer,
-            "name": self.device.label,
-            "model": model,
-            "sw_version": self.executor.select_attribute(CORE_FIRMWARE_REVISION),
-            "suggested_area": self.coordinator.areas[self.device.placeoid],
-            "via_device": self.executor.get_gateway_id(),
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.executor.base_device_url)},
+            manufacturer=manufacturer,
+            name=self.device.label,
+            model=model,
+            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
+            suggested_area=self.coordinator.areas[self.device.placeoid],
+            via_device=self.executor.get_gateway_id(),
+        )
 
     @property
-    def device_state_attributes(self) -> dict[str, Any]:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
 
