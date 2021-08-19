@@ -20,6 +20,8 @@ CORE_DEPLOYMENT_STATE = "core:DeploymentState"
 class Awning(OverkizGenericCover):
     """Representation of a TaHoma Awning."""
 
+    _attr_device_class = DEVICE_CLASS_AWNING
+
     @property
     def supported_features(self):
         """Flag supported features."""
@@ -38,11 +40,6 @@ class Awning(OverkizGenericCover):
             supported_features |= SUPPORT_CLOSE
 
         return supported_features
-
-    @property
-    def device_class(self):
-        """Return the class of the device."""
-        return DEVICE_CLASS_AWNING
 
     @property
     def current_cover_position(self):

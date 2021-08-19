@@ -34,12 +34,8 @@ class OverkizScene(Scene):
         self.scenario = scenario
         self.client = client
         self._attr_name = self.scenario.label
+        self._attr_unique_id = self.scenario.oid
 
     async def async_activate(self, **_: Any) -> None:
         """Activate the scene."""
         await self.client.execute_scenario(self.scenario.oid)
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self.scenario.oid
