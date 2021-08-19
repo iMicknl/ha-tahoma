@@ -44,30 +44,12 @@ OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
 class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     """Representation of a HitachiDHW Water Heater."""
 
-    @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        return SUPPORT_OPERATION_MODE | SUPPORT_TARGET_TEMPERATURE
-
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def min_temp(self):
-        """Return the minimum temperature."""
-        return 30.0
-
-    @property
-    def max_temp(self):
-        """Return the maximum temperature."""
-        return 70.0
-
-    @property
-    def precision(self):
-        """Return the precision of the system."""
-        return PRECISION_WHOLE
+    _attr_max_temp = 70.0
+    _attr_min_temp = 30.0
+    _attr_operation_list = [*OPERATION_MODE_TO_TAHOMA]
+    _attr_precision = PRECISION_WHOLE
+    _attr_supported_features = SUPPORT_OPERATION_MODE | SUPPORT_TARGET_TEMPERATURE
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def current_temperature(self):
@@ -95,11 +77,6 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
         return TAHOMA_TO_OPERATION_MODE[
             self.executor.select_state(MODBUS_DHW_MODE_STATE)
         ]
-
-    @property
-    def operation_list(self):
-        """Return the list of available operation modes."""
-        return [*OPERATION_MODE_TO_TAHOMA]
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""

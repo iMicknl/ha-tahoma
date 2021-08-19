@@ -1,6 +1,4 @@
 """Support for Atlantic Pass APC Zone Control."""
-from typing import List
-
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_COOL,
@@ -30,22 +28,9 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 class AtlanticPassAPCZoneControl(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Pass APC Zone Control."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        supported_features = 0
-
-        return supported_features
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODE_TO_TAHOMA]
+    _attr_hvac_modes = [*HVAC_MODE_TO_TAHOMA]
+    _attr_supported_features = 0
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def hvac_mode(self) -> str:
