@@ -1,5 +1,5 @@
 """Support for Atlantic Electrical Towel Dryer."""
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.climate import (
     SUPPORT_PRESET_MODE,
@@ -63,20 +63,10 @@ HVAC_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODE.items()}
 class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Electrical Towel Dryer."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODE_TO_TAHOMA]
+    _attr_hvac_modes = [*HVAC_MODE_TO_TAHOMA]
+    _attr_preset_modes = [*PRESET_MODE_TO_TAHOMA]
+    _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def hvac_mode(self) -> str:
@@ -94,11 +84,6 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
         await self.executor.async_execute_command(
             COMMAND_SET_TOWEL_DRYER_OPERATING_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [*PRESET_MODE_TO_TAHOMA]
 
     @property
     def preset_mode(self) -> Optional[str]:
