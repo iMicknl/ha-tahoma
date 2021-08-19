@@ -12,13 +12,13 @@ Custom component for Home Assistant to interact with smart devices via the Overk
 ## Supported hubs
 
 - Somfy TaHoma
-- Somfy Tahoma Switch [(instructions)](#tahoma-switch)
+- Somfy TaHoma Switch [(instructions)](#tahoma-switch)
 - Somfy Connexoon IO
 - Somfy Connexoon RTS
-- Cozytouch
-- Hi Kumo
-- Rexel
-- eedomus
+- Atlantic Cozytouch
+- Hitachi Hi Kumo
+- Rexel Energeasy Connect
+- Nexity Eugénie
 
 ### TaHoma Switch
 
@@ -30,15 +30,20 @@ This integration doesn't rely on a hardcoded list of devices anymore, but relies
 
 ## Installation
 
-### Manual
-
-Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+You can install this integration via [HACS](#hacs) or [manually](#manual).
 
 ### HACS
 
-This integration is included in HACS. Search for the `Somfy TaHoma` integration and choose install. Reboot Home Assistant and install the Somfy TaHoma integration via the integrations page or press the blue button below.
+This integration is included in HACS. Search for the `Overkiz (by Somfy)` integration and choose install. Reboot Home Assistant and configure the 'Overkiz (by Somfy)' integration via the integrations page or press the blue button below.
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tahoma)
+
+### Manual
+
+Copy the `custom_components/tahoma` to your `custom_components` folder. Reboot Home Assistant and configure the 'Overkiz (by Somfy)' integration via the integrations page or press the blue button below.
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=tahoma)
+
 
 ## Advanced
 
@@ -46,10 +51,10 @@ This integration is included in HACS. Search for the `Somfy TaHoma` integration 
 
 After installation this integration adds new services to Home Assistant which can be used in automations. The new services are:
 
-+ Somfy TaHoma: Set cover position with low speed (tahoma.set_cover_position_low_speed, only added if supported by the device)
-+ Somfy TaHoma: My position (cover) (tahoma.set_cover_my_position)
-+ Somfy TaHoma: Execute command (tahoma.execute_command)
-+ Somfy TaHoma: Get execution history (tahoma.get_execution_history)
++ Overkiz (by Somfy): Set cover position with low speed (tahoma.set_cover_position_low_speed, only added if supported by the device)
++ Overkiz (by Somfy): My position (cover) (tahoma.set_cover_my_position)
++ Overkiz (by Somfy): Execute command (tahoma.execute_command)
++ Overkiz (by Somfy): Get execution history (tahoma.get_execution_history)
 
 If you want to move your covers always with low speed create [templates](https://www.home-assistant.io/integrations/cover.template/) for each cover which calls the first service.
 
