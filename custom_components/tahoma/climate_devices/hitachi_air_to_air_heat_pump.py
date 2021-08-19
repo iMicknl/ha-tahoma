@@ -88,10 +88,11 @@ FAN_MODES_TO_OVP_TAHOMA = {v: k for k, v in OVP_TAHOMA_TO_FAN_MODES.items()}
 class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     """Representation of HitachiAirToAirHeatPump."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
+    _attr_hvac_modes = [*HVAC_MODES_TO_TAHOMA]
+    _attr_preset_modes = [PRESET_NONE, PRESET_HOLIDAY_MODE]
+    _attr_swing_modes = [*SWING_MODES_TO_TAHOMA]
+    _attr_target_temperature_step = 1.0
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def supported_features(self) -> int:
@@ -105,11 +106,6 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
             supported_features |= SUPPORT_SWING_MODE
 
         return supported_features
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODES_TO_TAHOMA]
 
     @property
     def hvac_mode(self) -> str:
@@ -156,19 +152,9 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
         """Return the swing setting."""
         return TAHOMA_TO_SWING_MODES[self._select_state(*SWING_STATE)]
 
-    @property
-    def swing_modes(self) -> Optional[List[str]]:
-        """Return the list of available swing modes."""
-        return [*SWING_MODES_TO_TAHOMA]
-
     async def async_set_swing_mode(self, swing_mode: str) -> None:
         """Set new target swing operation."""
         await self._global_control(swing_mode=SWING_MODES_TO_TAHOMA[swing_mode])
-
-    @property
-    def target_temperature_step(self) -> Optional[float]:
-        """Return the supported step of target temperature."""
-        return 1.0
 
     @property
     def target_temperature(self) -> None:
@@ -195,11 +181,6 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
             return PRESET_NONE
 
         return None
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [PRESET_NONE, PRESET_HOLIDAY_MODE]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""

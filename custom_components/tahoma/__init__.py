@@ -1,4 +1,4 @@
-"""The TaHoma integration."""
+"""The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -37,10 +37,10 @@ from .const import (
     DEFAULT_HUB,
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
-    IGNORED_TAHOMA_DEVICES,
-    TAHOMA_DEVICE_TO_PLATFORM,
+    IGNORED_OVERKIZ_DEVICES,
+    OVERKIZ_DEVICE_TO_PLATFORM,
 )
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -164,7 +164,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
     )
 
-    tahoma_coordinator = TahomaDataUpdateCoordinator(
+    coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
         name="device events",
@@ -179,28 +179,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
     )
 
-    await tahoma_coordinator.async_refresh()
+    await coordinator.async_refresh()
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
-        "coordinator": tahoma_coordinator,
+        "coordinator": coordinator,
         "update_listener": entry.add_update_listener(update_listener),
     }
 
     # Map Overkiz device to Home Assistant platform
-    for device in tahoma_coordinator.data.values():
-        platform = TAHOMA_DEVICE_TO_PLATFORM.get(
+    for device in coordinator.data.values():
+        platform = OVERKIZ_DEVICE_TO_PLATFORM.get(
             device.widget
-        ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
+        ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
             log_device("Added device", device)
         elif (
-            device.widget not in IGNORED_TAHOMA_DEVICES
-            and device.ui_class not in IGNORED_TAHOMA_DEVICES
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
         ):
             log_device("Unsupported device detected", device)
 
@@ -256,7 +256,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entity = entity_registry.entities.get(entity_id)
 
             try:
-                await tahoma_coordinator.client.execute_command(
+                await coordinator.client.execute_command(
                     entity.unique_id,
                     Command(call.data.get("command"), call.data.get("args")),
                     "Home Assistant Service",
@@ -282,7 +282,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def handle_get_execution_history(call):
         """Handle get execution history service."""
-        await write_execution_history_to_log(tahoma_coordinator.client)
+        await write_execution_history_to_log(coordinator.client)
 
     service.async_register_admin_service(
         hass,

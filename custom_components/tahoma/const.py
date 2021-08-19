@@ -1,4 +1,4 @@
-"""Constants for the TaHoma integration."""
+"""Constants for the Overkiz (by Somfy) integration."""
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
@@ -15,7 +15,7 @@ DEFAULT_HUB = "somfy_europe"
 MIN_UPDATE_INTERVAL = 30
 DEFAULT_UPDATE_INTERVAL = 30
 
-IGNORED_TAHOMA_DEVICES = [
+IGNORED_OVERKIZ_DEVICES = [
     "ProtocolGateway",
     "Pod",
     # entries mapped to Sensor based on available states
@@ -44,7 +44,7 @@ IGNORED_TAHOMA_DEVICES = [
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
-TAHOMA_DEVICE_TO_PLATFORM = {
+OVERKIZ_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
     "Alarm": ALARM_CONTROL_PANEL,
     "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)

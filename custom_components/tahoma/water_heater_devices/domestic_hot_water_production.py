@@ -43,10 +43,11 @@ MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
 class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
+    _attr_operation_list = [*MAP_REVERSE_OPERATION_MODES]
+    _attr_supported_features = (
+        SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
+    )
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def min_temp(self):
@@ -62,11 +63,6 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
         return MAP_OPERATION_MODES[self.executor.select_state(IO_DHW_MODE_STATE)]
-
-    @property
-    def operation_list(self):
-        """Return the list of available operation modes."""
-        return [*MAP_REVERSE_OPERATION_MODES]
 
     @property
     def current_temperature(self):
@@ -100,11 +96,6 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
-
-    @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        return SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
 
     @property
     def is_away_mode_on(self):

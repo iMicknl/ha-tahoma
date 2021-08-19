@@ -1,4 +1,4 @@
-"""Support for TaHoma water heater devices."""
+"""Support for Overkiz water heater devices."""
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -21,7 +21,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the TaHoma water heater from a config entry."""
+    """Set up the Overkiz water heater from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 

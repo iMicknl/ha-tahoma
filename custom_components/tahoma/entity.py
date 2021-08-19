@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
 from .const import DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 
 ATTR_RSSI_LEVEL = "rssi_level"
@@ -46,34 +46,22 @@ BATTERY_MAP = {
 class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
         self.base_device_url, *_ = self.device_url.split("#")
         self.executor = OverkizExecutor(device_url, coordinator)
 
+        self._attr_assumed_state = not self.device.states
+        self._attr_available = self.device.available
         self._attr_name = self.device.label
+        self._attr_unique_id = self.device.deviceurl
 
     @property
     def device(self) -> Device:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.device.available
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self.device.deviceurl
-
-    @property
-    def assumed_state(self) -> bool:
-        """Return True if unable to access real state of the entity."""
-        return not self.device.states
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -157,15 +145,11 @@ class OverkizDescriptiveEntity(OverkizEntity):
     def __init__(
         self,
         device_url: str,
-        coordinator: TahomaDataUpdateCoordinator,
+        coordinator: OverkizDataUpdateCoordinator,
         description: OverkizSensorDescription | OverkizBinarySensorDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
         self.entity_description = description
         self._attr_name = f"{super().name} {self.entity_description.name}"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return f"{super().unique_id}-{self.entity_description.key}"
+        self._attr_unique_id = f"{super().unique_id}-{self.entity_description.key}"

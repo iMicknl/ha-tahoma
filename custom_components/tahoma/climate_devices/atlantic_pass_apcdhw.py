@@ -1,5 +1,5 @@
 """Support for AtlanticPassAPCDHWComponement."""
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.climate import (
     HVAC_MODE_HEAT,
@@ -73,25 +73,12 @@ MAP_REVERSE_PRESET_MODES = {v: k for k, v in MAP_PRESET_MODES.items()}
 class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-
-    @property
-    def min_temp(self) -> float:
-        """Return minimum temperature."""
-        return 30
-
-    @property
-    def max_temp(self) -> float:
-        """Return maximum temperature."""
-        return 65
+    _attr_hvac_modes = [*MAP_REVERSE_HVAC_MODES]
+    _attr_max_temp = 65
+    _attr_min_temp = 30
+    _attr_preset_modes = [*MAP_REVERSE_PRESET_MODES]
+    _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -109,11 +96,6 @@ class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
             return PRESET_BOOST
 
         return PRESET_COMFORT
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [*MAP_REVERSE_PRESET_MODES]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
@@ -143,11 +125,6 @@ class AtlanticPassAPCDHW(OverkizEntity, ClimateEntity):
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
         return MAP_HVAC_MODES[self.executor.select_state(CORE_DWH_ON_OFF_STATE)]
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*MAP_REVERSE_HVAC_MODES]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""

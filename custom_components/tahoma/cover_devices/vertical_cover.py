@@ -18,7 +18,7 @@ from homeassistant.const import STATE_ON
 from .tahoma_cover import (
     COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
     COMMANDS_STOP,
-    TahomaGenericCover,
+    OverkizGenericCover,
 )
 
 COMMAND_CYCLE = "cycle"
@@ -53,7 +53,7 @@ TAHOMA_COVER_DEVICE_CLASSES = {
 }
 
 
-class VerticalCover(TahomaGenericCover):
+class VerticalCover(OverkizGenericCover):
     """Representation of a TaHoma Vertical Cover."""
 
     @property
