@@ -12,6 +12,7 @@ from homeassistant.const import (
     POWER_WATT,
     SIGNAL_STRENGTH_DECIBELS,
     TEMP_CELSIUS,
+    TIME_SECONDS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
@@ -97,11 +98,6 @@ SENSOR_DESCRIPTIONS = [
         name="Middle Water Temperature",
         device_class=sensor.DEVICE_CLASS_TEMPERATURE,
         state_class=STATE_CLASS_MEASUREMENT,
-    ),
-    OverkizSensorDescription(
-        key="io:PriorityLockOriginatorState",
-        name="Priority Lock Originator",
-        icon="mdi:alert",
     ),
     OverkizSensorDescription(
         key="core:FossilEnergyConsumptionState",
@@ -289,6 +285,20 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: str(value).capitalize(),
         entity_registry_enabled_default=False,
     ),
+    OverkizSensorDescription(
+        key="io:PriorityLockOriginatorState",
+        name="Priority Lock Originator",
+        value=lambda value: str(value).capitalize(),
+        icon="mdi:lock",
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:PriorityLockTimerState",
+        name="Priority Lock Timer",
+        icon="mdi:lock-clock",
+        unit_of_measurement=TIME_SECONDS,
+        entity_registry_enabled_default=False,
+    ),
 ]
 
 
@@ -308,9 +318,8 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.states:
-            description = key_supported_states.get(state.name)
-            if description:
+        for state in device.definition.states:
+            if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizStateSensor(
                         device.deviceurl,
@@ -328,7 +337,10 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
     @property
     def state(self):
         """Return the value of the sensor."""
-        state = self.device.states[self.entity_description.key]
+        state = self.device.states.get(self.entity_description.key)
+
+        if not state:
+            return None
 
         # Transform the value with a lambda function
         if hasattr(self.entity_description, "value"):
