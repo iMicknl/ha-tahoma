@@ -12,6 +12,7 @@ from homeassistant.const import (
     POWER_WATT,
     SIGNAL_STRENGTH_DECIBELS,
     TEMP_CELSIUS,
+    TIME_SECONDS,
     VOLUME_FLOW_RATE_CUBIC_METERS_PER_HOUR,
     VOLUME_LITERS,
 )
@@ -296,6 +297,7 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: value,
         name="Priority Lock Timer",
         icon="mdi:lock-clock",
+        unit_of_measurement=TIME_SECONDS,
         entity_registry_enabled_default=False,
     ),
 ]
