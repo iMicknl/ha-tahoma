@@ -294,7 +294,6 @@ SENSOR_DESCRIPTIONS = [
     ),
     OverkizSensorDescription(
         key="core:PriorityLockTimerState",
-        value=lambda value: value,
         name="Priority Lock Timer",
         icon="mdi:lock-clock",
         unit_of_measurement=TIME_SECONDS,
