@@ -54,7 +54,6 @@ CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
 CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
 # io:DiscreteGateOpenerIOComponent
 CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
-CORE_PRIORITY_LOCK_TIMER_STATE = "core:PriorityLockTimerState"
 CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
 CORE_SLATE_ORIENTATION_STATE = "core:SlateOrientationState"
 CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
@@ -62,10 +61,6 @@ CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
 MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
 
 IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
-IO_PRIORITY_LOCK_ORIGINATOR_STATE = "io:PriorityLockOriginatorState"
-
-ICON_LOCK_ALERT = "mdi:lock-alert"
-ICON_WEATHER_WINDY = "mdi:weather-windy"
 
 STATE_CLOSED = "closed"
 
@@ -125,19 +120,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
-
-        return None
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend, if any."""
-        if (
-            self.executor.has_state(CORE_PRIORITY_LOCK_TIMER_STATE)
-            and self.executor.select_state(CORE_PRIORITY_LOCK_TIMER_STATE) > 0
-        ):
-            if self.executor.select_state(IO_PRIORITY_LOCK_ORIGINATOR_STATE) == "wind":
-                return ICON_WEATHER_WINDY
-            return ICON_LOCK_ALERT
 
         return None
 

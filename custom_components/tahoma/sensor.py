@@ -99,11 +99,6 @@ SENSOR_DESCRIPTIONS = [
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     OverkizSensorDescription(
-        key="io:PriorityLockOriginatorState",
-        name="Priority Lock Originator",
-        icon="mdi:alert",
-    ),
-    OverkizSensorDescription(
         key="core:FossilEnergyConsumptionState",
         name="Fossil Energy Consumption",
         device_class=sensor.DEVICE_CLASS_ENERGY,
@@ -289,6 +284,20 @@ SENSOR_DESCRIPTIONS = [
         value=lambda value: str(value).capitalize(),
         entity_registry_enabled_default=False,
     ),
+    OverkizSensorDescription(
+        key="io:PriorityLockOriginatorState",
+        name="Priority Lock Originator",
+        value=lambda value: str(value).capitalize(),
+        icon="mdi:lock",
+        entity_registry_enabled_default=False,
+    ),
+    OverkizSensorDescription(
+        key="core:PriorityLockTimerState",
+        value=lambda value: value,
+        name="Priority Lock Timer",
+        icon="mdi:lock-clock",
+        entity_registry_enabled_default=False,
+    ),
 ]
 
 
@@ -308,9 +317,8 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.states:
-            description = key_supported_states.get(state.name)
-            if description:
+        for state in device.definition.states:
+            if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizStateSensor(
                         device.deviceurl,
@@ -328,7 +336,10 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
     @property
     def state(self):
         """Return the value of the sensor."""
-        state = self.device.states[self.entity_description.key]
+        state = self.device.states.get(self.entity_description.key)
+
+        if not state:
+            return None
 
         # Transform the value with a lambda function
         if hasattr(self.entity_description, "value"):
