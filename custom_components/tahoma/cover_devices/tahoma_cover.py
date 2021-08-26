@@ -70,10 +70,8 @@ ICON_WEATHER_WINDY = "mdi:weather-windy"
 STATE_CLOSED = "closed"
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
-SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
 SUPPORT_MY = 512
-SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
 class OverkizGenericCover(OverkizEntity, CoverEntity):
@@ -290,9 +288,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
         if self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
-
-        if self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
-            supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
 
         if self.executor.has_command(COMMAND_MY):
             supported_features |= SUPPORT_MY

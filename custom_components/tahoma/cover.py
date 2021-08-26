@@ -1,5 +1,9 @@
 """Support for Overkiz covers - shutters etc."""
-from homeassistant.components.cover import ATTR_POSITION, DOMAIN as COVER
+from homeassistant.components.cover import (
+    ATTR_POSITION,
+    DOMAIN as COVER,
+    SUPPORT_SET_POSITION,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
@@ -14,7 +18,6 @@ SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
 SUPPORT_MY = 512
-SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
 async def async_setup_entry(
@@ -53,5 +56,5 @@ async def async_setup_entry(
             )
         },
         "async_set_cover_position_low_speed",
-        [SUPPORT_COVER_POSITION_LOW_SPEED],
+        [SUPPORT_SET_POSITION],
     )
