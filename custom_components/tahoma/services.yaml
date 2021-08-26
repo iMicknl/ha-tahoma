@@ -16,10 +16,9 @@ set_light_my_position:
 
 set_cover_position_low_speed:
   name: Set cover position with low speed
-  description: Move cover to specific position with a low speed.
+  description: Move to specific position all or specified cover with low speed.
   target:
     entity:
-      integration: tahoma
       domain: cover
   fields:
     position:
@@ -31,9 +30,7 @@ set_cover_position_low_speed:
         number:
           min: 0
           max: 100
-          step: 1
           unit_of_measurement: "%"
-          mode: slider
 
 execute_command:
   name: Execute command
