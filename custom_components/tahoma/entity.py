@@ -7,6 +7,7 @@ from typing import Any, Callable
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
@@ -14,15 +15,13 @@ from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 
-ATTR_RSSI_LEVEL = "rssi_level"
-
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
+CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
 CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
 CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
 
@@ -45,6 +44,8 @@ BATTERY_MAP = {
 
 class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
+
+    coordinator: OverkizDataUpdateCoordinator
 
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
@@ -88,23 +89,20 @@ class OverkizEntity(CoordinatorEntity):
             or self.device.widget
         )
 
-        return {
-            "identifiers": {(DOMAIN, self.executor.base_device_url)},
-            "manufacturer": manufacturer,
-            "name": self.device.label,
-            "model": model,
-            "sw_version": self.device.controllable_name,
-            "suggested_area": self.coordinator.areas[self.device.placeoid],
-            "via_device": self.executor.get_gateway_id(),
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.executor.base_device_url)},
+            name=self.device.label,
+            manufacturer=manufacturer,
+            model=model,
+            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
+            suggested_area=self.coordinator.areas[self.device.placeoid],
+            via_device=self.executor.get_gateway_id(),
+        )
 
     @property
-    def device_state_attributes(self) -> dict[str, Any]:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
-
-        if self.executor.has_state(CORE_RSSI_LEVEL_STATE):
-            attr[ATTR_RSSI_LEVEL] = self.executor.select_state(CORE_RSSI_LEVEL_STATE)
 
         if self.executor.has_state(CORE_BATTERY_STATE):
             battery_state = self.executor.select_state(CORE_BATTERY_STATE)
@@ -112,15 +110,6 @@ class OverkizEntity(CoordinatorEntity):
 
         if self.executor.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
-
-        if self.device.attributes:
-            for attribute in self.device.attributes:
-                attr[attribute.name] = attribute.value
-
-        if self.device.states:
-            for state in self.device.states:
-                if "State" in state.name:
-                    attr[state.name] = state.value
 
         return attr
 
