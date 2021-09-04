@@ -2,7 +2,11 @@
 from __future__ import annotations
 
 from homeassistant.components import sensor
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
+from homeassistant.components.sensor import (
+    STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
+    SensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
@@ -18,7 +22,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util.dt import utc_from_timestamp
 
 from .const import DOMAIN
 from .entity import OverkizDescriptiveEntity, OverkizSensorDescription
@@ -126,8 +129,7 @@ SENSOR_DESCRIPTIONS = [
         name="Electric Energy Consumption",
         device_class=sensor.DEVICE_CLASS_ENERGY,
         unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh (not for modbus:YutakiV2DHWElectricalEnergyConsumptionComponent)
-        state_class=STATE_CLASS_MEASUREMENT,  # core:MeasurementCategory attribute = electric/overall
-        last_reset=utc_from_timestamp(0),
+        state_class=STATE_CLASS_TOTAL_INCREASING,  # core:MeasurementCategory attribute = electric/overall
     ),
     OverkizSensorDescription(
         key="core:ElectricPowerConsumptionState",
