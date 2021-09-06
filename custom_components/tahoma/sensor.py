@@ -345,7 +345,7 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
             return None
 
         # Transform the value with a lambda function
-        if hasattr(self.entity_description, "value"):
-            return self.entity_description.value(state.value)
+        if hasattr(self.entity_description, "native_value"):
+            return self.entity_description.native_value(state.value)
 
         return state.value
