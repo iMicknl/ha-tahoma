@@ -54,7 +54,7 @@ PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
 class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
     """Representation of HitachiAirToWaterHeatingZone."""
 
-    _attr_hvac_action = [*HVAC_MODE_TO_TAHOMA]
+    _attr_hvac_modes = [*HVAC_MODE_TO_TAHOMA]
     _attr_max_temp = 35.0
     _attr_min_temp = 5.0
     _attr_preset_modes = [*PRESET_MODE_TO_TAHOMA]
