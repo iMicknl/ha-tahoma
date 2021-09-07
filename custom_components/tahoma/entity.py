@@ -118,7 +118,9 @@ class OverkizEntity(CoordinatorEntity):
 class OverkizSensorDescription(SensorEntityDescription):
     """Class to describe an Overkiz sensor."""
 
-    value: Callable[[str | int | float], str | int | float] | None = lambda val: val
+    native_value: Callable[
+        [str | int | float], str | int | float
+    ] | None = lambda val: val
 
 
 @dataclass
