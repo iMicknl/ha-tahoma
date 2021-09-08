@@ -49,7 +49,7 @@ async def async_setup_entry(
     entities.extend(
         [
             OverkizLowSpeedCoverSwitch(device.deviceurl, coordinator)
-            for device in data["platforms"].get(COVER)
+            for device in data["platforms"][COVER]
             if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )
