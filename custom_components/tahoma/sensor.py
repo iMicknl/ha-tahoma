@@ -303,7 +303,8 @@ SENSOR_DESCRIPTIONS = [
     ),
     OverkizSensorDescription(
         key="core:Memorized1PositionState",
-        name="MY position",
+        name="My Position",
+        icon="mdi:content-save-cog",
         entity_registry_enabled_default=False,
     ),
 ]
