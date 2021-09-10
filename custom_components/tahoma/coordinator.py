@@ -19,7 +19,7 @@ from pyhoma.exceptions import (
 )
 from pyhoma.models import DataType, Device, Place, State
 
-from .const import DOMAIN
+from .const import DOMAIN, UPDATE_INTERVAL
 
 TYPES = {
     DataType.NONE: None,
@@ -59,7 +59,6 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
         self.data = {}
-        self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
         self.executions: Dict[str, Dict[str, str]] = {}
@@ -146,7 +145,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 del self.executions[event.exec_id]
 
         if not self.executions:
-            self.update_interval = self.original_update_interval
+            self.update_interval = UPDATE_INTERVAL
 
         return self.devices
 

@@ -20,16 +20,5 @@
     "abort": {
       "already_configured": "Account is al geconfigureerd"
     }
-  },
-  "options": {
-    "step": {
-      "update_interval": {
-        "title": "Update interval",
-        "description": "De Overkiz integratie haalt periodiek nieuwe gebeurtenissen op. Wijzig de update-interval naar een lagere waarde als je vaker updates wilt, bijvoorbeeld wanneer je je apparaten ook buiten Home Assistant bedient.",
-        "data": {
-          "update_interval": "Update interval (in seconden)"
-        }
-      }
-    }
   }
 }

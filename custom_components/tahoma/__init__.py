@@ -1,7 +1,7 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime
 from enum import Enum
 import logging
 
@@ -33,12 +33,11 @@ import voluptuous as vol
 
 from .const import (
     CONF_HUB,
-    CONF_UPDATE_INTERVAL,
     DEFAULT_HUB,
-    DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
+    UPDATE_INTERVAL,
 )
 from .coordinator import OverkizDataUpdateCoordinator
 
@@ -157,10 +156,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.exception(exception)
         return False
 
-    update_interval = timedelta(
-        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
-    )
-
     coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
@@ -168,12 +163,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         client=client,
         devices=devices,
         places=places,
-        update_interval=update_interval,
+        update_interval=UPDATE_INTERVAL,
         config_entry_id=entry.entry_id,
-    )
-
-    _LOGGER.debug(
-        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
     )
 
     await coordinator.async_refresh()
@@ -184,7 +175,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
         "coordinator": coordinator,
-        "update_listener": entry.add_update_listener(update_listener),
     }
 
     # Map Overkiz device to Home Assistant platform
@@ -297,21 +287,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     if unload_ok:
-        hass.data[DOMAIN][entry.entry_id]["update_listener"]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
-
-
-async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Update when config_entry options update."""
-    if entry.options[CONF_UPDATE_INTERVAL]:
-        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
-        coordinator.update_interval = new_update_interval
-        coordinator.original_update_interval = new_update_interval
-
-        await coordinator.async_refresh()
 
 
 async def write_execution_history_to_log(client: TahomaClient):
