@@ -29,7 +29,7 @@ Multiple users reported that the TaHoma Switch will work with this integration *
 
 ## Supported devices
 
-This integration doesn't rely on a hardcoded list of devices anymore, but relies on the characteristics of every device. This means that more devices will be supported out of the box, based on their category, available states and commands. If your device is not supported or working correctly, have a look [here](#device-not-supported--working-correctly).
+Most of the devices supported by your hub should be supported. If it is not the case or working correctly, have a look [here](#device-not-supported--working-correctly).
 
 ## Installation
 
@@ -86,10 +86,6 @@ In order to gather more information, you can use the `tahoma.get_execution_histo
 2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 21:30:00: off executed via Home Assistant on io://xxxx, with [].
 2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 16:23:29: setIntensity executed via Home Assistant on io://xxxx, with [70].
 ```
-
-### Exclude devices
-
-The previous version had functionality to exclude devices from Home Assistant. Since we moved to the entity registry, this functionality is now offered by default in Home Assistant core. You can now disable entities via the interface.
 
 ### Retrieve HomeKit code
 
