@@ -45,7 +45,6 @@ COMMANDS_SET_TILT_POSITION = [COMMAND_SET_ORIENTATION]
 CORE_CLOSURE_STATE = "core:ClosureState"
 CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
 CORE_DEPLOYMENT_STATE = "core:DeploymentState"
-CORE_MEMORIZED_1_POSITION_STATE = "core:Memorized1PositionState"
 CORE_MOVING_STATE = "core:MovingState"
 CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
 # io:DiscreteGateOpenerIOComponent

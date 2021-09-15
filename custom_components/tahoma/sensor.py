@@ -301,6 +301,12 @@ SENSOR_DESCRIPTIONS = [
         native_unit_of_measurement=TIME_SECONDS,
         entity_registry_enabled_default=False,
     ),
+    OverkizSensorDescription(
+        key="core:Memorized1PositionState",
+        name="My Position",
+        icon="mdi:content-save-cog",
+        entity_registry_enabled_default=False,
+    ),
 ]
 
 
