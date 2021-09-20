@@ -8,7 +8,6 @@
     "pyhoma==0.5.18"
   ],
   "codeowners": [
-    "@philklei",
     "@imicknl",
     "@vlebourl",
     "@tetienne"
