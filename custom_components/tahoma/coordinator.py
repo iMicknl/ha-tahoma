@@ -96,14 +96,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(exception) from exception
 
         for event in events:
-            _LOGGER.debug(
-                "%s/%s (device: %s, state: %s -> %s)",
-                event.name,
-                event.exec_id,
-                event.deviceurl,
-                event.old_state,
-                event.new_state,
-            )
+            _LOGGER.debug(event)
 
             if event.name == EventName.DEVICE_AVAILABLE:
                 self.devices[event.deviceurl].available = True
