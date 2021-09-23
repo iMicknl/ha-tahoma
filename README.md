@@ -89,4 +89,4 @@ In order to gather more information, you can use the `tahoma.get_execution_histo
 
 ### Retrieve HomeKit code
 
-If your hub (e.g. Somfy TaHoma) supports HomeKit natively, your setup code will be added as a sensor in Home Assistant. Look up your hub in Home Assistant and retrieve the value from the 'HomeKit Setup Code' sensor. You can now setup the [HomeKit Controller](https://www.home-assistant.io/integrations/homekit_controller/) integration in Home Assistant.
+If your hub (e.g. Somfy TaHoma) supports HomeKit natively, your setup code will be added as a sensor in Home Assistant. Look up your hub in Home Assistant and retrieve the value from the 'HomeKit Setup Code' sensor. You can now configure the [HomeKit Controller](https://www.home-assistant.io/integrations/homekit_controller/) integration in Home Assistant.
