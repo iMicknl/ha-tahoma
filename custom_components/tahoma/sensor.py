@@ -307,6 +307,13 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:content-save-cog",
         entity_registry_enabled_default=False,
     ),
+    OverkizSensorDescription(
+        key="core:DiscreteRSSILevelState",
+        name="Discrete RSSI Level",
+        entity_registry_enabled_default=False,
+        native_value=lambda value: str(value).capitalize(),
+        device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
+    ),
 ]
 
 
