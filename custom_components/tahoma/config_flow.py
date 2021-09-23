@@ -18,6 +18,7 @@ from pyhoma.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
+from pyhoma.models import obfuscate_id
 import voluptuous as vol
 
 from .const import (
@@ -162,10 +163,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         hostname = discovery_info[HOSTNAME]
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug("DHCP discovery detected gateway %s", gateway_id)
+        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
 
         if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", gateway_id)
+            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
             return self.async_abort(reason="already_configured")
 
         return await self.async_step_user()

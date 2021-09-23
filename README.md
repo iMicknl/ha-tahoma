@@ -72,20 +72,15 @@ logger:
 
 ### Device not supported
 
-If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging). Copy the debug string from your log and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose)
+If your device is not visible in the device list of Home Assistant (/config/devices/dashboard), you need to turn on [debug logging](#enable-debug-logging) first. Copy your Home Assistant log (Configuration > Logs) and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose).
 
-`DEBUG (MainThread) [custom_components.tahoma] Unsupported TaHoma device (io:DimmableLightIOComponent - Light - DimmableLight).`
 
 ### Device not working correctly
 
-If your device is listed in the device list, create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose) and fill in all details of the issue template.
+If your device is listed in the device list, you need to turn on [debug logging](#enable-debug-logging) first. Copy your Home Assistant log (Configuration > Logs) and create a [new issue](https://github.com/iMicknl/ha-tahoma/issues/new/choose).
 
-In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor app (e.g. TaHoma) and capture the commands.
+In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor app (e.g. TaHoma) and include your log in the issue.
 
-```
-2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 21:30:00: off executed via Home Assistant on io://xxxx, with [].
-2021-01-28 09:20:22 INFO (MainThread) [custom_components.tahoma] 2021-01-27 16:23:29: setIntensity executed via Home Assistant on io://xxxx, with [70].
-```
 
 ### Retrieve HomeKit code
 
