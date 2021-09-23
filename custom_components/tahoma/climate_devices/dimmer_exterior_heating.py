@@ -1,6 +1,4 @@
 """Support for Atlantic Electrical Heater IO controller."""
-from typing import List
-
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     HVAC_MODE_HEAT,
@@ -21,30 +19,16 @@ CORE_LEVEL_STATE = "core:LevelState"
 class DimmerExteriorHeating(OverkizEntity, ClimateEntity):
     """Representation of TaHoma IO Atlantic Electrical Heater."""
 
+    _attr_hvac_modes = [HVAC_MODE_OFF, HVAC_MODE_HEAT]
+    _attr_max_temp = 100
+    _attr_min_temp = 0
+    _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+    _attr_temperature_unit = TEMP_CELSIUS
+
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
         self._saved_level = 100 - self.executor.select_state(CORE_LEVEL_STATE)
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_TARGET_TEMPERATURE
-
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def min_temp(self) -> float:
-        """Return minimum percentage."""
-        return 0
-
-    @property
-    def max_temp(self) -> float:
-        """Return maximum percentage."""
-        return 100
 
     @property
     def target_temperature(self):
@@ -65,11 +49,6 @@ class DimmerExteriorHeating(OverkizEntity, ClimateEntity):
         if self.executor.select_state(CORE_LEVEL_STATE) == 100:
             return HVAC_MODE_OFF
         return HVAC_MODE_HEAT
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [HVAC_MODE_OFF, HVAC_MODE_HEAT]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""

@@ -1,5 +1,5 @@
 """Support for EvoHome HeatingSetPoint."""
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from homeassistant.components.climate import SUPPORT_TARGET_TEMPERATURE, ClimateEntity
 from homeassistant.components.climate.const import HVAC_MODE_HEAT
@@ -31,6 +31,11 @@ UNITS = {
 class HeatingSetPoint(OverkizEntity, ClimateEntity):
     """Representation of EvoHome HeatingSetPoint device."""
 
+    _attr_hvac_mode = HVAC_MODE_HEAT
+    _attr_hvac_modes = [HVAC_MODE_HEAT]
+    _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+    _attr_target_temperature_step = 0.5
+
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
@@ -44,39 +49,19 @@ class HeatingSetPoint(OverkizEntity, ClimateEntity):
         return None
 
     @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_TARGET_TEMPERATURE
-
-    @property
-    def hvac_mode(self) -> str:
-        """Return hvac operation ie. heat, cool mode."""
-        return HVAC_MODE_HEAT
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [HVAC_MODE_HEAT]
-
-    @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
         return self.executor.select_state(CORE_TEMPERATURE_STATE)
 
     @property
-    def target_temperature_step(self) -> Optional[float]:
-        """Return the supported step of target temperature."""
-        return 0.5
-
-    @property
     def min_temp(self) -> float:
         """Return the minimum temperature."""
-        return self.select_attribute(CORE_MIN_SETTABLE_VALUE)
+        return self.executor.select_attribute(CORE_MIN_SETTABLE_VALUE)
 
     @property
     def max_temp(self) -> float:
         """Return the maximum temperature."""
-        return self.select_attribute(CORE_MAX_SETTABLE_VALUE)
+        return self.executor.select_attribute(CORE_MAX_SETTABLE_VALUE)
 
     @property
     def target_temperature(self):

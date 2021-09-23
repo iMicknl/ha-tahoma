@@ -98,10 +98,8 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.states:
-            description = key_supported_states.get(state.name)
-
-            if description:
+        for state in device.definition.states:
+            if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizBinarySensor(
                         device.deviceurl,
@@ -119,5 +117,9 @@ class OverkizBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return the state of the sensor."""
-        state = self.device.states[self.entity_description.key]
+        state = self.device.states.get(self.entity_description.key)
+
+        if not state:
+            return None
+
         return self.entity_description.is_on(state.value)

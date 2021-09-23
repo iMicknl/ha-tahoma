@@ -1,6 +1,6 @@
 """Support for Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.climate import (
     SUPPORT_PRESET_MODE,
@@ -84,6 +84,10 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
 ):
     """Representation of Atlantic Electrical Heater (With Adjustable Temperature Setpoint)."""
 
+    _attr_hvac_modes = [*HVAC_MODE_TO_TAHOMA]
+    _attr_preset_modes = [*PRESET_MODE_TO_TAHOMA]
+    _attr_temperature_unit = TEMP_CELSIUS
+
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
@@ -154,11 +158,6 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
     @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
         supported_features = 0
@@ -170,11 +169,6 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
             supported_features |= SUPPORT_TARGET_TEMPERATURE
 
         return supported_features
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODE_TO_TAHOMA]
 
     @property
     def hvac_mode(self) -> str:
@@ -201,11 +195,6 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
                 await self.executor.async_execute_command(
                     COMMAND_SET_HEATING_LEVEL, PRESET_STATE_COMFORT
                 )
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [*PRESET_MODE_TO_TAHOMA]
 
     @property
     def preset_mode(self) -> Optional[str]:

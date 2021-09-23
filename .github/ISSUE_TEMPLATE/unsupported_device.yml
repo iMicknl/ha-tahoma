@@ -28,8 +28,8 @@ body:
   - type: textarea
     id: unsupported_device_log
     attributes:
-      label: Unsupported device log
-      description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste the Unsupported device string here. If your device already shows up in Home Assistant, share the firwmare (e.g. `io:DimmableLightIOComponent`), which can be gathered from device detail page.
+      label: Home Assistant log
+      description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste your full log here. We redact your id's and emailaddresses by default.
       render: shell
     validations:
       required: true
@@ -51,13 +51,6 @@ body:
     attributes:
       label: Additional information
       description: If you have any additional information for us, use the field below. Please note, you can attach screenshots or screen recordings here, by dragging and dropping files in the field below.
-
-  - type: textarea
-    id: logs
-    attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
 
   - type: markdown
     attributes:

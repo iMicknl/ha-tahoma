@@ -1,7 +1,7 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import timedelta
 from enum import Enum
 import logging
 
@@ -45,9 +45,6 @@ from .coordinator import OverkizDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
-
-HOMEKIT_SETUP_CODE = "homekit:SetupCode"
-HOMEKIT_STACK = "HomekitStack"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -172,6 +169,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         devices=devices,
         places=places,
         update_interval=update_interval,
+        config_entry_id=entry.entry_id,
     )
 
     _LOGGER.debug(
@@ -203,9 +201,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-        if device.widget == HOMEKIT_STACK:
-            print_homekit_setup_code(device)
-
     supported_platforms = set(platforms.keys())
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
@@ -219,12 +214,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     device_registry = await dr.async_get_registry(hass)
 
     for gateway in gateways:
-        _LOGGER.debug(
-            "Added gateway (%s - %s - %s)",
-            gateway.id,
-            gateway.type,
-            gateway.sub_type,
-        )
+        _LOGGER.debug("Added gateway (%s)", gateway)
 
         gateway_model = (
             beautify_name(gateway.sub_type.name)
@@ -324,34 +314,12 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         await coordinator.async_refresh()
 
 
-def print_homekit_setup_code(device: Device):
-    """Retrieve and print HomeKit Setup Code."""
-    if device.attributes:
-        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
-
-        if homekit:
-            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
-
-
 async def write_execution_history_to_log(client: TahomaClient):
     """Retrieve execution history and write output to log."""
     history = await client.get_execution_history()
 
     for item in history:
-        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
-
-        for command in item.commands:
-            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-            _LOGGER.info(
-                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
-                    command=command.command,
-                    timestamp=date,
-                    device=command.deviceurl,
-                    parameters=command.parameters,
-                    app=item.label,
-                )
-            )
+        _LOGGER.info(item)
 
 
 def beautify_name(name: str):
@@ -361,11 +329,4 @@ def beautify_name(name: str):
 
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
-    _LOGGER.debug(
-        "%s (%s - %s - %s - %s)",
-        message,
-        device.controllable_name,
-        device.ui_class,
-        device.widget,
-        device.deviceurl,
-    )
+    _LOGGER.debug("%s (%s)", message, device)

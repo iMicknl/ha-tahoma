@@ -1,6 +1,6 @@
 """Support for TaHoma Smart Thermostat."""
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
@@ -77,6 +77,19 @@ MAP_PRESET_TEMPERATURES = {
 class SomfyThermostat(OverkizEntity, ClimateEntity):
     """Representation of Somfy Smart Thermostat."""
 
+    _attr_temperature_unit = TEMP_CELSIUS
+    _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+    _attr_hvac_modes = [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
+    _attr_preset_modes = [
+        PRESET_NONE,
+        PRESET_FREEZE,
+        PRESET_NIGHT,
+        PRESET_AWAY,
+        PRESET_HOME,
+    ]
+    _attr_min_temp = 15.0
+    _attr_max_temp = 26.0
+
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
@@ -150,26 +163,11 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
             _LOGGER.error("Unable to update from sensor: %s", ex)
 
     @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-
-    @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
         return MAP_HVAC_MODES[
             self.executor.select_state(CORE_DEROGATION_ACTIVATION_STATE)
         ]
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [HVAC_MODE_AUTO, HVAC_MODE_HEAT]
 
     @property
     def hvac_action(self) -> str:
@@ -190,30 +188,9 @@ class SomfyThermostat(OverkizEntity, ClimateEntity):
         ]
 
     @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [
-            PRESET_NONE,
-            PRESET_FREEZE,
-            PRESET_NIGHT,
-            PRESET_AWAY,
-            PRESET_HOME,
-        ]
-
-    @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
         return self._current_temperature
-
-    @property
-    def min_temp(self) -> float:
-        """Return the minimum temperature."""
-        return 15.0
-
-    @property
-    def max_temp(self) -> float:
-        """Return the maximum temperature."""
-        return 26.0
 
     @property
     def target_temperature(self):
