@@ -24,18 +24,16 @@ async def async_setup_entry(
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    # Includes fix for #486, which is waiting on Somfy back-end deployment
-    # Remove when DeploymentState will be returned for AwningValance
     entities = [
         Awning(device.deviceurl, coordinator)
         for device in data["platforms"].get(COVER)
-        if device.ui_class == "Awning" and device.widget != "AwningValance"
+        if "Awning" in device.qualified_name
     ]
 
     entities += [
         VerticalCover(device.deviceurl, coordinator)
         for device in data["platforms"].get(COVER)
-        if device.ui_class != "Awning" or device.widget == "AwningValance"
+        if "Awning" not in device.qualified_name
     ]
 
     async_add_entities(entities)
