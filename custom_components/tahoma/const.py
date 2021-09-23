@@ -98,6 +98,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "Shutter": COVER,
     "Siren": SWITCH,
     "SirenStatus": None,  # widgetName, uiClass is Siren (switch)
+    "SomfyHeatingTemperatureInterface": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SwimmingPool": SWITCH,

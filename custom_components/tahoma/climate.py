@@ -23,6 +23,9 @@ from .climate_devices.hitachi_air_to_air_heat_pump import HitachiAirToAirHeatPum
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
 )
+from .climate_devices.somfy_heating_temperature_interface import (
+    SomfyHeatingTemperatureInterface,
+)
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .climate_devices.valve_heating_temperature_interface import (
@@ -42,6 +45,7 @@ TYPE = {
     "HeatingSetPoint": HeatingSetPoint,
     "HitachiAirToAirHeatPump": HitachiAirToAirHeatPump,
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
+    "SomfyHeatingTemperatureInterface": SomfyHeatingTemperatureInterface,
     "SomfyThermostat": SomfyThermostat,
     "StatelessExteriorHeating": StatelessExteriorHeating,
     "ValveHeatingTemperatureInterface": ValveHeatingTemperatureInterface,
