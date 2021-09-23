@@ -53,16 +53,12 @@ async def async_setup_entry(
 class OverkizSwitch(OverkizEntity, SwitchEntity):
     """Representation an Overkiz Switch."""
 
-    @property
-    def device_class(self):
-        """Return the class of the device."""
-        return DEVICE_CLASS_SWITCH
+    _attr_device_class = DEVICE_CLASS_SWITCH
 
     async def async_turn_on(self, **_):
         """Send the on command."""
         if self.executor.has_command(COMMAND_ON):
             await self.executor.async_execute_command(COMMAND_ON)
-
         elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.executor.async_execute_command(
                 COMMAND_SET_FORCE_HEATING, STATE_ON
@@ -70,13 +66,12 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
     async def async_turn_off(self, **_):
         """Send the off command."""
-        if self.executor.has_command(COMMAND_SET_FORCE_HEATING):
+        if self.executor.has_command(COMMAND_OFF):
+            await self.executor.async_execute_command(COMMAND_OFF)
+        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.executor.async_execute_command(
                 COMMAND_SET_FORCE_HEATING, STATE_OFF
             )
-
-        elif self.executor.has_command(COMMAND_OFF):
-            await self.executor.async_execute_command(COMMAND_OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
