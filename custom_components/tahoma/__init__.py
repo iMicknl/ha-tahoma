@@ -46,9 +46,6 @@ _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
-HOMEKIT_SETUP_CODE = "homekit:SetupCode"
-HOMEKIT_STACK = "HomekitStack"
-
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.All(
@@ -204,9 +201,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-        if device.widget == HOMEKIT_STACK:
-            print_homekit_setup_code(device)
-
     supported_platforms = set(platforms.keys())
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
@@ -323,15 +317,6 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
         coordinator.original_update_interval = new_update_interval
 
         await coordinator.async_refresh()
-
-
-def print_homekit_setup_code(device: Device):
-    """Retrieve and print HomeKit Setup Code."""
-    if device.attributes:
-        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
-
-        if homekit:
-            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
 
 
 async def write_execution_history_to_log(client: TahomaClient):
