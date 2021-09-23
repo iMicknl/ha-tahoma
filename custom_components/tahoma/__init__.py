@@ -1,7 +1,7 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import timedelta
 from enum import Enum
 import logging
 
@@ -324,20 +324,7 @@ async def write_execution_history_to_log(client: TahomaClient):
     history = await client.get_execution_history()
 
     for item in history:
-        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
-
-        for command in item.commands:
-            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-            _LOGGER.info(
-                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
-                    command=command.command,
-                    timestamp=date,
-                    device=command.deviceurl,
-                    parameters=command.parameters,
-                    app=item.label,
-                )
-            )
+        _LOGGER.info(item)
 
 
 def beautify_name(name: str):
@@ -347,11 +334,4 @@ def beautify_name(name: str):
 
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
-    _LOGGER.debug(
-        "%s (%s - %s - %s - %s)",
-        message,
-        device.controllable_name,
-        device.ui_class,
-        device.widget,
-        device.deviceurl,
-    )
+    _LOGGER.debug("%s (%s)", message, device)
