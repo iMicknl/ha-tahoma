@@ -385,7 +385,6 @@ class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
         self._attr_name = "HomeKit Setup Code"
-        self._attr_entity_registry_enabled_default = False
         self._attr_icon = "mdi:shield-home"
 
     @property
@@ -396,8 +395,8 @@ class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
     @property
     def device_info(self) -> dict[str, Any]:
         """Return device registry information for this entity."""
-        # By default HomeKit devices will be listed at a virtual HomekitStack device,
-        # but it makes more sense to show this at the gateway in the entity registry.
+        # By default this sensor will be listed at a virtual HomekitStack device,
+        # but it makes more sense to show this at the gateway device in the entity registry.
         return {
             "identifiers": {(DOMAIN, self.executor.get_gateway_id())},
         }
