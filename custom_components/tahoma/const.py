@@ -72,6 +72,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "MyFoxSecurityCamera": COVER,  # widgetName, uiClass is Camera (not supported)
     "OnOff": SWITCH,
     "Pergola": COVER,
+    "ProgrammableAndProtectableThermostatSetPoint": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "RollerShutter": COVER,
     "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
     "Screen": COVER,

@@ -23,6 +23,9 @@ from .climate_devices.hitachi_air_to_air_heat_pump import HitachiAirToAirHeatPum
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
 )
+from .climate_devices.programmable_and_protectable_thermostat_set_point import (
+    ProgrammableAndProtectableThermostatSetPoint,
+)
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
@@ -39,6 +42,7 @@ TYPE = {
     "HeatingSetPoint": HeatingSetPoint,
     "HitachiAirToAirHeatPump": HitachiAirToAirHeatPump,
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
+    "ProgrammableAndProtectableThermostatSetPoint": ProgrammableAndProtectableThermostatSetPoint,
     "SomfyThermostat": SomfyThermostat,
     "StatelessExteriorHeating": StatelessExteriorHeating,
 }
