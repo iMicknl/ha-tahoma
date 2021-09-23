@@ -1,11 +1,10 @@
 """Support for Overkiz sirens."""
 from homeassistant.components.siren import DOMAIN as SIREN, SirenEntity
 from homeassistant.components.siren.const import (
+    ATTR_DURATION,
     SUPPORT_DURATION,
-    SUPPORT_TONES,
     SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON,
-    SUPPORT_VOLUME_SET,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -18,10 +17,7 @@ COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
 COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
 COMMAND_STANDARD = "standard"
 
-
 STATE_ON = "on"
-
-SUPPORT_FLAGS = SUPPORT_TURN_OFF | SUPPORT_TURN_ON
 
 
 async def async_setup_entry(
@@ -44,14 +40,21 @@ async def async_setup_entry(
 class OverkizSiren(OverkizEntity, SirenEntity):
     """Representation an Overkiz Switch."""
 
-    _attr_supported_features = (
-        SUPPORT_FLAGS | SUPPORT_TONES | SUPPORT_VOLUME_SET | SUPPORT_DURATION
-    )
+    _attr_supported_features = SUPPORT_TURN_OFF | SUPPORT_TURN_ON | SUPPORT_DURATION
 
-    async def async_turn_on(self, **_):
+    @property
+    def is_on(self):
+        """Get whether the siren is in on state."""
+        return self.executor.select_state(CORE_ON_OFF_STATE) == STATE_ON
+
+    async def async_turn_on(self, **kwargs):
         """Send the on command."""
 
-        duration = 2 * 60  # 2 minutes
+        if kwargs.get(ATTR_DURATION):
+            duration = kwargs.get(ATTR_DURATION)
+        else:
+            duration = 2 * 60  # 2 minutes
+
         duration_in_ms = duration * 1000
 
         await self.executor.async_execute_command(
@@ -62,7 +65,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
             COMMAND_MEMORIZED_VOLUME,
         )
 
-    async def async_turn_off(self, **_):
+    async def async_turn_off(self, **kwargs):
         """Send the off command."""
         await self.executor.async_execute_command(
             COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
@@ -71,8 +74,3 @@ class OverkizSiren(OverkizEntity, SirenEntity):
             0,
             COMMAND_STANDARD,
         )
-
-    @property
-    def is_on(self):
-        """Get whether the switch is in on state."""
-        return self.executor.select_state(CORE_ON_OFF_STATE) == STATE_ON
