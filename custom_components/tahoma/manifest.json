@@ -8,13 +8,12 @@
     "pyhoma==0.5.20"
   ],
   "codeowners": [
-    "@philklei",
     "@imicknl",
     "@vlebourl",
     "@tetienne"
   ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
-  "version": "2.7.2",
+  "version": "2.8.0",
   "dhcp": [
     {
       "hostname": "gateway*",

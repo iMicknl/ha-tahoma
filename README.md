@@ -4,13 +4,13 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![GitHub release](https://img.shields.io/github/release/iMicknl/ha-tahoma.svg)](https://GitHub.com/iMicknl/ha-tahoma/releases/)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/iMicknl/ha-tahoma/)
-[![Discord](https://img.shields.io/discord/718361810985549945?label=chat&logo=discord)](https://discord.gg/HDVSYqvh)
+[![Discord](https://img.shields.io/discord/718361810985549945?label=chat&logo=discord)](https://discord.gg/RRXuSVDAzG)
 
 # Overkiz (by Somfy) - Home Assistant
 
 Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
 
->This component builds upon the work of [@philklei](https://github.com/philklei) and is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of eventually merging into core. The installation of this component will replace the original TaHoma integration and thus allows you to beta-test [all changes](https://github.com/iMicknl/ha-tahoma/releases).
+>This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of eventually merging into core. The installation of this component will replace the original TaHoma integration and thus allows you to beta-test [all changes](https://github.com/iMicknl/ha-tahoma/releases).
 
 ## Supported hubs
 
