@@ -1,7 +1,6 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from datetime import datetime
 from enum import Enum
 import logging
 
@@ -38,6 +37,7 @@ from .const import (
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
     UPDATE_INTERVAL,
+    UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
 from .coordinator import OverkizDataUpdateCoordinator
 
@@ -167,7 +167,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         config_entry_id=entry.entry_id,
     )
 
-    await coordinator.async_refresh()
+    await coordinator.async_config_entry_first_refresh()
+
+    if coordinator.is_stateless:
+        _LOGGER.debug(
+            "All devices have assumed state. Update interval has been reduced to: %s",
+            UPDATE_INTERVAL_ALL_ASSUMED_STATE,
+        )
+        coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios

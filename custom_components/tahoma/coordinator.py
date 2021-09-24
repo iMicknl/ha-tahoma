@@ -61,6 +61,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         self.data = {}
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
+        self.is_stateless = all(len(device.states) == 0 for device in devices)
         self.executions: Dict[str, Dict[str, str]] = {}
         self.areas = self.places_to_area(places)
         self._config_entry_id = config_entry_id
@@ -135,7 +136,8 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 if event.exec_id not in self.executions:
                     self.executions[event.exec_id] = {}
 
-                self.update_interval = timedelta(seconds=1)
+                if not self.is_stateless:
+                    self.update_interval = timedelta(seconds=1)
 
             elif (
                 event.name == EventName.EXECUTION_STATE_CHANGED
