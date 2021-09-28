@@ -99,12 +99,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(event)
 
             if event.failure_type_code:
-                # Some event names are not mapped to an enum, it’s why this trick.
-                # Like CommandExecutionStateChangedEvent
-                try:
-                    raw_event_name = event.name.value
-                except AttributeError:
-                    raw_event_name = event.name
+                raw_event_name = event.name.value
 
                 self.hass.bus.fire(
                     raw_event_name,
