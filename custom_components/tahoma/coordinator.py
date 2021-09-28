@@ -99,11 +99,10 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(event)
 
             if event.failure_type_code:
-                raw_event_name = event.name.value
-
                 self.hass.bus.fire(
-                    raw_event_name,
+                    "overkiz.event",
                     {
+                        "event_name": event.name.value,
                         "failure_type_code": event.failure_type_code.value,
                         "failure_type": event.failure_type,
                     },
