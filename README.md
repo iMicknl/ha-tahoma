@@ -59,6 +59,31 @@ After installation this integration adds new services to Home Assistant which ca
 + Overkiz (by Somfy): Execute command (tahoma.execute_command)
 + Overkiz (by Somfy): Get execution history (tahoma.get_execution_history)
 
+## Events
+This component listen for events returned by Overkiz. In case of command failure, the event will forwarded to Home Assistant.
+
+You can subscribe to the `overkiz.event` event type in Developer Tools/Events in order to examine the event data JSON for the correct parameters to use in your automations. For example, `overkiz.event` returns event data JSON similar to the following when your cover is blocked.
+
+```JSON
+{
+    "event_type": "overkiz.event",
+    "data": {
+        "event_name": "ExecutionStateChangedEvent",
+        "failure_type_code": 106,
+        "failure_type": "CMDCANCELLED"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2021-09-28T20:03:57.102478+00:00",
+    "context": {
+        "id": "92a84240d914b43ceaf1aee3249568f6",
+        "parent_id": null,
+        "user_id": null
+    }
+}
+```
+
+You can find the list of available failure_type [here](https://github.com/iMicknl/python-tahoma-api/blob/master/pyhoma/enums.py#L118).
+
 ### Enable debug logging
 
 The [logger](https://www.home-assistant.io/integrations/logger/) integration lets you define the level of logging activities in Home Assistant. Turning on debug mode will show more information about unsupported devices in your logbook.
