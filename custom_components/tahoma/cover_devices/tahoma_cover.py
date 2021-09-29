@@ -103,6 +103,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
+        if self.current_cover_position is not None:
+            return self.current_cover_position == 0
+
         state = self.executor.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
@@ -113,9 +116,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
         if state is not None:
             return state == STATE_CLOSED
-
-        if self.current_cover_position is not None:
-            return self.current_cover_position == 0
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
