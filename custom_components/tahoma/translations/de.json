@@ -20,16 +20,5 @@
     "abort": {
       "already_configured": "Der Account ist bereits eingerichtet."
     }
-  },
-  "options": {
-    "step": {
-      "update_interval": {
-        "title": "Update Intervall",
-        "description": "Die Somfy TaHoma Integration erhält periodisch neue Ereignisse (Events). Wenn deine Geräte auch außerhalb von Home Assistant gesteuert werden, kann es Sinn machen das Update Intervall zu verkürzen, um öfter Updates zu bekommen.",
-        "data": {
-          "update_interval": "Update Intervall (in Sekunden)"
-        }
-      }
-    }
   }
 }
