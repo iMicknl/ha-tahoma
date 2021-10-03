@@ -98,6 +98,16 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         for event in events:
             _LOGGER.debug(event)
 
+            if event.failure_type_code:
+                self.hass.bus.fire(
+                    "overkiz.event",
+                    {
+                        "event_name": event.name.value,
+                        "failure_type_code": event.failure_type_code.value,
+                        "failure_type": event.failure_type,
+                    },
+                )
+
             if event.name == EventName.DEVICE_AVAILABLE:
                 self.devices[event.deviceurl].available = True
 
