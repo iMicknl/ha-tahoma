@@ -61,7 +61,11 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         self.data = {}
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
-        self.is_stateless = all(len(device.states) == 0 for device in devices)
+        self.is_stateless = all(
+            device.deviceurl.startswith("rts://")
+            or device.deviceurl.startswith("internal://")
+            for device in devices
+        )
         self.executions: Dict[str, Dict[str, str]] = {}
         self.areas = self.places_to_area(places)
         self._config_entry_id = config_entry_id
