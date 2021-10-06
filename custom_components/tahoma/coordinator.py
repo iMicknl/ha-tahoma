@@ -19,7 +19,7 @@ from pyhoma.exceptions import (
 )
 from pyhoma.models import DataType, Device, Place, State
 
-from .const import DOMAIN
+from .const import DOMAIN, UPDATE_INTERVAL
 
 TYPES = {
     DataType.NONE: None,
@@ -59,9 +59,13 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
         self.data = {}
-        self.original_update_interval = update_interval
         self.client = client
         self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
+        self.is_stateless = all(
+            device.deviceurl.startswith("rts://")
+            or device.deviceurl.startswith("internal://")
+            for device in devices
+        )
         self.executions: Dict[str, Dict[str, str]] = {}
         self.areas = self.places_to_area(places)
         self._config_entry_id = config_entry_id
@@ -97,6 +101,16 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
 
         for event in events:
             _LOGGER.debug(event)
+
+            if event.failure_type_code:
+                self.hass.bus.fire(
+                    "overkiz.event",
+                    {
+                        "event_name": event.name.value,
+                        "failure_type_code": event.failure_type_code.value,
+                        "failure_type": event.failure_type,
+                    },
+                )
 
             if event.name == EventName.DEVICE_AVAILABLE:
                 self.devices[event.deviceurl].available = True
@@ -136,7 +150,8 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 if event.exec_id not in self.executions:
                     self.executions[event.exec_id] = {}
 
-                self.update_interval = timedelta(seconds=1)
+                if not self.is_stateless:
+                    self.update_interval = timedelta(seconds=1)
 
             elif (
                 event.name == EventName.EXECUTION_STATE_CHANGED
@@ -146,7 +161,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 del self.executions[event.exec_id]
 
         if not self.executions:
-            self.update_interval = self.original_update_interval
+            self.update_interval = UPDATE_INTERVAL
 
         return self.devices
 

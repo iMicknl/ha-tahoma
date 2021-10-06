@@ -1,4 +1,6 @@
 """Constants for the Overkiz (by Somfy) integration."""
+from datetime import timedelta
+
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
@@ -12,8 +14,8 @@ DOMAIN = "tahoma"
 CONF_HUB = "hub"
 DEFAULT_HUB = "somfy_europe"
 
-MIN_UPDATE_INTERVAL = 30
-DEFAULT_UPDATE_INTERVAL = 30
+UPDATE_INTERVAL = timedelta(seconds=30)
+UPDATE_INTERVAL_ALL_ASSUMED_STATE = timedelta(minutes=60)
 
 IGNORED_OVERKIZ_DEVICES = [
     "ProtocolGateway",
@@ -90,5 +92,3 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
-
-CONF_UPDATE_INTERVAL = "update_interval"

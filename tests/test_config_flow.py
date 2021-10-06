@@ -240,44 +240,6 @@ async def test_import_failing(hass, side_effect, error, enable_custom_integratio
     # Should write Exception to the log
 
 
-async def test_options_flow(hass, enable_custom_integrations):
-    """Test options flow."""
-
-    entry = MockConfigEntry(
-        domain=config_flow.DOMAIN,
-        unique_id=TEST_EMAIL,
-        data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
-        version=2,
-    )
-
-    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
-        "custom_components.tahoma.async_setup_entry", return_value=True
-    ) as mock_setup_entry:
-        entry.add_to_hass(hass)
-        assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
-
-    assert len(hass.config_entries.async_entries(config_flow.DOMAIN)) == 1
-    assert entry.state == config_entries.ConfigEntryState.LOADED
-
-    result = await hass.config_entries.options.async_init(
-        entry.entry_id, context={"source": "test"}, data=None
-    )
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
-    assert result["step_id"] == "update_interval"
-
-    assert entry.options == {}
-
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        user_input={
-            "update_interval": 12000,
-        },
-    )
-
-    assert entry.options == {"update_interval": 12000}
-
-
 async def test_dhcp_flow(hass):
     """Test that DHCP discovery for new bridge works."""
     result = await hass.config_entries.flow.async_init(
