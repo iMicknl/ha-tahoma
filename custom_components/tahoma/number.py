@@ -52,5 +52,5 @@ class MyPositionNumber(OverkizEntity, NumberEntity):
         return self.device.states.get(CORE_MEMORIZED_POSITION).value
 
     async def async_set_value(self, value: float) -> None:
-        """Update the My position value."""
+        """Update the My position value. Min: 0, max: 100."""
         await self.executor.async_execute_command(COMMAND_SET_MEMORIZED_POSITION, value)
