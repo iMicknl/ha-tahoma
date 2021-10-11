@@ -203,7 +203,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
     # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
-    # Number will be added dynamically, base on device features (e.g. My position)
+    # Number will be added dynamically, based on device features (e.g. My position)
     supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH, NUMBER))
     for platform in supported_platforms:
         hass.async_create_task(
