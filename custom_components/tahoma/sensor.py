@@ -308,12 +308,6 @@ SENSOR_DESCRIPTIONS = [
         entity_registry_enabled_default=False,
     ),
     OverkizSensorDescription(
-        key="core:Memorized1PositionState",
-        name="My Position",
-        icon="mdi:content-save-cog",
-        entity_registry_enabled_default=False,
-    ),
-    OverkizSensorDescription(
         key="core:DiscreteRSSILevelState",
         name="Discrete RSSI Level",
         entity_registry_enabled_default=False,
