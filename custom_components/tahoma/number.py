@@ -36,8 +36,6 @@ class MyPositionNumber(OverkizEntity, NumberEntity):
     """Representation of a My Position Number."""
 
     _attr_icon = "mdi:content-save-cog"
-    _attr_min_value: 0
-    _attr_max_value: 100
 
     def __init__(
         self,
