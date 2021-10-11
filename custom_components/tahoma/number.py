@@ -5,6 +5,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
+
 from .const import DOMAIN
 from .entity import OverkizEntity
 
@@ -33,10 +35,18 @@ async def async_setup_entry(
 class MyPositionNumber(OverkizEntity, NumberEntity):
     """Representation of a My Position Number."""
 
-    _attr_name = "My Position"
     _attr_icon = "mdi:content-save-cog"
     _attr_min_value: 0
     _attr_max_value: 100
+
+    def __init__(
+        self,
+        device_url: str,
+        coordinator: OverkizDataUpdateCoordinator,
+    ):
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self._attr_name = f"{super().name} My Position"
 
     @property
     def value(self) -> float:
