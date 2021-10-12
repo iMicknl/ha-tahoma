@@ -8,6 +8,7 @@ from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.number import DOMAIN as NUMBER
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.select import DOMAIN as SELECT
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
@@ -204,7 +205,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Sensor and Binary Sensor will be added dynamically, based on the device states
     # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
     # Number will be added dynamically, based on device features (e.g. My position)
-    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH, NUMBER))
+    # Select is used at least for DiscreteGateWithPedestrianPosition
+    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH, NUMBER, SELECT))
     for platform in supported_platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
