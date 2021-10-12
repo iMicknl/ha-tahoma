@@ -1,5 +1,6 @@
 """Support for Overkiz number devices."""
 from homeassistant.components.cover import DOMAIN as COVER
+from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -26,6 +27,12 @@ async def async_setup_entry(
     entities = [
         MyPositionNumber(device.deviceurl, coordinator)
         for device in data["platforms"][COVER]
+        if CORE_MEMORIZED_POSITION in device.states
+    ]
+
+    entities += [
+        MyPositionNumber(device.deviceurl, coordinator)
+        for device in data["platforms"][LIGHT]
         if CORE_MEMORIZED_POSITION in device.states
     ]
 
