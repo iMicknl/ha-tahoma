@@ -54,7 +54,7 @@ class PedestrianGateSelect(OverkizEntity, SelectEntity):
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
-        self._attr_name = f"{super().name} State"
+        self._attr_name = f"{super().name} Position"
 
     @property
     def current_option(self):
