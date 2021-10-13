@@ -15,12 +15,12 @@ from .const import DOMAIN
 from .entity import OverkizEntity
 
 CORE_OPEN_CLOSED_PEDESTRIAN_STATE = "core:OpenClosedPedestrianState"
-COMMAND_SET_PESTRIAN_POSITION = "setPedestrianPosition"
+COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
 
 OPTION_TO_COMMAND = {
     "closed": COMMAND_CLOSE,
     "open": COMMAND_OPEN,
-    "pedestrian": COMMAND_SET_PESTRIAN_POSITION,
+    "pedestrian": COMMAND_SET_PEDESTRIAN_POSITION,
 }
 
 
