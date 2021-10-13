@@ -69,4 +69,4 @@ class PedestrianGateSelect(OverkizEntity, SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         if option in OPTION_TO_COMMAND:
-            self.executor.async_execute_command(OPTION_TO_COMMAND[option])
+            await self.executor.async_execute_command(OPTION_TO_COMMAND[option])
