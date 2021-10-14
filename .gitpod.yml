@@ -22,4 +22,6 @@ github:
 vscode:
   extensions:
     - esbenp.prettier-vscode
+    - github.vscode-pull-request-github
+    - eamodio.gitlens
     - ms-python.python
