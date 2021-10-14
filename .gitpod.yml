@@ -1,3 +1,6 @@
+ports:
+  - port: 9123
+    onOpen: notify
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
