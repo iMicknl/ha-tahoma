@@ -16,4 +16,6 @@ github:
     addBadge: true
     # add a label once the prebuild is ready to pull requests (defaults to false)
     addLabel: prebuilt-in-gitpod
-    
+vscode:
+  extensions:
+    - esbenp.prettier-vscode
