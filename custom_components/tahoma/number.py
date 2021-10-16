@@ -15,13 +15,13 @@ NUMBER_DESCRIPTIONS = [
         icon="mdi:content-save-cog",
         command="setMemorized1Position",
     ),
-    # WaterHeater: Expected Number Of Shower (0 - 4)
+    # WaterHeater: Expected Number Of Shower (2 - 4)
     OverkizNumberDescription(
         key="core:ExpectedNumberOfShowerState",
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
         command="setExpectedNumberOfShower",
-        min_value=0,
+        min_value=2,
         max_value=4,
     ),
 ]
