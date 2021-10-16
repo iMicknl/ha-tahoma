@@ -179,6 +179,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
     platforms = defaultdict(list)
+
+    # Sensor and Binary Sensor will be added dynamically, based on the device states
+    # Select will be added dynamically, based on device features (e.g. DiscreteGateWithPedestrianPosition)
+    # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
+    # Number will be added dynamically, based on device features (e.g. My position)
+    default_platforms = [BINARY_SENSOR, SELECT, SENSOR, SWITCH, NUMBER]
+
+    for platform in default_platforms:
+        platforms[platform] = []
+
     platforms[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
@@ -200,14 +210,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    supported_platforms = set(platforms.keys())
-
-    # Sensor and Binary Sensor will be added dynamically, based on the device states
-    # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
-    # Number will be added dynamically, based on device features (e.g. My position)
-    # Select is used at least for DiscreteGateWithPedestrianPosition
-    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH, NUMBER, SELECT))
-    for platform in supported_platforms:
+    for platform in platforms:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
