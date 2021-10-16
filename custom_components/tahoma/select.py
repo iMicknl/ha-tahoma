@@ -64,7 +64,7 @@ class PedestrianGateSelect(OverkizEntity, SelectEntity):
     @property
     def options(self):
         """Return a set of selectable options."""
-        return ["closed", "open", "pedestrian", "unknown"]
+        return ["closed", "open", "pedestrian"]
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
