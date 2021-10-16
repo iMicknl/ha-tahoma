@@ -185,7 +185,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     default_platforms = [BINARY_SENSOR, SENSOR, SWITCH, NUMBER]
 
     for platform in default_platforms:
-        platforms[platform] = {}
+        platforms[platform] = []
 
     platforms[SCENE] = scenarios
 
