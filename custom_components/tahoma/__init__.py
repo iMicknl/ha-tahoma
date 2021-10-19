@@ -5,12 +5,7 @@ from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
-from homeassistant.components.number import DOMAIN as NUMBER
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.components.select import DOMAIN as SELECT
-from homeassistant.components.sensor import DOMAIN as SENSOR
-from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -38,6 +33,7 @@ from .const import (
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
+    SUPPORTED_PLATFORMS,
     UPDATE_INTERVAL,
     UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
@@ -179,16 +175,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
     platforms = defaultdict(list)
-
-    # Sensor and Binary Sensor will be added dynamically, based on the device states
-    # Select will be added dynamically, based on device features (e.g. DiscreteGateWithPedestrianPosition)
-    # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
-    # Number will be added dynamically, based on device features (e.g. My position)
-    default_platforms = [BINARY_SENSOR, SELECT, SENSOR, SWITCH, NUMBER]
-
-    for platform in default_platforms:
-        platforms[platform] = []
-
     platforms[SCENE] = scenarios
 
     hass.data[DOMAIN][entry.entry_id] = {
@@ -210,10 +196,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    for platform in platforms:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
 
     device_registry = await dr.async_get_registry(hass)
 
@@ -289,15 +272,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in entities_per_platform
-            ]
-        )
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        entry, SUPPORTED_PLATFORMS
     )
 
     if unload_ok:
