@@ -80,7 +80,7 @@ class OverkizEntity(CoordinatorEntity):
         manufacturer = (
             self.executor.select_attribute(CORE_MANUFACTURER)
             or self.executor.select_state(CORE_MANUFACTURER_NAME_STATE)
-            or "Somfy"
+            or self.coordinator.client.server.manufacturer
         )
 
         model = (
