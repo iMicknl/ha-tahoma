@@ -1,17 +1,30 @@
 """Support for Overkiz number devices."""
-from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
-
 from .const import DOMAIN
-from .entity import OverkizEntity
+from .entity import OverkizDescriptiveEntity, OverkizNumberDescription
 
-CORE_MEMORIZED_POSITION = "core:Memorized1PositionState"
-COMMAND_SET_MEMORIZED_POSITION = "setMemorized1Position"
+NUMBER_DESCRIPTIONS = [
+    # Cover: My Position (0 - 100)
+    OverkizNumberDescription(
+        key="core:Memorized1PositionState",
+        name="My Position",
+        icon="mdi:content-save-cog",
+        command="setMemorized1Position",
+    ),
+    # WaterHeater: Expected Number Of Shower (2 - 4)
+    OverkizNumberDescription(
+        key="core:ExpectedNumberOfShowerState",
+        name="Expected Number Of Shower",
+        icon="mdi:shower-head",
+        command="setExpectedNumberOfShower",
+        min_value=2,
+        max_value=4,
+    ),
+]
 
 
 async def async_setup_entry(
@@ -23,34 +36,46 @@ async def async_setup_entry(
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    entities = [
-        MyPositionNumber(device.deviceurl, coordinator)
-        for device in data["platforms"][COVER]
-        if CORE_MEMORIZED_POSITION in device.states
-    ]
+    entities = []
+
+    key_supported_states = {
+        description.key: description for description in NUMBER_DESCRIPTIONS
+    }
+
+    for device in coordinator.data.values():
+        for state in device.definition.states:
+            if description := key_supported_states.get(state.qualified_name):
+                entities.append(
+                    OverkizNumber(
+                        device.deviceurl,
+                        coordinator,
+                        description,
+                    )
+                )
 
     async_add_entities(entities)
 
 
-class MyPositionNumber(OverkizEntity, NumberEntity):
-    """Representation of a My Position Number."""
-
-    _attr_icon = "mdi:content-save-cog"
-
-    def __init__(
-        self,
-        device_url: str,
-        coordinator: OverkizDataUpdateCoordinator,
-    ):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self._attr_name = f"{super().name} My Position"
+class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
+    """Representation of an Overkiz Number entity."""
 
     @property
     def value(self) -> float:
-        """Return the current My position."""
-        return self.device.states.get(CORE_MEMORIZED_POSITION).value
+        """Return the current number."""
+        return self.device.states.get(self.entity_description.key).value
 
     async def async_set_value(self, value: float) -> None:
         """Update the My position value. Min: 0, max: 100."""
-        await self.executor.async_execute_command(COMMAND_SET_MEMORIZED_POSITION, value)
+        await self.executor.async_execute_command(
+            self.entity_description.command, value
+        )
+
+    @property
+    def min_value(self) -> float:
+        """Return the minimum value."""
+        return self.entity_description.min_value or self._attr_min_value
+
+    @property
+    def max_value(self) -> float:
+        """Return the maximum value."""
+        return self.entity_description.max_value or self._attr_max_value
