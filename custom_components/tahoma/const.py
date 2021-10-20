@@ -1,5 +1,6 @@
 """Constants for the Overkiz (by Somfy) integration."""
 from datetime import timedelta
+from enum import Enum
 
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
@@ -106,7 +107,34 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "Window": COVER,
 }
 
-CORE_ON_OFF_STATE = "core:OnOffState"
 
-COMMAND_OFF = "off"
-COMMAND_ON = "on"
+class OverkizAttribute(str, Enum):
+    """Device attributes used by Overkiz."""
+
+    CORE_MANUFACTURER = "core:Manufacturer"
+    CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
+
+
+class OverkizState(str, Enum):
+    """Device states used by Overkiz."""
+
+    CORE_ON_OFF = "core:OnOffState"
+    CORE_AVAILABILITY = "core:AvailabilityState"
+    CORE_BATTERY = "core:BatteryState"
+    CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
+    CORE_MANUFACTURER_NAME = "core:ManufacturerNameState"
+    CORE_MODEL = "core:ModelState"
+    CORE_PRODUCT_MODEL_NAME = "core:ProductModelNameState"
+    CORE_SENSOR_DEFECT = "core:SensorDefectState"
+    CORE_STATUS = "core:StatusState"
+    IO_MODEL = "io:ModelState"
+
+    ON = "on"
+    OFF = "off"
+
+
+class OverkizCommand(str, Enum):
+    """Device commands used by Overkiz."""
+
+    ON = "on"
+    OFF = "off"

@@ -12,21 +12,9 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
-from .const import DOMAIN
+from .const import DOMAIN, OverkizAttribute, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
-
-CORE_AVAILABILITY_STATE = "core:AvailabilityState"
-CORE_BATTERY_STATE = "core:BatteryState"
-CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
-CORE_MANUFACTURER = "core:Manufacturer"
-CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
-CORE_MODEL_STATE = "core:ModelState"
-CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
-CORE_STATUS_STATE = "core:StatusState"
-
-IO_MODEL_STATE = "io:ModelState"
 
 STATE_AVAILABLE = "available"
 STATE_BATTERY_FULL = "full"
@@ -78,14 +66,16 @@ class OverkizEntity(CoordinatorEntity):
             }
 
         manufacturer = (
-            self.executor.select_attribute(CORE_MANUFACTURER)
-            or self.executor.select_state(CORE_MANUFACTURER_NAME_STATE)
+            self.executor.select_attribute(OverkizAttribute.CORE_MANUFACTURER)
+            or self.executor.select_state(OverkizState.CORE_MANUFACTURER_NAME)
             or "Somfy"
         )
 
         model = (
             self.executor.select_state(
-                CORE_MODEL_STATE, CORE_PRODUCT_MODEL_NAME_STATE, IO_MODEL_STATE
+                OverkizState.CORE_MODEL,
+                OverkizState.CORE_PRODUCT_MODEL_NAME,
+                OverkizState.IO_MODEL,
             )
             or self.device.widget
         )
@@ -95,7 +85,9 @@ class OverkizEntity(CoordinatorEntity):
             name=self.device.label,
             manufacturer=manufacturer,
             model=model,
-            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
+            sw_version=self.executor.select_attribute(
+                OverkizAttribute.CORE_FIRMWARE_REVISION
+            ),
             suggested_area=self.coordinator.areas[self.device.placeoid],
             via_device=self.executor.get_gateway_id(),
         )
@@ -105,11 +97,11 @@ class OverkizEntity(CoordinatorEntity):
         """Return the state attributes of the device."""
         attr = {}
 
-        if self.executor.has_state(CORE_BATTERY_STATE):
-            battery_state = self.executor.select_state(CORE_BATTERY_STATE)
+        if self.executor.has_state(OverkizState.CORE_BATTERY):
+            battery_state = self.executor.select_state(OverkizState.CORE_BATTERY)
             attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
 
-        if self.executor.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
+        if self.executor.select_state(OverkizState.CORE_SENSOR_DEFECT) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
 
         return attr

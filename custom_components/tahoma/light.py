@@ -10,13 +10,12 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
+from .const import DOMAIN, OverkizCommand, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
@@ -74,7 +73,7 @@ class OverkizLight(OverkizEntity, LightEntity):
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        return self.executor.select_state(CORE_ON_OFF_STATE) == STATE_ON
+        return self.executor.select_state(OverkizState.CORE_ON_OFF) == OverkizState.ON
 
     @property
     def hs_color(self):
@@ -123,11 +122,11 @@ class OverkizLight(OverkizEntity, LightEntity):
             await self.executor.async_execute_command(self._effect, 100)
 
         else:
-            await self.executor.async_execute_command(COMMAND_ON)
+            await self.executor.async_execute_command(OverkizCommand.On)
 
     async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
-        await self.executor.async_execute_command(COMMAND_OFF)
+        await self.executor.async_execute_command(OverkizCommand.OFF)
 
     async def async_my(self, **_):
         """Set light to preset position."""
