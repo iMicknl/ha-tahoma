@@ -66,7 +66,7 @@ class OverkizEntity(CoordinatorEntity):
         return self.coordinator.data[self.device_url]
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> DeviceInfo:
         """Return device registry information for this entity."""
         # Some devices, such as the Smart Thermostat have several devices in one physical device,
         # with same device url, terminated by '#' and a number.
