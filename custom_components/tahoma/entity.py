@@ -58,7 +58,7 @@ class OverkizEntity(CoordinatorEntity):
         self._attr_assumed_state = not self.device.states
         self._attr_available = self.device.available
         self._attr_name = self.device.label
-        self._attr_unique_id = self.device.deviceurl
+        self._attr_unique_id = self.device.device_url
 
     @property
     def device(self) -> Device:
@@ -96,7 +96,7 @@ class OverkizEntity(CoordinatorEntity):
             manufacturer=manufacturer,
             model=model,
             sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
-            suggested_area=self.coordinator.areas[self.device.placeoid],
+            suggested_area=self.coordinator.areas[self.device.place_oid],
             via_device=self.executor.get_gateway_id(),
         )
 
