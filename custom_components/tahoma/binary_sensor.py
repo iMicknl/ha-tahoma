@@ -4,6 +4,7 @@ from __future__ import annotations
 from homeassistant.components import binary_sensor
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -72,6 +73,19 @@ BINARY_SENSOR_DESCRIPTIONS = [
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
+    ),
+    # Water Heater state sensor
+    OverkizBinarySensorDescription(
+        key="io:DHWBoostModeState",
+        name="Boost Mode",
+        device_class=None,
+        is_on=lambda state: state == STATE_ON,
+    ),
+    OverkizBinarySensorDescription(
+        key="io:DHWAbsenceModeState",
+        name="Away Mode",
+        device_class=None,
+        is_on=lambda state: state == STATE_ON,
     ),
 ]
 
