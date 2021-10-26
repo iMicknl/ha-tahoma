@@ -102,10 +102,14 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
         if operation_mode == MODE_BOOST:
-            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, COMMAND_ON)
+            await self.executor.async_execute_command(
+                COMMAND_SET_BOOST_MODE, COMMAND_ON
+            )
             return
         if operation_mode != MODE_BOOST and self._is_boost_mode_on:
-            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, COMMAND_OFF)
+            await self.executor.async_execute_command(
+                COMMAND_SET_BOOST_MODE, COMMAND_OFF
+            )
         await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
