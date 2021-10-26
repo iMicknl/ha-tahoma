@@ -185,6 +185,7 @@ class OverkizState(str, Enum):
     CORE_GREEN_COLOR_INTENSITY = "core:GreenColorIntensityState"
     CORE_LIGHT_INTENSITY = "core:LightIntensityState"
     CORE_RED_COLOR_INTENSITY = "core:RedColorIntensityState"
+    CORE_LOCKED_UNLOCKED = "core:LockedUnlockedState"
 
 
 class OverkizCommandState(str, Enum):
@@ -199,6 +200,7 @@ class OverkizCommandState(str, Enum):
     DISARMED = "disarmed"
     FULL = "full"
     LOW = "low"
+    LOCKED = "locked"
     NORMAL = "normal"
     ON = "on"
     OFF = "off"
@@ -232,3 +234,5 @@ class OverkizCommand(str, Enum):
     SET_INTENSITY = "setIntensity"
     SET_RGB = "setRGB"
     WINK = "wink"
+    LOCK = "lock"
+    UNLOCK = "unlock"
