@@ -12,22 +12,15 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
-from .const import DOMAIN, OverkizAttribute, OverkizState
+from .const import DOMAIN, OverkizAttribute, OverkizCommandState, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 
-STATE_AVAILABLE = "available"
-STATE_BATTERY_FULL = "full"
-STATE_BATTERY_NORMAL = "normal"
-STATE_BATTERY_LOW = "low"
-STATE_BATTERY_VERY_LOW = "verylow"
-STATE_DEAD = "dead"
-
 BATTERY_MAP = {
-    STATE_BATTERY_FULL: 100,
-    STATE_BATTERY_NORMAL: 75,
-    STATE_BATTERY_LOW: 25,
-    STATE_BATTERY_VERY_LOW: 10,
+    OverkizCommandState.FULL: 100,
+    OverkizCommandState.NORMAL: 75,
+    OverkizCommandState.LOW: 25,
+    OverkizCommandState.VERY_LOW: 10,
 }
 
 
@@ -101,7 +94,10 @@ class OverkizEntity(CoordinatorEntity):
             battery_state = self.executor.select_state(OverkizState.CORE_BATTERY)
             attr[ATTR_BATTERY_LEVEL] = BATTERY_MAP.get(battery_state, battery_state)
 
-        if self.executor.select_state(OverkizState.CORE_SENSOR_DEFECT) == STATE_DEAD:
+        if (
+            self.executor.select_state(OverkizState.CORE_SENSOR_DEFECT)
+            == OverkizCommandState.DEAD
+        ):
             attr[ATTR_BATTERY_LEVEL] = 0
 
         return attr

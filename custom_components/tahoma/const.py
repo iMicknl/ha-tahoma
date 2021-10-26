@@ -111,30 +111,73 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
 class OverkizAttribute(str, Enum):
     """Device attributes used by Overkiz."""
 
-    CORE_MANUFACTURER = "core:Manufacturer"
     CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
+    CORE_MANUFACTURER = "core:Manufacturer"
 
 
 class OverkizState(str, Enum):
     """Device states used by Overkiz."""
 
-    CORE_ON_OFF = "core:OnOffState"
+    CORE_BATTERRY_LEVEL = "core:BatteryLevelState"
     CORE_AVAILABILITY = "core:AvailabilityState"
     CORE_BATTERY = "core:BatteryState"
     CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
+    CORE_INTRUSION = "core:IntrusionState"
     CORE_MANUFACTURER_NAME = "core:ManufacturerNameState"
     CORE_MODEL = "core:ModelState"
+    CORE_ON_OFF = "core:OnOffState"
     CORE_PRODUCT_MODEL_NAME = "core:ProductModelNameState"
     CORE_SENSOR_DEFECT = "core:SensorDefectState"
     CORE_STATUS = "core:StatusState"
+    INTERNAL_CURRENT_ALARM_MODE = "internal:CurrentAlarmModeState"
+    INTERNAL_INTRUSION_DETECTED = "internal:IntrusionDetectedState"
+    INTERNAL_TARGET_ALARM_MODE = "internal:TargetAlarmModeState"
     IO_MODEL = "io:ModelState"
+    MYFOX_ALARM_STATUS = "myfox:AlarmStatusState"
+    VERISURE_ALARM_PANEL_MAIN_ARM_TYPE = "verisure:AlarmPanelMainArmTypeState"
 
     ON = "on"
     OFF = "off"
+
+
+class OverkizCommandState(str, Enum):
+    """Device states used by Overkiz commands and/or states."""
+
+    ARMED = "armed"
+    ARMED_DAY = "armedDay"
+    ARMED_NIGHT = "armedNight"
+    AVAILABLE = "available"
+    DEAD = "dead"
+    DETECTED = "detected"
+    DETECTED = "detected"
+    DISARMED = "disarmed"
+    FULL = "full"
+    LOW = "low"
+    NORMAL = "normal"
+    OFF = "off"
+    OPEN = "open"
+    PARTIAL = "partial"
+    PENDING = "pending"
+    PERSON_INSIDE = "personInside"
+    TOTAL = "total"
+    UNDETECTED = "undetected"
+    VERY_LOW = "verylow"
+    ZONE_1 = "zone1"
+    ZONE_2 = "zone2"
 
 
 class OverkizCommand(str, Enum):
     """Device commands used by Overkiz."""
 
-    ON = "on"
+    ALARM_OFF = "alarmOff"
+    ALARM_ON = "alarmOn"
+    ALARM_PARTIAL_1 = "alarmPartial1"
+    ALARM_PARTIAL_2 = "alarmPartial2"
+    ARM = "arm"
+    ARM_PARTIAL_DAY = "armPartialDay"
+    ARM_PARTIAL_NIGHT = "armPartialNight"
+    DISARM = "disarm"
     OFF = "off"
+    ON = "on"
+    PARTIAL = "partial"
+    SET_ALARM_STATUS = "setAlarmStatus"
