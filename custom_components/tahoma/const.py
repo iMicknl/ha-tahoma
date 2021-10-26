@@ -110,3 +110,6 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
+
+STATE_ON = "on"
+STATE_OFF = "off"
