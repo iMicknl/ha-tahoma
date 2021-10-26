@@ -186,6 +186,8 @@ class OverkizState(str, Enum):
     CORE_LIGHT_INTENSITY = "core:LightIntensityState"
     CORE_RED_COLOR_INTENSITY = "core:RedColorIntensityState"
     CORE_LOCKED_UNLOCKED = "core:LockedUnlockedState"
+    CORE_MEMORIZED_1_POSITION = "core:Memorized1PositionState"
+    CORE_EXPECTED_NUMBER_OF_SHOWER = "core:ExpectedNumberOfShowerState"
 
 
 class OverkizCommandState(str, Enum):
@@ -236,3 +238,5 @@ class OverkizCommand(str, Enum):
     WINK = "wink"
     LOCK = "lock"
     UNLOCK = "unlock"
+    SET_EXPECTED_NUMBER_OF_SHOWER = "setExpectedNumberOfShower"
+    SET_MEMORIZED_1_POSITION = "setMemorized1Position"

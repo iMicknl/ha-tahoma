@@ -4,23 +4,23 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, OverkizCommand, OverkizState
 from .entity import OverkizDescriptiveEntity, OverkizNumberDescription
 
 NUMBER_DESCRIPTIONS = [
     # Cover: My Position (0 - 100)
     OverkizNumberDescription(
-        key="core:Memorized1PositionState",
+        key=OverkizState.CORE_MEMORIZED_1_POSITION,
         name="My Position",
         icon="mdi:content-save-cog",
-        command="setMemorized1Position",
+        command=OverkizCommand.SET_MEMORIZED_1_POSITION,
     ),
     # WaterHeater: Expected Number Of Shower (2 - 4)
     OverkizNumberDescription(
-        key="core:ExpectedNumberOfShowerState",
+        key=OverkizState.CORE_EXPECTED_NUMBER_OF_SHOWER,
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
-        command="setExpectedNumberOfShower",
+        command=OverkizCommand.SET_EXPECTED_NUMBER_OF_SHOWER,
         min_value=2,
         max_value=4,
     ),
