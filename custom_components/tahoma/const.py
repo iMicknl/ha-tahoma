@@ -181,6 +181,11 @@ class OverkizState(str, Enum):
     MYFOX_ALARM_STATUS = "myfox:AlarmStatusState"
     VERISURE_ALARM_PANEL_MAIN_ARM_TYPE = "verisure:AlarmPanelMainArmTypeState"
 
+    CORE_BLUE_COLOR_INTENSITY = "core:BlueColorIntensityState"
+    CORE_GREEN_COLOR_INTENSITY = "core:GreenColorIntensityState"
+    CORE_LIGHT_INTENSITY = "core:LightIntensityState"
+    CORE_RED_COLOR_INTENSITY = "core:RedColorIntensityState"
+
 
 class OverkizCommandState(str, Enum):
     """Device states used by Overkiz commands and/or states."""
@@ -223,3 +228,7 @@ class OverkizCommand(str, Enum):
     ON = "on"
     PARTIAL = "partial"
     SET_ALARM_STATUS = "setAlarmStatus"
+    MY = "my"
+    SET_INTENSITY = "setIntensity"
+    SET_RGB = "setRGB"
+    WINK = "wink"

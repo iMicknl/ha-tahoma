@@ -15,19 +15,9 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
-from .const import DOMAIN, OverkizCommand, OverkizState
+from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
-
-COMMAND_MY = "my"
-COMMAND_SET_INTENSITY = "setIntensity"
-COMMAND_SET_RGB = "setRGB"
-COMMAND_WINK = "wink"
-
-CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
-CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
-CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
-CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
 SERVICE_LIGHT_MY_POSITION = "set_light_my_position"
 
@@ -67,20 +57,23 @@ class OverkizLight(OverkizEntity, LightEntity):
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        brightness = self.executor.select_state(CORE_LIGHT_INTENSITY_STATE)
+        brightness = self.executor.select_state(OverkizState.CORE_LIGHT_INTENSITY)
         return round(brightness * 255 / 100)
 
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        return self.executor.select_state(OverkizState.CORE_ON_OFF) == OverkizState.ON
+        return (
+            self.executor.select_state(OverkizState.CORE_ON_OFF)
+            == OverkizCommandState.ON
+        )
 
     @property
     def hs_color(self):
         """Return the hue and saturation color value [float, float]."""
-        r = self.executor.select_state(CORE_RED_COLOR_INTENSITY_STATE)
-        g = self.executor.select_state(CORE_GREEN_COLOR_INTENSITY_STATE)
-        b = self.executor.select_state(CORE_BLUE_COLOR_INTENSITY_STATE)
+        r = self.executor.select_state(OverkizState.CORE_RED_COLOR_INTENSITY)
+        g = self.executor.select_state(OverkizState.CORE_GREEN_COLOR_INTENSITY)
+        b = self.executor.select_state(OverkizState.CORE_BLUE_COLOR_INTENSITY)
         return None if None in [r, g, b] else color_util.color_RGB_to_hs(r, g, b)
 
     @property
@@ -88,16 +81,16 @@ class OverkizLight(OverkizEntity, LightEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.executor.has_command(COMMAND_SET_INTENSITY):
+        if self.executor.has_command(OverkizCommand.SET_INTENSITY):
             supported_features |= SUPPORT_BRIGHTNESS
 
-        if self.executor.has_command(COMMAND_WINK):
+        if self.executor.has_command(OverkizCommand.WINK):
             supported_features |= SUPPORT_EFFECT
 
-        if self.executor.has_command(COMMAND_SET_RGB):
+        if self.executor.has_command(OverkizCommand.SET_RGB):
             supported_features |= SUPPORT_COLOR
 
-        if self.executor.has_command(COMMAND_MY):
+        if self.executor.has_command(OverkizCommand.MY):
             supported_features |= SUPPORT_MY
 
         return supported_features
@@ -106,7 +99,7 @@ class OverkizLight(OverkizEntity, LightEntity):
         """Turn the light on."""
         if ATTR_HS_COLOR in kwargs:
             await self.executor.async_execute_command(
-                COMMAND_SET_RGB,
+                OverkizCommand.SET_RGB,
                 *[
                     round(float(c))
                     for c in color_util.color_hs_to_RGB(*kwargs[ATTR_HS_COLOR])
@@ -115,14 +108,16 @@ class OverkizLight(OverkizEntity, LightEntity):
 
         if ATTR_BRIGHTNESS in kwargs:
             brightness = round(float(kwargs[ATTR_BRIGHTNESS]) / 255 * 100)
-            await self.executor.async_execute_command(COMMAND_SET_INTENSITY, brightness)
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_INTENSITY, brightness
+            )
 
         elif ATTR_EFFECT in kwargs:
             self._effect = kwargs[ATTR_EFFECT]
             await self.executor.async_execute_command(self._effect, 100)
 
         else:
-            await self.executor.async_execute_command(OverkizCommand.On)
+            await self.executor.async_execute_command(OverkizCommand.ON)
 
     async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
@@ -130,12 +125,16 @@ class OverkizLight(OverkizEntity, LightEntity):
 
     async def async_my(self, **_):
         """Set light to preset position."""
-        await self.executor.async_execute_command(COMMAND_MY)
+        await self.executor.async_execute_command(OverkizCommand.MY)
 
     @property
     def effect_list(self) -> list:
         """Return the list of supported effects."""
-        return [COMMAND_WINK] if self.executor.has_command(COMMAND_WINK) else None
+        return (
+            [OverkizCommand.WINK]
+            if self.executor.has_command(OverkizCommand.WINK)
+            else None
+        )
 
     @property
     def effect(self) -> str:
