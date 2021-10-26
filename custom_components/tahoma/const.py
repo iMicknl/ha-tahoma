@@ -149,7 +149,6 @@ class OverkizCommandState(str, Enum):
     AVAILABLE = "available"
     DEAD = "dead"
     DETECTED = "detected"
-    DETECTED = "detected"
     DISARMED = "disarmed"
     FULL = "full"
     LOW = "low"
