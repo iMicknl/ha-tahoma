@@ -8,6 +8,7 @@ from homeassistant.components.water_heater import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, TEMP_CELSIUS
 
+from ..const import COMMAND_OFF, COMMAND_ON
 from ..entity import OverkizEntity
 
 CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
@@ -101,10 +102,10 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
         if operation_mode == MODE_BOOST:
-            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, STATE_ON)
+            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, COMMAND_ON)
             return
         if operation_mode != MODE_BOOST and self._is_boost_mode_on:
-            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, STATE_OFF)
+            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, COMMAND_OFF)
         await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
