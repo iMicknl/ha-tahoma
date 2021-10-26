@@ -41,6 +41,7 @@ MAP_OPERATION_MODES = {
     MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
     MODE_MANUAL_ECO_INACTIVE: STATE_MANUAL,
     MODE_AUTO: STATE_AUTO,
+    MODE_BOOST: MODE_BOOST,
 }
 
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
@@ -102,6 +103,8 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         if operation_mode == MODE_BOOST:
             await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, STATE_ON)
             return
+        if operation_mode != MODE_BOOST and self._is_boost_mode_on:
+            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, STATE_OFF)
         await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
@@ -110,6 +113,11 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     def is_away_mode_on(self):
         """Return true if away mode is on."""
         return self.executor.select_state(IO_DHW_ABSENCE_MODE_STATE) == STATE_ON
+
+    @property
+    def _is_boost_mode_on(self):
+        """Return true if boost mode is on."""
+        return self.executor.select_state(IO_DHW_BOOST_MODE_STATE) == STATE_ON
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
