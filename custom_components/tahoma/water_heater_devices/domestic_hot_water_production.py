@@ -17,6 +17,8 @@ CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 
 IO_DHW_MODE_STATE = "io:DHWModeState"
 IO_MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
+IO_DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
+IO_DHW_ABSENCE_MODE_STATE = "io:DHWAbsenceModeState"
 
 STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
@@ -26,10 +28,14 @@ STATE_RELAUNCH = "relaunch"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_DHW_MODE = "setDHWMode"
 COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
+COMMAND_SET_ABSENCE_MODE = "setAbsenceMode"
+COMMAND_SET_BOOST_MODE = "setBoostMode"
 
+MODE_BOOST = "boost"
 MODE_AUTO = "autoMode"
 MODE_MANUAL_ECO_ACTIVE = "manualEcoActive"
 MODE_MANUAL_ECO_INACTIVE = "manualEcoInactive"
+MODE_ABSENCE_PROG = "prog"
 
 MAP_OPERATION_MODES = {
     MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
@@ -93,6 +99,9 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
+        if operation_mode == MODE_BOOST:
+            await self.executor.async_execute_command(COMMAND_SET_BOOST_MODE, STATE_ON)
+            return
         await self.executor.async_execute_command(
             COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
         )
@@ -100,27 +109,12 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     @property
     def is_away_mode_on(self):
         """Return true if away mode is on."""
-        return (
-            self.executor.select_state(CORE_OPERATING_MODE_STATE).get(STATE_ABSENCE)
-            == STATE_ON
-        )
+        return self.executor.select_state(IO_DHW_ABSENCE_MODE_STATE) == STATE_ON
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
-        await self.executor.async_execute_command(
-            COMMAND_SET_CURRENT_OPERATING_MODE,
-            {
-                STATE_RELAUNCH: STATE_OFF,
-                STATE_ABSENCE: STATE_ON,
-            },
-        )
+        await self.executor.async_execute_command(COMMAND_SET_ABSENCE_MODE, STATE_ON)
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
-        await self.executor.async_execute_command(
-            COMMAND_SET_CURRENT_OPERATING_MODE,
-            {
-                STATE_RELAUNCH: STATE_OFF,
-                STATE_ABSENCE: STATE_OFF,
-            },
-        )
+        await self.executor.async_execute_command(COMMAND_SET_ABSENCE_MODE, STATE_OFF)
