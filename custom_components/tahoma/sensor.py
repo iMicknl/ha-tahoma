@@ -25,11 +25,10 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, OverkizState
+from .const import DOMAIN, OverkizAttribute, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
 
-HOMEKIT_SETUP_CODE = "homekit:SetupCode"
 HOMEKIT_STACK = "HomekitStack"
 
 SENSOR_DESCRIPTIONS = [
@@ -387,7 +386,7 @@ class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
     @property
     def state(self):
         """Return the value of the sensor."""
-        return self.device.attributes.get(HOMEKIT_SETUP_CODE).value
+        return self.device.attributes.get(OverkizAttribute.HOMEKIT_SETUP_CODE).value
 
     @property
     def device_info(self) -> dict[str, Any]:

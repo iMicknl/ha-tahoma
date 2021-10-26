@@ -113,6 +113,7 @@ class OverkizAttribute(str, Enum):
 
     CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
     CORE_MANUFACTURER = "core:Manufacturer"
+    HOMEKIT_SETUP_CODE = "homekit:SetupCode"
 
 
 class OverkizState(str, Enum):
@@ -121,6 +122,7 @@ class OverkizState(str, Enum):
     CORE_AVAILABILITY = "core:AvailabilityState"
     CORE_BATTERY = "core:BatteryState"
     CORE_BATTERY_LEVEL = "core:BatteryLevelState"
+    CORE_BLUE_COLOR_INTENSITY = "core:BlueColorIntensityState"
     CORE_CO2_CONCENTRATION = "core:CO2ConcentrationState"
     CORE_CONSUMPTION_TARIFF1 = "core:ConsumptionTariff1State"
     CORE_CONSUMPTION_TARIFF2 = "core:ConsumptionTariff2State"
@@ -141,10 +143,14 @@ class OverkizState(str, Enum):
     CORE_FOSSIL_ENERGY_CONSUMPTION = "core:FossilEnergyConsumptionState"
     CORE_GAS_CONSUMPTION = "core:GasConsumptionState"
     CORE_GAS_DETECTION = "core:GasDetectionState"
+    CORE_GREEN_COLOR_INTENSITY = "core:GreenColorIntensityState"
     CORE_INTRUSION = "core:IntrusionState"
+    CORE_LIGHT_INTENSITY = "core:LightIntensityState"
+    CORE_LOCKED_UNLOCKED = "core:LockedUnlockedState"
     CORE_LUMINANCE = "core:LuminanceState"
     CORE_MANUFACTURER_NAME = "core:ManufacturerNameState"
     CORE_MAXIMUM_TEMPERATURE = "core:MaximumTemperatureState"
+    CORE_MEMORIZED_1_POSITION = "core:Memorized1PositionState"
     CORE_MINIMUM_TEMPERATURE = "core:MinimumTemperatureState"
     CORE_MODEL = "core:ModelState"
     CORE_NUMBER_OF_SHOWER_REMAINING = "core:NumberOfShowerRemainingState"
@@ -153,6 +159,7 @@ class OverkizState(str, Enum):
     CORE_PRIORITY_LOCK_TIMER = "core:PriorityLockTimerState"
     CORE_PRODUCT_MODEL_NAME = "core:ProductModelNameState"
     CORE_RAIN = "core:RainState"
+    CORE_RED_COLOR_INTENSITY = "core:RedColorIntensityState"
     CORE_RELATIVE_HUMIDITY = "core:RelativeHumidityState"
     CORE_RSSI_LEVEL = "core:RSSILevelState"
     CORE_SENSOR_DEFECT = "core:SensorDefectState"
@@ -181,14 +188,6 @@ class OverkizState(str, Enum):
     MYFOX_ALARM_STATUS = "myfox:AlarmStatusState"
     VERISURE_ALARM_PANEL_MAIN_ARM_TYPE = "verisure:AlarmPanelMainArmTypeState"
 
-    CORE_BLUE_COLOR_INTENSITY = "core:BlueColorIntensityState"
-    CORE_GREEN_COLOR_INTENSITY = "core:GreenColorIntensityState"
-    CORE_LIGHT_INTENSITY = "core:LightIntensityState"
-    CORE_RED_COLOR_INTENSITY = "core:RedColorIntensityState"
-    CORE_LOCKED_UNLOCKED = "core:LockedUnlockedState"
-    CORE_MEMORIZED_1_POSITION = "core:Memorized1PositionState"
-    CORE_EXPECTED_NUMBER_OF_SHOWER = "core:ExpectedNumberOfShowerState"
-
 
 class OverkizCommandState(str, Enum):
     """Device states used by Overkiz commands and/or states."""
@@ -197,6 +196,7 @@ class OverkizCommandState(str, Enum):
     ARMED_DAY = "armedDay"
     ARMED_NIGHT = "armedNight"
     AVAILABLE = "available"
+    CLOSED = "closed"
     DEAD = "dead"
     DETECTED = "detected"
     DISARMED = "disarmed"
@@ -209,6 +209,7 @@ class OverkizCommandState(str, Enum):
     OPEN = "open"
     PARTIAL = "partial"
     PENDING = "pending"
+    PEDESTRIAN = "pedestrian"
     PERSON_INSIDE = "personInside"
     TOTAL = "total"
     UNDETECTED = "undetected"
@@ -227,9 +228,11 @@ class OverkizCommand(str, Enum):
     ARM = "arm"
     ARM_PARTIAL_DAY = "armPartialDay"
     ARM_PARTIAL_NIGHT = "armPartialNight"
+    CLOSE = "close"
     DISARM = "disarm"
     OFF = "off"
     ON = "on"
+    OPEN = "open"
     PARTIAL = "partial"
     SET_ALARM_STATUS = "setAlarmStatus"
     MY = "my"
@@ -240,3 +243,4 @@ class OverkizCommand(str, Enum):
     UNLOCK = "unlock"
     SET_EXPECTED_NUMBER_OF_SHOWER = "setExpectedNumberOfShower"
     SET_MEMORIZED_1_POSITION = "setMemorized1Position"
+    SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
