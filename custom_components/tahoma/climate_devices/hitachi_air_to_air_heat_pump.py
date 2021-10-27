@@ -34,7 +34,7 @@ CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 PRESET_HOLIDAY_MODE = "holiday_mode"
 
 FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
-LEAVE_HOME_STATE = ["ovp::LeaveHomeState", "hlrrwifi:LeaveHomeState"]
+LEAVE_HOME_STATE = ["ovp:LeaveHomeState", "hlrrwifi:LeaveHomeState"]
 MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
 MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
 ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
