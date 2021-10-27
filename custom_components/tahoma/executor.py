@@ -66,7 +66,7 @@ class OverkizExecutor:
         """Execute device command in async context."""
         try:
             exec_id = await self.coordinator.client.execute_command(
-                self.device.deviceurl,
+                self.device.device_url,
                 Command(command_name, list(args)),
                 "Home Assistant",
             )
@@ -74,9 +74,9 @@ class OverkizExecutor:
             _LOGGER.error(exception)
             return
 
-        # ExecutionRegisteredEvent doesn't contain the deviceurl, thus we need to register it here
+        # ExecutionRegisteredEvent doesn't contain the device_url, thus we need to register it here
         self.coordinator.executions[exec_id] = {
-            "deviceurl": self.device.deviceurl,
+            "device_url": self.device.device_url,
             "command_name": command_name,
         }
 
