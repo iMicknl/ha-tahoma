@@ -17,14 +17,6 @@ from .coordinator import OverkizDataUpdateCoordinator
 from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
 
-COMMAND_CYCLE = "cycle"
-COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
-COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
-COMMAND_SET_FORCE_HEATING = "setForceHeating"
-COMMAND_STANDARD = "standard"
-
-IO_FORCE_HEATING_STATE = "io:ForceHeatingState"
-
 DEVICE_CLASS_SIREN = "siren"
 
 ICON_BELL_RING = "mdi:bell-ring"
@@ -82,34 +74,34 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
         if self.executor.has_command(OverkizCommand.ON):
             await self.executor.async_execute_command(OverkizCommand.ON)
 
-        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, OverkizCommandState.ON
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandState.ON
             )
 
-        elif self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        elif self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.executor.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
+                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
                 2 * 60 * 1000,  # 2 minutes
                 75,  # 90 seconds bip, 30 seconds silence
                 2,  # repeat 3 times
-                COMMAND_MEMORIZED_VOLUME,
+                OverkizCommand.MEMORIZED_VOLUME,
             )
 
     async def async_turn_off(self, **_):
         """Send the off command."""
-        if self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        if self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.executor.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
+                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 2000,
                 100,
                 0,
-                COMMAND_STANDARD,
+                OverkizCommand.STANDARD,
             )
 
-        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, OverkizCommandState.OFF
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandState.OFF
             )
 
         elif self.executor.has_command(OverkizCommand.OFF):
@@ -117,14 +109,16 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
     async def async_toggle(self, **_):
         """Click the switch."""
-        if self.executor.has_command(COMMAND_CYCLE):
-            await self.executor.async_execute_command(COMMAND_CYCLE)
+        if self.executor.has_command(OverkizCommand.CYCLE):
+            await self.executor.async_execute_command(OverkizCommand.CYCLE)
 
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
         return (
-            self.executor.select_state(OverkizState.CORE_ON_OFF, IO_FORCE_HEATING_STATE)
+            self.executor.select_state(
+                OverkizState.CORE_ON_OFF, OverkizState.IO_FORCE_HEATING_STATE
+            )
             == OverkizCommandState.ON
         )
 
