@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import OverkizState, OverkizCommand, OverkizCommandState, DOMAIN
+from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
