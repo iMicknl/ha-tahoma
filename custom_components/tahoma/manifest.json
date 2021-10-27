@@ -13,7 +13,7 @@
     "@tetienne"
   ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "dhcp": [
     {
       "hostname": "gateway*",
