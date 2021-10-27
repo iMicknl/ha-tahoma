@@ -13,29 +13,14 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
-from homeassistant.const import STATE_ON
-
+from ..const import OverkizCommand, OverkizCommandState, OverkizState
 from .tahoma_cover import (
-    COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
     COMMANDS_STOP,
     OverkizGenericCover,
 )
 
-COMMAND_CYCLE = "cycle"
-COMMAND_CLOSE = "close"
-COMMAND_DOWN = "down"
-COMMAND_OPEN = "open"
-COMMAND_SET_CLOSURE = "setClosure"
-
-COMMAND_UP = "up"
-
-COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
-COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
-
-CORE_CLOSURE_STATE = "core:ClosureState"
-CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
-# io:DiscreteGateOpenerIOComponent
-CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
+COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
+COMMANDS_CLOSE = [OverkizCommand.CLOSE, OverkizCommand.DOWN, OverkizCommand.CYCLE]
 
 TAHOMA_COVER_DEVICE_CLASSES = {
     "Blind": DEVICE_CLASS_BLIND,
@@ -61,7 +46,7 @@ class VerticalCover(OverkizGenericCover):
         """Flag supported features."""
         supported_features = super().supported_features
 
-        if self.executor.has_command(COMMAND_SET_CLOSURE):
+        if self.executor.has_command(OverkizCommand.SET_CLOSURE):
             supported_features |= SUPPORT_SET_POSITION
 
         if self.executor.has_command(*COMMANDS_OPEN):
@@ -92,9 +77,9 @@ class VerticalCover(OverkizGenericCover):
         None is unknown, 0 is closed, 100 is fully open.
         """
         position = self.executor.select_state(
-            CORE_CLOSURE_STATE,
-            CORE_CLOSURE_OR_ROCKER_POSITION_STATE,
-            CORE_PEDESTRIAN_POSITION_STATE,
+            OverkizState.CORE_CLOSURE,
+            OverkizState.CORE_CLOSURE_OR_ROCKER_POSITION,
+            OverkizState.CORE_PEDESTRIAN_POSITION,
         )
 
         # Uno devices can have a position not in 0 to 100 range when unknown
@@ -109,7 +94,9 @@ class VerticalCover(OverkizGenericCover):
             await self.async_set_cover_position_low_speed(**kwargs)
         else:
             position = 100 - kwargs.get(ATTR_POSITION, 0)
-            await self.executor.async_execute_command(COMMAND_SET_CLOSURE, position)
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_CLOSURE, position
+            )
 
     async def async_open_cover(self, **_):
         """Open the cover."""
@@ -131,9 +118,13 @@ class VerticalCover(OverkizGenericCover):
 
     def is_low_speed_enabled(self):
         """Return if low speed mode is enabled."""
-        if not self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
+        if not self.executor.has_command(OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED):
             return False
 
         switch_entity_id = f"{self.entity_id.replace('cover', 'switch')}_low_speed"
         low_speed_entity = self.coordinator.hass.states.get(switch_entity_id)
-        return low_speed_entity.state == STATE_ON if low_speed_entity else False
+        return (
+            low_speed_entity.state == OverkizCommandState.ON
+            if low_speed_entity
+            else False
+        )

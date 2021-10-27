@@ -9,59 +9,23 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
+from ..const import OverkizCommand, OverkizCommandState, OverkizState
 from ..entity import OverkizEntity
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
-COMMAND_CYCLE = "cycle"
-COMMAND_CLOSE = "close"
-COMMAND_CLOSE_SLATS = "closeSlats"
-COMMAND_DOWN = "down"
-COMMAND_DEPLOY = "deploy"
-COMMAND_MY = "my"
-COMMAND_OPEN = "open"
-COMMAND_OPEN_SLATS = "openSlats"
-COMMAND_SET_CLOSURE = "setClosure"
-COMMAND_SET_CLOSURE_AND_LINEAR_SPEED = "setClosureAndLinearSpeed"
-COMMAND_SET_DEPLOYMENT = "setDeployment"
-COMMAND_SET_ORIENTATION = "setOrientation"
-# io:DiscreteGateOpenerIOComponent
-COMMAND_SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
+COMMANDS_STOP = [OverkizCommand.STOP, OverkizCommand.STOP_IDENTIFY, OverkizCommand.MY]
+COMMANDS_STOP_TILT = [
+    OverkizCommand.STOP,
+    OverkizCommand.STOP_IDENTIFY,
+    OverkizCommand.MY,
+]
+COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
+COMMANDS_OPEN_TILT = [OverkizCommand.OPEN_SLATS]
+COMMANDS_CLOSE = [OverkizCommand.CLOSE, OverkizCommand.DOWN, OverkizCommand.CYCLE]
+COMMANDS_CLOSE_TILT = [OverkizCommand.CLOSE_SLATS]
 
-COMMAND_STOP = "stop"
-COMMAND_STOP_IDENTIFY = "stopIdentify"
-COMMAND_UNDEPLOY = "undeploy"
-COMMAND_UP = "up"
-
-COMMANDS_STOP = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
-COMMANDS_STOP_TILT = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
-COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
-COMMANDS_OPEN_TILT = [COMMAND_OPEN_SLATS]
-COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
-COMMANDS_CLOSE_TILT = [COMMAND_CLOSE_SLATS]
-
-COMMANDS_SET_TILT_POSITION = [COMMAND_SET_ORIENTATION]
-
-CORE_CLOSURE_STATE = "core:ClosureState"
-CORE_CLOSURE_OR_ROCKER_POSITION_STATE = "core:ClosureOrRockerPositionState"
-CORE_DEPLOYMENT_STATE = "core:DeploymentState"
-CORE_MOVING_STATE = "core:MovingState"
-CORE_OPEN_CLOSED_PARTIAL_STATE = "core:OpenClosedPartialState"
-# io:DiscreteGateOpenerIOComponent
-CORE_OPEN_CLOSED_PEDESTRIAN_STATE = "core:OpenClosedPedestrianState"
-CORE_OPEN_CLOSED_STATE = "core:OpenClosedState"
-CORE_OPEN_CLOSED_UNKNOWN_STATE = "core:OpenClosedUnknownState"
-# io:DiscreteGateOpenerIOComponent
-CORE_PEDESTRIAN_POSITION_STATE = "core:PedestrianPositionState"
-CORE_SLATS_OPEN_CLOSED_STATE = "core:SlatsOpenClosedState"
-CORE_SLATE_ORIENTATION_STATE = "core:SlateOrientationState"
-CORE_SLATS_ORIENTATION_STATE = "core:SlatsOrientationState"
-CORE_TARGET_CLOSURE_STATE = "core:TargetClosureState"
-MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState"
-
-IO_PRIORITY_LOCK_LEVEL_STATE = "io:PriorityLockLevelState"
-
-STATE_CLOSED = "closed"
+COMMANDS_SET_TILT_POSITION = [OverkizCommand.SET_ORIENTATION]
 
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
@@ -80,7 +44,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         None is unknown, 0 is closed, 100 is fully open.
         """
         position = self.executor.select_state(
-            CORE_SLATS_ORIENTATION_STATE, CORE_SLATE_ORIENTATION_STATE
+            OverkizState.CORE_SLATS_ORIENTATION, OverkizState.CORE_SLATE_ORIENTATION
         )
         return 100 - position if position is not None else None
 
@@ -89,7 +53,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
         await self.executor.async_execute_command(
-            COMMAND_SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
+            OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED, position, "lowspeed"
         )
 
     async def async_set_cover_tilt_position(self, **kwargs):
@@ -107,15 +71,15 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             return self.current_cover_position == 0
 
         state = self.executor.select_state(
-            CORE_OPEN_CLOSED_STATE,
-            CORE_SLATS_OPEN_CLOSED_STATE,
-            CORE_OPEN_CLOSED_PARTIAL_STATE,
-            CORE_OPEN_CLOSED_PEDESTRIAN_STATE,
-            CORE_OPEN_CLOSED_UNKNOWN_STATE,
-            MYFOX_SHUTTER_STATUS_STATE,
+            OverkizState.CORE_OPEN_CLOSED,
+            OverkizState.CORE_SLATS_OPEN_CLOSED,
+            OverkizState.CORE_OPEN_CLOSED_PARTIAL,
+            OverkizState.CORE_OPEN_CLOSED_PEDESTRIAN,
+            OverkizState.CORE_OPEN_CLOSED_UNKNOWN,
+            OverkizState.MYFOX_SHUTTER_STATUS,
         )
         if state is not None:
-            return state == STATE_CLOSED
+            return state == OverkizCommandState.CLOSED
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
@@ -137,7 +101,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
     async def async_stop_cover(self, **_):
         """Stop the cover."""
         await self.async_cancel_or_stop_cover(
-            COMMANDS_OPEN + [COMMAND_SET_CLOSURE] + COMMANDS_CLOSE,
+            COMMANDS_OPEN + [OverkizCommand.SET_CLOSURE] + COMMANDS_CLOSE,
             COMMANDS_STOP,
         )
 
@@ -192,7 +156,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
     async def async_my(self, **_):
         """Set cover to preset position."""
-        await self.executor.async_execute_command(COMMAND_MY)
+        await self.executor.async_execute_command(OverkizCommand.MY)
 
     @property
     def is_opening(self):
@@ -208,9 +172,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         ):
             return True
 
-        is_moving = self.device.states.get(CORE_MOVING_STATE)
-        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
-        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
+        is_moving = self.device.states.get(OverkizState.CORE_MOVING)
+        current_closure = self.device.states.get(OverkizState.CORE_CLOSURE)
+        target_closure = self.device.states.get(OverkizState.CORE_TARGET_CLOSURE)
         return (
             is_moving
             and is_moving.value
@@ -233,9 +197,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         ):
             return True
 
-        is_moving = self.device.states.get(CORE_MOVING_STATE)
-        current_closure = self.device.states.get(CORE_CLOSURE_STATE)
-        target_closure = self.device.states.get(CORE_TARGET_CLOSURE_STATE)
+        is_moving = self.device.states.get(OverkizState.CORE_MOVING)
+        current_closure = self.device.states.get(OverkizState.CORE_CLOSURE)
+        target_closure = self.device.states.get(OverkizState.CORE_TARGET_CLOSURE)
         return (
             is_moving
             and is_moving.value
@@ -250,7 +214,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         attr = super().device_state_attributes or {}
 
         # Obstruction Detected attribute is used by HomeKit
-        if self.executor.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
+        if self.executor.has_state(OverkizState.IO_PRIORITY_LOCK_LEVEL):
             attr[ATTR_OBSTRUCTION_DETECTED] = True
 
         return attr
@@ -272,10 +236,10 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         if self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_SET_TILT_POSITION
 
-        if self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
+        if self.executor.has_command(OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
 
-        if self.executor.has_command(COMMAND_MY):
+        if self.executor.has_command(OverkizCommand.MY):
             supported_features |= SUPPORT_MY
 
         return supported_features
