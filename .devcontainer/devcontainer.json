@@ -4,7 +4,7 @@
 	"name": "Overkiz (by Somfy) integration development",
 	"context": "..",
 	"appPort": ["9123:8123"],
-	"postCreateCommand": "apt update && apt -y upgrade && container install",
+	"postCreateCommand": "apt update && apt -y upgrade && pip3 install -r requirements_dev.txt && container install",
 	"extensions": [
 		"esbenp.prettier-vscode",
 		"github.vscode-pull-request-github",
