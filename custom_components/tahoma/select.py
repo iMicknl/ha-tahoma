@@ -34,7 +34,7 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        PedestrianGateSelect(device.deviceurl, coordinator)
+        PedestrianGateSelect(device.device_url, coordinator)
         for device in data["platforms"][COVER]
         if CORE_OPEN_CLOSED_PEDESTRIAN_STATE in device.states
     ]
