@@ -13,11 +13,9 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
+
 from ..const import OverkizCommand, OverkizCommandState, OverkizState
-from .tahoma_cover import (
-    COMMANDS_STOP,
-    OverkizGenericCover,
-)
+from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
 COMMANDS_CLOSE = [OverkizCommand.CLOSE, OverkizCommand.DOWN, OverkizCommand.CYCLE]
