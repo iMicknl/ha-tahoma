@@ -36,6 +36,8 @@
 		"files.associations": {
 			"*.yaml": "home-assistant"
 		},
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+		"editor.defaultFormatter": null,
+		"[javascript, yaml, json]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		}
 }
