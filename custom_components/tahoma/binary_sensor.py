@@ -4,11 +4,10 @@ from __future__ import annotations
 from homeassistant.components import binary_sensor
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, STATE_ON
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
 
 STATE_OPEN = "open"
