@@ -13,8 +13,8 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
-from homeassistant.const import STATE_ON
 
+from ..const import STATE_ON
 from .tahoma_cover import (
     COMMAND_SET_CLOSURE_AND_LINEAR_SPEED,
     COMMANDS_STOP,

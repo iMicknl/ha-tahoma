@@ -25,6 +25,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
+from ..const import STATE_OFF, STATE_ON
 from ..entity import OverkizEntity
 
 COMMAND_GLOBAL_CONTROL = "globalControl"
@@ -40,8 +41,6 @@ MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
 ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
 SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
 
-STATE_ON = "on"
-STATE_OFF = "off"
 
 TAHOMA_TO_HVAC_MODES = {
     "autocooling": HVAC_MODE_AUTO,

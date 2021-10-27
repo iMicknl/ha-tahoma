@@ -6,8 +6,9 @@ from homeassistant.components.water_heater import (
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
-from homeassistant.const import ATTR_TEMPERATURE, STATE_OFF, STATE_ON, TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
+from ..const import STATE_OFF, STATE_ON
 from ..entity import OverkizEntity
 
 CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"

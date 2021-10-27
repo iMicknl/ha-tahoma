@@ -10,13 +10,12 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
+from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN, STATE_ON
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
