@@ -8,12 +8,11 @@ from homeassistant.components.switch import (
     SwitchEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_OFF, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
+from .const import OverkizState, OverkizCommand, OverkizCommandState, DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
@@ -80,12 +79,12 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
     async def async_turn_on(self, **_):
         """Send the on command."""
-        if self.executor.has_command(COMMAND_ON):
-            await self.executor.async_execute_command(COMMAND_ON)
+        if self.executor.has_command(OverkizCommand.ON):
+            await self.executor.async_execute_command(OverkizCommand.ON)
 
         elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, STATE_ON
+                COMMAND_SET_FORCE_HEATING, OverkizCommandState.ON
             )
 
         elif self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
@@ -110,11 +109,11 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
         elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, STATE_OFF
+                COMMAND_SET_FORCE_HEATING, OverkizCommandState.OFF
             )
 
-        elif self.executor.has_command(COMMAND_OFF):
-            await self.executor.async_execute_command(COMMAND_OFF)
+        elif self.executor.has_command(OverkizCommand.OFF):
+            await self.executor.async_execute_command(OverkizCommand.OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
@@ -125,8 +124,8 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
     def is_on(self):
         """Get whether the switch is in on state."""
         return (
-            self.executor.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE)
-            == STATE_ON
+            self.executor.select_state(OverkizState.CORE_ON_OFF, IO_FORCE_HEATING_STATE)
+            == OverkizCommandState.ON
         )
 
 
@@ -146,7 +145,7 @@ class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         await super().async_added_to_hass()
         state = await self.async_get_last_state()
         if state:
-            self._is_on = state.state == STATE_ON
+            self._is_on = state.state == OverkizCommandState.ON
 
     @property
     def is_on(self) -> bool:
