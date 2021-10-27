@@ -7,7 +7,6 @@
 	"postCreateCommand": "apt update && apt -y upgrade && container install",
 	"extensions": [
 		"esbenp.prettier-vscode",
-		"github.copilot",
 		"github.vscode-pull-request-github",
 		"ibm.output-colorizer",
 		"ms-python.python",
