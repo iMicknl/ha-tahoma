@@ -39,7 +39,7 @@ class OverkizEntity(CoordinatorEntity):
         self._attr_assumed_state = not self.device.states
         self._attr_available = self.device.available
         self._attr_name = self.device.label
-        self._attr_unique_id = self.device.deviceurl
+        self._attr_unique_id = self.device.device_url
 
     @property
     def device(self) -> Device:
@@ -47,7 +47,7 @@ class OverkizEntity(CoordinatorEntity):
         return self.coordinator.data[self.device_url]
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> DeviceInfo:
         """Return device registry information for this entity."""
         # Some devices, such as the Smart Thermostat have several devices in one physical device,
         # with same device url, terminated by '#' and a number.
@@ -61,7 +61,7 @@ class OverkizEntity(CoordinatorEntity):
         manufacturer = (
             self.executor.select_attribute(OverkizAttribute.CORE_MANUFACTURER)
             or self.executor.select_state(OverkizState.CORE_MANUFACTURER_NAME)
-            or "Somfy"
+            or self.coordinator.client.server.manufacturer
         )
 
         model = (
@@ -81,7 +81,7 @@ class OverkizEntity(CoordinatorEntity):
             sw_version=self.executor.select_attribute(
                 OverkizAttribute.CORE_FIRMWARE_REVISION
             ),
-            suggested_area=self.coordinator.areas[self.device.placeoid],
+            suggested_area=self.coordinator.areas[self.device.place_oid],
             via_device=self.executor.get_gateway_id(),
         )
 

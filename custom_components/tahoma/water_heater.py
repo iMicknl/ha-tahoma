@@ -28,7 +28,7 @@ async def async_setup_entry(
     water_heater_devices = [device for device in data["platforms"][WATER_HEATER]]
 
     entities = [
-        TYPE[device.widget](device.deviceurl, coordinator)
+        TYPE[device.widget](device.device_url, coordinator)
         for device in water_heater_devices
         if device.widget in TYPE
     ]
