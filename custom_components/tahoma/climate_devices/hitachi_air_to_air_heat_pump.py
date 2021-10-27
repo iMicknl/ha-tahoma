@@ -30,12 +30,18 @@ from ..entity import OverkizEntity
 
 PRESET_HOLIDAY_MODE = "holiday_mode"
 
-FAN_SPEED_STATE = ["ovp:FanSpeedState", "hlrrwifi:FanSpeedState"]
-LEAVE_HOME_STATE = ["ovp:LeaveHomeState", "hlrrwifi:LeaveHomeState"]
-MAIN_OPERATION_STATE = ["ovp:MainOperationState", "hlrrwifi:MainOperationState"]
-MODE_CHANGE_STATE = ["ovp:ModeChangeState", "hlrrwifi:ModeChangeState"]
-ROOM_TEMPERATURE_STATE = ["ovp:RoomTemperatureState", "hlrrwifi:RoomTemperatureState"]
-SWING_STATE = ["ovp:SwingState", "hlrrwifi:SwingState"]
+FAN_SPEED_STATE = [OverkizState.OVP_FAN_SPEED, OverkizState.HLRRWIFI_FAN_SPEED]
+LEAVE_HOME_STATE = [OverkizState.OVP_LEAVE_HOME, OverkizState.HLRRWIFI_LEAVE_HOME]
+MAIN_OPERATION_STATE = [
+    OverkizState.OVP_MAIN_OPERATION,
+    OverkizState.HLRRWIFI_MAIN_OPERATION,
+]
+MODE_CHANGE_STATE = [OverkizState.OVP_MODE_CHANGE, OverkizState.HLRRWIFI_MODE_CHANGE]
+ROOM_TEMPERATURE_STATE = [
+    OverkizState.OVP_ROOM_TEMPERATURE,
+    OverkizState.HLRRWIFI_ROOM_TEMPERATURE,
+]
+SWING_STATE = [OverkizState.OVP_SWING, OverkizState.HLRRWIFI_SWING]
 
 TAHOMA_TO_HVAC_MODES = {
     "autocooling": HVAC_MODE_AUTO,
