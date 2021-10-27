@@ -60,10 +60,10 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
 
         self.data = {}
         self.client = client
-        self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
+        self.devices: Dict[str, Device] = {d.device_url: d for d in devices}
         self.is_stateless = all(
-            device.deviceurl.startswith("rts://")
-            or device.deviceurl.startswith("internal://")
+            device.device_url.startswith("rts://")
+            or device.device_url.startswith("internal://")
             for device in devices
         )
         self.executions: Dict[str, Dict[str, str]] = {}
@@ -113,13 +113,13 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 )
 
             if event.name == EventName.DEVICE_AVAILABLE:
-                self.devices[event.deviceurl].available = True
+                self.devices[event.device_url].available = True
 
             elif event.name in [
                 EventName.DEVICE_UNAVAILABLE,
                 EventName.DEVICE_DISABLED,
             ]:
-                self.devices[event.deviceurl].available = False
+                self.devices[event.device_url].available = False
 
             elif event.name in [
                 EventName.DEVICE_CREATED,
@@ -131,17 +131,17 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 return None
 
             elif event.name == EventName.DEVICE_REMOVED:
-                base_device_url, *_ = event.deviceurl.split("#")
+                base_device_url, *_ = event.device_url.split("#")
                 registry = await device_registry.async_get_registry(self.hass)
 
                 if device := registry.async_get_device({(DOMAIN, base_device_url)}):
                     registry.async_remove_device(device.id)
 
-                del self.devices[event.deviceurl]
+                del self.devices[event.device_url]
 
             elif event.name == EventName.DEVICE_STATE_CHANGED:
                 for state in event.device_states:
-                    device = self.devices[event.deviceurl]
+                    device = self.devices[event.device_url]
                     if state.name not in device.states:
                         device.states[state.name] = state
                     device.states[state.name].value = self._get_state(state)
@@ -168,7 +168,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
     async def _get_devices(self) -> Dict[str, Device]:
         """Fetch devices."""
         _LOGGER.debug("Fetching all devices and state via /setup/devices")
-        return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
+        return {d.device_url: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
     def _get_state(
