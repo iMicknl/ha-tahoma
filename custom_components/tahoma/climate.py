@@ -56,7 +56,7 @@ async def async_setup_entry(
     climate_devices = [device for device in data["platforms"][CLIMATE]]
 
     entities = [
-        TYPE[device.widget](device.deviceurl, coordinator)
+        TYPE[device.widget](device.device_url, coordinator)
         for device in climate_devices
         if device.widget in TYPE
     ]

@@ -44,7 +44,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         server = SUPPORTED_SERVERS[user_input.get(CONF_HUB, DEFAULT_HUB)]
 
-        async with TahomaClient(username, password, api_url=server.endpoint) as client:
+        async with TahomaClient(
+            username=username, password=password, server=server
+        ) as client:
             await client.login()
 
             # Set first gateway as unique id
