@@ -1,15 +1,10 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
-from homeassistant.components.number import DOMAIN as NUMBER
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.components.sensor import DOMAIN as SENSOR
-from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -22,6 +17,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
+from pyhoma.enums import GatewaySubType, GatewayType
 from pyhoma.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
@@ -37,6 +33,7 @@ from .const import (
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
+    SUPPORTED_PLATFORMS,
     UPDATE_INTERVAL,
     UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
@@ -129,10 +126,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     session = async_get_clientsession(hass)
     client = TahomaClient(
-        username,
-        password,
-        session=session,
-        api_url=server.endpoint,
+        username=username, password=password, session=session, server=server
     )
 
     try:
@@ -199,16 +193,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    supported_platforms = set(platforms.keys())
-
-    # Sensor and Binary Sensor will be added dynamically, based on the device states
-    # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
-    # Number will be added dynamically, based on device features (e.g. My position)
-    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH, NUMBER))
-    for platform in supported_platforms:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
 
     device_registry = await dr.async_get_registry(hass)
 
@@ -216,15 +201,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
         gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
+            beautify_name(GatewaySubType(gateway.sub_type).name)
+            if gateway.sub_type
             else None
         )
 
         gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else gateway.type
+            f"{beautify_name(GatewayType(gateway.type).name)} hub"
+            if gateway.type
+            else None
         )
 
         device_registry.async_get_or_create(
@@ -284,15 +269,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in entities_per_platform
-            ]
-        )
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        entry, SUPPORTED_PLATFORMS
     )
 
     if unload_ok:

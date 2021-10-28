@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
+from homeassistant.components.number import NumberEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import DeviceInfo
@@ -57,7 +58,7 @@ class OverkizEntity(CoordinatorEntity):
         self._attr_assumed_state = not self.device.states
         self._attr_available = self.device.available
         self._attr_name = self.device.label
-        self._attr_unique_id = self.device.deviceurl
+        self._attr_unique_id = self.device.device_url
 
     @property
     def device(self) -> Device:
@@ -65,7 +66,7 @@ class OverkizEntity(CoordinatorEntity):
         return self.coordinator.data[self.device_url]
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> DeviceInfo:
         """Return device registry information for this entity."""
         # Some devices, such as the Smart Thermostat have several devices in one physical device,
         # with same device url, terminated by '#' and a number.
@@ -79,7 +80,7 @@ class OverkizEntity(CoordinatorEntity):
         manufacturer = (
             self.executor.select_attribute(CORE_MANUFACTURER)
             or self.executor.select_state(CORE_MANUFACTURER_NAME_STATE)
-            or "Somfy"
+            or self.coordinator.client.server.manufacturer
         )
 
         model = (
@@ -95,7 +96,7 @@ class OverkizEntity(CoordinatorEntity):
             manufacturer=manufacturer,
             model=model,
             sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
-            suggested_area=self.coordinator.areas[self.device.placeoid],
+            suggested_area=self.coordinator.areas[self.device.place_oid],
             via_device=self.executor.get_gateway_id(),
         )
 
@@ -130,6 +131,19 @@ class OverkizBinarySensorDescription(BinarySensorEntityDescription):
     is_on: Callable[[str], bool] = lambda state: state
 
 
+@dataclass
+class OverkizNumberDescription(NumberEntityDescription):
+    """Class to describe an Overkiz number."""
+
+    command: str = None
+
+    max_value: float | None = None
+    min_value: float | None = None
+    min_step: float | None = None
+    value: float | None = None
+    state: Callable[[str], bool] = lambda state: state
+
+
 class OverkizDescriptiveEntity(OverkizEntity):
     """Representation of a Overkiz device entity based on a description."""
 
@@ -137,7 +151,9 @@ class OverkizDescriptiveEntity(OverkizEntity):
         self,
         device_url: str,
         coordinator: OverkizDataUpdateCoordinator,
-        description: OverkizSensorDescription | OverkizBinarySensorDescription,
+        description: OverkizSensorDescription
+        | OverkizBinarySensorDescription
+        | OverkizNumberDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
