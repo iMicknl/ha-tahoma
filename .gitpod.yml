@@ -1,3 +1,7 @@
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - init: pip3 install -r requirements.txt
 ports:
   - port: 9123
     onOpen: notify
