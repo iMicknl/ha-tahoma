@@ -93,7 +93,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except MaintenanceException:
                 errors["base"] = "server_in_maintenance"
             except AbortFlow as abort_flow:
-                return abort_flow
+                raise abort_flow
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.exception(exception)
