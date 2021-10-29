@@ -1,6 +1,7 @@
 """Support for DomesticHotWaterProduction."""
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
+    STATE_ECO,
     SUPPORT_AWAY_MODE,
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
@@ -10,10 +11,13 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from ..const import OverkizCommand, OverkizCommandState, OverkizState
 from ..entity import OverkizEntity
 
+STATE_MANUAL = "manual"
+STATE_AUTO = "auto"
+
 MAP_OPERATION_MODES = {
-    OverkizCommandState.MANUAL_ECO_ACTIVE: OverkizCommandState.ECO,
-    OverkizCommandState.MANUAL_ECO_INACTIVE: OverkizCommandState.MANUAL,
-    OverkizCommandState.AUTO: OverkizCommandState.AUTO,
+    OverkizCommandState.MANUAL_ECO_ACTIVE: STATE_ECO,
+    OverkizCommandState.MANUAL_ECO_INACTIVE: STATE_MANUAL,
+    OverkizCommandState.AUTO: STATE_AUTO,
 }
 
 MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
