@@ -73,6 +73,13 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
     ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizBinarySensorDescription(
+        key="io:OperatingModeCapabilitiesState",
+        name="Energy Demand Status",
+        device_class=binary_sensor.DEVICE_CLASS_HEAT,
+        is_on=lambda state: state["energyDemandStatus"] == 0,
+    ),
 ]
 
 
