@@ -1,17 +1,12 @@
 """Support for HitachiDHW."""
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
-    STATE_HIGH_DEMAND,
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
-from homeassistant.const import (
-    ATTR_TEMPERATURE,
-    PRECISION_WHOLE,
-    TEMP_CELSIUS,
-)
+from homeassistant.const import ATTR_TEMPERATURE, PRECISION_WHOLE, TEMP_CELSIUS
 
-from ..const import OverkizState, OverkizCommand, OverkizCommandState
+from ..const import OverkizCommand, OverkizCommandState, OverkizState
 from ..entity import OverkizEntity
 
 MODE_HIGH_DEMAND = "high demand"
