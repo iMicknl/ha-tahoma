@@ -1,6 +1,6 @@
 """Constants for the Overkiz (by Somfy) integration."""
 from datetime import timedelta
-from enum import Enum
+from enum import Enum, unique
 
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
@@ -108,6 +108,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
 }
 
 
+@unique
 class OverkizAttribute(str, Enum):
     """Device attributes used by Overkiz."""
 
@@ -116,6 +117,7 @@ class OverkizAttribute(str, Enum):
     HOMEKIT_SETUP_CODE = "homekit:SetupCode"
 
 
+@unique
 class OverkizState(str, Enum):
     """Device states used by Overkiz."""
 
@@ -139,6 +141,7 @@ class OverkizState(str, Enum):
     CORE_CO_CONCENTRATION = "core:COConcentrationState"
     CORE_DEPLOYMENT = "core:DeploymentState"
     CORE_DISCRETE_RSSI_LEVEL = "core:DiscreteRSSILevelState"
+    CORE_DHW_TEMPERATURE = "core:DHWTemperatureState"
     CORE_ELECTRIC_ENERGY_CONSUMPTION = "core:ElectricEnergyConsumptionState"
     CORE_ELECTRIC_POWER_CONSUMPTION = "core:ElectricPowerConsumptionState"
     CORE_EXPECTED_NUMBER_OF_SHOWER = "core:ExpectedNumberOfShowerState"
@@ -152,8 +155,10 @@ class OverkizState(str, Enum):
     CORE_LOCKED_UNLOCKED = "core:LockedUnlockedState"
     CORE_LUMINANCE = "core:LuminanceState"
     CORE_MANUFACTURER_NAME = "core:ManufacturerNameState"
+    CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE = "core:MaximalTemperatureManualModeState"
     CORE_MAXIMUM_TEMPERATURE = "core:MaximumTemperatureState"
     CORE_MEMORIZED_1_POSITION = "core:Memorized1PositionState"
+    CORE_MINIMAL_TEMPERATURE_MANUAL_MODE = "core:MinimalTemperatureManualModeState"
     CORE_MINIMUM_TEMPERATURE = "core:MinimumTemperatureState"
     CORE_MODEL = "core:ModelState"
     CORE_MOVING = "core:MovingState"
@@ -164,6 +169,7 @@ class OverkizState(str, Enum):
     CORE_OPEN_CLOSED_PEDESTRIAN = "core:OpenClosedPedestrianState"
     CORE_OPEN_CLOSED = "core:OpenClosedState"
     CORE_OPEN_CLOSED_UNKNOWN = "core:OpenClosedUnknownState"
+    CORE_OPERATING_MODE = "core:OperatingModeState"
     CORE_PEDESTRIAN_POSITION = "core:PedestrianPositionState"
     CORE_PRIORITY_LOCK_TIMER = "core:PriorityLockTimerState"
     CORE_PRODUCT_MODEL_NAME = "core:ProductModelNameState"
@@ -197,6 +203,7 @@ class OverkizState(str, Enum):
     INTERNAL_CURRENT_ALARM_MODE = "internal:CurrentAlarmModeState"
     INTERNAL_INTRUSION_DETECTED = "internal:IntrusionDetectedState"
     INTERNAL_TARGET_ALARM_MODE = "internal:TargetAlarmModeState"
+    IO_DHW_MODE = "io:DHWModeState"
     IO_FORCE_HEATING_STATE = "io:ForceHeatingState"
     IO_INLET_ENGINE = "io:InletEngineState"
     IO_MIDDLE_WATER_TEMPERATURE = "io:MiddleWaterTemperatureState"
@@ -206,6 +213,9 @@ class OverkizState(str, Enum):
     IO_PRIORITY_LOCK_ORIGINATOR = "io:PriorityLockOriginatorState"
     IO_SENSOR_ROOM = "io:SensorRoomState"
     IO_VIBRATION_DETECTED = "io:VibrationDetectedState"
+    MODBUS_DHW_MODE = "modbus:DHWModeState"
+    MODBUS_CONTROL_DHW = "modbus:ControlDHWState"
+    MODBUS_CONTROL_DHW_SETTING_TEMPERATURE = "modbus:ControlDHWSettingTemperatureState"
     MYFOX_ALARM_STATUS = "myfox:AlarmStatusState"
     MYFOX_SHUTTER_STATUS = "myfox:ShutterStatusState"
     OVP_FAN_SPEED = "ovp:FanSpeedState"
@@ -217,20 +227,29 @@ class OverkizState(str, Enum):
     VERISURE_ALARM_PANEL_MAIN_ARM_TYPE = "verisure:AlarmPanelMainArmTypeState"
 
 
+@unique
 class OverkizCommandState(str, Enum):
     """Device states used by Overkiz commands and/or states."""
 
+    ABSENCE = "absence"
     ARMED = "armed"
     ARMED_DAY = "armedDay"
     ARMED_NIGHT = "armedNight"
+    AUTO = "auto"
+    AUTO_MODE = "autoMode"
     AVAILABLE = "available"
     CLOSED = "closed"
     DEAD = "dead"
     DETECTED = "detected"
     DISARMED = "disarmed"
+    ECO = "eco"
     FULL = "full"
+    HIGH_DEMAND = "highDemand"
     LOW = "low"
     LOCKED = "locked"
+    MANUAL = "manual"
+    MANUAL_ECO_ACTIVE = "manualEcoActive"
+    MANUAL_ECO_INACTIVE = "manualEcoInactive"
     NORMAL = "normal"
     ON = "on"
     OFF = "off"
@@ -239,6 +258,8 @@ class OverkizCommandState(str, Enum):
     PENDING = "pending"
     PEDESTRIAN = "pedestrian"
     PERSON_INSIDE = "personInside"
+    RELAUNCH = "relaunch"
+    STANDARD = "standard"
     TOTAL = "total"
     UNDETECTED = "undetected"
     VERY_LOW = "verylow"
@@ -246,6 +267,7 @@ class OverkizCommandState(str, Enum):
     ZONE_2 = "zone2"
 
 
+@unique
 class OverkizCommand(str, Enum):
     """Device commands used by Overkiz."""
 
@@ -274,7 +296,11 @@ class OverkizCommand(str, Enum):
     SET_ALARM_STATUS = "setAlarmStatus"
     SET_CLOSURE = "setClosure"
     SET_CLOSURE_AND_LINEAR_SPEED = "setClosureAndLinearSpeed"
+    SET_CONTROL_DHW = "setControlDHW"
+    SET_CONTROL_DHW_SETTING_TEMPERATURE = "setControlDHWSettingTemperature"
+    SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
     SET_DEPLOYMENT = "setDeployment"
+    SET_DHW_MODE = "setDHWMode"
     SET_EXPECTED_NUMBER_OF_SHOWER = "setExpectedNumberOfShower"
     SET_FORCE_HEATING = "setForceHeating"
     SET_INTENSITY = "setIntensity"
@@ -282,6 +308,7 @@ class OverkizCommand(str, Enum):
     SET_ORIENTATION = "setOrientation"
     SET_PEDESTRIAN_POSITION = "setPedestrianPosition"
     SET_RGB = "setRGB"
+    SET_TARGET_TEMPERATURE = "setTargetTemperature"
     STANDARD = "standard"
     STOP = "stop"
     STOP_IDENTIFY = "stopIdentify"
