@@ -318,12 +318,10 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key="io:HeatPumpOperatingTimeState",
         name="Heat Pump Operating Time",
-        device_class=sensor.DEVICE_CLASS_TIMESTAMP,
     ),
     OverkizSensorDescription(
         key="io:ElectricBoosterOperatingTimeState",
         name="Electric Booster Operating Time",
-        device_class=sensor.DEVICE_CLASS_TIMESTAMP,
     ),
 ]
 

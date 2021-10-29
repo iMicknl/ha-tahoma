@@ -78,7 +78,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
         key="io:OperatingModeCapabilitiesState",
         name="Energy Demand Status",
         device_class=binary_sensor.DEVICE_CLASS_HEAT,
-        is_on=lambda state: state["energyDemandStatus"] == 0,
+        is_on=lambda state: state.get("energyDemandStatus") == 1,
     ),
 ]
 
