@@ -244,7 +244,7 @@ class OverkizCommandState(str, Enum):
     DISARMED = "disarmed"
     ECO = "eco"
     FULL = "full"
-    HIGH_DEMAND = "high demand"
+    HIGH_DEMAND = "high demand"  # should it be highDemand?
     LOW = "low"
     LOCKED = "locked"
     MANUAL = "manual"
