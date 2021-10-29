@@ -59,8 +59,11 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        if self.executor.select_state(OverkizState.MODBUS_CONTROL_DHW) == STATE_STOP:
-            return STATE_OFF
+        if (
+            self.executor.select_state(OverkizState.MODBUS_CONTROL_DHW)
+            == OverkizCommandState.STOP
+        ):
+            return OverkizCommandState.OFF
 
         return TAHOMA_TO_OPERATION_MODE[
             self.executor.select_state(OverkizState.MODBUS_DHW_MODE)
@@ -69,15 +72,18 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
         # Turn water heater off
-        if operation_mode == STATE_OFF:
+        if operation_mode == OverkizCommandState.OFF:
             return await self.executor.async_execute_command(
-                OverkizCommand.SET_CONTROL_DHW, STATE_STOP
+                OverkizCommand.SET_CONTROL_DHW, OverkizCommandState.STOP
             )
 
         # Turn water heater on, when off
-        if self.current_operation == STATE_OFF and operation_mode != STATE_OFF:
+        if (
+            self.current_operation == OverkizCommandState.OFF
+            and operation_mode != OverkizCommandState.OFF
+        ):
             await self.executor.async_execute_command(
-                OverkizCommand.SET_CONTROL_DHW, STATE_RUN
+                OverkizCommand.SET_CONTROL_DHW, OverkizCommandState.RUN
             )
 
         # Change operation mode

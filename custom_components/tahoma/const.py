@@ -260,6 +260,7 @@ class OverkizCommandState(str, Enum):
     PERSON_INSIDE = "personInside"
     RELAUNCH = "relaunch"
     STANDARD = "standard"
+    STOP = "stop"
     TOTAL = "total"
     UNDETECTED = "undetected"
     VERY_LOW = "verylow"
