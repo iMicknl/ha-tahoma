@@ -199,16 +199,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for gateway in gateways:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
-        gateway_model = gateway.sub_type.beautify_name if gateway.sub_type else None
-
-        gateway_name = gateway.type.beautify_name
-
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
+            model=gateway.sub_type.beautify_name if gateway.sub_type else None,
             manufacturer=server.manufacturer,
-            name=gateway_name,
+            name=gateway.type.beautify_name,
             sw_version=gateway.connectivity.protocol_version,
         )
 
