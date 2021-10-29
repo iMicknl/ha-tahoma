@@ -14,7 +14,7 @@ from homeassistant.helpers import (
     device_registry as dr,
     service,
 )
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.enums import GatewaySubType, GatewayType
@@ -124,7 +124,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     password = entry.data.get(CONF_PASSWORD)
     server = SUPPORTED_SERVERS[entry.data.get(CONF_HUB, DEFAULT_HUB)]
 
-    session = async_get_clientsession(hass)
+    # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
+    session = async_create_clientsession(hass)
     client = TahomaClient(
         username=username, password=password, session=session, server=server
     )
