@@ -17,13 +17,13 @@ from ..entity import OverkizEntity
 
 STATE_STANDARD = "standard"
 
-TAHOMA_TO_OPERATION_MODE = {
+OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandState.STANDARD: STATE_STANDARD,
     OverkizCommandState.HIGH_DEMAND: STATE_HIGH_DEMAND,
     OverkizCommandState.STOP: STATE_OFF,
 }
 
-OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
+OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
 
 
 class HitachiDHW(OverkizEntity, WaterHeaterEntity):
@@ -31,7 +31,7 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
 
     _attr_max_temp = 70.0
     _attr_min_temp = 30.0
-    _attr_operation_list = [*OPERATION_MODE_TO_TAHOMA]
+    _attr_operation_list = [*OPERATION_MODE_TO_OVERKIZ]
     _attr_precision = PRECISION_WHOLE
     _attr_supported_features = SUPPORT_OPERATION_MODE | SUPPORT_TARGET_TEMPERATURE
     _attr_temperature_unit = TEMP_CELSIUS
@@ -64,7 +64,7 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
         ):
             return OverkizCommandState.OFF
 
-        return TAHOMA_TO_OPERATION_MODE[
+        return OVERKIZ_TO_OPERATION_MODE[
             self.executor.select_state(OverkizState.MODBUS_DHW_MODE)
         ]
 
@@ -87,5 +87,5 @@ class HitachiDHW(OverkizEntity, WaterHeaterEntity):
 
         # Change operation mode
         await self.executor.async_execute_command(
-            OverkizCommand.SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
+            OverkizCommand.SET_DHW_MODE, OPERATION_MODE_TO_OVERKIZ[operation_mode]
         )

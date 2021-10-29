@@ -14,19 +14,19 @@ from ..entity import OverkizEntity
 STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
 
-TAHOMA_TO_OPERATION_MODE = {
+OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandState.MANUAL_ECO_ACTIVE: STATE_ECO,
     OverkizCommandState.MANUAL_ECO_INACTIVE: STATE_MANUAL,
     OverkizCommandState.AUTO: STATE_AUTO,
 }
 
-OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
+OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
 
 
 class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
-    _attr_operation_list = [*OPERATION_MODE_TO_TAHOMA]
+    _attr_operation_list = [*OPERATION_MODE_TO_OVERKIZ]
     _attr_supported_features = (
         SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
     )
@@ -49,7 +49,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        return TAHOMA_TO_OPERATION_MODE[
+        return OVERKIZ_TO_OPERATION_MODE[
             self.executor.select_state(OverkizState.IO_DHW_MODE)
         ]
 
@@ -87,7 +87,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
         await self.executor.async_execute_command(
-            OverkizCommand.SET_DHW_MODE, OPERATION_MODE_TO_TAHOMA[operation_mode]
+            OverkizCommand.SET_DHW_MODE, OPERATION_MODE_TO_OVERKIZ[operation_mode]
         )
 
     @property
