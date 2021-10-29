@@ -1,7 +1,6 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
@@ -18,6 +17,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
+from pyhoma.enums import GatewaySubType, GatewayType
 from pyhoma.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
@@ -126,10 +126,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     session = async_get_clientsession(hass)
     client = TahomaClient(
-        username,
-        password,
-        session=session,
-        api_url=server.endpoint,
+        username=username, password=password, session=session, server=server
     )
 
     try:
@@ -204,15 +201,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
         gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
+            beautify_name(GatewaySubType(gateway.sub_type).name)
+            if gateway.sub_type
             else None
         )
 
         gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else gateway.type
+            f"{beautify_name(GatewayType(gateway.type).name)} hub"
+            if gateway.type
+            else None
         )
 
         device_registry.async_get_or_create(

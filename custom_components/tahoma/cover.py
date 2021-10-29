@@ -25,15 +25,15 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        Awning(device.deviceurl, coordinator)
-        for device in data["platforms"].get(COVER)
-        if "Awning" in device.definition.qualified_name
+        Awning(device.device_url, coordinator)
+        for device in data["platforms"][COVER]
+        if device.ui_class == "Awning"
     ]
 
     entities += [
-        VerticalCover(device.deviceurl, coordinator)
-        for device in data["platforms"].get(COVER)
-        if "Awning" not in device.definition.qualified_name
+        VerticalCover(device.device_url, coordinator)
+        for device in data["platforms"][COVER]
+        if device.ui_class != "Awning"
     ]
 
     async_add_entities(entities)

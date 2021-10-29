@@ -50,7 +50,7 @@ async def async_setup_entry(
             if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizNumber(
-                        device.deviceurl,
+                        device.device_url,
                         coordinator,
                         description,
                     )
