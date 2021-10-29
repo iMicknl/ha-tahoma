@@ -1,22 +1,26 @@
 """Support for HitachiDHW."""
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
+    STATE_HIGH_DEMAND,
     SUPPORT_OPERATION_MODE,
     WaterHeaterEntity,
 )
-from homeassistant.const import ATTR_TEMPERATURE, PRECISION_WHOLE, TEMP_CELSIUS
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    PRECISION_WHOLE,
+    STATE_OFF,
+    TEMP_CELSIUS,
+)
 
 from ..const import OverkizCommand, OverkizCommandState, OverkizState
 from ..entity import OverkizEntity
 
-MODE_HIGH_DEMAND = "high demand"
-MODE_STANDARD = "standard"
-MODE_STOP = "stop"
+STATE_STANDARD = "standard"
 
 TAHOMA_TO_OPERATION_MODE = {
-    MODE_STANDARD: OverkizCommandState.STANDARD,
-    MODE_HIGH_DEMAND: OverkizCommandState.HIGH_DEMAND,
-    MODE_STOP: OverkizCommandState.OFF,
+    OverkizCommandState.STANDARD: STATE_STANDARD,
+    OverkizCommandState.HIGH_DEMAND: STATE_HIGH_DEMAND,
+    OverkizCommandState.STOP: STATE_OFF,
 }
 
 OPERATION_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_OPERATION_MODE.items()}
