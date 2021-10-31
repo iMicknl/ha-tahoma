@@ -17,7 +17,6 @@ from homeassistant.helpers import (
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
-from pyhoma.enums import GatewaySubType, GatewayType
 from pyhoma.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
@@ -201,24 +200,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     for gateway in gateways:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
-        gateway_model = (
-            beautify_name(GatewaySubType(gateway.sub_type).name)
-            if gateway.sub_type
-            else None
-        )
-
-        gateway_name = (
-            f"{beautify_name(GatewayType(gateway.type).name)} hub"
-            if gateway.type
-            else None
-        )
-
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
+            model=gateway.sub_type.beautify_name if gateway.sub_type else None,
             manufacturer=server.manufacturer,
-            name=gateway_name,
+            name=gateway.type.beautify_name,
             sw_version=gateway.connectivity.protocol_version,
         )
 
@@ -287,11 +274,6 @@ async def write_execution_history_to_log(client: TahomaClient):
 
     for item in history:
         _LOGGER.info(item)
-
-
-def beautify_name(name: str):
-    """Return human readable string."""
-    return name.replace("_", " ").title()
 
 
 def log_device(message: str, device: Device) -> None:
