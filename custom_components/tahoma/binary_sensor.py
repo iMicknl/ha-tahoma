@@ -73,7 +73,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
     ),
-    # Water Heater state sensor
+    # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(
         key="io:DHWBoostModeState",
         name="Boost Mode",
@@ -85,6 +85,12 @@ BINARY_SENSOR_DESCRIPTIONS = [
         name="Away Mode",
         device_class=None,
         is_on=lambda state: state == STATE_ON,
+    ),
+    OverkizBinarySensorDescription(
+        key="io:OperatingModeCapabilitiesState",
+        name="Energy Demand Status",
+        device_class=binary_sensor.DEVICE_CLASS_HEAT,
+        is_on=lambda state: state.get("energyDemandStatus") == 1,
     ),
 ]
 
