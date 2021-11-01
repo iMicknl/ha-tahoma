@@ -62,7 +62,9 @@ class OverkizExecutor:
                 None,
             )
 
-    async def async_execute_command(self, command_name: str, *args: Any):
+        return
+
+    async def async_execute_command(self, command_name: str, *args: Any) -> None:
         """Execute device command in async context."""
         try:
             exec_id = await self.coordinator.client.execute_command(
@@ -82,11 +84,11 @@ class OverkizExecutor:
 
         await self.coordinator.async_refresh()
 
-    async def async_cancel_command(self, exec_id: str):
+    async def async_cancel_command(self, exec_id: str) -> None:
         """Cancel device command in async context."""
         await self.coordinator.client.cancel_command(exec_id)
 
-    def get_gateway_id(self):
+    def get_gateway_id(self) -> str:
         """
         Retrieve gateway id from device url.
 
