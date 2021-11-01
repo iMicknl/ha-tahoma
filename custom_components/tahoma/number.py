@@ -62,8 +62,8 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     @property
     def value(self) -> float:
         """Return the current number."""
-        if self.device.states.get(self.entity_description.key):
-            return self.device.states.get(self.entity_description.key).value
+        if state := self.device.states.get(self.entity_description.key):
+            return state.value
 
         return None
 
