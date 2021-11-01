@@ -323,11 +323,11 @@ SENSOR_DESCRIPTIONS = [
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizSensorDescription(
-        key="io:HeatPumpOperatingTimeState",
+        key=OverkizState.IO_HEAT_PUMP_OPERATING_TIME,
         name="Heat Pump Operating Time",
     ),
     OverkizSensorDescription(
-        key="io:ElectricBoosterOperatingTimeState",
+        key=OverkizState.IO_ELECTRIC_BOOSTER_OPERATING_TIME,
         name="Electric Booster Operating Time",
     ),
 ]

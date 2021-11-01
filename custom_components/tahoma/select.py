@@ -7,13 +7,13 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
+from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
 from .entity import OverkizEntity
 
 SELECT_OPTION_TO_COMMAND = {
-    OverkizCommandState.CLOSED: OverkizCommand.CLOSE,
-    OverkizCommandState.OPEN: OverkizCommand.OPEN,
-    OverkizCommandState.PEDESTRIAN: OverkizCommand.SET_PEDESTRIAN_POSITION,
+    OverkizCommandParam.CLOSED: OverkizCommand.CLOSE,
+    OverkizCommandParam.OPEN: OverkizCommand.OPEN,
+    OverkizCommandParam.PEDESTRIAN: OverkizCommand.SET_PEDESTRIAN_POSITION,
 }
 
 

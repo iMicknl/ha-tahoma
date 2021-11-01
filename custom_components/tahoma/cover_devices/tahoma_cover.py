@@ -9,7 +9,7 @@ from homeassistant.components.cover import (
     CoverEntity,
 )
 
-from ..const import OverkizCommand, OverkizCommandState, OverkizState
+from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from ..entity import OverkizEntity
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
@@ -79,7 +79,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             OverkizState.MYFOX_SHUTTER_STATUS,
         )
         if state is not None:
-            return state == OverkizCommandState.CLOSED
+            return state == OverkizCommandParam.CLOSED
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0

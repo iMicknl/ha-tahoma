@@ -14,7 +14,7 @@ from homeassistant.components.cover import (
     SUPPORT_STOP,
 )
 
-from ..const import OverkizCommand, OverkizCommandState, OverkizState
+from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
@@ -122,7 +122,7 @@ class VerticalCover(OverkizGenericCover):
         switch_entity_id = f"{self.entity_id.replace('cover', 'switch')}_low_speed"
         low_speed_entity = self.coordinator.hass.states.get(switch_entity_id)
         return (
-            low_speed_entity.state == OverkizCommandState.ON
+            low_speed_entity.state == OverkizCommandParam.ON
             if low_speed_entity
             else False
         )

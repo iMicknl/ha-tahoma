@@ -25,7 +25,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..const import OverkizCommand, OverkizCommandState, OverkizState
+from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from ..entity import OverkizEntity
 
 PRESET_HOLIDAY_MODE = "holiday_mode"
@@ -110,7 +110,7 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if self._select_state(*MAIN_OPERATION_STATE) == OverkizCommandState.OFF:
+        if self._select_state(*MAIN_OPERATION_STATE) == OverkizCommandParam.OFF:
             return HVAC_MODE_OFF
 
         return TAHOMA_TO_HVAC_MODES[self._select_state(*MODE_CHANGE_STATE)]
@@ -118,10 +118,10 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_OFF:
-            await self._global_control(main_operation=OverkizCommandState.OFF)
+            await self._global_control(main_operation=OverkizCommandParam.OFF)
         else:
             await self._global_control(
-                main_operation=OverkizCommandState.ON,
+                main_operation=OverkizCommandParam.ON,
                 hvac_mode=HVAC_MODES_TO_TAHOMA[hvac_mode],
             )
 
@@ -175,10 +175,10 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        if self._select_state(*LEAVE_HOME_STATE) == OverkizCommandState.ON:
+        if self._select_state(*LEAVE_HOME_STATE) == OverkizCommandParam.ON:
             return PRESET_HOLIDAY_MODE
 
-        if self._select_state(*LEAVE_HOME_STATE) == OverkizCommandState.OFF:
+        if self._select_state(*LEAVE_HOME_STATE) == OverkizCommandParam.OFF:
             return PRESET_NONE
 
         return None
@@ -186,10 +186,10 @@ class HitachiAirToAirHeatPump(OverkizEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         if preset_mode == PRESET_HOLIDAY_MODE:
-            await self._global_control(leave_home=OverkizCommandState.ON)
+            await self._global_control(leave_home=OverkizCommandParam.ON)
 
         if preset_mode == PRESET_NONE:
-            await self._global_control(leave_home=OverkizCommandState.OFF)
+            await self._global_control(leave_home=OverkizCommandParam.OFF)
 
     @property
     def device_info(self) -> Dict[str, Any]:

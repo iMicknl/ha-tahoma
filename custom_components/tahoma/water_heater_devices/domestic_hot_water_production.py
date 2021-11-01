@@ -8,16 +8,16 @@ from homeassistant.components.water_heater import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..const import OverkizCommand, OverkizCommandState, OverkizState
+from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from ..entity import OverkizEntity
 
 STATE_MANUAL = "manual"
 STATE_AUTO = "auto"
 
 OVERKIZ_TO_OPERATION_MODE = {
-    OverkizCommandState.MANUAL_ECO_ACTIVE: STATE_ECO,
-    OverkizCommandState.MANUAL_ECO_INACTIVE: STATE_MANUAL,
-    OverkizCommandState.AUTO: STATE_AUTO,
+    OverkizCommandParam.MANUAL_ECO_ACTIVE: STATE_ECO,
+    OverkizCommandParam.MANUAL_ECO_INACTIVE: STATE_MANUAL,
+    OverkizCommandParam.AUTO: STATE_AUTO,
 }
 
 OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
@@ -95,9 +95,9 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         """Return true if away mode is on."""
         return (
             self.executor.select_state(OverkizState.CORE_OPERATING_MODE).get(
-                OverkizCommandState.ABSENCE
+                OverkizCommandParam.ABSENCE
             )
-            == OverkizCommandState.ON
+            == OverkizCommandParam.ON
         )
 
     async def async_turn_away_mode_on(self):
@@ -105,8 +105,8 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         await self.executor.async_execute_command(
             OverkizCommand.SET_CURRENT_OPERATING_MODE,
             {
-                OverkizCommandState.RELAUNCH: OverkizCommandState.OFF,
-                OverkizCommandState.ABSENCE: OverkizCommandState.ON,
+                OverkizCommandParam.RELAUNCH: OverkizCommandParam.OFF,
+                OverkizCommandParam.ABSENCE: OverkizCommandParam.ON,
             },
         )
 
@@ -115,7 +115,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         await self.executor.async_execute_command(
             OverkizCommand.SET_CURRENT_OPERATING_MODE,
             {
-                OverkizCommandState.RELAUNCH: OverkizCommandState.OFF,
-                OverkizCommandState.ABSENCE: OverkizCommandState.OFF,
+                OverkizCommandParam.RELAUNCH: OverkizCommandParam.OFF,
+                OverkizCommandParam.ABSENCE: OverkizCommandParam.OFF,
             },
         )

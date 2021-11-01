@@ -4,7 +4,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
+from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
 from .entity import OverkizEntity
 
 
@@ -41,5 +41,5 @@ class OverkizLock(OverkizEntity, LockEntity):
         """Return True if the lock is locked."""
         return (
             self.executor.select_state(OverkizState.CORE_LOCKED_UNLOCKED)
-            == OverkizCommandState.LOCKED
+            == OverkizCommandParam.LOCKED
         )

@@ -15,7 +15,7 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
+from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
@@ -65,7 +65,7 @@ class OverkizLight(OverkizEntity, LightEntity):
         """Return true if light is on."""
         return (
             self.executor.select_state(OverkizState.CORE_ON_OFF)
-            == OverkizCommandState.ON
+            == OverkizCommandParam.ON
         )
 
     @property

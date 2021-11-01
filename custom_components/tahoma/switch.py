@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandState, OverkizState
+from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
 from .coordinator import OverkizDataUpdateCoordinator
 from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
@@ -77,7 +77,7 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
         elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                OverkizCommand.SET_FORCE_HEATING, OverkizCommandState.ON
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.ON
             )
 
         elif self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
@@ -102,7 +102,7 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
         elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                OverkizCommand.SET_FORCE_HEATING, OverkizCommandState.OFF
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.OFF
             )
 
         elif self.executor.has_command(OverkizCommand.OFF):
@@ -120,7 +120,7 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
             self.executor.select_state(
                 OverkizState.CORE_ON_OFF, OverkizState.IO_FORCE_HEATING_STATE
             )
-            == OverkizCommandState.ON
+            == OverkizCommandParam.ON
         )
 
 
@@ -141,7 +141,7 @@ class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         await super().async_added_to_hass()
         state = await self.async_get_last_state()
         if state:
-            self._is_on = state.state == OverkizCommandState.ON
+            self._is_on = state.state == OverkizCommandParam.ON
 
     @property
     def is_on(self) -> bool:
