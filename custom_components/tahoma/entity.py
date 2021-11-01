@@ -95,7 +95,8 @@ class OverkizEntity(CoordinatorEntity):
             name=self.device.label,
             manufacturer=manufacturer,
             model=model,
-            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
+            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION)
+            or self.device.controllable_name,
             suggested_area=self.coordinator.areas[self.device.place_oid],
             via_device=self.executor.get_gateway_id(),
         )
