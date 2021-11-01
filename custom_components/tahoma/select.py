@@ -59,7 +59,7 @@ class PedestrianGateSelect(OverkizEntity, SelectEntity):
     @property
     def current_option(self):
         """Return the selected entity option to represent the entity state."""
-        return self.device.states.get(CORE_OPEN_CLOSED_PEDESTRIAN_STATE).value
+        return self.device.states[CORE_OPEN_CLOSED_PEDESTRIAN_STATE].value
 
     @property
     def options(self):
