@@ -124,29 +124,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_user()
 
-    async def async_step_import(self, import_config: dict):
-        """Handle the initial step via YAML configuration."""
-        if not import_config:
-            return
-
-        try:
-            return await self.async_validate_input(import_config)
-        except TooManyRequestsException:
-            _LOGGER.error("too_many_requests")
-            return self.async_abort(reason="too_many_requests")
-        except BadCredentialsException:
-            _LOGGER.error("invalid_auth")
-            return self.async_abort(reason="invalid_auth")
-        except (TimeoutError, ClientError):
-            _LOGGER.error("cannot_connect")
-            return self.async_abort(reason="cannot_connect")
-        except MaintenanceException:
-            _LOGGER.error("server_in_maintenance")
-            return self.async_abort(reason="server_in_maintenance")
-        except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.exception(exception)
-            return self.async_abort(reason="unknown")
-
     async def async_step_dhcp(self, discovery_info):
         """Handle DHCP discovery."""
         hostname = discovery_info[HOSTNAME]
