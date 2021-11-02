@@ -35,13 +35,13 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        OverkizSwitch(device.deviceurl, coordinator)
+        OverkizSwitch(device.device_url, coordinator)
         for device in data["platforms"][SWITCH]
     ]
 
     entities.extend(
         [
-            OverkizLowSpeedCoverSwitch(device.deviceurl, coordinator)
+            OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
             for device in data["platforms"][COVER]
             if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]

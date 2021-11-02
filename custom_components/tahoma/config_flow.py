@@ -8,9 +8,8 @@ from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components.dhcp import HOSTNAME
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import callback
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
-from homeassistant.helpers import config_validation as cv, device_registry as dr
+from homeassistant.helpers import device_registry as dr
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
@@ -21,13 +20,7 @@ from pyhoma.exceptions import (
 from pyhoma.models import obfuscate_id
 import voluptuous as vol
 
-from .const import (
-    CONF_HUB,
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_HUB,
-    DEFAULT_UPDATE_INTERVAL,
-    MIN_UPDATE_INTERVAL,
-)
+from .const import CONF_HUB, DEFAULT_HUB
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,12 +30,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Somfy TaHoma."""
 
     VERSION = 2
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        """Handle the flow."""
-        return OptionsFlowHandler(config_entry)
 
     def __init__(self) -> None:
         """Start the Overkiz config flow."""
@@ -57,7 +44,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         server = SUPPORTED_SERVERS[user_input.get(CONF_HUB, DEFAULT_HUB)]
 
-        async with TahomaClient(username, password, api_url=server.endpoint) as client:
+        async with TahomaClient(
+            username=username, password=password, server=server
+        ) as client:
             await client.login()
 
             # Set first gateway as unique id
@@ -103,8 +92,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except MaintenanceException:
                 errors["base"] = "server_in_maintenance"
-            except AbortFlow:
-                raise
+            except AbortFlow as abort_flow:
+                raise abort_flow
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
                 _LOGGER.exception(exception)
@@ -178,35 +167,4 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             device_registry.async_get_device(
                 identifiers={(DOMAIN, gateway_id)}, connections=set()
             )
-        )
-
-
-class OptionsFlowHandler(config_entries.OptionsFlow):
-    """Handle a option flow for Somfy TaHoma."""
-
-    def __init__(self, config_entry):
-        """Initialize options flow."""
-        self.config_entry = config_entry
-
-    async def async_step_init(self, user_input=None):
-        """Manage the Somfy TaHoma options."""
-        return await self.async_step_update_interval()
-
-    async def async_step_update_interval(self, user_input=None):
-        """Manage the options regarding interval updates."""
-        if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
-        return self.async_show_form(
-            step_id="update_interval",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_UPDATE_INTERVAL,
-                        default=self.config_entry.options.get(
-                            CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
-                        ),
-                    ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL))
-                }
-            ),
         )

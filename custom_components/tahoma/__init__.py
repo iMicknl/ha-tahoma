@@ -1,15 +1,10 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
-from datetime import timedelta
-from enum import Enum
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.components.sensor import DOMAIN as SENSOR
-from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -19,7 +14,7 @@ from homeassistant.helpers import (
     device_registry as dr,
     service,
 )
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
@@ -33,12 +28,13 @@ import voluptuous as vol
 
 from .const import (
     CONF_HUB,
-    CONF_UPDATE_INTERVAL,
     DEFAULT_HUB,
-    DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
+    SUPPORTED_PLATFORMS,
+    UPDATE_INTERVAL,
+    UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
 from .coordinator import OverkizDataUpdateCoordinator
 
@@ -127,12 +123,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     password = entry.data.get(CONF_PASSWORD)
     server = SUPPORTED_SERVERS[entry.data.get(CONF_HUB, DEFAULT_HUB)]
 
-    session = async_get_clientsession(hass)
+    # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
+    session = async_create_clientsession(hass)
     client = TahomaClient(
-        username,
-        password,
-        session=session,
-        api_url=server.endpoint,
+        username=username, password=password, session=session, server=server
     )
 
     try:
@@ -157,10 +151,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.exception(exception)
         return False
 
-    update_interval = timedelta(
-        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
-    )
-
     coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
@@ -168,15 +158,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         client=client,
         devices=devices,
         places=places,
-        update_interval=update_interval,
+        update_interval=UPDATE_INTERVAL,
         config_entry_id=entry.entry_id,
     )
 
-    _LOGGER.debug(
-        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
-    )
+    await coordinator.async_config_entry_first_refresh()
 
-    await coordinator.async_refresh()
+    if coordinator.is_stateless:
+        _LOGGER.debug(
+            "All devices have assumed state. Update interval has been reduced to: %s",
+            UPDATE_INTERVAL_ALL_ASSUMED_STATE,
+        )
+        coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
@@ -184,7 +177,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
         "coordinator": coordinator,
-        "update_listener": entry.add_update_listener(update_listener),
     }
 
     # Map Overkiz device to Home Assistant platform
@@ -201,39 +193,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    supported_platforms = set(platforms.keys())
-
-    # Sensor and Binary Sensor will be added dynamically, based on the device states
-    # Switch will be added dynamically, based on device features (e.g. low speed cover switch)
-    supported_platforms.update((BINARY_SENSOR, SENSOR, SWITCH))
-    for platform in supported_platforms:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
 
     device_registry = await dr.async_get_registry(hass)
 
     for gateway in gateways:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
-        gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
-            else None
-        )
-
-        gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else gateway.type
-        )
-
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
+            model=gateway.sub_type.beautify_name if gateway.sub_type else None,
             manufacturer=server.manufacturer,
-            name=gateway_name,
+            name=gateway.type.beautify_name,
             sw_version=gateway.connectivity.protocol_version,
         )
 
@@ -285,33 +257,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in entities_per_platform
-            ]
-        )
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        entry, SUPPORTED_PLATFORMS
     )
 
     if unload_ok:
-        hass.data[DOMAIN][entry.entry_id]["update_listener"]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
-
-
-async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Update when config_entry options update."""
-    if entry.options[CONF_UPDATE_INTERVAL]:
-        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
-        coordinator.update_interval = new_update_interval
-        coordinator.original_update_interval = new_update_interval
-
-        await coordinator.async_refresh()
 
 
 async def write_execution_history_to_log(client: TahomaClient):
@@ -320,11 +274,6 @@ async def write_execution_history_to_log(client: TahomaClient):
 
     for item in history:
         _LOGGER.info(item)
-
-
-def beautify_name(name: str):
-    """Return human readable string."""
-    return name.replace("_", " ").title()
 
 
 def log_device(message: str, device: Device) -> None:

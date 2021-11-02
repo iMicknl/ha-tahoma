@@ -89,7 +89,7 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        OverkizAlarmControlPanel(device.deviceurl, coordinator)
+        OverkizAlarmControlPanel(device.device_url, coordinator)
         for device in data["platforms"][ALARM_CONTROL_PANEL]
     ]
     async_add_entities(entities)

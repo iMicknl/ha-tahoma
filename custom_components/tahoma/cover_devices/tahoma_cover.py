@@ -103,6 +103,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
+        if self.current_cover_position is not None:
+            return self.current_cover_position == 0
+
         state = self.executor.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
@@ -113,9 +116,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
         if state is not None:
             return state == STATE_CLOSED
-
-        if self.current_cover_position is not None:
-            return self.current_cover_position == 0
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
@@ -157,7 +157,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
                 exec_id
                 # Reverse dictionary to cancel the last added execution
                 for exec_id, execution in reversed(self.coordinator.executions.items())
-                if execution.get("deviceurl") == self.device.deviceurl
+                if execution.get("device_url") == self.device.device_url
                 and execution.get("command_name") in cancel_commands
             ),
             None,
@@ -175,7 +175,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
                 # Reverse dictionary to cancel the last added execution
                 for action in reversed(execution.action_group.get("actions"))
                 for command in action.get("commands")
-                if action.get("deviceurl") == self.device.deviceurl
+                if action.get("device_url") == self.device.device_url
                 and command.get("name") in cancel_commands
             ),
             None,
@@ -202,7 +202,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             return None
 
         if any(
-            execution.get("deviceurl") == self.device.deviceurl
+            execution.get("device_url") == self.device.device_url
             and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
             for execution in self.coordinator.executions.values()
         ):
@@ -227,7 +227,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             return None
 
         if any(
-            execution.get("deviceurl") == self.device.deviceurl
+            execution.get("device_url") == self.device.device_url
             and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
             for execution in self.coordinator.executions.values()
         ):

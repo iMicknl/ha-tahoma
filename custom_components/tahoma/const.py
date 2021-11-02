@@ -1,10 +1,16 @@
 """Constants for the Overkiz (by Somfy) integration."""
+from datetime import timedelta
+
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
+from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
 from homeassistant.components.siren import DOMAIN as SIREN
+from homeassistant.components.number import DOMAIN as NUMBER
+from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 
@@ -13,8 +19,22 @@ DOMAIN = "tahoma"
 CONF_HUB = "hub"
 DEFAULT_HUB = "somfy_europe"
 
-MIN_UPDATE_INTERVAL = 30
-DEFAULT_UPDATE_INTERVAL = 30
+UPDATE_INTERVAL = timedelta(seconds=30)
+UPDATE_INTERVAL_ALL_ASSUMED_STATE = timedelta(minutes=60)
+
+SUPPORTED_PLATFORMS = [
+    ALARM_CONTROL_PANEL,
+    BINARY_SENSOR,
+    CLIMATE,
+    COVER,
+    LIGHT,
+    LOCK,
+    NUMBER,
+    SCENE,
+    SENSOR,
+    SWITCH,
+    WATER_HEATER,
+]
 
 IGNORED_OVERKIZ_DEVICES = [
     "ProtocolGateway",
@@ -91,5 +111,3 @@ CORE_ON_OFF_STATE = "core:OnOffState"
 
 COMMAND_OFF = "off"
 COMMAND_ON = "on"
-
-CONF_UPDATE_INTERVAL = "update_interval"

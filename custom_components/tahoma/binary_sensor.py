@@ -80,6 +80,13 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
         is_on=lambda state: state == STATE_DETECTED,
     ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizBinarySensorDescription(
+        key="io:OperatingModeCapabilitiesState",
+        name="Energy Demand Status",
+        device_class=binary_sensor.DEVICE_CLASS_HEAT,
+        is_on=lambda state: state.get("energyDemandStatus") == 1,
+    ),
 ]
 
 
@@ -102,7 +109,7 @@ async def async_setup_entry(
             if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizBinarySensor(
-                        device.deviceurl,
+                        device.device_url,
                         coordinator,
                         description,
                     )

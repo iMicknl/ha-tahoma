@@ -308,17 +308,20 @@ SENSOR_DESCRIPTIONS = [
         entity_registry_enabled_default=False,
     ),
     OverkizSensorDescription(
-        key="core:Memorized1PositionState",
-        name="My Position",
-        icon="mdi:content-save-cog",
-        entity_registry_enabled_default=False,
-    ),
-    OverkizSensorDescription(
         key="core:DiscreteRSSILevelState",
         name="Discrete RSSI Level",
         entity_registry_enabled_default=False,
         native_value=lambda value: str(value).capitalize(),
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
+    ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizSensorDescription(
+        key="io:HeatPumpOperatingTimeState",
+        name="Heat Pump Operating Time",
+    ),
+    OverkizSensorDescription(
+        key="io:ElectricBoosterOperatingTimeState",
+        name="Electric Booster Operating Time",
     ),
 ]
 
@@ -343,7 +346,7 @@ async def async_setup_entry(
             if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizStateSensor(
-                        device.deviceurl,
+                        device.device_url,
                         coordinator,
                         description,
                     )
@@ -352,7 +355,7 @@ async def async_setup_entry(
         if device.widget == HOMEKIT_STACK:
             entities.append(
                 OverkizHomeKitSetupCodeSensor(
-                    device.deviceurl,
+                    device.device_url,
                     coordinator,
                 )
             )
