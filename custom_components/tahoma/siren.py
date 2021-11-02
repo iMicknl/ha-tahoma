@@ -86,7 +86,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
                 exec_id
                 # Reverse dictionary to cancel the last added execution
                 for exec_id, execution in reversed(self.coordinator.executions.items())
-                if execution.get("deviceurl") == self.device.deviceurl
+                if execution.get("device_url") == self.device.device_url
                 and execution.get("command_name") in cancel_commands
             ),
             None,
