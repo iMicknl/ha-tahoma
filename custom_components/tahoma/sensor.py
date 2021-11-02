@@ -314,6 +314,15 @@ SENSOR_DESCRIPTIONS = [
         native_value=lambda value: str(value).capitalize(),
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
     ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizSensorDescription(
+        key="io:HeatPumpOperatingTimeState",
+        name="Heat Pump Operating Time",
+    ),
+    OverkizSensorDescription(
+        key="io:ElectricBoosterOperatingTimeState",
+        name="Electric Booster Operating Time",
+    ),
 ]
 
 
