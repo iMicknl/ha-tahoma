@@ -30,7 +30,7 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        OverkizSiren(device.deviceurl, coordinator)
+        OverkizSiren(device.device_url, coordinator)
         for device in data["platforms"][SIREN]
     ]
 
