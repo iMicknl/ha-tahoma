@@ -104,7 +104,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
                 # Reverse dictionary to cancel the last added execution
                 for action in reversed(execution.action_group.get("actions"))
                 for command in action.get("commands")
-                if action.get("deviceurl") == self.device.deviceurl
+                if action.get("device_url") == self.device.device_url
                 and command.get("name") in cancel_commands
             ),
             None,
