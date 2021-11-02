@@ -67,15 +67,8 @@ class OverkizSiren(OverkizEntity, SirenEntity):
 
     async def async_turn_off(self, **kwargs):
         """Send the off command."""
-        # await self.executor.async_execute_command(
-        #     COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
-        #     2000,
-        #     100,
-        #     0,
-        #     COMMAND_STANDARD,
-        # )
-
         await self.async_cancel_or_stop_siren(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE)
+        await self.executor.async_execute_command("advancedRefresh", "normal")
 
     async def async_cancel_or_stop_siren(self, cancel_commands) -> None:
         """Cancel running execution or send stop command."""
