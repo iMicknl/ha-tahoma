@@ -1,4 +1,6 @@
 """Support for Overkiz select devices."""
+from __future__ import annotations
+
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -66,14 +68,12 @@ class OverkizSelect(OverkizDescriptiveEntity, SelectEntity):
     """Representation of an Overkiz Number entity."""
 
     @property
-    def current_option(self):
+    def current_option(self) -> str | None:
         """Return the selected entity option to represent the entity state."""
-        state = self.device.states.get(self.entity_description.key)
+        if state := self.device.states.get(self.entity_description.key):
+            return state.value
 
-        if not state:
-            return None
-
-        return state.value
+        return None
 
     @property
     def options(self):
