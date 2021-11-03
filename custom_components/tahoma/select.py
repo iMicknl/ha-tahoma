@@ -51,8 +51,6 @@ async def async_setup_entry(
     for device in coordinator.data.values():
         for state in device.definition.states:
             if description := key_supported_states.get(state.qualified_name):
-                print("added")
-                print(state.qualified_name)
                 entities.append(
                     OverkizSelect(
                         device.device_url,
