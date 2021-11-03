@@ -59,7 +59,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
 
         await self.executor.async_execute_command(
             COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
-            duration_in_ms,  # 2 minutes
+            duration_in_ms,  # duration
             75,  # 90 seconds bip, 30 seconds silence
             2,  # repeat 3 times
             COMMAND_MEMORIZED_VOLUME,
