@@ -67,41 +67,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
 
     async def async_turn_off(self, **kwargs):
         """Send the off command."""
-        await self.async_cancel_or_stop_siren(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE)
+        await self.executor.async_cancel_command(
+            [COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE]
+        )
         await self.executor.async_execute_command("advancedRefresh", "normal")
-
-    async def async_cancel_or_stop_siren(self, cancel_commands) -> None:
-        """Cancel running execution or send stop command."""
-        # Cancelling a running execution will stop the siren movement
-        # Retrieve executions initiated via Home Assistant from Data Update Coordinator queue
-        exec_id = next(
-            (
-                exec_id
-                # Reverse dictionary to cancel the last added execution
-                for exec_id, execution in reversed(self.coordinator.executions.items())
-                if execution.get("device_url") == self.device.device_url
-                and execution.get("command_name") in cancel_commands
-            ),
-            None,
-        )
-
-        if exec_id:
-            return await self.executor.async_cancel_command(exec_id)
-
-        # Retrieve executions initiated outside Home Assistant via API
-        executions = await self.coordinator.client.get_current_executions()
-        exec_id = next(
-            (
-                execution.id
-                for execution in executions
-                # Reverse dictionary to cancel the last added execution
-                for action in reversed(execution.action_group.get("actions"))
-                for command in action.get("commands")
-                if action.get("device_url") == self.device.device_url
-                and command.get("name") in cancel_commands
-            ),
-            None,
-        )
-
-        if exec_id:
-            return await self.executor.async_cancel_command(exec_id)
