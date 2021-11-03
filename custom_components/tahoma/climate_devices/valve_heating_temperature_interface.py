@@ -53,7 +53,11 @@ class ValveHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
-        await self.executor.async_execute_command("", temperature)
+        # todo change only selected preset temp
+        await self.executor.async_execute_command(
+            "setAllModeTemperatures",
+            [temperature, temperature, temperature, temperature],
+        )
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
