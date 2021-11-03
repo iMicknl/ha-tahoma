@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -31,6 +32,7 @@ SELECT_DESCRIPTIONS = [
         select_option=lambda option, execute_command: execute_command(
             "setMemorizedSimpleVolume", option
         ),
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
 ]
 
