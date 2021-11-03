@@ -319,6 +319,15 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizSensorDescription(
+        key="io:HeatPumpOperatingTimeState",
+        name="Heat Pump Operating Time",
+    ),
+    OverkizSensorDescription(
+        key="io:ElectricBoosterOperatingTimeState",
+        name="Electric Booster Operating Time",
+    ),
 ]
 
 

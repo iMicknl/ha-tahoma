@@ -65,7 +65,10 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     @property
     def value(self) -> float:
         """Return the current number."""
-        return self.device.states.get(self.entity_description.key).value
+        if state := self.device.states.get(self.entity_description.key):
+            return state.value
+
+        return None
 
     async def async_set_value(self, value: float) -> None:
         """Update the My position value. Min: 0, max: 100."""
