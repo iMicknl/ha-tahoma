@@ -8,7 +8,7 @@ from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components.dhcp import HOSTNAME
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.data_entry_flow import STEP_ID_USER, AbortFlow, FlowResult
+from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.helpers import device_registry as dr
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
@@ -99,7 +99,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception(exception)
 
         return self.async_show_form(
-            step_id=STEP_ID_USER,
+            step_id="user",
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_USERNAME, default=self._default_username): str,
