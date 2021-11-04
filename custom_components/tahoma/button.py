@@ -23,7 +23,7 @@ BUTTON_DESCRIPTIONS = [
     ),
     # Identify
     ButtonEntityDescription(
-        key="startIdentify",
+        key="identify",
         name="Identify",
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
