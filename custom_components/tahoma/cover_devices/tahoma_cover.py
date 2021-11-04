@@ -18,7 +18,6 @@ COMMAND_CLOSE = "close"
 COMMAND_CLOSE_SLATS = "closeSlats"
 COMMAND_DOWN = "down"
 COMMAND_DEPLOY = "deploy"
-COMMAND_MY = "my"
 COMMAND_OPEN = "open"
 COMMAND_OPEN_SLATS = "openSlats"
 COMMAND_SET_CLOSURE = "setClosure"
@@ -33,8 +32,8 @@ COMMAND_STOP_IDENTIFY = "stopIdentify"
 COMMAND_UNDEPLOY = "undeploy"
 COMMAND_UP = "up"
 
-COMMANDS_STOP = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
-COMMANDS_STOP_TILT = [COMMAND_STOP, COMMAND_STOP_IDENTIFY, COMMAND_MY]
+COMMANDS_STOP = [COMMAND_STOP, COMMAND_STOP_IDENTIFY]
+COMMANDS_STOP_TILT = [COMMAND_STOP, COMMAND_STOP_IDENTIFY]
 COMMANDS_OPEN = [COMMAND_OPEN, COMMAND_UP, COMMAND_CYCLE]
 COMMANDS_OPEN_TILT = [COMMAND_OPEN_SLATS]
 COMMANDS_CLOSE = [COMMAND_CLOSE, COMMAND_DOWN, COMMAND_CYCLE]
@@ -66,7 +65,6 @@ STATE_CLOSED = "closed"
 SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
-SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
@@ -190,10 +188,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             self.executor.select_command(*stop_commands)
         )
 
-    async def async_my(self, **_):
-        """Set cover to preset position."""
-        await self.executor.async_execute_command(COMMAND_MY)
-
     @property
     def is_opening(self):
         """Return if the cover is opening or not."""
@@ -274,8 +268,5 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
         if self.executor.has_command(COMMAND_SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
-
-        if self.executor.has_command(COMMAND_MY):
-            supported_features |= SUPPORT_MY
 
         return supported_features

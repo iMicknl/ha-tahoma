@@ -12,7 +12,6 @@ from homeassistant.components.light import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 
@@ -20,7 +19,6 @@ from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
-COMMAND_MY = "my"
 COMMAND_SET_INTENSITY = "setIntensity"
 COMMAND_SET_RGB = "setRGB"
 COMMAND_WINK = "wink"
@@ -31,8 +29,6 @@ CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
 CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
 SERVICE_LIGHT_MY_POSITION = "set_light_my_position"
-
-SUPPORT_MY = 512
 
 
 async def async_setup_entry(
@@ -50,11 +46,6 @@ async def async_setup_entry(
     ]
 
     async_add_entities(entities)
-
-    platform = entity_platform.current_platform.get()
-    platform.async_register_entity_service(
-        SERVICE_LIGHT_MY_POSITION, {}, "async_my", [SUPPORT_MY]
-    )
 
 
 class OverkizLight(OverkizEntity, LightEntity):
@@ -98,9 +89,6 @@ class OverkizLight(OverkizEntity, LightEntity):
         if self.executor.has_command(COMMAND_SET_RGB):
             supported_features |= SUPPORT_COLOR
 
-        if self.executor.has_command(COMMAND_MY):
-            supported_features |= SUPPORT_MY
-
         return supported_features
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -128,10 +116,6 @@ class OverkizLight(OverkizEntity, LightEntity):
     async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
         await self.executor.async_execute_command(COMMAND_OFF)
-
-    async def async_my(self, **_):
-        """Set light to preset position."""
-        await self.executor.async_execute_command(COMMAND_MY)
 
     @property
     def effect_list(self) -> list:
