@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
+from homeassistant.components.button import ButtonEntityDescription
 from homeassistant.components.number import NumberEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
@@ -154,7 +155,8 @@ class OverkizDescriptiveEntity(OverkizEntity):
         coordinator: OverkizDataUpdateCoordinator,
         description: OverkizSensorDescription
         | OverkizBinarySensorDescription
-        | OverkizNumberDescription,
+        | OverkizNumberDescription
+        | ButtonEntityDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)

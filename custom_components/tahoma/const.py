@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
+from homeassistant.components.button import DOMAIN as BUTTON
 from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.components.cover import DOMAIN as COVER
 from homeassistant.components.light import DOMAIN as LIGHT
@@ -24,6 +25,7 @@ UPDATE_INTERVAL_ALL_ASSUMED_STATE = timedelta(minutes=60)
 SUPPORTED_PLATFORMS = [
     ALARM_CONTROL_PANEL,
     BINARY_SENSOR,
+    BUTTON,
     CLIMATE,
     COVER,
     LIGHT,
