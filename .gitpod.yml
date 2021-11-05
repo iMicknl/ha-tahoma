@@ -1,23 +1,19 @@
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - init: pip3 install -r requirements_dev.txt
 ports:
   - port: 9123
     onOpen: notify
 github:
   prebuilds:
-    # enable for the master/default branch (defaults to true)
     master: true
-    # enable for all branches in this repo (defaults to false)
     branches: false
-    # enable for pull requests coming from this repo (defaults to true)
     pullRequests: true
-    # enable for pull requests coming from forks (defaults to false)
     pullRequestsFromForks: true
-    # add a check to pull requests (defaults to true)
     addCheck: true
-    # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
     addComment: false
-    # add a "Review in Gitpod" button to pull requests (defaults to false)
     addBadge: true
-    # add a label once the prebuild is ready to pull requests (defaults to false)
     addLabel: prebuilt-in-gitpod
 vscode:
   extensions:
