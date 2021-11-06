@@ -103,7 +103,6 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SwimmingPool": SWITCH,
     "SwingingShutter": COVER,
-    "ValveHeatingTemperatureInterface": CLIMATE,  # widgetName, uiClass is HeatingSystem.
     "VenetianBlind": COVER,
     "Window": COVER,
 }

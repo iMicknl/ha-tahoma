@@ -28,9 +28,6 @@ from .climate_devices.somfy_heating_temperature_interface import (
 )
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
-from .climate_devices.valve_heating_temperature_interface import (
-    ValveHeatingTemperatureInterface,
-)
 from .const import DOMAIN
 
 TYPE = {
@@ -48,7 +45,6 @@ TYPE = {
     "SomfyHeatingTemperatureInterface": SomfyHeatingTemperatureInterface,
     "SomfyThermostat": SomfyThermostat,
     "StatelessExteriorHeating": StatelessExteriorHeating,
-    "ValveHeatingTemperatureInterface": ValveHeatingTemperatureInterface,
 }
 
 
