@@ -25,9 +25,6 @@ from .climate_devices.hitachi_air_to_water_heating_zone import (
 )
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
-from .climate_devices.valve_heating_temperature_interface import (
-    ValveHeatingTemperatureInterface,
-)
 from .const import DOMAIN
 
 TYPE = {
@@ -44,7 +41,6 @@ TYPE = {
     "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
     "SomfyThermostat": SomfyThermostat,
     "StatelessExteriorHeating": StatelessExteriorHeating,
-    "ValveHeatingTemperatureInterface": ValveHeatingTemperatureInterface,
 }
 
 
