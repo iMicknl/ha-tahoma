@@ -207,6 +207,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             manufacturer=server.manufacturer,
             name=gateway.type.beautify_name,
             sw_version=gateway.connectivity.protocol_version,
+            configuration_url=server.configuration_url,
         )
 
     async def handle_execute_command(call: ServiceCall):
