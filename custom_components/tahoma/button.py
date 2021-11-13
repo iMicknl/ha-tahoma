@@ -15,11 +15,12 @@ BUTTON_DESCRIPTIONS = [
         name="My Position",
         icon="mdi:star",
     ),
-    # Wink (light)
+    # Wink (cover, siren, light)
     ButtonEntityDescription(
         key="wink",
         name="Wink",
         icon="mdi:emoticon-wink",
+        entity_registry_enabled_default=False,
     ),
     # Identify
     ButtonEntityDescription(
