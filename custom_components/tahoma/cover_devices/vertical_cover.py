@@ -13,8 +13,8 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]

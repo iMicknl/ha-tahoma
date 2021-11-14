@@ -3,8 +3,9 @@ from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
+from .const import DOMAIN
 from .entity import OverkizEntity
 
 

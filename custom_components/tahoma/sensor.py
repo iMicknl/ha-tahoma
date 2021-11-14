@@ -25,8 +25,9 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizAttribute, OverkizState
 
-from .const import DOMAIN, OverkizAttribute, OverkizState
+from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
 

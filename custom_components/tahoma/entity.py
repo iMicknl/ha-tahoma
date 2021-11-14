@@ -10,9 +10,10 @@ from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from pyhoma.enums import OverkizAttribute, OverkizCommandParam, OverkizState
 from pyhoma.models import Device
 
-from .const import DOMAIN, OverkizAttribute, OverkizCommandParam, OverkizState
+from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
 

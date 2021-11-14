@@ -4,8 +4,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizCommand, OverkizState
 
-from .const import DOMAIN, OverkizCommand, OverkizState
+from .const import DOMAIN
 from .entity import OverkizDescriptiveEntity, OverkizNumberDescription
 
 NUMBER_DESCRIPTIONS = [
@@ -15,7 +16,6 @@ NUMBER_DESCRIPTIONS = [
         name="My Position",
         icon="mdi:content-save-cog",
         command=OverkizCommand.SET_MEMORIZED_1_POSITION,
-        command="setMemorized1Position",
         entity_category=ENTITY_CATEGORY_CONFIG,
     ),
     # WaterHeater: Expected Number Of Shower (2 - 4)

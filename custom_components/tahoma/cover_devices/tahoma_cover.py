@@ -8,8 +8,8 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from ..entity import OverkizEntity
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"

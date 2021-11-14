@@ -4,10 +4,11 @@ from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
 
-from .const import DOMAIN, OverkizCommand, OverkizCommandParam, OverkizState
+from .const import DOMAIN
 from .entity import OverkizEntity
 
 SELECT_OPTION_TO_COMMAND = {

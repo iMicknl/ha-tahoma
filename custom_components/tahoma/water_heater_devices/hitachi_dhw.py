@@ -11,8 +11,8 @@ from homeassistant.const import (
     STATE_OFF,
     TEMP_CELSIUS,
 )
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from ..const import OverkizCommand, OverkizCommandParam, OverkizState
 from ..entity import OverkizEntity
 
 STATE_STANDARD = "standard"

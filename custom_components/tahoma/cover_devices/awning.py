@@ -7,8 +7,8 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
+from pyhoma.enums import OverkizCommand, OverkizState
 
-from ..const import OverkizCommand, OverkizState
 from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
 
