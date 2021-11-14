@@ -25,13 +25,11 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import OverkizAttribute, OverkizState
+from pyhoma.enums import OverkizAttribute, OverkizState, UIWidget
 
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
-
-HOMEKIT_STACK = "HomekitStack"
 
 SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
@@ -360,7 +358,7 @@ async def async_setup_entry(
                     )
                 )
 
-        if device.widget == HOMEKIT_STACK:
+        if device.widget == UIWidget.HOMEKIT_STACK:
             entities.append(
                 OverkizHomeKitSetupCodeSensor(
                     device.device_url,
