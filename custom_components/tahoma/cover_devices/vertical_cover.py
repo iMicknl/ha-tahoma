@@ -13,7 +13,13 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
-from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
+from pyhoma.enums import (
+    OverkizCommand,
+    OverkizCommandParam,
+    OverkizState,
+    UIClass,
+    UIWidget,
+)
 
 from .tahoma_cover import COMMANDS_STOP, OverkizGenericCover
 
@@ -21,18 +27,16 @@ COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
 COMMANDS_CLOSE = [OverkizCommand.CLOSE, OverkizCommand.DOWN, OverkizCommand.CYCLE]
 
 TAHOMA_COVER_DEVICE_CLASSES = {
-    "Blind": DEVICE_CLASS_BLIND,
-    "Curtain": DEVICE_CLASS_CURTAIN,
-    "ExteriorScreen": DEVICE_CLASS_BLIND,
-    "ExteriorVenetianBlind": DEVICE_CLASS_BLIND,
-    "GarageDoor": DEVICE_CLASS_GARAGE,
-    "Gate": DEVICE_CLASS_GATE,
-    "MyFoxSecurityCamera": DEVICE_CLASS_SHUTTER,
-    "Pergola": DEVICE_CLASS_AWNING,
-    "RollerShutter": DEVICE_CLASS_SHUTTER,
-    "SwingingShutter": DEVICE_CLASS_SHUTTER,
-    "VeluxInteriorBlind": DEVICE_CLASS_BLIND,
-    "Window": DEVICE_CLASS_WINDOW,
+    UIClass.CURTAIN: DEVICE_CLASS_CURTAIN,
+    UIClass.EXTERIOR_SCREEN: DEVICE_CLASS_BLIND,
+    UIClass.EXTERIOR_VENETIAN_BLIND: DEVICE_CLASS_BLIND,
+    UIClass.GARAGE_DOOR: DEVICE_CLASS_GARAGE,
+    UIClass.GATE: DEVICE_CLASS_GATE,
+    UIWidget.MY_FOX_SECURITY_CAMERA: DEVICE_CLASS_SHUTTER,
+    UIClass.PERGOLA: DEVICE_CLASS_AWNING,
+    UIClass.ROLLER_SHUTTER: DEVICE_CLASS_SHUTTER,
+    UIClass.SWINGING_SHUTTER: DEVICE_CLASS_SHUTTER,
+    UIClass.WINDOW: DEVICE_CLASS_WINDOW,
 }
 
 
