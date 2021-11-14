@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "pyhoma==0.6.3"
+    "pyhoma==0.6.4"
   ],
   "codeowners": [
     "@imicknl",
@@ -13,7 +13,7 @@
     "@tetienne"
   ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
-  "version": "2.9.2",
+  "version": "2.9.3",
   "dhcp": [
     {
       "hostname": "gateway*",

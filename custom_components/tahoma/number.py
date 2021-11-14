@@ -1,6 +1,7 @@
 """Support for Overkiz number devices."""
 from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -14,6 +15,7 @@ NUMBER_DESCRIPTIONS = [
         name="My Position",
         icon="mdi:content-save-cog",
         command="setMemorized1Position",
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
     # WaterHeater: Expected Number Of Shower (2 - 4)
     OverkizNumberDescription(
@@ -23,6 +25,7 @@ NUMBER_DESCRIPTIONS = [
         command="setExpectedNumberOfShower",
         min_value=2,
         max_value=4,
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
 ]
 
