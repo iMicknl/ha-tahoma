@@ -16,7 +16,6 @@ from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
-from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
 
 DEVICE_CLASS_SIREN = "siren"
@@ -43,7 +42,7 @@ async def async_setup_entry(
         [
             OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
             for device in data["platforms"][COVER]
-            if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
+            if OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )
 

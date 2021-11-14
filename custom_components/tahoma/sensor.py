@@ -135,7 +135,7 @@ SENSOR_DESCRIPTIONS = [
     ),
     # ElectricitySensor/CumulativeElectricPowerConsumptionSensor
     OverkizSensorDescription(
-        key=OverkizState.CORE_ELECTRICITY_ENERGY_CONSUMPTION,
+        key=OverkizState.CORE_ELECTRIC_ENERGY_CONSUMPTION,
         name="Electric Energy Consumption",
         device_class=sensor.DEVICE_CLASS_ENERGY,
         native_unit_of_measurement=ENERGY_WATT_HOUR,  # core:MeasuredValueType = core:ElectricalEnergyInWh (not for modbus:YutakiV2DHWElectricalEnergyConsumptionComponent)
