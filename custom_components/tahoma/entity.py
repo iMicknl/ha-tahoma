@@ -83,6 +83,7 @@ class OverkizEntity(CoordinatorEntity):
             ),
             suggested_area=self.coordinator.areas[self.device.place_oid],
             via_device=self.executor.get_gateway_id(),
+            configuration_url=self.coordinator.client.server.configuration_url,
         )
 
     @property

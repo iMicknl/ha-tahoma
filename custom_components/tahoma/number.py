@@ -1,6 +1,7 @@
 """Support for Overkiz number devices."""
 from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -14,6 +15,8 @@ NUMBER_DESCRIPTIONS = [
         name="My Position",
         icon="mdi:content-save-cog",
         command=OverkizCommand.SET_MEMORIZED_1_POSITION,
+        command="setMemorized1Position",
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
     # WaterHeater: Expected Number Of Shower (2 - 4)
     OverkizNumberDescription(
@@ -23,6 +26,7 @@ NUMBER_DESCRIPTIONS = [
         command=OverkizCommand.SET_EXPECTED_NUMBER_OF_SHOWER,
         min_value=2,
         max_value=4,
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
 ]
 
@@ -62,7 +66,10 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     @property
     def value(self) -> float:
         """Return the current number."""
-        return self.device.states.get(self.entity_description.key).value
+        if state := self.device.states.get(self.entity_description.key):
+            return state.value
+
+        return None
 
     async def async_set_value(self, value: float) -> None:
         """Update the My position value. Min: 0, max: 100."""
