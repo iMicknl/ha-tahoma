@@ -14,14 +14,15 @@ Custom component for Home Assistant to interact with smart devices via the Overk
 
 ## Supported hubs
 
-- Somfy TaHoma
-- Somfy TaHoma Switch [(instructions)](#tahoma-switch)
-- Somfy Connexoon IO
-- Somfy Connexoon RTS
 - Atlantic Cozytouch
 - Hitachi Hi Kumo
-- Rexel Energeasy Connect
 - Nexity Eugénie
+- Rexel Energeasy Connect
+- Somfy Connexoon IO
+- Somfy Connexoon RTS
+- Somfy TaHoma
+- Somfy TaHoma Switch [(instructions)](#tahoma-switch)
+- Thermor Cozytouch
 
 ### TaHoma Switch
 
