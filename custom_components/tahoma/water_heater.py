@@ -3,6 +3,7 @@ from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import UIWidget
 
 from .const import DOMAIN
 from .water_heater_devices.domestic_hot_water_production import (
@@ -11,8 +12,8 @@ from .water_heater_devices.domestic_hot_water_production import (
 from .water_heater_devices.hitachi_dhw import HitachiDHW
 
 TYPE = {
-    "DomesticHotWaterProduction": DomesticHotWaterProduction,
-    "HitachiDHW": HitachiDHW,
+    UIWidget.DOMESTIC_HOT_WATER_PRODUCTION: DomesticHotWaterProduction,
+    UIWidget.HITACHI_DHW: HitachiDHW,
 }
 
 
