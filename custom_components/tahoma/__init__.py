@@ -23,14 +23,13 @@ from pyhoma.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command, Device
+from pyhoma.models import Command
 import voluptuous as vol
 
 from .const import (
     CONF_HUB,
     DEFAULT_HUB,
     DOMAIN,
-    IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
     SUPPORTED_PLATFORMS,
     UPDATE_INTERVAL,
@@ -181,17 +180,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Map Overkiz device to Home Assistant platform
     for device in coordinator.data.values():
+        _LOGGER.debug(
+            "The following device has been retrieved. Report an issue if not supported correctly (%s)",
+            device,
+        )
         platform = OVERKIZ_DEVICE_TO_PLATFORM.get(
             device.widget
         ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
-            log_device("Added device", device)
-        elif (
-            device.widget not in IGNORED_OVERKIZ_DEVICES
-            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
-        ):
-            log_device("Unsupported device detected", device)
 
     hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
 
@@ -275,8 +272,3 @@ async def write_execution_history_to_log(client: TahomaClient):
 
     for item in history:
         _LOGGER.info(item)
-
-
-def log_device(message: str, device: Device) -> None:
-    """Log device information."""
-    _LOGGER.debug("%s (%s)", message, device)

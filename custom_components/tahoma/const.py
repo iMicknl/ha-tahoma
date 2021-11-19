@@ -37,34 +37,6 @@ SUPPORTED_PLATFORMS = [
     WATER_HEATER,
 ]
 
-IGNORED_OVERKIZ_DEVICES = [
-    "ProtocolGateway",
-    "Pod",
-    # entries mapped to Sensor based on available states
-    "AirSensor",
-    "ConsumptionSensor",
-    "ElectricitySensor",
-    "GasSensor",
-    "GenericSensor",
-    "HumiditySensor",
-    "LightSensor",
-    "SunIntensitySensor",
-    "SunSensor",
-    "TemperatureSensor",
-    "ThermalEnergySensor",
-    "WaterSensor",
-    "WeatherSensor",
-    "WindSensor",
-    # entries mapped to Binary Sensor based on available states
-    "AirFlowSensor",  # widgetName, uiClass is AirSensor (sensor)
-    "ContactSensor",
-    "MotionSensor",
-    "OccupancySensor",
-    "RainSensor",
-    "SmokeSensor",
-    "WaterDetectionSensor",  # widgetName, uiClass is HumiditySensor (sensor)
-]
-
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 OVERKIZ_DEVICE_TO_PLATFORM = {
     "AdjustableSlatsRollerShutter": COVER,
@@ -99,7 +71,6 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     "Screen": COVER,
     "Shutter": COVER,
     "Siren": SWITCH,
-    "SirenStatus": None,  # widgetName, uiClass is Siren (switch)
     "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     "SwimmingPool": SWITCH,
