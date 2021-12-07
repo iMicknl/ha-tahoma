@@ -9,15 +9,11 @@ from homeassistant.components.siren.const import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizState
+from pyhoma.enums.command import OverkizCommand, OverkizCommandParam
 
-from .const import CORE_ON_OFF_STATE, DOMAIN
+from .const import DOMAIN
 from .entity import OverkizEntity
-
-COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
-COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
-COMMAND_STANDARD = "standard"
-
-STATE_ON = "on"
 
 
 async def async_setup_entry(
@@ -45,7 +41,10 @@ class OverkizSiren(OverkizEntity, SirenEntity):
     @property
     def is_on(self):
         """Get whether the siren is in on state."""
-        return self.executor.select_state(CORE_ON_OFF_STATE) == STATE_ON
+        return (
+            self.executor.select_state(OverkizState.CORE_ON_OFF)
+            == OverkizCommandParam.ON
+        )
 
     async def async_turn_on(self, **kwargs):
         """Send the on command."""
@@ -58,16 +57,17 @@ class OverkizSiren(OverkizEntity, SirenEntity):
         duration_in_ms = duration * 1000
 
         await self.executor.async_execute_command(
-            COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
+            OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
             duration_in_ms,  # duration
             75,  # 90 seconds bip, 30 seconds silence
             2,  # repeat 3 times
-            COMMAND_MEMORIZED_VOLUME,
+            "memorizedVolume",
         )
 
     async def async_turn_off(self, **kwargs):
         """Send the off command."""
         await self.executor.async_cancel_command(
-            [COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE]
+            [OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE]
         )
+
         await self.executor.async_execute_command("advancedRefresh", "normal")
