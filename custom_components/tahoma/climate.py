@@ -3,6 +3,7 @@ from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import UIWidget
 
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
@@ -28,19 +29,19 @@ from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
-    "AtlanticElectricalHeater": AtlanticElectricalHeater,
-    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
-    "AtlanticElectricalTowelDryer": AtlanticElectricalTowelDryer,
-    "AtlanticPassAPCDHW": AtlanticPassAPCDHW,
-    "AtlanticPassAPCHeatingAndCoolingZone": AtlanticPassAPCHeatingAndCoolingZone,
-    "AtlanticPassAPCZoneControl": AtlanticPassAPCZoneControl,
-    "DimmerExteriorHeating": DimmerExteriorHeating,
-    "EvoHomeController": EvoHomeController,
-    "HeatingSetPoint": HeatingSetPoint,
-    "HitachiAirToAirHeatPump": HitachiAirToAirHeatPump,
-    "HitachiAirToWaterHeatingZone": HitachiAirToWaterHeatingZone,
-    "SomfyThermostat": SomfyThermostat,
-    "StatelessExteriorHeating": StatelessExteriorHeating,
+    UIWidget.ATLANTIC_ELECTRICAL_HEATER: AtlanticElectricalHeater,
+    UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
+    UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: AtlanticElectricalTowelDryer,
+    UIWidget.ATLANTIC_PASS_APC_DHW: AtlanticPassAPCDHW,
+    UIWidget.ATLANTIC_PASS_APC_HEATING_AND_COOLING_ZONE: AtlanticPassAPCHeatingAndCoolingZone,
+    UIWidget.ATLANTIC_PASS_APC_ZONE_CONTROL: AtlanticPassAPCZoneControl,
+    UIWidget.DIMMER_EXTERIOR_HEATING: DimmerExteriorHeating,
+    UIWidget.EVO_HOME_CONTROLLER: EvoHomeController,
+    UIWidget.HEATING_SET_POINT: HeatingSetPoint,
+    UIWidget.HITACHI_AIR_TO_AIR_HEAT_PUMP: HitachiAirToAirHeatPump,
+    UIWidget.HITACHI_AIR_TO_WATER_HEATING_ZONE: HitachiAirToWaterHeatingZone,
+    UIWidget.SOMFY_THERMOSTAT: SomfyThermostat,
+    UIWidget.STATELESS_EXTERIOR_HEATING: StatelessExteriorHeating,
 }
 
 

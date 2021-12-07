@@ -6,65 +6,61 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizCommandParam, OverkizState
 
 from .const import DOMAIN
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
 
-STATE_OPEN = "open"
-STATE_PERSON_INSIDE = "personInside"
-STATE_DETECTED = "detected"
-
-
 BINARY_SENSOR_DESCRIPTIONS = [
     # RainSensor/RainSensor
     OverkizBinarySensorDescription(
-        key="core:RainState",
+        key=OverkizState.CORE_RAIN,
         name="Rain",
         icon="mdi:weather-rainy",
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # SmokeSensor/SmokeSensor
     OverkizBinarySensorDescription(
-        key="core:SmokeState",
+        key=OverkizState.CORE_SMOKE,
         name="Smoke",
         device_class=binary_sensor.DEVICE_CLASS_SMOKE,
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # WaterSensor/WaterDetectionSensor
     OverkizBinarySensorDescription(
-        key="core:WaterDetectionState",
+        key=OverkizState.CORE_WATER_DETECTION,
         name="Water",
         icon="mdi:water",
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # AirSensor/AirFlowSensor
     OverkizBinarySensorDescription(
-        key="core:GasDetectionState",
+        key=OverkizState.CORE_GAS_DETECTION,
         name="Gas",
         device_class=binary_sensor.DEVICE_CLASS_GAS,
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # OccupancySensor/OccupancySensor
     # OccupancySensor/MotionSensor
     OverkizBinarySensorDescription(
-        key="core:OccupancyState",
+        key=OverkizState.CORE_OCCUPANCY,
         name="Occupancy",
         device_class=binary_sensor.DEVICE_CLASS_OCCUPANCY,
-        is_on=lambda state: state == STATE_PERSON_INSIDE,
+        is_on=lambda state: state == OverkizCommandParam.PERSON_INSIDE,
     ),
     # ContactSensor/WindowWithTiltSensor
     OverkizBinarySensorDescription(
-        key="core:VibrationState",
+        key=OverkizState.CORE_VIBRATION,
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # ContactSensor/ContactSensor
     OverkizBinarySensorDescription(
-        key="core:ContactState",
+        key=OverkizState.CORE_CONTACT,
         name="Contact",
         device_class=binary_sensor.DEVICE_CLASS_DOOR,
-        is_on=lambda state: state == STATE_OPEN,
+        is_on=lambda state: state == OverkizCommandParam.OPEN,
     ),
     # Siren/SirenStatus
     OverkizBinarySensorDescription(
@@ -75,10 +71,10 @@ BINARY_SENSOR_DESCRIPTIONS = [
     ),
     # Unknown
     OverkizBinarySensorDescription(
-        key="io:VibrationDetectedState",
+        key=OverkizState.IO_VIBRATION_DETECTED,
         name="Vibration",
         device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
-        is_on=lambda state: state == STATE_DETECTED,
+        is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(

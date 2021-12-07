@@ -1,5 +1,6 @@
 """Constants for the Overkiz (by Somfy) integration."""
 from datetime import timedelta
+from typing import Final
 
 from homeassistant.components.alarm_control_panel import DOMAIN as ALARM_CONTROL_PANEL
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR
@@ -9,12 +10,14 @@ from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
 from homeassistant.components.number import DOMAIN as NUMBER
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.select import DOMAIN as SELECT
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.siren import DOMAIN as SIREN
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
+from pyhoma.enums import UIClass, UIWidget
 
-DOMAIN = "tahoma"
+DOMAIN: Final = "tahoma"
 
 CONF_HUB = "hub"
 DEFAULT_HUB = "somfy_europe"
@@ -31,6 +34,7 @@ SUPPORTED_PLATFORMS = [
     LOCK,
     NUMBER,
     SCENE,
+    SELECT,
     SENSOR,
     SIREN,
     SWITCH,
@@ -38,77 +42,72 @@ SUPPORTED_PLATFORMS = [
 ]
 
 IGNORED_OVERKIZ_DEVICES = [
-    "ProtocolGateway",
-    "Pod",
+    UIClass.PROTOCOL_GATEWAY,
+    UIClass.POD,
     # entries mapped to Sensor based on available states
-    "AirSensor",
-    "ConsumptionSensor",
-    "ElectricitySensor",
-    "GasSensor",
-    "GenericSensor",
-    "HumiditySensor",
-    "LightSensor",
-    "SunIntensitySensor",
-    "SunSensor",
-    "TemperatureSensor",
-    "ThermalEnergySensor",
-    "WaterSensor",
-    "WeatherSensor",
-    "WindSensor",
+    UIClass.AIR_SENSOR,
+    UIClass.CONSUMPTION_SENSOR,
+    UIClass.ELECTRICITY_SENSOR,
+    UIClass.GAS_SENSOR,
+    UIClass.GENERIC_SENSOR,
+    UIClass.HUMIDITY_SENSOR,
+    UIClass.LIGHT_SENSOR,
+    UIClass.SUN_INTENSITY_SENSOR,
+    UIClass.SUN_SENSOR,
+    UIClass.TEMPERATURE_SENSOR,
+    UIClass.THERMAL_ENERGY_SENSOR,
+    UIClass.WATER_SENSOR,
+    UIClass.WEATHER_SENSOR,
+    UIClass.WIND_SENSOR,
     # entries mapped to Binary Sensor based on available states
-    "AirFlowSensor",  # widgetName, uiClass is AirSensor (sensor)
-    "ContactSensor",
-    "MotionSensor",
-    "OccupancySensor",
-    "RainSensor",
-    "SmokeSensor",
-    "WaterDetectionSensor",  # widgetName, uiClass is HumiditySensor (sensor)
+    UIWidget.AIR_FLOW_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
+    UIClass.CONTACT_SENSOR,
+    UIWidget.MOTION_SENSOR,
+    UIClass.OCCUPANCY_SENSOR,
+    UIClass.RAIN_SENSOR,
+    UIClass.SMOKE_SENSOR,
+    UIWidget.WATER_DETECTION_SENSOR,  # widgetName, uiClass is HumiditySensor (sensor)
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 OVERKIZ_DEVICE_TO_PLATFORM = {
-    "AdjustableSlatsRollerShutter": COVER,
-    "Alarm": ALARM_CONTROL_PANEL,
-    "AtlanticElectricalHeater": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "AtlanticElectricalTowelDryer": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "AtlanticPassAPCDHW": CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
-    "AtlanticPassAPCHeatingAndCoolingZone": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "AtlanticPassAPCZoneControl": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "Awning": COVER,
-    "Curtain": COVER,
-    "DimmerExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
-    "DomesticHotWaterProduction": WATER_HEATER,  # widgetName, uiClass is WaterHeatingSystem (not supported)
-    "DomesticHotWaterTank": SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
-    "DoorLock": LOCK,
-    "EvoHomeController": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
-    "ExteriorScreen": COVER,
-    "ExteriorVenetianBlind": COVER,
-    "GarageDoor": COVER,
-    "Gate": COVER,
-    "HeatingSetPoint": CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
-    "HitachiDHW": WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
-    "HitachiAirToWaterHeatingZone": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
-    "HitachiAirToAirHeatPump": CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
-    "Light": LIGHT,
-    "MyFoxSecurityCamera": COVER,  # widgetName, uiClass is Camera (not supported)
-    "OnOff": SWITCH,
-    "Pergola": COVER,
-    "RollerShutter": COVER,
-    "RTSGeneric": COVER,  # widgetName, uiClass is Generic (not supported)
-    "Screen": COVER,
-    "Shutter": COVER,
-    "Siren": SIREN,
-    "SirenStatus": None,  # widgetName, uiClass is Siren (switch)
-    "SomfyThermostat": CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    "StatelessExteriorHeating": CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
-    "SwimmingPool": SWITCH,
-    "SwingingShutter": COVER,
-    "VenetianBlind": COVER,
-    "Window": COVER,
+    UIClass.ADJUSTABLE_SLATS_ROLLER_SHUTTER: COVER,
+    UIClass.ALARM: ALARM_CONTROL_PANEL,
+    UIWidget.ATLANTIC_ELECTRICAL_HEATER: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIWidget.ATLANTIC_PASS_APC_DHW: CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    UIWidget.ATLANTIC_PASS_APC_HEATING_AND_COOLING_ZONE: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIWidget.ATLANTIC_PASS_APC_ZONE_CONTROL: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIClass.AWNING: COVER,
+    UIClass.CURTAIN: COVER,
+    UIWidget.DIMMER_EXTERIOR_HEATING: CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+    UIWidget.DOMESTIC_HOT_WATER_PRODUCTION: WATER_HEATER,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    UIWidget.DOMESTIC_HOT_WATER_TANK: SWITCH,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    UIClass.DOOR_LOCK: LOCK,
+    UIWidget.EVO_HOME_CONTROLLER: CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
+    UIClass.EXTERIOR_SCREEN: COVER,
+    UIClass.EXTERIOR_VENETIAN_BLIND: COVER,
+    UIClass.GARAGE_DOOR: COVER,
+    UIClass.GATE: COVER,
+    UIWidget.HEATING_SET_POINT: CLIMATE,  # widgetName, uiClass is EvoHome (not supported)
+    UIWidget.HITACHI_DHW: WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    UIWidget.HITACHI_AIR_TO_WATER_HEATING_ZONE: CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    UIWidget.HITACHI_AIR_TO_AIR_HEAT_PUMP: CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
+    UIClass.LIGHT: LIGHT,
+    UIWidget.MY_FOX_SECURITY_CAMERA: COVER,  # widgetName, uiClass is Camera (not supported)
+    UIClass.ON_OFF: SWITCH,
+    UIClass.PERGOLA: COVER,
+    UIClass.ROLLER_SHUTTER: COVER,
+    UIWidget.RTS_GENERIC: COVER,  # widgetName, uiClass is Generic (not supported)
+    UIClass.SCREEN: COVER,
+    UIClass.SHUTTER: COVER,
+    UIClass.SIREN: SIREN,
+    UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (siren)
+    UIWidget.SOMFY_THERMOSTAT: CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
+    UIWidget.STATELESS_EXTERIOR_HEATING: CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
+    UIClass.SWIMMING_POOL: SWITCH,
+    UIClass.SWINGING_SHUTTER: COVER,
+    UIClass.VENETIAN_BLIND: COVER,
+    UIClass.WINDOW: COVER,
 }
-
-CORE_ON_OFF_STATE = "core:OnOffState"
-
-COMMAND_OFF = "off"
-COMMAND_ON = "on"
