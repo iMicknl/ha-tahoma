@@ -8,7 +8,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-
 from .const import DOMAIN
 from .entity import OverkizDescriptiveEntity, OverkizSelectDescription
 
@@ -17,7 +16,11 @@ SELECT_DESCRIPTIONS = [
         key=OverkizState.CORE_OPEN_CLOSED_PEDESTRIAN,
         name="Position",
         icon="mdi:content-save-cog",
-        options=[OverkizCommandParam.CLOSED, OverkizCommandParam.OPEN, OverkizCommandParam.PEDESTRIAN],
+        options=[
+            OverkizCommandParam.CLOSED,
+            OverkizCommandParam.OPEN,
+            OverkizCommandParam.PEDESTRIAN,
+        ],
         select_option=lambda option, execute_command: execute_command(
             {
                 OverkizCommandParam.CLOSED: OverkizCommand.CLOSE,
