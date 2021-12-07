@@ -10,6 +10,7 @@ from homeassistant.components.light import DOMAIN as LIGHT
 from homeassistant.components.lock import DOMAIN as LOCK
 from homeassistant.components.number import DOMAIN as NUMBER
 from homeassistant.components.scene import DOMAIN as SCENE
+from homeassistant.components.select import DOMAIN as SELECT
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER
@@ -32,6 +33,7 @@ SUPPORTED_PLATFORMS = [
     LOCK,
     NUMBER,
     SCENE,
+    SELECT,
     SENSOR,
     SWITCH,
     WATER_HEATER,

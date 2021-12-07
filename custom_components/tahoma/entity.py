@@ -7,6 +7,7 @@ from typing import Any, Callable
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.button import ButtonEntityDescription
 from homeassistant.components.number import NumberEntityDescription
+from homeassistant.components.select import SelectEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
 from homeassistant.helpers.entity import DeviceInfo
@@ -146,6 +147,14 @@ class OverkizNumberDescription(NumberEntityDescription):
     state: Callable[[str], bool] = lambda state: state
 
 
+@dataclass
+class OverkizSelectDescription(SelectEntityDescription):
+    """Class to describe an Overkiz select entity."""
+
+    options: list[str] = None
+    select_option: Callable[[str], bool] = lambda option, execute_command: None
+
+
 class OverkizDescriptiveEntity(OverkizEntity):
     """Representation of a Overkiz device entity based on a description."""
 
@@ -157,6 +166,7 @@ class OverkizDescriptiveEntity(OverkizEntity):
         | OverkizBinarySensorDescription
         | OverkizNumberDescription
         | ButtonEntityDescription,
+        | OverkizSelectDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)

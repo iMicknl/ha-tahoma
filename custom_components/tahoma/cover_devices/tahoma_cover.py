@@ -101,9 +101,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
-        if self.current_cover_position is not None:
-            return self.current_cover_position == 0
-
         state = self.executor.select_state(
             CORE_OPEN_CLOSED_STATE,
             CORE_SLATS_OPEN_CLOSED_STATE,
@@ -114,6 +111,10 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
         if state is not None:
             return state == STATE_CLOSED
+
+        # Keep this condition after the previous one.  Some device like the pedestrian gate, always return 50 as position.
+        if self.current_cover_position is not None:
+            return self.current_cover_position == 0
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
@@ -239,9 +240,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the device state attributes."""
-        attr = super().device_state_attributes or {}
+        attr = super().extra_state_attributes or {}
 
         # Obstruction Detected attribute is used by HomeKit
         if self.executor.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
