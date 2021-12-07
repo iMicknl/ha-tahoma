@@ -8,23 +8,15 @@ from homeassistant.components.switch import (
     SwitchEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_CONFIG, STATE_OFF, STATE_ON
+from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from .const import COMMAND_OFF, COMMAND_ON, CORE_ON_OFF_STATE, DOMAIN
+from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
-from .cover_devices.tahoma_cover import COMMAND_SET_CLOSURE_AND_LINEAR_SPEED
 from .entity import OverkizEntity
-
-COMMAND_CYCLE = "cycle"
-COMMAND_MEMORIZED_VOLUME = "memorizedVolume"
-COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE = "ringWithSingleSimpleSequence"
-COMMAND_SET_FORCE_HEATING = "setForceHeating"
-COMMAND_STANDARD = "standard"
-
-IO_FORCE_HEATING_STATE = "io:ForceHeatingState"
 
 DEVICE_CLASS_SIREN = "siren"
 
@@ -50,7 +42,7 @@ async def async_setup_entry(
         [
             OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
             for device in data["platforms"][COVER]
-            if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
+            if OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )
 
@@ -80,53 +72,55 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
 
     async def async_turn_on(self, **_):
         """Send the on command."""
-        if self.executor.has_command(COMMAND_ON):
-            await self.executor.async_execute_command(COMMAND_ON)
+        if self.executor.has_command(OverkizCommand.ON):
+            await self.executor.async_execute_command(OverkizCommand.ON)
 
-        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, STATE_ON
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.ON
             )
 
-        elif self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        elif self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.executor.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
+                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
                 2 * 60 * 1000,  # 2 minutes
                 75,  # 90 seconds bip, 30 seconds silence
                 2,  # repeat 3 times
-                COMMAND_MEMORIZED_VOLUME,
+                OverkizCommand.MEMORIZED_VOLUME,
             )
 
     async def async_turn_off(self, **_):
         """Send the off command."""
-        if self.executor.has_command(COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE):
+        if self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
             await self.executor.async_execute_command(
-                COMMAND_RING_WITH_SINGLE_SIMPLE_SEQUENCE,
+                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,
                 2000,
                 100,
                 0,
-                COMMAND_STANDARD,
+                OverkizCommand.STANDARD,
             )
 
-        elif self.executor.has_command(COMMAND_SET_FORCE_HEATING):
+        elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
-                COMMAND_SET_FORCE_HEATING, STATE_OFF
+                OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.OFF
             )
 
-        elif self.executor.has_command(COMMAND_OFF):
-            await self.executor.async_execute_command(COMMAND_OFF)
+        elif self.executor.has_command(OverkizCommand.OFF):
+            await self.executor.async_execute_command(OverkizCommand.OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
-        if self.executor.has_command(COMMAND_CYCLE):
-            await self.executor.async_execute_command(COMMAND_CYCLE)
+        if self.executor.has_command(OverkizCommand.CYCLE):
+            await self.executor.async_execute_command(OverkizCommand.CYCLE)
 
     @property
     def is_on(self):
         """Get whether the switch is in on state."""
         return (
-            self.executor.select_state(CORE_ON_OFF_STATE, IO_FORCE_HEATING_STATE)
-            == STATE_ON
+            self.executor.select_state(
+                OverkizState.CORE_ON_OFF, OverkizState.IO_FORCE_HEATING_STATE
+            )
+            == OverkizCommandParam.ON
         )
 
 
@@ -147,7 +141,7 @@ class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         await super().async_added_to_hass()
         state = await self.async_get_last_state()
         if state:
-            self._is_on = state.state == STATE_ON
+            self._is_on = state.state == OverkizCommandParam.ON
 
     @property
     def is_on(self) -> bool:

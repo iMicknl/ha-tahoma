@@ -6,31 +6,36 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from .const import DOMAIN
 from .entity import OverkizDescriptiveEntity, OverkizSelectDescription
 
 SELECT_DESCRIPTIONS = [
     OverkizSelectDescription(
-        key="core:OpenClosedPedestrianState",
+        key=OverkizState.CORE_OPEN_CLOSED_PEDESTRIAN,
         name="Position",
         icon="mdi:content-save-cog",
-        options=["closed", "open", "pedestrian"],
+        options=[
+            OverkizCommandParam.CLOSED,
+            OverkizCommandParam.OPEN,
+            OverkizCommandParam.PEDESTRIAN,
+        ],
         select_option=lambda option, execute_command: execute_command(
             {
-                "closed": "close",
-                "open": "open",
-                "pedestrian": "setPedestrianPosition",
+                OverkizCommandParam.CLOSED: OverkizCommand.CLOSE,
+                OverkizCommandParam.OPEN: OverkizCommand.OPEN,
+                OverkizCommandParam.PEDESTRIAN: OverkizCommand.SET_PEDESTRIAN_POSITION,
             }[option]
         ),
     ),
     OverkizSelectDescription(
-        key="io:MemorizedSimpleVolumeState",
+        key=OverkizState.IO_MEMORIZED_SIMPLE_VOLUME,
         name="Memorized Simple Volume",
         icon="mdi:volume-high",
-        options=["highest", "standard"],
+        options=[OverkizCommandParam.HIGHEST, OverkizCommandParam.STANDARD],
         select_option=lambda option, execute_command: execute_command(
-            "setMemorizedSimpleVolume", option
+            OverkizCommand.SET_MEMORIZED_SIMPLE_VOLUME, option
         ),
         entity_category=ENTITY_CATEGORY_CONFIG,
     ),
