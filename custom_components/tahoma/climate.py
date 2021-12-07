@@ -1,6 +1,6 @@
 """Support for Overkiz climate devices."""
-from homeassistant.components.climate import DOMAIN as CLIMATE
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import UIWidget
@@ -54,7 +54,7 @@ async def async_setup_entry(
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
-    climate_devices = [device for device in data["platforms"][CLIMATE]]
+    climate_devices = [device for device in data["platforms"][Platform.CLIMATE]]
 
     entities = [
         TYPE[device.widget](device.device_url, coordinator)
