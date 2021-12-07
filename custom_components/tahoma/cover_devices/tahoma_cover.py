@@ -246,9 +246,9 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the device state attributes."""
-        attr = super().device_state_attributes or {}
+        attr = super().extra_state_attributes or {}
 
         # Obstruction Detected attribute is used by HomeKit
         if self.executor.has_state(IO_PRIORITY_LOCK_LEVEL_STATE):
