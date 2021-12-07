@@ -70,4 +70,4 @@ class OverkizButton(OverkizDescriptiveEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         """Handle the button press."""
-        self.executor.async_execute_command(self.entity_description.key)
+        await self.executor.async_execute_command(self.entity_description.key)
