@@ -13,7 +13,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     ENERGY_WATT_HOUR,
-    ENTITY_CATEGORY_DIAGNOSTIC,
     LIGHT_LUX,
     PERCENTAGE,
     POWER_WATT,
@@ -24,6 +23,7 @@ from homeassistant.const import (
     VOLUME_LITERS,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizAttribute, OverkizState, UIWidget
 
@@ -38,14 +38,14 @@ SENSOR_DESCRIPTIONS = [
         native_unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
         state_class=STATE_CLASS_MEASUREMENT,
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key=OverkizState.CORE_BATTERY,
         name="Battery",
         device_class=sensor.DEVICE_CLASS_BATTERY,
         native_value=lambda value: str(value).capitalize(),
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key=OverkizState.CORE_RSSI_LEVEL,
@@ -54,7 +54,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
         state_class=STATE_CLASS_MEASUREMENT,
         native_value=lambda value: round(value),
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key=OverkizState.CORE_EXPECTED_NUMBER_OF_SHOWER,
@@ -318,7 +318,7 @@ SENSOR_DESCRIPTIONS = [
         entity_registry_enabled_default=False,
         native_value=lambda value: str(value).capitalize(),
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizSensorDescription(
@@ -395,7 +395,7 @@ class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
         super().__init__(device_url, coordinator)
         self._attr_name = "HomeKit Setup Code"
         self._attr_icon = "mdi:shield-home"
-        self._attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def state(self):

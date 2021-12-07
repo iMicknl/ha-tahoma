@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
@@ -37,7 +37,7 @@ SELECT_DESCRIPTIONS = [
         select_option=lambda option, execute_command: execute_command(
             OverkizCommand.SET_MEMORIZED_SIMPLE_VOLUME, option
         ),
-        entity_category=ENTITY_CATEGORY_CONFIG,
+        entity_category=EntityCategory.CONFIG,
     ),
 ]
 
