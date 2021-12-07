@@ -67,9 +67,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
     def is_closed(self):
         """Return if the cover is closed."""
 
-        if self.current_cover_position is not None:
-            return self.current_cover_position == 0
-
         state = self.executor.select_state(
             OverkizState.CORE_OPEN_CLOSED,
             OverkizState.CORE_SLATS_OPEN_CLOSED,
@@ -80,6 +77,10 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         )
         if state is not None:
             return state == OverkizCommandParam.CLOSED
+
+        # Keep this condition after the previous one.  Some device like the pedestrian gate, always return 50 as position.
+        if self.current_cover_position is not None:
+            return self.current_cover_position == 0
 
         if self.current_cover_tilt_position is not None:
             return self.current_cover_tilt_position == 0
