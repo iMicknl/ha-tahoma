@@ -5,7 +5,7 @@ from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizDescriptiveEntity
 
 BUTTON_DESCRIPTIONS = [
@@ -48,15 +48,19 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for command in device.definition.commands:
-            if description := supported_commands.get(command.command_name):
-                entities.append(
-                    OverkizButton(
-                        device.device_url,
-                        coordinator,
-                        description,
+        if (
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
+        ):
+            for command in device.definition.commands:
+                if description := supported_commands.get(command.command_name):
+                    entities.append(
+                        OverkizButton(
+                            device.device_url,
+                            coordinator,
+                            description,
+                        )
                     )
-                )
 
     async_add_entities(entities)
 
