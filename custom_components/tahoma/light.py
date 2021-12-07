@@ -28,6 +28,7 @@ CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
 CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
 CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
