@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizState
 
-from .const import DOMAIN
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizDescriptiveEntity, OverkizNumberDescription
 
 NUMBER_DESCRIPTIONS = [
@@ -47,15 +47,16 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.definition.states:
-            if description := key_supported_states.get(state.qualified_name):
-                entities.append(
-                    OverkizNumber(
-                        device.device_url,
-                        coordinator,
-                        description,
+        if device not in IGNORED_OVERKIZ_DEVICES:
+            for state in device.definition.states:
+                if description := key_supported_states.get(state.qualified_name):
+                    entities.append(
+                        OverkizNumber(
+                            device.device_url,
+                            coordinator,
+                            description,
+                        )
                     )
-                )
 
     async_add_entities(entities)
 

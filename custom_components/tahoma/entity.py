@@ -154,7 +154,7 @@ class OverkizDescriptiveEntity(OverkizEntity):
         description: OverkizSensorDescription
         | OverkizBinarySensorDescription
         | OverkizNumberDescription
-        | ButtonEntityDescription,
+        | ButtonEntityDescription
         | OverkizSelectDescription,
     ):
         """Initialize the device."""

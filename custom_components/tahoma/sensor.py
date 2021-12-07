@@ -27,7 +27,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizAttribute, OverkizState, UIWidget
 
-from .const import DOMAIN
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
 
@@ -348,23 +348,24 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.definition.states:
-            if description := key_supported_states.get(state.qualified_name):
+        if device not in IGNORED_OVERKIZ_DEVICES:
+            for state in device.definition.states:
+                if description := key_supported_states.get(state.qualified_name):
+                    entities.append(
+                        OverkizStateSensor(
+                            device.device_url,
+                            coordinator,
+                            description,
+                        )
+                    )
+
+            if device.widget == UIWidget.HOMEKIT_STACK:
                 entities.append(
-                    OverkizStateSensor(
+                    OverkizHomeKitSetupCodeSensor(
                         device.device_url,
                         coordinator,
-                        description,
                     )
                 )
-
-        if device.widget == UIWidget.HOMEKIT_STACK:
-            entities.append(
-                OverkizHomeKitSetupCodeSensor(
-                    device.device_url,
-                    coordinator,
-                )
-            )
 
     async_add_entities(entities)
 
