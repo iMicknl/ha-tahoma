@@ -76,13 +76,3 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
         await self.executor.async_execute_command(
             self.entity_description.command, value
         )
-
-    @property
-    def min_value(self) -> float:
-        """Return the minimum value."""
-        return self.entity_description.min_value or self._attr_min_value
-
-    @property
-    def max_value(self) -> float:
-        """Return the maximum value."""
-        return self.entity_description.max_value or self._attr_max_value
