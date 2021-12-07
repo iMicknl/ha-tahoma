@@ -6,7 +6,7 @@ from typing import Any
 
 from aiohttp import ClientError
 from homeassistant import config_entries
-from homeassistant.components.dhcp import HOSTNAME
+from homeassistant.components import dhcp
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.helpers import device_registry as dr
@@ -124,9 +124,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_user()
 
-    async def async_step_dhcp(self, discovery_info):
+    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo):
         """Handle DHCP discovery."""
-        hostname = discovery_info[HOSTNAME]
+        hostname = discovery_info.hostname
         gateway_id = hostname[8:22]
 
         _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
