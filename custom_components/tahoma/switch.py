@@ -1,15 +1,11 @@
 """Support for Overkiz switches."""
 from typing import Any
 
-from homeassistant.components.cover import DOMAIN as COVER
-from homeassistant.components.switch import (
-    DEVICE_CLASS_SWITCH,
-    DOMAIN as SWITCH,
-    SwitchEntity,
-)
+from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_CONFIG
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
@@ -30,13 +26,13 @@ async def async_setup_entry(
 
     entities = [
         OverkizSwitch(device.device_url, coordinator)
-        for device in data["platforms"][SWITCH]
+        for device in data["platforms"][Platform.SWITCH]
     ]
 
     entities.extend(
         [
             OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
-            for device in data["platforms"][COVER]
+            for device in data["platforms"][Platform.COVER]
             if OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )
@@ -93,7 +89,7 @@ class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         super().__init__(device_url, coordinator)
         self._is_on = False
         self._attr_name = f"{super().name} low speed"
-        self._attr_entity_category = ENTITY_CATEGORY_CONFIG
+        self._attr_entity_category = EntityCategory.CONFIG
 
     async def async_added_to_hass(self):
         """Run when entity about to be added."""

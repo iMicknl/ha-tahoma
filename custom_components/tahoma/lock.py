@@ -1,6 +1,7 @@
 """Support for Overkiz lock."""
-from homeassistant.components.lock import DOMAIN as LOCK, LockEntity
+from homeassistant.components.lock import LockEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
@@ -20,7 +21,7 @@ async def async_setup_entry(
 
     entities = [
         OverkizLock(device.device_url, coordinator)
-        for device in data["platforms"][LOCK]
+        for device in data["platforms"][Platform.LOCK]
     ]
 
     async_add_entities(entities)
