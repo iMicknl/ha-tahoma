@@ -68,7 +68,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
     OverkizBinarySensorDescription(
         key="core:AssemblyState",
         name="Assembly",
-        device_class=binary_sensor.DEVICE_CLASS_PROBLEM,
+        device_class=BinarySensorDeviceClass.PROBLEM,
         is_on=lambda state: state == OverkizCommandParam.OPEN,
     ),
     # Unknown
