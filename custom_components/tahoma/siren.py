@@ -1,5 +1,5 @@
 """Support for Overkiz sirens."""
-from homeassistant.components.siren import DOMAIN as SIREN, SirenEntity
+from homeassistant.components.siren import SirenEntity
 from homeassistant.components.siren.const import (
     ATTR_DURATION,
     SUPPORT_DURATION,
@@ -7,6 +7,7 @@ from homeassistant.components.siren.const import (
     SUPPORT_TURN_ON,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizState
@@ -27,7 +28,7 @@ async def async_setup_entry(
 
     entities = [
         OverkizSiren(device.device_url, coordinator)
-        for device in data["platforms"][SIREN]
+        for device in data["platforms"][Platform.SIREN]
     ]
 
     async_add_entities(entities)
@@ -61,7 +62,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
             duration_in_ms,  # duration
             75,  # 90 seconds bip, 30 seconds silence
             2,  # repeat 3 times
-            "memorizedVolume",
+            OverkizCommandParam.MEMORIZED_VOLUME,
         )
 
     async def async_turn_off(self, **kwargs):
@@ -70,4 +71,6 @@ class OverkizSiren(OverkizEntity, SirenEntity):
             [OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE]
         )
 
-        await self.executor.async_execute_command("advancedRefresh", "normal")
+        await self.executor.async_execute_command(
+            OverkizCommand.ADVANCED_REFRESH, OverkizCommandParam.NORMAL
+        )
