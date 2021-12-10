@@ -3,13 +3,13 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
     ATTR_HS_COLOR,
-    DOMAIN as LIGHT,
     SUPPORT_BRIGHTNESS,
     SUPPORT_COLOR,
     SUPPORT_EFFECT,
     LightEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
@@ -40,7 +40,7 @@ async def async_setup_entry(
 
     entities = [
         OverkizLight(device.device_url, coordinator)
-        for device in data["platforms"][LIGHT]
+        for device in data["platforms"][Platform.LIGHT]
     ]
 
     async_add_entities(entities)

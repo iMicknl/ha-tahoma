@@ -1,6 +1,7 @@
 """Support for Overkiz covers - shutters etc."""
-from homeassistant.components.cover import ATTR_POSITION, DOMAIN as COVER
+from homeassistant.components.cover import ATTR_POSITION
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -26,13 +27,13 @@ async def async_setup_entry(
 
     entities = [
         Awning(device.device_url, coordinator)
-        for device in data["platforms"][COVER]
+        for device in data["platforms"][Platform.COVER]
         if device.ui_class == UIClass.AWNING
     ]
 
     entities += [
         VerticalCover(device.device_url, coordinator)
-        for device in data["platforms"][COVER]
+        for device in data["platforms"][Platform.COVER]
         if device.ui_class != UIClass.AWNING
     ]
 

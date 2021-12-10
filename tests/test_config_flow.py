@@ -2,6 +2,7 @@ from unittest.mock import Mock, patch
 
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
+from homeassistant.components import dhcp
 from pyhoma.exceptions import (
     BadCredentialsException,
     MaintenanceException,
@@ -186,11 +187,11 @@ async def test_dhcp_flow(hass):
     """Test that DHCP discovery for new bridge works."""
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN,
-        data={
-            "hostname": "gateway-1234-5678-9123",
-            "ip": "192.168.1.4",
-            "macaddress": "F8811A000000",
-        },
+        data=dhcp.DhcpServiceInfo(
+            hostname="gateway-1234-5678-9123",
+            ip="192.168.1.4",
+            macaddress="F8811A000000",
+        ),
         context={"source": config_entries.SOURCE_DHCP},
     )
 
@@ -215,11 +216,11 @@ async def test_dhcp_flow_already_configured(hass):
 
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN,
-        data={
-            "hostname": "gateway-1234-5678-9123",
-            "ip": "192.168.1.4",
-            "macaddress": "F8811A000000",
-        },
+        data=dhcp.DhcpServiceInfo(
+            hostname="gateway-1234-5678-9123",
+            ip="192.168.1.4",
+            macaddress="F8811A000000",
+        ),
         context={"source": config_entries.SOURCE_DHCP},
     )
 
