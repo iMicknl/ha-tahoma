@@ -188,11 +188,9 @@ async def test_dhcp_flow(hass):
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN,
         data=dhcp.DhcpServiceInfo(
-            {
-                "hostname": "gateway-1234-5678-9123",
-                "ip": "192.168.1.4",
-                "macaddress": "F8811A000000",
-            }
+            hostname="gateway-1234-5678-9123",
+            ip="192.168.1.4",
+            macaddress="F8811A000000",
         ),
         context={"source": config_entries.SOURCE_DHCP},
     )
@@ -219,11 +217,9 @@ async def test_dhcp_flow_already_configured(hass):
     result = await hass.config_entries.flow.async_init(
         config_flow.DOMAIN,
         data=dhcp.DhcpServiceInfo(
-            {
-                "hostname": "gateway-1234-5678-9123",
-                "ip": "192.168.1.4",
-                "macaddress": "F8811A000000",
-            }
+            hostname="gateway-1234-5678-9123",
+            ip="192.168.1.4",
+            macaddress="F8811A000000",
         ),
         context={"source": config_entries.SOURCE_DHCP},
     )
