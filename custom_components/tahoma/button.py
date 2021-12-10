@@ -17,14 +17,14 @@ BUTTON_DESCRIPTIONS = [
     ),
     # Identify
     ButtonEntityDescription(
-        key="identify",
+        key="startIdentify",
         name="Start Identify",
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         entity_registry_enabled_default=False,
     ),
     ButtonEntityDescription(
-        key="identify",
+        key="stopIdentify",
         name="Stop Identify",
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
