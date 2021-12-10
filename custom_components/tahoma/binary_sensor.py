@@ -66,7 +66,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
     ),
     # Siren/SirenStatus
     OverkizBinarySensorDescription(
-        key="core:AssemblyState",
+        key=OverkizState.CORE_ASSEMBLY,
         name="Assembly",
         device_class=BinarySensorDeviceClass.PROBLEM,
         is_on=lambda state: state == OverkizCommandParam.OPEN,
@@ -80,10 +80,10 @@ BINARY_SENSOR_DESCRIPTIONS = [
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(
-        key="io:OperatingModeCapabilitiesState",
+        key=OverkizState.IO_OPERATING_MODE_CAPABILITIES,
         name="Energy Demand Status",
         device_class=BinarySensorDeviceClass.HEAT,
-        is_on=lambda state: state.get("energyDemandStatus") == 1,
+        is_on=lambda state: state.get(OverkizCommandParam.ENERGY_DEMAND_STATUS) == 1,
     ),
 ]
 
