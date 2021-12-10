@@ -73,7 +73,7 @@ async def async_setup_entry(
 
 
 class OverkizButton(OverkizDescriptiveEntity, ButtonEntity):
-    """Representation of an Overkiz Number entity."""
+    """Representation of an Overkiz Button entity."""
 
     async def async_press(self) -> None:
         """Handle the button press."""
