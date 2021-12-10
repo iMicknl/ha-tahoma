@@ -1,8 +1,10 @@
 """Support for Overkiz binary sensors."""
 from __future__ import annotations
 
-from homeassistant.components import binary_sensor
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -23,7 +25,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
     OverkizBinarySensorDescription(
         key=OverkizState.CORE_SMOKE,
         name="Smoke",
-        device_class=binary_sensor.DEVICE_CLASS_SMOKE,
+        device_class=BinarySensorDeviceClass.SMOKE,
         is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # WaterSensor/WaterDetectionSensor
@@ -37,7 +39,7 @@ BINARY_SENSOR_DESCRIPTIONS = [
     OverkizBinarySensorDescription(
         key=OverkizState.CORE_GAS_DETECTION,
         name="Gas",
-        device_class=binary_sensor.DEVICE_CLASS_GAS,
+        device_class=BinarySensorDeviceClass.GAS,
         is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # OccupancySensor/OccupancySensor
@@ -45,35 +47,35 @@ BINARY_SENSOR_DESCRIPTIONS = [
     OverkizBinarySensorDescription(
         key=OverkizState.CORE_OCCUPANCY,
         name="Occupancy",
-        device_class=binary_sensor.DEVICE_CLASS_OCCUPANCY,
+        device_class=BinarySensorDeviceClass.OCCUPANCY,
         is_on=lambda state: state == OverkizCommandParam.PERSON_INSIDE,
     ),
     # ContactSensor/WindowWithTiltSensor
     OverkizBinarySensorDescription(
         key=OverkizState.CORE_VIBRATION,
         name="Vibration",
-        device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
+        device_class=BinarySensorDeviceClass.VIBRATION,
         is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # ContactSensor/ContactSensor
     OverkizBinarySensorDescription(
         key=OverkizState.CORE_CONTACT,
         name="Contact",
-        device_class=binary_sensor.DEVICE_CLASS_DOOR,
+        device_class=BinarySensorDeviceClass.DOOR,
         is_on=lambda state: state == OverkizCommandParam.OPEN,
     ),
     # Unknown
     OverkizBinarySensorDescription(
         key=OverkizState.IO_VIBRATION_DETECTED,
         name="Vibration",
-        device_class=binary_sensor.DEVICE_CLASS_VIBRATION,
+        device_class=BinarySensorDeviceClass.VIBRATION,
         is_on=lambda state: state == OverkizCommandParam.DETECTED,
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(
         key="io:OperatingModeCapabilitiesState",
         name="Energy Demand Status",
-        device_class=binary_sensor.DEVICE_CLASS_HEAT,
+        device_class=BinarySensorDeviceClass.HEAT,
         is_on=lambda state: state.get("energyDemandStatus") == 1,
     ),
 ]
