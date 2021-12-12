@@ -89,7 +89,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.RTS_GENERIC: Platform.COVER,  # widgetName, uiClass is Generic (not supported)
     UIClass.SCREEN: Platform.COVER,
     UIClass.SHUTTER: Platform.COVER,
-    UIClass.SIREN: Platform.SWITCH,
+    UIClass.SIREN: Platform.SIREN,
     UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (switch)
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.STATELESS_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
