@@ -16,6 +16,7 @@ UPDATE_INTERVAL_ALL_ASSUMED_STATE = timedelta(minutes=60)
 SUPPORTED_PLATFORMS = [
     Platform.ALARM_CONTROL_PANEL,
     Platform.BINARY_SENSOR,
+    Platform.BUTTON,
     Platform.CLIMATE,
     Platform.COVER,
     Platform.LIGHT,
@@ -31,29 +32,6 @@ SUPPORTED_PLATFORMS = [
 IGNORED_OVERKIZ_DEVICES = [
     UIClass.PROTOCOL_GATEWAY,
     UIClass.POD,
-    # entries mapped to Sensor based on available states
-    UIClass.AIR_SENSOR,
-    UIClass.CONSUMPTION_SENSOR,
-    UIClass.ELECTRICITY_SENSOR,
-    UIClass.GAS_SENSOR,
-    UIClass.GENERIC_SENSOR,
-    UIClass.HUMIDITY_SENSOR,
-    UIClass.LIGHT_SENSOR,
-    UIClass.SUN_INTENSITY_SENSOR,
-    UIClass.SUN_SENSOR,
-    UIClass.TEMPERATURE_SENSOR,
-    UIClass.THERMAL_ENERGY_SENSOR,
-    UIClass.WATER_SENSOR,
-    UIClass.WEATHER_SENSOR,
-    UIClass.WIND_SENSOR,
-    # entries mapped to Binary Sensor based on available states
-    UIWidget.AIR_FLOW_SENSOR,  # widgetName, uiClass is AirSensor (sensor)
-    UIClass.CONTACT_SENSOR,
-    UIWidget.MOTION_SENSOR,
-    UIClass.OCCUPANCY_SENSOR,
-    UIClass.RAIN_SENSOR,
-    UIClass.SMOKE_SENSOR,
-    UIWidget.WATER_DETECTION_SENSOR,  # widgetName, uiClass is HumiditySensor (sensor)
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform

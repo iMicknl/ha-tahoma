@@ -27,10 +27,8 @@ COMMANDS_CLOSE_TILT = [OverkizCommand.CLOSE_SLATS]
 
 COMMANDS_SET_TILT_POSITION = [OverkizCommand.SET_ORIENTATION]
 
-SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
-SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
@@ -124,10 +122,6 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
                 self.executor.select_command(*stop_commands)
             )
 
-    async def async_my(self, **_):
-        """Set cover to preset position."""
-        await self.executor.async_execute_command(OverkizCommand.MY)
-
     @property
     def is_opening(self):
         """Return if the cover is opening or not."""
@@ -208,8 +202,5 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
         if self.executor.has_command(OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
-
-        if self.executor.has_command(OverkizCommand.MY):
-            supported_features |= SUPPORT_MY
 
         return supported_features

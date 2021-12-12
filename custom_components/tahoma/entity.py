@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
+from homeassistant.components.button import ButtonEntityDescription
 from homeassistant.components.number import NumberEntityDescription
 from homeassistant.components.select import SelectEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
@@ -153,6 +154,7 @@ class OverkizDescriptiveEntity(OverkizEntity):
         description: OverkizSensorDescription
         | OverkizBinarySensorDescription
         | OverkizNumberDescription
+        | ButtonEntityDescription
         | OverkizSelectDescription,
     ):
         """Initialize the device."""
