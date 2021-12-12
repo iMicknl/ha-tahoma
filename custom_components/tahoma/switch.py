@@ -1,5 +1,5 @@
 """Support for Overkiz switches."""
-from typing import Any, Optional
+from typing import Any
 
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
@@ -14,18 +14,13 @@ from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
-DEVICE_CLASS_SIREN = "siren"
-
-ICON_BELL_RING = "mdi:bell-ring"
-ICON_BELL_OFF = "mdi:bell-off"
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ):
-    """Set up the Overkiz sensors from a config entry."""
+    """Set up the Overkiz switch from a config entry."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
 
@@ -48,61 +43,25 @@ async def async_setup_entry(
 class OverkizSwitch(OverkizEntity, SwitchEntity):
     """Representation an Overkiz Switch."""
 
-    @property
-    def device_class(self):
-        """Return the class of the device."""
-        if self.device.ui_class == "Siren":
-            return DEVICE_CLASS_SIREN
-
-        return DEVICE_CLASS_SWITCH
-
-    @property
-    def icon(self) -> Optional[str]:
-        """Return the icon to use in the frontend, if any."""
-        if self.device_class == DEVICE_CLASS_SIREN:
-            if self.is_on:
-                return ICON_BELL_RING
-            return ICON_BELL_OFF
-
-        return None
+    _attr_device_class = DEVICE_CLASS_SWITCH
 
     async def async_turn_on(self, **_):
         """Send the on command."""
         if self.executor.has_command(OverkizCommand.ON):
             await self.executor.async_execute_command(OverkizCommand.ON)
-
         elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
                 OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.ON
             )
 
-        elif self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            await self.executor.async_execute_command(
-                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,  # https://www.tahomalink.com/enduser-mobile-web/steer-html5-client/vendor/somfy/io/siren/const.js
-                2 * 60 * 1000,  # 2 minutes
-                75,  # 90 seconds bip, 30 seconds silence
-                2,  # repeat 3 times
-                OverkizCommand.MEMORIZED_VOLUME,
-            )
-
     async def async_turn_off(self, **_):
         """Send the off command."""
-        if self.executor.has_command(OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE):
-            await self.executor.async_execute_command(
-                OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE,
-                2000,
-                100,
-                0,
-                OverkizCommand.STANDARD,
-            )
-
+        if self.executor.has_command(OverkizCommand.OFF):
+            await self.executor.async_execute_command(OverkizCommand.OFF)
         elif self.executor.has_command(OverkizCommand.SET_FORCE_HEATING):
             await self.executor.async_execute_command(
                 OverkizCommand.SET_FORCE_HEATING, OverkizCommandParam.OFF
             )
-
-        elif self.executor.has_command(OverkizCommand.OFF):
-            await self.executor.async_execute_command(OverkizCommand.OFF)
 
     async def async_toggle(self, **_):
         """Click the switch."""
