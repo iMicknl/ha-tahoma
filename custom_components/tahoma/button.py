@@ -17,7 +17,7 @@ BUTTON_DESCRIPTIONS = [
     ),
     # Identify
     ButtonEntityDescription(
-        key="startIdentify",
+        key="identify",  # startIdentify and identify are reversed... Remove when fixed server side.
         name="Start Identify",
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
@@ -31,7 +31,7 @@ BUTTON_DESCRIPTIONS = [
         entity_registry_enabled_default=False,
     ),
     ButtonEntityDescription(
-        key="identify",
+        key="startIdentify",  # startIdentify and identify are reversed... Remove when fixed server side.
         name="Identify",
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
