@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommandParam, OverkizState
 
-from .const import DOMAIN
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
 
 BINARY_SENSOR_DESCRIPTIONS = [
@@ -64,6 +64,13 @@ BINARY_SENSOR_DESCRIPTIONS = [
         device_class=BinarySensorDeviceClass.DOOR,
         is_on=lambda state: state == OverkizCommandParam.OPEN,
     ),
+    # Siren/SirenStatus
+    OverkizBinarySensorDescription(
+        key=OverkizState.CORE_ASSEMBLY,
+        name="Assembly",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        is_on=lambda state: state == OverkizCommandParam.OPEN,
+    ),
     # Unknown
     OverkizBinarySensorDescription(
         key=OverkizState.IO_VIBRATION_DETECTED,
@@ -73,10 +80,10 @@ BINARY_SENSOR_DESCRIPTIONS = [
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(
-        key="io:OperatingModeCapabilitiesState",
+        key=OverkizState.IO_OPERATING_MODE_CAPABILITIES,
         name="Energy Demand Status",
         device_class=BinarySensorDeviceClass.HEAT,
-        is_on=lambda state: state.get("energyDemandStatus") == 1,
+        is_on=lambda state: state.get(OverkizCommandParam.ENERGY_DEMAND_STATUS) == 1,
     ),
 ]
 
@@ -96,15 +103,19 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.definition.states:
-            if description := key_supported_states.get(state.qualified_name):
-                entities.append(
-                    OverkizBinarySensor(
-                        device.device_url,
-                        coordinator,
-                        description,
+        if (
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
+        ):
+            for state in device.definition.states:
+                if description := key_supported_states.get(state.qualified_name):
+                    entities.append(
+                        OverkizBinarySensor(
+                            device.device_url,
+                            coordinator,
+                            description,
+                        )
                     )
-                )
 
     async_add_entities(entities)
 

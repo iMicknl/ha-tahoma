@@ -27,10 +27,8 @@ COMMANDS_CLOSE_TILT = [OverkizCommand.CLOSE_SLATS]
 
 COMMANDS_SET_TILT_POSITION = [OverkizCommand.SET_ORIENTATION]
 
-SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
-SUPPORT_MY = 512
 SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
@@ -108,56 +106,21 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
     async def async_stop_cover_tilt(self, **_):
         """Stop the cover tilt."""
-        await self.async_cancel_or_stop_cover(
+        await self.executor.async_cancel_or_stop_cover(
             COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT,
             COMMANDS_STOP_TILT,
         )
 
     async def async_cancel_or_stop_cover(self, cancel_commands, stop_commands) -> None:
         """Cancel running execution or send stop command."""
-        # Cancelling a running execution will stop the cover movement
-        # Retrieve executions initiated via Home Assistant from Data Update Coordinator queue
-        exec_id = next(
-            (
-                exec_id
-                # Reverse dictionary to cancel the last added execution
-                for exec_id, execution in reversed(self.coordinator.executions.items())
-                if execution.get("device_url") == self.device.device_url
-                and execution.get("command_name") in cancel_commands
-            ),
-            None,
-        )
+        success = await self.executor.async_cancel_command(cancel_commands)
 
-        if exec_id:
-            return await self.executor.async_cancel_command(exec_id)
-
-        # Retrieve executions initiated outside Home Assistant via API
-        executions = await self.coordinator.client.get_current_executions()
-        exec_id = next(
-            (
-                execution.id
-                for execution in executions
-                # Reverse dictionary to cancel the last added execution
-                for action in reversed(execution.action_group.get("actions"))
-                for command in action.get("commands")
-                if action.get("device_url") == self.device.device_url
-                and command.get("name") in cancel_commands
-            ),
-            None,
-        )
-
-        if exec_id:
-            return await self.executor.async_cancel_command(exec_id)
-
-        # Fallback to available stop commands when no executions are found
-        # Stop commands don't work with all devices, due to a bug in Somfy service
-        await self.executor.async_execute_command(
-            self.executor.select_command(*stop_commands)
-        )
-
-    async def async_my(self, **_):
-        """Set cover to preset position."""
-        await self.executor.async_execute_command(OverkizCommand.MY)
+        if not success:
+            # Fallback to available stop commands when no executions are found
+            # Stop commands don't work with all devices, due to a bug in Somfy service
+            await self.executor.async_execute_command(
+                self.executor.select_command(*stop_commands)
+            )
 
     @property
     def is_opening(self):
@@ -239,8 +202,5 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
         if self.executor.has_command(OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED):
             supported_features |= SUPPORT_COVER_POSITION_LOW_SPEED
-
-        if self.executor.has_command(OverkizCommand.MY):
-            supported_features |= SUPPORT_MY
 
         return supported_features
