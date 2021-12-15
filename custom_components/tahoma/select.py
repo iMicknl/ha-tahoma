@@ -3,12 +3,12 @@ from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from .const import DOMAIN
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizDescriptiveEntity, OverkizSelectDescription
 
 SELECT_DESCRIPTIONS = [
@@ -37,7 +37,7 @@ SELECT_DESCRIPTIONS = [
         select_option=lambda option, execute_command: execute_command(
             OverkizCommand.SET_MEMORIZED_SIMPLE_VOLUME, option
         ),
-        entity_category=ENTITY_CATEGORY_CONFIG,
+        entity_category=EntityCategory.CONFIG,
     ),
 ]
 
@@ -58,15 +58,19 @@ async def async_setup_entry(
     }
 
     for device in coordinator.data.values():
-        for state in device.definition.states:
-            if description := key_supported_states.get(state.qualified_name):
-                entities.append(
-                    OverkizSelect(
-                        device.device_url,
-                        coordinator,
-                        description,
+        if (
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
+        ):
+            for state in device.definition.states:
+                if description := key_supported_states.get(state.qualified_name):
+                    entities.append(
+                        OverkizSelect(
+                            device.device_url,
+                            coordinator,
+                            description,
+                        )
                     )
-                )
 
     async_add_entities(entities)
 

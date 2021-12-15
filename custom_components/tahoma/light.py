@@ -3,15 +3,14 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
     ATTR_HS_COLOR,
-    DOMAIN as LIGHT,
     SUPPORT_BRIGHTNESS,
     SUPPORT_COLOR,
     SUPPORT_EFFECT,
     LightEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
@@ -20,9 +19,14 @@ from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
 
-SERVICE_LIGHT_MY_POSITION = "set_light_my_position"
+COMMAND_SET_INTENSITY = "setIntensity"
+COMMAND_SET_RGB = "setRGB"
+COMMAND_WINK = "wink"
 
-SUPPORT_MY = 512
+CORE_BLUE_COLOR_INTENSITY_STATE = "core:BlueColorIntensityState"
+CORE_GREEN_COLOR_INTENSITY_STATE = "core:GreenColorIntensityState"
+CORE_LIGHT_INTENSITY_STATE = "core:LightIntensityState"
+CORE_RED_COLOR_INTENSITY_STATE = "core:RedColorIntensityState"
 
 
 async def async_setup_entry(
@@ -36,15 +40,10 @@ async def async_setup_entry(
 
     entities = [
         OverkizLight(device.device_url, coordinator)
-        for device in data["platforms"][LIGHT]
+        for device in data["platforms"][Platform.LIGHT]
     ]
 
     async_add_entities(entities)
-
-    platform = entity_platform.current_platform.get()
-    platform.async_register_entity_service(
-        SERVICE_LIGHT_MY_POSITION, {}, "async_my", [SUPPORT_MY]
-    )
 
 
 class OverkizLight(OverkizEntity, LightEntity):
@@ -91,9 +90,6 @@ class OverkizLight(OverkizEntity, LightEntity):
         if self.executor.has_command(OverkizCommand.SET_RGB):
             supported_features |= SUPPORT_COLOR
 
-        if self.executor.has_command(OverkizCommand.MY):
-            supported_features |= SUPPORT_MY
-
         return supported_features
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -123,10 +119,6 @@ class OverkizLight(OverkizEntity, LightEntity):
     async def async_turn_off(self, **_) -> None:
         """Turn the light off."""
         await self.executor.async_execute_command(OverkizCommand.OFF)
-
-    async def async_my(self, **_):
-        """Set light to preset position."""
-        await self.executor.async_execute_command(OverkizCommand.MY)
 
     @property
     def effect_list(self) -> list:
