@@ -7,6 +7,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizState
 
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
+from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizNumberDescription
 
 NUMBER_DESCRIPTIONS = [
@@ -121,11 +122,14 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
 class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
     """Representation of an Overkiz BoostModeDuration Number entity."""
 
-    _attr_max_value = 7
-    _attr_min_value = 1
-    _attr_icon = "mdi:water-boiler-alert"
-    _attr_name = "Boost Mode Duration"
-    _attr_unique_id = "temp_core:BoostModeDurationState"
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self._attr_max_value = 7
+        self._attr_min_value = 1
+        self._attr_icon = "mdi:water-boiler-alert"
+        self._attr_name = "Boost Mode Duration"
+        self._attr_unique_id = f"{super().unique_id}-core:BoostModeDurationState"
 
     @property
     def value(self) -> float:
