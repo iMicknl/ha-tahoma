@@ -7,7 +7,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommand, OverkizState
 
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
-from .entity import OverkizDescriptiveEntity, OverkizNumberDescription
+from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizNumberDescription
 
 NUMBER_DESCRIPTIONS = [
     # Cover: My Position (0 - 100)
@@ -28,15 +28,15 @@ NUMBER_DESCRIPTIONS = [
         max_value=4,
         entity_category=EntityCategory.CONFIG,
     ),
-    # DomesticHotWaterProduction: Boost mode in Days (1 - 6)
-    OverkizNumberDescription(
-        key="core:BoostModeDurationState",
-        name="Boost Mode Duration",
-        icon="mdi:water-boiler-alert",
-        command="setBoostModeDuration",
-        min_value=0,
-        max_value=10,
-    ),
+    # # DomesticHotWaterProduction: Boost mode in Days (1 - 6)
+    # OverkizNumberDescription(
+    #     key="core:BoostModeDurationState",
+    #     name="Boost Mode Duration",
+    #     icon="mdi:water-boiler-alert",
+    #     command="setBoostModeDuration",
+    #     min_value=0,
+    #     max_value=10,
+    # ),
     # DomesticHotWaterProduction: Away mode in Days (1 - 6)
     OverkizNumberDescription(
         key="io:AwayModeDurationState",
@@ -79,6 +79,14 @@ async def async_setup_entry(
                         )
                     )
 
+                if state.qualified_name == "core:BoostModeDurationState":
+                    entities.append(
+                        OverkizBoostModeDurationNumber(
+                            device.device_url,
+                            coordinator,
+                        )
+                    )
+
     async_add_entities(entities)
 
 
@@ -88,7 +96,7 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     @property
     def value(self) -> float:
         """Return the current number."""
-        if state := self.device.states.get(self.entity_description.key):
+        if state := self.device.states.get("self.entity_description.key"):
             return state.value
 
         return None
@@ -108,3 +116,37 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     def max_value(self) -> float:
         """Return the maximum value."""
         return self.entity_description.max_value or self._attr_max_value
+
+
+class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
+    """Representation of an Overkiz BoostModeDuration Number entity."""
+
+    _attr_max_value = 7
+    _attr_min_value = 1
+    _attr_icon = "mdi:water-boiler-alert"
+    _attr_name = "Boost Mode Duration"
+    _attr_unique_id = "temp_core:BoostModeDurationState"
+
+    @property
+    def value(self) -> float:
+        """Return the current number."""
+        if state := self.device.states.get("core:BoostModeDurationState"):
+            return state.value
+
+        return None
+
+    async def async_set_value(self, value: float) -> None:
+        """Update the My position value. Min: 0, max: 100."""
+
+        if value > 0:
+            await self.executor.async_execute_command("setBoostModeDuration", value)
+
+            await self.executor.async_execute_command(
+                "setCurrentOperatingMode", {"relaunch": "on", "absence": "off"}
+            )
+        else:
+            await self.executor.async_execute_command(
+                "setCurrentOperatingMode", {"relaunch": "off", "absence": "off"}
+            )
+
+        await self.executor.async_execute_command("refreshBoostModeDuration")
