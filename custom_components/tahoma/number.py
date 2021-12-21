@@ -31,11 +31,20 @@ NUMBER_DESCRIPTIONS = [
     # DomesticHotWaterProduction: Boost mode in Days (1 - 6)
     OverkizNumberDescription(
         key="core:BoostModeDurationState",
-        name="Expected Number Of Shower",
-        icon="mdi:water-plus",
+        name="Boost Mode Duration",
+        icon="mdi:water-boiler-alert",
         command="setBoostModeDuration",
-        min_value=1,
-        max_value=7,
+        min_value=0,
+        max_value=10,
+    ),
+    # DomesticHotWaterProduction: Away mode in Days (1 - 6)
+    OverkizNumberDescription(
+        key="io:AwayModeDurationState",
+        name="Away Mode Duration",
+        icon="mdi:water-boiler-off",
+        command="setAwayModeDuration",
+        min_value=0,
+        max_value=10,
     ),
 ]
 
