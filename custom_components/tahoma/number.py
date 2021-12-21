@@ -29,7 +29,7 @@ NUMBER_DESCRIPTIONS = [
         max_value=4,
         entity_category=EntityCategory.CONFIG,
     ),
-    # # DomesticHotWaterProduction: Boost mode in Days (1 - 6)
+    # # DomesticHotWaterProduction: Boost mode in Days (0 - 6)
     # OverkizNumberDescription(
     #     key="core:BoostModeDurationState",
     #     name="Boost Mode Duration",
@@ -38,7 +38,7 @@ NUMBER_DESCRIPTIONS = [
     #     min_value=0,
     #     max_value=10,
     # ),
-    # DomesticHotWaterProduction: Away mode in Days (1 - 6)
+    # DomesticHotWaterProduction: Away mode in Days (0 - 6)
     OverkizNumberDescription(
         key="io:AwayModeDurationState",
         name="Away Mode Duration",
@@ -111,11 +111,15 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     @property
     def min_value(self) -> float:
         """Return the minimum value."""
+        if hasattr(super(), "min_value"):
+            return super().min_value
         return self.entity_description.min_value or self._attr_min_value
 
     @property
     def max_value(self) -> float:
         """Return the maximum value."""
+        if hasattr(super(), "max_value"):
+            return super().max_value
         return self.entity_description.max_value or self._attr_max_value
 
 
@@ -140,7 +144,7 @@ class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
         return None
 
     async def async_set_value(self, value: float) -> None:
-        """Update the My position value. Min: 0, max: 100."""
+        """Update the boost duration value. min: 0, max: 7."""
 
         if value > 0:
             await self.executor.async_execute_command("setBoostModeDuration", value)
