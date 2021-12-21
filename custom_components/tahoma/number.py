@@ -28,6 +28,15 @@ NUMBER_DESCRIPTIONS = [
         max_value=4,
         entity_category=EntityCategory.CONFIG,
     ),
+    # DomesticHotWaterProduction: Boost mode in Days (1 - 6)
+    OverkizNumberDescription(
+        key="core:BoostModeDurationState",
+        name="Expected Number Of Shower",
+        icon="mdi:water-plus",
+        command="setBoostModeDuration",
+        min_value=1,
+        max_value=7,
+    ),
 ]
 
 
