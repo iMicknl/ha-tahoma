@@ -18,8 +18,6 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from pyhoma.enums import OverkizState
-
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 

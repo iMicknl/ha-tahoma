@@ -13,7 +13,6 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import TEMP_CELSIUS
-
 from pyhoma.enums import OverkizState
 
 from ..entity import OverkizEntity
