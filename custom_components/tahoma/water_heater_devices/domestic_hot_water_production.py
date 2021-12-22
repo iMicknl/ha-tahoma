@@ -9,7 +9,6 @@ from homeassistant.components.water_heater import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from ..const import STATE_ON
 from ..entity import OverkizEntity
 
 DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"

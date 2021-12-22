@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyhoma.enums import OverkizCommandParam, OverkizState
 
-from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES, STATE_ON
+from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
 
 BINARY_SENSOR_DESCRIPTIONS = [
@@ -83,13 +83,13 @@ BINARY_SENSOR_DESCRIPTIONS = [
         key=OverkizState.IO_DHW_BOOST_MODE,
         name="Boost Mode",
         device_class=None,
-        is_on=lambda state: state == STATE_ON,
+        is_on=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
         key=OverkizState.IO_DHW_ABSENCE_MODE,
         name="Away Mode",
         device_class=None,
-        is_on=lambda state: state == STATE_ON,
+        is_on=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
         key=OverkizState.IO_OPERATING_MODE_CAPABILITIES,
