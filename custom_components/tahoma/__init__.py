@@ -58,12 +58,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await client.login()
 
         tasks = [
-            client.get_devices(),
+            client.get_setup(),
             client.get_scenarios(),
-            client.get_gateways(),
-            client.get_places(),
         ]
-        devices, scenarios, gateways, places = await asyncio.gather(*tasks)
+        setup, scenarios = await asyncio.gather(*tasks)
     except BadCredentialsException as exception:
         raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
@@ -81,8 +79,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER,
         name="device events",
         client=client,
-        devices=devices,
-        places=places,
+        devices=setup.devices,
+        places=setup.root_place,
         update_interval=UPDATE_INTERVAL,
         config_entry_id=entry.entry_id,
     )
@@ -122,7 +120,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     device_registry = await dr.async_get_registry(hass)
 
-    for gateway in gateways:
+    for gateway in setup.gateways:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
         device_registry.async_get_or_create(
