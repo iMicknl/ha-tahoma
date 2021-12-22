@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
@@ -73,7 +73,7 @@ class OverkizSwitch(OverkizEntity, SwitchEntity):
         """Get whether the switch is in on state."""
         return (
             self.executor.select_state(
-                OverkizState.CORE_ON_OFF, OverkizState.IO_FORCE_HEATING_STATE
+                OverkizState.CORE_ON_OFF, OverkizState.IO_FORCE_HEATING
             )
             == OverkizCommandParam.ON
         )
