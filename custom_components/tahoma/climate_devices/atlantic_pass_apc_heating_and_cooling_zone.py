@@ -18,6 +18,8 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
+from pyhoma.enums import OverkizState
+
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
@@ -40,7 +42,6 @@ CORE_MINIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
 CORE_MAXIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
     "core:MaximumHeatingTargetTemperatureState"
 )
-CORE_ON_OFF_STATE = "core:OnOffState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 

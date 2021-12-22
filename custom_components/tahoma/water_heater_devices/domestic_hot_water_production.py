@@ -7,50 +7,28 @@ from homeassistant.components.water_heater import (
     WaterHeaterEntity,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from ..const import COMMAND_OFF, COMMAND_ON, STATE_ON
+from ..const import STATE_ON
 from ..entity import OverkizEntity
 
-CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MaximalTemperatureManualModeState"
-CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE = "core:MinimalTemperatureManualModeState"
-CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
-CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
+DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
+DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
 
-IO_DHW_ABSENCE_MODE_STATE = "io:DHWAbsenceModeState"
-IO_DHW_BOOST_MODE_STATE = "io:DHWBoostModeState"
-IO_DHW_MODE_STATE = "io:DHWModeState"
-IO_MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState"
-
-STATE_ABSENCE = "absence"
-STATE_AUTO = "auto"
-STATE_MANUAL = "manual"
-
-COMMAND_SET_ABSENCE_MODE = "setAbsenceMode"
-COMMAND_SET_BOOST_MODE = "setBoostMode"
-COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode"
-COMMAND_SET_DHW_MODE = "setDHWMode"
-COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
-
-MODE_AUTO = "autoMode"
-MODE_BOOST = "boost"
-MODE_MANUAL_ECO_ACTIVE = "manualEcoActive"
-MODE_MANUAL_ECO_INACTIVE = "manualEcoInactive"
-MODE_ABSENCE_PROG = "prog"
-
-MAP_OPERATION_MODES = {
-    MODE_AUTO: STATE_AUTO,
-    MODE_BOOST: MODE_BOOST,
-    MODE_MANUAL_ECO_ACTIVE: STATE_ECO,
-    MODE_MANUAL_ECO_INACTIVE: STATE_MANUAL,
+OVERKIZ_TO_OPERATION_MODE = {
+    OverkizCommandParam.MANUAL_ECO_ACTIVE: STATE_ECO,
+    OverkizCommandParam.MANUAL_ECO_INACTIVE: OverkizCommandParam.MANUAL,
+    OverkizCommandParam.AUTO: OverkizCommandParam.AUTO,
+    OverkizCommandParam.AUTO_MODE: OverkizCommandParam.AUTO,
 }
 
-MAP_REVERSE_OPERATION_MODES = {v: k for k, v in MAP_OPERATION_MODES.items()}
+OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
 
 
 class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     """Representation of a DomesticHotWaterProduction Water Heater."""
 
-    _attr_operation_list = [*MAP_REVERSE_OPERATION_MODES]
+    _attr_operation_list = [*OPERATION_MODE_TO_OVERKIZ]
     _attr_supported_features = (
         SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
     )
@@ -59,74 +37,120 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     @property
     def min_temp(self):
         """Return the minimum temperature."""
-        return self.executor.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(
+            OverkizState.CORE_MINIMAL_TEMPERATURE_MANUAL_MODE
+        )
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
-        return self.executor.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(
+            OverkizState.CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE
+        )
 
     @property
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
-        return MAP_OPERATION_MODES[self.executor.select_state(IO_DHW_MODE_STATE)]
+        return OVERKIZ_TO_OPERATION_MODE[
+            self.executor.select_state(OverkizState.IO_DHW_MODE)
+        ]
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.executor.select_state(IO_MIDDLE_WATER_TEMPERATURE_STATE)
+        return self.executor.select_state(OverkizState.IO_MIDDLE_WATER_TEMPERATURE)
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.executor.select_state(OverkizState.CORE_TARGET_TEMPERATURE)
 
     @property
     def target_temperature_high(self):
         """Return the highbound target temperature we try to reach."""
-        return self.executor.select_state(CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(
+            OverkizState.CORE_MAXIMAL_TEMPERATURE_MANUAL_MODE
+        )
 
     @property
     def target_temperature_low(self):
         """Return the lowbound target temperature we try to reach."""
-        return self.executor.select_state(CORE_MINIMAL_TEMPERATURE_MANUAL_MODE_STATE)
+        return self.executor.select_state(
+            OverkizState.CORE_MINIMAL_TEMPERATURE_MANUAL_MODE
+        )
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
         await self.executor.async_execute_command(
-            COMMAND_SET_TARGET_TEMPERATURE, target_temperature
+            OverkizCommand.SET_TARGET_TEMPERATURE, target_temperature
         )
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-        if operation_mode == MODE_BOOST:
+        if operation_mode == OverkizCommandParam.BOOST:
             await self.executor.async_execute_command(
-                COMMAND_SET_BOOST_MODE, COMMAND_ON
+                OverkizCommand.SET_BOOST_MODE, OverkizCommand.ON
             )
             return
-        if operation_mode != MODE_BOOST and self._is_boost_mode_on:
+        if operation_mode != OverkizCommandParam.BOOST and self._is_boost_mode_on:
             await self.executor.async_execute_command(
-                COMMAND_SET_BOOST_MODE, COMMAND_OFF
+                OverkizCommand.SET_BOOST_MODE, OverkizCommand.OFF
             )
         await self.executor.async_execute_command(
-            COMMAND_SET_DHW_MODE, MAP_REVERSE_OPERATION_MODES[operation_mode]
+            OverkizCommand.SET_DHW_MODE, OPERATION_MODE_TO_OVERKIZ[operation_mode]
         )
 
     @property
     def is_away_mode_on(self):
         """Return true if away mode is on."""
-        return self.executor.select_state(IO_DHW_ABSENCE_MODE_STATE) == STATE_ON
+        if self.device.controllable_name == DHWP_TYPE_MURAL:
+            return (
+                self.executor.select_state(OverkizState.CORE_OPERATING_MODE).get(
+                    OverkizCommandParam.ABSENCE
+                )
+                == OverkizCommandParam.ON
+            )
+        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+            return (
+                self.executor.select_state(OverkizState.IO_DHW_ABSENCE_MODE)
+                == OverkizCommandParam.ON
+            )
 
     @property
     def _is_boost_mode_on(self):
         """Return true if boost mode is on."""
-        return self.executor.select_state(IO_DHW_BOOST_MODE_STATE) == STATE_ON
+        return (
+            self.executor.select_state(OverkizState.IO_DHW_BOOST_MODE)
+            == OverkizCommandParam.ON
+        )
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
-        await self.executor.async_execute_command(COMMAND_SET_ABSENCE_MODE, COMMAND_ON)
+        if self.device.controllable_name == DHWP_TYPE_MURAL:
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_CURRENT_OPERATING_MODE,
+                {
+                    OverkizCommandParam.RELAUNCH: OverkizCommandParam.OFF,
+                    OverkizCommandParam.ABSENCE: OverkizCommandParam.ON,
+                },
+            )
+        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_ABSENCE_MODE, OverkizCommandParam.ON
+            )
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
-        await self.executor.async_execute_command(COMMAND_SET_ABSENCE_MODE, COMMAND_OFF)
+        if self.device.controllable_name == DHWP_TYPE_MURAL:
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_CURRENT_OPERATING_MODE,
+                {
+                    OverkizCommandParam.RELAUNCH: OverkizCommandParam.OFF,
+                    OverkizCommandParam.ABSENCE: OverkizCommandParam.OFF,
+                },
+            )
+        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+            await self.executor.async_execute_command(
+                OverkizCommand.SET_ABSENCE_MODE, OverkizCommandParam.OFF
+            )

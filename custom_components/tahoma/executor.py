@@ -1,6 +1,8 @@
 """Class for helpers and community with the OverKiz API."""
+from __future__ import annotations
+
 import logging
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 from pyhoma.models import Command, Device
@@ -24,7 +26,7 @@ class OverkizExecutor:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
 
-    def select_command(self, *commands: str) -> Optional[str]:
+    def select_command(self, *commands: str) -> str | None:
         """Select first existing command in a list of commands."""
         existing_commands = self.device.definition.commands
         return next((c for c in commands if c in existing_commands), None)
@@ -33,7 +35,7 @@ class OverkizExecutor:
         """Return True if a command exists in a list of commands."""
         return self.select_command(*commands) is not None
 
-    def select_state(self, *states) -> Optional[str]:
+    def select_state(self, *states) -> str | None:
         """Select first existing active state in a list of states."""
         if self.device.states:
             return next(
@@ -50,7 +52,7 @@ class OverkizExecutor:
         """Return True if a state exists in self."""
         return self.select_state(*states) is not None
 
-    def select_attribute(self, *attributes) -> Optional[str]:
+    def select_attribute(self, *attributes) -> str | None:
         """Select first existing active state in a list of states."""
         if self.device.attributes:
             return next(
@@ -82,8 +84,49 @@ class OverkizExecutor:
 
         await self.coordinator.async_refresh()
 
-    async def async_cancel_command(self, exec_id: str):
-        """Cancel device command in async context."""
+    async def async_cancel_command(self, commands_to_cancel: list[str]) -> bool:
+        """Cancel running execution by command."""
+
+        # Cancel a running execution
+        # Retrieve executions initiated via Home Assistant from Data Update Coordinator queue
+        exec_id = next(
+            (
+                exec_id
+                # Reverse dictionary to cancel the last added execution
+                for exec_id, execution in reversed(self.coordinator.executions.items())
+                if execution.get("device_url") == self.device.device_url
+                and execution.get("command_name") in commands_to_cancel
+            ),
+            None,
+        )
+
+        if exec_id:
+            await self.async_cancel_execution(exec_id)
+            return True
+
+        # Retrieve executions initiated outside Home Assistant via API
+        executions = await self.coordinator.client.get_current_executions()
+        exec_id = next(
+            (
+                execution.id
+                for execution in executions
+                # Reverse dictionary to cancel the last added execution
+                for action in reversed(execution.action_group.get("actions"))
+                for command in action.get("commands")
+                if action.get("device_url") == self.device.device_url
+                and command.get("name") in commands_to_cancel
+            ),
+            None,
+        )
+
+        if exec_id:
+            await self.async_cancel_execution(exec_id)
+            return True
+
+        return False
+
+    async def async_cancel_execution(self, exec_id: str):
+        """Cancel running execution via execution id."""
         await self.coordinator.client.cancel_command(exec_id)
 
     def get_gateway_id(self):

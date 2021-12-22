@@ -24,6 +24,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
+from pyhoma.enums import OverkizCommand, OverkizState
 
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
@@ -33,11 +34,9 @@ _LOGGER = logging.getLogger(__name__)
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
 COMMAND_SET_OPERATING_MODE = "setOperatingMode"
-COMMAND_OFF = "off"
 
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 PRESET_AUTO = "auto"
@@ -177,8 +176,10 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
             return TAHOMA_TO_HVAC_MODE[
                 self.executor.select_state(CORE_OPERATING_MODE_STATE)
             ]
-        if CORE_ON_OFF_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.executor.select_state(CORE_ON_OFF_STATE)]
+        if OverkizState.CORE_ON_OFF in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[
+                self.executor.select_state(OverkizState.CORE_ON_OFF)
+            ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -189,7 +190,7 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
         else:
             if hvac_mode == HVAC_MODE_OFF:
                 await self.executor.async_execute_command(
-                    COMMAND_OFF,
+                    OverkizCommand.OFF,
                 )
             else:
                 await self.executor.async_execute_command(

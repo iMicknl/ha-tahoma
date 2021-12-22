@@ -14,11 +14,12 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import TEMP_CELSIUS
 
+from pyhoma.enums import OverkizState
+
 from ..entity import OverkizEntity
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
-CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 PRESET_COMFORT1 = "comfort-1"
@@ -55,7 +56,9 @@ class AtlanticElectricalHeater(OverkizEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.executor.select_state(CORE_ON_OFF_STATE)]
+        return TAHOMA_TO_HVAC_MODES[
+            self.executor.select_state(OverkizState.CORE_ON_OFF)
+        ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
