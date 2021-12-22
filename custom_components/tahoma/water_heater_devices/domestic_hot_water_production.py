@@ -119,10 +119,13 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     @property
     def _is_boost_mode_on(self):
         """Return true if boost mode is on."""
-        return (
-            self.executor.select_state(OverkizState.IO_DHW_BOOST_MODE)
-            == OverkizCommandParam.ON
-        )
+        if self.device.controllable_name == DHWP_TYPE_MURAL:
+            return super()._is_boost_mode_on
+        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+            return (
+                self.executor.select_state(OverkizState.IO_DHW_BOOST_MODE)
+                == OverkizCommandParam.ON
+            )
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
