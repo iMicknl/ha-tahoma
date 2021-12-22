@@ -15,15 +15,15 @@ from homeassistant.helpers import (
     service,
 )
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from pyhoma.client import TahomaClient
-from pyhoma.const import SUPPORTED_SERVERS
-from pyhoma.exceptions import (
+from pyoverkiz.client import OverkizClient
+from pyoverkiz.const import SUPPORTED_SERVERS
+from pyoverkiz.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command, Device
+from pyoverkiz.models import Command, Device
 import voluptuous as vol
 
 from .const import (
@@ -50,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
     session = async_create_clientsession(hass)
-    client = TahomaClient(
+    client = OverkizClient(
         username=username, password=password, session=session, server=server
     )
 
@@ -194,7 +194,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def write_execution_history_to_log(client: TahomaClient):
+async def write_execution_history_to_log(client: OverkizClient):
     """Retrieve execution history and write output to log."""
     history = await client.get_execution_history()
 
