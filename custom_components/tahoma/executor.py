@@ -37,15 +37,9 @@ class OverkizExecutor:
 
     def select_state(self, *states) -> str | None:
         """Select first existing active state in a list of states."""
-        if self.device.states:
-            return next(
-                (
-                    state.value
-                    for state in self.device.states
-                    if state.name in list(states)
-                ),
-                None,
-            )
+        for state in states:
+            if current_state := self.device.states[state]:
+                return current_state.value
         return None
 
     def has_state(self, *states: str) -> bool:
@@ -54,15 +48,9 @@ class OverkizExecutor:
 
     def select_attribute(self, *attributes) -> str | None:
         """Select first existing active state in a list of states."""
-        if self.device.attributes:
-            return next(
-                (
-                    attribute.value
-                    for attribute in self.device.attributes
-                    if attribute.name in list(attributes)
-                ),
-                None,
-            )
+        for attribute in attributes:
+            if current_attribute := self.device.attributes[attribute]:
+                return current_attribute.value
 
     async def async_execute_command(self, command_name: str, *args: Any):
         """Execute device command in async context."""
