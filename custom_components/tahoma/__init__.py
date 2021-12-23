@@ -31,7 +31,7 @@ from .const import (
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
-    SUPPORTED_PLATFORMS,
+    PLATFORMS,
     UPDATE_INTERVAL,
     UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
@@ -116,7 +116,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
+    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
     device_registry = await dr.async_get_registry(hass)
 
@@ -182,9 +182,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
 
-    unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, SUPPORTED_PLATFORMS
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
