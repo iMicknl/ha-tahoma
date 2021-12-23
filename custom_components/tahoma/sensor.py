@@ -27,7 +27,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
 
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
-from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
 
 SENSOR_DESCRIPTIONS = [
@@ -393,12 +392,9 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
 class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
     """Representation of an Overkiz HomeKit Setup Code."""
 
-    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self._attr_name = "HomeKit Setup Code"
-        self._attr_icon = "mdi:shield-home"
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_name = "HomeKit Setup Code"
+    _attr_icon = "mdi:shield-home"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def state(self):
