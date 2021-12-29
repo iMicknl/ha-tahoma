@@ -97,9 +97,10 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODE[
-            self.executor.select_state(IO_TOWEL_DRYER_TEMPORARY_STATE_STATE)
-        ]
+        state = self.executor.select_state(IO_TOWEL_DRYER_TEMPORARY_STATE_STATE)
+        if state:
+            return TAHOMA_TO_PRESET_MODE[state]
+        return None
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
