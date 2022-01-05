@@ -8,15 +8,15 @@ from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from pyhoma.client import TahomaClient
-from pyhoma.enums import EventName, ExecutionState
-from pyhoma.exceptions import (
+from pyoverkiz.client import OverkizClient
+from pyoverkiz.enums import EventName, ExecutionState
+from pyoverkiz.exceptions import (
     BadCredentialsException,
     MaintenanceException,
     NotAuthenticatedException,
     TooManyRequestsException,
 )
-from pyhoma.models import DataType, Device, Place, State
+from pyoverkiz.models import DataType, Device, Place, State
 
 from .const import DOMAIN, UPDATE_INTERVAL
 
@@ -43,7 +43,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         logger: logging.Logger,
         *,
         name: str,
-        client: TahomaClient,
+        client: OverkizClient,
         devices: List[Device],
         places: Place,
         update_interval: Optional[timedelta] = None,

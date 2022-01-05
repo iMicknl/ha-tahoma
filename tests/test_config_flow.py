@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
 from homeassistant.components import dhcp
-from pyhoma.exceptions import (
+from pyoverkiz.exceptions import (
     BadCredentialsException,
     MaintenanceException,
     TooManyRequestsException,
@@ -37,8 +37,8 @@ async def test_form(hass):
     assert result["type"] == "form"
     assert result["errors"] == {}
 
-    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
-        "pyhoma.client.TahomaClient.get_gateways", return_value=None
+    with patch("pyoverkiz.client.OverkizClient.login", return_value=True), patch(
+        "pyoverkiz.client.OverkizClient.get_gateways", return_value=None
     ), patch(
         "custom_components.tahoma.async_setup_entry", return_value=True
     ) as mock_setup_entry:
@@ -77,7 +77,7 @@ async def test_form_invalid(hass, side_effect, error):
         config_flow.DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch("pyhoma.client.TahomaClient.login", side_effect=side_effect):
+    with patch("pyoverkiz.client.OverkizClient.login", side_effect=side_effect):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
             {"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
@@ -99,8 +99,9 @@ async def test_abort_on_duplicate_entry(hass):
         config_flow.DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
-        "pyhoma.client.TahomaClient.get_gateways", return_value=MOCK_GATEWAY_RESPONSE
+    with patch("pyoverkiz.client.OverkizClient.login", return_value=True), patch(
+        "pyoverkiz.client.OverkizClient.get_gateways",
+        return_value=MOCK_GATEWAY_RESPONSE,
     ), patch("custom_components.tahoma.async_setup_entry", return_value=True):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
@@ -123,8 +124,9 @@ async def test_allow_multiple_unique_entries(hass):
         config_flow.DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
 
-    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
-        "pyhoma.client.TahomaClient.get_gateways", return_value=MOCK_GATEWAY_RESPONSE
+    with patch("pyoverkiz.client.OverkizClient.login", return_value=True), patch(
+        "pyoverkiz.client.OverkizClient.get_gateways",
+        return_value=MOCK_GATEWAY_RESPONSE,
     ), patch("custom_components.tahoma.async_setup_entry", return_value=True):
         result2 = await hass.config_entries.flow.async_configure(
             result["flow_id"],
@@ -144,7 +146,9 @@ async def test_reauth_success(hass):
     """Test reauthentication flow."""
     await setup.async_setup_component(hass, "persistent_notification", {})
 
-    with patch("pyhoma.client.TahomaClient.login", side_effect=BadCredentialsException):
+    with patch(
+        "pyoverkiz.client.OverkizClient.login", side_effect=BadCredentialsException
+    ):
         mock_entry = MockConfigEntry(
             domain=config_flow.DOMAIN,
             unique_id=TEST_GATEWAY_ID,
@@ -165,8 +169,9 @@ async def test_reauth_success(hass):
         assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
         assert result["step_id"] == "user"
 
-    with patch("pyhoma.client.TahomaClient.login", return_value=True), patch(
-        "pyhoma.client.TahomaClient.get_gateways", return_value=MOCK_GATEWAY_RESPONSE
+    with patch("pyoverkiz.client.OverkizClient.login", return_value=True), patch(
+        "pyoverkiz.client.OverkizClient.get_gateways",
+        return_value=MOCK_GATEWAY_RESPONSE,
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],
