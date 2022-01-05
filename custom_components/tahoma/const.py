@@ -63,6 +63,8 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.MY_FOX_SECURITY_CAMERA: Platform.COVER,  # widgetName, uiClass is Camera (not supported)
     UIClass.ON_OFF: Platform.SWITCH,
     UIClass.PERGOLA: Platform.COVER,
+    UIWidget.RTD_INDOOR_SIREN: Platform.SWITCH,
+    UIWidget.RTD_OUTDOOR_SIREN: Platform.SWITCH,
     UIClass.ROLLER_SHUTTER: Platform.COVER,
     UIWidget.RTS_GENERIC: Platform.COVER,  # widgetName, uiClass is Generic (not supported)
     UIClass.SCREEN: Platform.COVER,
