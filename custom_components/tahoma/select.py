@@ -39,6 +39,16 @@ SELECT_DESCRIPTIONS = [
         ),
         entity_category=EntityCategory.CONFIG,
     ),
+    OverkizSelectDescription(
+        key=OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE,
+        name="Mode",
+        icon="mdi:sun-snowflake",
+        options=["heating", "cooling"],
+        select_option=lambda option, execute_command: execute_command(
+            "setOperatingMode", option
+        ),
+        entity_category=EntityCategory.CONFIG,
+    ),
 ]
 
 

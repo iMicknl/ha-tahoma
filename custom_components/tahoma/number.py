@@ -28,6 +28,26 @@ NUMBER_DESCRIPTIONS = [
         max_value=4,
         entity_category=EntityCategory.CONFIG,
     ),
+    OverkizNumberDescription(
+        key="core:EcoRoomTemperatureState",
+        name="Eco temperature",
+        icon="mdi:content-save-cog",
+        command="setEcoTemperature",
+        min_value=7,
+        max_value=40,
+        step=0.5,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    OverkizNumberDescription(
+        key="core:ComfortRoomTemperatureState",
+        name="Comfort temperature",
+        icon="mdi:content-save-cog",
+        command="setComfortTemperature",
+        min_value=7,
+        max_value=40,
+        step=0.5,
+        entity_category=EntityCategory.CONFIG,
+    ),
 ]
 
 
