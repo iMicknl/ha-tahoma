@@ -9,9 +9,9 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT_COOL,
     HVAC_MODE_OFF,
+    PRESET_AWAY,
     PRESET_COMFORT,
     PRESET_ECO,
-    PRESET_AWAY,
     PRESET_NONE,
 )
 from homeassistant.const import (
@@ -81,10 +81,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         await super().async_added_to_hass()
 
         # Only the AtlanticElectricarHeater WithAdjustableTemperatureSetpoint has a separate temperature sensor
-        if (
-            self.device.widget
-            != "SomfyHeatingTemperatureInterface"
-        ):
+        if self.device.widget != "SomfyHeatingTemperatureInterface":
             _LOGGER.error("No somfy heating widget !")
             return
 

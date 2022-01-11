@@ -24,7 +24,9 @@ from .climate_devices.hitachi_air_to_air_heat_pump import HitachiAirToAirHeatPum
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
 )
-from .climate_devices.somfy_heating_temperature_interface import SomfyHeatingTemperatureInterface
+from .climate_devices.somfy_heating_temperature_interface import (
+    SomfyHeatingTemperatureInterface,
+)
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
@@ -45,6 +47,7 @@ TYPE = {
     UIWidget.SOMFY_THERMOSTAT: SomfyThermostat,
     UIWidget.STATELESS_EXTERIOR_HEATING: StatelessExteriorHeating,
 }
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
