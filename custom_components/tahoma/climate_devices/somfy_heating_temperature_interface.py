@@ -2,7 +2,11 @@
 import logging
 from typing import Optional
 
-from homeassistant.components.climate import SUPPORT_PRESET_MODE, ClimateEntity
+from homeassistant.components.climate import (
+    SUPPORT_PRESET_MODE,
+    SUPPORT_TARGET_TEMPERATURE,
+    ClimateEntity,
+)
 from homeassistant.components.climate.const import (
     CURRENT_HVAC_COOL,
     CURRENT_HVAC_HEAT,
@@ -35,7 +39,6 @@ CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
-# PRESET_FROST_PROTECTION = "frost_protection"
 
 TAHOMA_TO_PRESET_MODES = {
     "secured": PRESET_AWAY,
@@ -73,6 +76,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
+
         self._temp_sensor_entity_id = None
         self._current_temperature = None
 
@@ -82,7 +86,6 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
 
         # Only the AtlanticElectricarHeater WithAdjustableTemperatureSetpoint has a separate temperature sensor
         if self.device.widget != "SomfyHeatingTemperatureInterface":
-            _LOGGER.error("No somfy heating widget !")
             return
 
         entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
