@@ -1,10 +1,9 @@
-"""Support for Atlantic Electrical Heater."""
+"""Support for Somfy Heating Temperature Interface."""
 import logging
 from typing import Optional
 
 from homeassistant.components.climate import (
     SUPPORT_PRESET_MODE,
-    SUPPORT_TARGET_TEMPERATURE,
     ClimateEntity,
 )
 from homeassistant.components.climate.const import (
@@ -29,29 +28,23 @@ from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 
 _LOGGER = logging.getLogger(__name__)
 
-COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
-
-CORE_OPERATING_MODE_STATE = "ovp:HeatingTemperatureInterfaceActiveModeState"
-CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-CORE_ON_OFF_STATE = "core:OnOffState"
-IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
-
-
 TAHOMA_TO_PRESET_MODES = {
-    "secured": PRESET_AWAY,
-    "eco": PRESET_ECO,
-    "comfort": PRESET_COMFORT,
-    "free": PRESET_NONE,
+    OverkizCommandParam.SECURED: PRESET_AWAY,
+    OverkizCommandParam.ECO: PRESET_ECO,
+    OverkizCommandParam.COMFORT: PRESET_COMFORT,
+    OverkizCommandParam.FREE: PRESET_NONE,
 }
 
 PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
 
 TAHOMA_TO_HVAC_MODES = {
-    "auto": HVAC_MODE_AUTO,
-    "manu": HVAC_MODE_HEAT_COOL,
+    OverkizCommandParam.AUTO: HVAC_MODE_AUTO,
+    OverkizCommandParam.MANU: HVAC_MODE_HEAT_COOL,
 }
 
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
@@ -59,9 +52,9 @@ HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 TAHOMA_TO_HVAC_ACTION = {"cooling": CURRENT_HVAC_COOL, "heating": CURRENT_HVAC_HEAT}
 
 MAP_PRESET_TEMPERATURES = {
-    PRESET_COMFORT: "core:ComfortRoomTemperatureState",
-    PRESET_ECO: "core:EcoRoomTemperatureState",
-    PRESET_AWAY: "core:SecuredPositionTemperatureState",
+    PRESET_COMFORT: OverkizState.CORE_COMFORT_ROOM_TEMPERATURE,
+    PRESET_ECO: OverkizState.CORE_ECO_ROOM_TEMPERATURE,
+    PRESET_AWAY: OverkizState.CORE_SECURED_POSITION_TEMPERATURE,
 }
 
 
@@ -142,13 +135,21 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if CORE_ON_OFF_STATE in self.device.states:
-            if self.executor.select_state(CORE_ON_OFF_STATE) == "off":
+        if OverkizState.CORE_ON_OFF in self.device.states:
+            if (
+                self.executor.select_state(OverkizState.CORE_ON_OFF)
+                == OverkizCommandParam.OFF
+            ):
                 return HVAC_MODE_OFF
 
-        if CORE_OPERATING_MODE_STATE in self.device.states:
+        if (
+            OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
+            in self.device.states
+        ):
             return TAHOMA_TO_HVAC_MODES[
-                self.executor.select_state(CORE_OPERATING_MODE_STATE)
+                self.executor.select_state(
+                    OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
+                )
             ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
@@ -162,7 +163,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         """Return the current preset mode, e.g., home, away, temp."""
         return TAHOMA_TO_PRESET_MODES[
             self.executor.select_state(
-                "ovp:HeatingTemperatureInterfaceSetPointModeState"
+                OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_SETPOINT_MODE
             )
         ]
 
@@ -204,17 +205,17 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         )
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        if mode == "comfort":
+        if mode == OverkizCommandParam.COMFORT:
             return await self.executor.async_execute_command(
-                "setComfortTemperature", temperature
+                OverkizCommand.SET_COMFORT_TEMPERATURE, temperature
             )
 
-        if mode == "eco":
+        if mode == OverkizCommandParam.ECO:
             return await self.executor.async_execute_command(
-                "setEcoTemperature", temperature
+                OverkizCommand.SET_ECO_TEMPERATURE, temperature
             )
-        if mode == "secured":
+        if mode == OverkizCommandParam.SECURED:
             return await self.executor.async_execute_command(
-                "setSecuredPositionTemperature", temperature
+                OverkizCommand.SET_SECURED_POSITION_TEMPERATURE, temperature
             )
         return None
