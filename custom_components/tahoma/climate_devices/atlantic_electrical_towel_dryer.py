@@ -15,8 +15,7 @@ from homeassistant.components.climate.const import (
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from pyoverkiz.enums import OverkizState
 
-from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
-
+from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
