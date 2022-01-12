@@ -36,22 +36,12 @@ BUTTON_DESCRIPTIONS = [
         icon="mdi:human-greeting-variant",
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
+    ButtonEntityDescription(key="dingDong", name="Ding Dong", icon="mdi:bell-ring"),
+    ButtonEntityDescription(key="bip", name="Bip", icon="mdi:bell-ring"),
     ButtonEntityDescription(
-        key="dingDong",
-        name="Ding Dong",
+        key="fastBipSequence", name="Fast Bip Sequence", icon="mdi:bell-ring"
     ),
-    ButtonEntityDescription(
-        key="bip",
-        name="Bip",
-    ),
-    ButtonEntityDescription(
-        key="fastBipSequence",
-        name="Fast Bip Sequence",
-    ),
-    ButtonEntityDescription(
-        key="ring",
-        name="Ring",
-    ),
+    ButtonEntityDescription(key="ring", name="Ring", icon="mdi:bell-ring"),
 ]
 
 
