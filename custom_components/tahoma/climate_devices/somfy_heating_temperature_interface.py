@@ -14,14 +14,7 @@ from homeassistant.components.climate.const import (
     PRESET_ECO,
     PRESET_NONE,
 )
-from homeassistant.const import (
-    ATTR_TEMPERATURE,
-    EVENT_HOMEASSISTANT_START,
-    STATE_UNKNOWN,
-    TEMP_CELSIUS,
-)
-from homeassistant.core import callback
-from homeassistant.helpers.event import async_track_state_change
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from ..coordinator import OverkizDataUpdateCoordinator
@@ -56,6 +49,12 @@ MAP_PRESET_TEMPERATURES = {
     PRESET_AWAY: OverkizState.CORE_SECURED_POSITION_TEMPERATURE,
 }
 
+MODE_COMMAND_MAPPING = {
+    OverkizCommandParam.COMFORT: OverkizCommand.SET_COMFORT_TEMPERATURE,
+    OverkizCommandParam.ECO: OverkizCommand.SET_ECO_TEMPERATURE,
+    OverkizCommandParam.SECURED: OverkizCommand.SET_SECURED_POSITION_TEMPERATURE,
+}
+
 
 class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     """Representation of Somfy Heating Temperature Interface."""
@@ -68,68 +67,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
-
-        self._temp_sensor_entity_id = None
-        self._current_temperature = None
-
-    async def async_added_to_hass(self):
-        """Register temperature sensor after added to hass."""
-        await super().async_added_to_hass()
-
-        # The SomfyHeatingTemperatureInterface has a separate temperature sensor
-        if self.device.widget != "SomfyHeatingTemperatureInterface":
-            return
-
-        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
-        self._temp_sensor_entity_id = next(
-            (
-                entity_id
-                for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{self.base_device_url}#2-core:TemperatureState"
-            ),
-            None,
-        )
-
-        if self._temp_sensor_entity_id:
-            async_track_state_change(
-                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
-            )
-
-        else:
-            _LOGGER.warning(
-                "Temperature sensor could not be found for entity %s", self.name
-            )
-
-        @callback
-        def _async_startup(event):
-            """Init on startup."""
-            if self._temp_sensor_entity_id:
-                temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
-                if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
-                    self.update_temp(temp_sensor_state)
-
-        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
-
-        self.schedule_update_ha_state(True)
-
-    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state) -> None:
-        """Handle temperature changes."""
-        if new_state is None or old_state == new_state:
-            return
-
-        self.update_temp(new_state)
-        self.schedule_update_ha_state()
-
-    @callback
-    def update_temp(self, state):
-        """Update thermostat with latest state from sensor."""
-        if state is None or state.state == STATE_UNKNOWN:
-            return
-
-        try:
-            self._current_temperature = float(state.state)
-        except ValueError as ex:
-            _LOGGER.error("Unable to update from sensor: %s", ex)
+        self.temperature_device = self.executor.linked_device(2)
 
     @property
     def hvac_mode(self) -> str:
@@ -198,7 +136,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
-        return self._current_temperature
+        return self.temperature_device.states.get(OverkizState.CORE_TEMPERATURE).value
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
@@ -208,17 +146,10 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         )
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        if mode == OverkizCommandParam.COMFORT:
+        if mode in MODE_COMMAND_MAPPING:
             return await self.executor.async_execute_command(
-                OverkizCommand.SET_COMFORT_TEMPERATURE, temperature
+                MODE_COMMAND_MAPPING[mode], temperature
             )
-
-        if mode == OverkizCommandParam.ECO:
-            return await self.executor.async_execute_command(
-                OverkizCommand.SET_ECO_TEMPERATURE, temperature
-            )
-        if mode == OverkizCommandParam.SECURED:
-            return await self.executor.async_execute_command(
-                OverkizCommand.SET_SECURED_POSITION_TEMPERATURE, temperature
-            )
+        else:
+            _LOGGER.error("Unkown mode: %s", mode)
         return None
