@@ -43,7 +43,7 @@ SELECT_DESCRIPTIONS = [
         key=OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE,
         name="Operating mode",
         icon="mdi:sun-snowflake",
-        options=["heating", "cooling"],
+        options=[OverkizCommandParam.HEATING, OverkizCommandParam.COOLING],
         select_option=lambda option, execute_command: execute_command(
             "setOperatingMode", option
         ),
