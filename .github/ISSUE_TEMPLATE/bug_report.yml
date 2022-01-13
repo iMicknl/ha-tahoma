@@ -82,7 +82,14 @@ body:
     attributes:
       label: Home Assistant log
       description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste your full log here. We redact your id's and emailaddresses by default.
-      render: shell
+      value: |
+        <details><summary>Logs</summary>
+
+        ```
+        Copy/paste any log here, between the starting and ending backticks
+        ```
+
+        </details>
 
   - type: textarea
     id: additional-information
