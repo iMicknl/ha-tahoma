@@ -2,10 +2,7 @@
 import logging
 from typing import Optional
 
-from homeassistant.components.climate import (
-    SUPPORT_PRESET_MODE,
-    ClimateEntity,
-)
+from homeassistant.components.climate import SUPPORT_PRESET_MODE, ClimateEntity
 from homeassistant.components.climate.const import (
     CURRENT_HVAC_COOL,
     CURRENT_HVAC_HEAT,
@@ -25,31 +22,33 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
-
 
 _LOGGER = logging.getLogger(__name__)
 
-TAHOMA_TO_PRESET_MODES = {
+OVERKIZ_TO_PRESET_MODES = {
     OverkizCommandParam.SECURED: PRESET_AWAY,
     OverkizCommandParam.ECO: PRESET_ECO,
     OverkizCommandParam.COMFORT: PRESET_COMFORT,
     OverkizCommandParam.FREE: PRESET_NONE,
 }
 
-PRESET_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODES.items()}
+PRESET_MODES_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_PRESET_MODES.items()}
 
-TAHOMA_TO_HVAC_MODES = {
+OVERKIZ_TO_HVAC_MODES = {
     OverkizCommandParam.AUTO: HVAC_MODE_AUTO,
     OverkizCommandParam.MANU: HVAC_MODE_HEAT_COOL,
 }
 
-HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
+HVAC_MODES_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_HVAC_MODES.items()}
 
-TAHOMA_TO_HVAC_ACTION = {"cooling": CURRENT_HVAC_COOL, "heating": CURRENT_HVAC_HEAT}
+OVERKIZ_TO_HVAC_ACTION = {
+    OverkizCommandParam.COOLING: CURRENT_HVAC_COOL,
+    OverkizCommandParam.HEATING: CURRENT_HVAC_HEAT,
+}
 
 MAP_PRESET_TEMPERATURES = {
     PRESET_COMFORT: OverkizState.CORE_COMFORT_ROOM_TEMPERATURE,
@@ -62,8 +61,8 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     """Representation of Somfy Heating Temperature Interface."""
 
     _attr_temperature_unit = TEMP_CELSIUS
-    _attr_hvac_modes = [*HVAC_MODES_TO_TAHOMA]
-    _attr_preset_modes = [*PRESET_MODES_TO_TAHOMA]
+    _attr_hvac_modes = [*HVAC_MODES_TO_OVERKIZ]
+    _attr_preset_modes = [*PRESET_MODES_TO_OVERKIZ]
     _attr_supported_features = SUPPORT_PRESET_MODE
 
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
@@ -135,18 +134,17 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if OverkizState.CORE_ON_OFF in self.device.states:
-            if (
-                self.executor.select_state(OverkizState.CORE_ON_OFF)
-                == OverkizCommandParam.OFF
-            ):
-                return HVAC_MODE_OFF
+        if (
+            self.executor.select_state(OverkizState.CORE_ON_OFF)
+            == OverkizCommandParam.OFF
+        ):
+            return HVAC_MODE_OFF
 
         if (
             OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
             in self.device.states
         ):
-            return TAHOMA_TO_HVAC_MODES[
+            return OVERKIZ_TO_HVAC_MODES[
                 self.executor.select_state(
                     OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
                 )
@@ -155,13 +153,13 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         await self.executor.async_execute_command(
-            "setActiveMode", HVAC_MODES_TO_TAHOMA[hvac_mode]
+            OverkizCommand.SET_ACTIVE_MODE, HVAC_MODES_TO_OVERKIZ[hvac_mode]
         )
 
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODES[
+        return OVERKIZ_TO_PRESET_MODES[
             self.executor.select_state(
                 OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_SETPOINT_MODE
             )
@@ -170,18 +168,19 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
         await self.executor.async_execute_command(
-            "setManuAndSetPointModes", PRESET_MODES_TO_TAHOMA[preset_mode]
+            OverkizCommand.SET_MANU_AND_SET_POINT_MODES,
+            PRESET_MODES_TO_OVERKIZ[preset_mode],
         )
 
     @property
     def hvac_action(self) -> str:
         """Return the current running hvac operation if supported."""
         current_operation = self.executor.select_state(
-            "ovp:HeatingTemperatureInterfaceOperatingModeState"
+            OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
         )
 
-        if current_operation in TAHOMA_TO_HVAC_ACTION:
-            return TAHOMA_TO_HVAC_ACTION[current_operation]
+        if current_operation in OVERKIZ_TO_HVAC_ACTION:
+            return OVERKIZ_TO_HVAC_ACTION[current_operation]
 
     @property
     def target_temperature(self) -> Optional[float]:
@@ -201,7 +200,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         """Set new temperature."""
 
         mode = self.executor.select_state(
-            "ovp:HeatingTemperatureInterfaceSetPointModeState"
+            OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_SETPOINT_MODE
         )
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
