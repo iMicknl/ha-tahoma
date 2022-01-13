@@ -76,7 +76,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
 
-        # Only the AtlanticElectricarHeater WithAdjustableTemperatureSetpoint has a separate temperature sensor
+        # The SomfyHeatingTemperatureInterface has a separate temperature sensor
         if self.device.widget != "SomfyHeatingTemperatureInterface":
             return
 
@@ -141,12 +141,13 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
             return HVAC_MODE_OFF
 
         if (
-            OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
+            OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE
             in self.device.states
         ):
+
             return OVERKIZ_TO_HVAC_MODES[
                 self.executor.select_state(
-                    OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
+                    OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE
                 )
             ]
 
@@ -185,11 +186,14 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
     @property
     def target_temperature(self) -> Optional[float]:
         """Return the temperature."""
-        if self.hvac_mode == HVAC_MODE_AUTO:
-            if self.preset_mode == PRESET_NONE:
-                return None
-            return self.executor.select_state(MAP_PRESET_TEMPERATURES[self.preset_mode])
-        return None
+        if self.preset_mode not in PRESET_MODES_TO_OVERKIZ:
+            return None
+
+        mode = PRESET_MODES_TO_OVERKIZ[self.preset_mode]
+        if mode not in MAP_PRESET_TEMPERATURES:
+            return None
+
+        return self.executor.select_state(MAP_PRESET_TEMPERATURES[mode])
 
     @property
     def current_temperature(self) -> Optional[float]:
