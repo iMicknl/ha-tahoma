@@ -89,6 +89,8 @@ body:
         Copy/paste any log here, between the starting and ending backticks
         ```
 
+        </details>
+
   - type: textarea
     id: additional-information
     attributes:
