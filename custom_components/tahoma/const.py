@@ -1,41 +1,38 @@
 """Constants for the Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 from datetime import timedelta
 from typing import Final
 
 from homeassistant.const import Platform
-from pyoverkiz.enums import UIClass, UIWidget
+from pyoverkiz.enums import UIClass
+from pyoverkiz.enums.ui import UIWidget
 
 DOMAIN: Final = "tahoma"
 
-CONF_HUB = "hub"
-DEFAULT_HUB = "somfy_europe"
+CONF_HUB: Final = "hub"
+DEFAULT_HUB: Final = "somfy_europe"
 
-UPDATE_INTERVAL = timedelta(seconds=30)
-UPDATE_INTERVAL_ALL_ASSUMED_STATE = timedelta(minutes=60)
+UPDATE_INTERVAL: Final = timedelta(seconds=30)
+UPDATE_INTERVAL_ALL_ASSUMED_STATE: Final = timedelta(minutes=60)
 
-SUPPORTED_PLATFORMS = [
-    Platform.ALARM_CONTROL_PANEL,
+PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
-    Platform.CLIMATE,
-    Platform.COVER,
     Platform.LIGHT,
     Platform.LOCK,
     Platform.NUMBER,
     Platform.SCENE,
-    Platform.SELECT,
     Platform.SENSOR,
-    Platform.SWITCH,
-    Platform.WATER_HEATER,
 ]
 
-IGNORED_OVERKIZ_DEVICES = [
+IGNORED_OVERKIZ_DEVICES: list[UIClass | UIWidget] = [
     UIClass.PROTOCOL_GATEWAY,
     UIClass.POD,
 ]
 
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
-OVERKIZ_DEVICE_TO_PLATFORM = {
+OVERKIZ_DEVICE_TO_PLATFORM: dict[UIClass | UIWidget, Platform] = {
     UIClass.ADJUSTABLE_SLATS_ROLLER_SHUTTER: Platform.COVER,
     UIClass.ALARM: Platform.ALARM_CONTROL_PANEL,
     UIWidget.ATLANTIC_ELECTRICAL_HEATER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
@@ -75,4 +72,17 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.SWINGING_SHUTTER: Platform.COVER,
     UIClass.VENETIAN_BLIND: Platform.COVER,
     UIClass.WINDOW: Platform.COVER,
+}
+
+# Map Overkiz camelCase to Home Assistant snake_case
+OVERKIZ_STATE_TO_TRANSLATION: dict[str, str] = {
+    "externalGateway": "external_gateway",
+    "localUser": "local_user",
+    "lowBattery": "low_battery",
+    "LSC": "lsc",
+    "maintenanceRequired": "maintenance_required",
+    "noDefect": "no_defect",
+    "SAAC": "saac",
+    "SFC": "sfc",
+    "UPS": "ups",
 }
