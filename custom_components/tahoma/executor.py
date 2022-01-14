@@ -26,7 +26,6 @@ class OverkizExecutor:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
 
-    @property
     def linked_device(self, index) -> Device:
         """Return Overkiz device sharing the same base url."""
         return self.coordinator.data[f"{self.base_device_url}#{index}"]
