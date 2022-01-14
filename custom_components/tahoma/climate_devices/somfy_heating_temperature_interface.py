@@ -81,13 +81,17 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         state = self.executor.select_state(
             OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE
         )
-        if state not in OVERKIZ_TO_HVAC_MODES:
-            if state is not None:
-                # Unknown and potentially a new state, log to make it easier to report
-                _LOGGER.error("Overkiz state unknown: %s", state)
-            return HVAC_MODE_OFF
+        if mode := OVERKIZ_TO_HVAC_MODES.get(state):
+            return mode
 
-        return OVERKIZ_TO_HVAC_MODES[state]
+        if state is not None:
+            # Unknown and potentially a new state, log to make it easier to report
+            _LOGGER.warning(
+                "Overkiz %s state unknown: %s",
+                OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE,
+                state,
+            )
+        return HVAC_MODE_OFF
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -118,13 +122,17 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
             OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
         )
 
-        if current_operation not in OVERKIZ_TO_HVAC_ACTION:
-            if current_operation is not None:
-                # Unknown and potentially a new state, log to make it easier to report
-                _LOGGER.error("Overkiz state unknown: %s", current_operation)
-            return None
+        if action := OVERKIZ_TO_HVAC_ACTION.get(current_operation):
+            return action
 
-        return OVERKIZ_TO_HVAC_ACTION[current_operation]
+        if current_operation is not None:
+            # Unknown and potentially a new state, log to make it easier to report
+            _LOGGER.error(
+                "Overkiz %s state unknown: %s",
+                OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE,
+                current_operation,
+            )
+        return None
 
     @property
     def target_temperature(self) -> Optional[float]:
