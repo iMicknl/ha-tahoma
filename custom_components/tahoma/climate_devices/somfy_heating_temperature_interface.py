@@ -71,23 +71,23 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
 
     @property
     def hvac_mode(self) -> str:
-        """Return hvac operation ie. heat, cool mode."""
+        """Return hvac operation i.e. heat, cool mode."""
         if (
             self.executor.select_state(OverkizState.CORE_ON_OFF)
             == OverkizCommandParam.OFF
         ):
             return HVAC_MODE_OFF
 
-        if (
+        state = self.executor.select_state(
             OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE
-            in self.device.states
-        ):
+        )
+        if state not in OVERKIZ_TO_HVAC_MODES:
+            if state is not None:
+                # Unknown and potentially a new state, log to make it easier to report
+                _LOGGER.error("Overkiz state unknown: %s", state)
+            return HVAC_MODE_OFF
 
-            return OVERKIZ_TO_HVAC_MODES[
-                self.executor.select_state(
-                    OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_ACTIVE_MODE
-                )
-            ]
+        return OVERKIZ_TO_HVAC_MODES[state]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
@@ -112,18 +112,23 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         )
 
     @property
-    def hvac_action(self) -> str:
+    def hvac_action(self) -> Optional[str]:
         """Return the current running hvac operation if supported."""
         current_operation = self.executor.select_state(
             OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE
         )
 
-        if current_operation in OVERKIZ_TO_HVAC_ACTION:
-            return OVERKIZ_TO_HVAC_ACTION[current_operation]
+        if current_operation not in OVERKIZ_TO_HVAC_ACTION:
+            if current_operation is not None:
+                # Unknown and potentially a new state, log to make it easier to report
+                _LOGGER.error("Overkiz state unknown: %s", current_operation)
+            return None
+
+        return OVERKIZ_TO_HVAC_ACTION[current_operation]
 
     @property
     def target_temperature(self) -> Optional[float]:
-        """Return the temperature."""
+        """Return the target temperature."""
         if self.preset_mode not in PRESET_MODES_TO_OVERKIZ:
             return None
 
@@ -146,10 +151,10 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         )
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        if mode in MODE_COMMAND_MAPPING:
-            return await self.executor.async_execute_command(
-                MODE_COMMAND_MAPPING[mode], temperature
-            )
-        else:
-            _LOGGER.error("Unkown mode: %s", mode)
-        return None
+        if mode not in MODE_COMMAND_MAPPING:
+            _LOGGER.error("Unknown temperature mode: %s", mode)
+            return None
+
+        return await self.executor.async_execute_command(
+            MODE_COMMAND_MAPPING[mode], temperature
+        )

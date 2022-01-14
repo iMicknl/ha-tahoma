@@ -30,7 +30,7 @@ NUMBER_DESCRIPTIONS = [
     ),
     OverkizNumberDescription(
         key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
-        name="Eco temperature",
+        name="Eco Room Temperature",
         icon="mdi:thermometer",
         command=OverkizCommand.SET_ECO_TEMPERATURE,
         min_value=6,
@@ -40,7 +40,7 @@ NUMBER_DESCRIPTIONS = [
     ),
     OverkizNumberDescription(
         key=OverkizState.CORE_COMFORT_ROOM_TEMPERATURE,
-        name="Comfort temperature",
+        name="Comfort Room Temperature",
         icon="mdi:home-thermometer-outline",
         command=OverkizCommand.SET_COMFORT_TEMPERATURE,
         min_value=7,
@@ -50,7 +50,7 @@ NUMBER_DESCRIPTIONS = [
     ),
     OverkizNumberDescription(
         key=OverkizState.CORE_SECURED_POSITION_TEMPERATURE,
-        name="Freeze protection temperature",
+        name="Freeze Protection Temperature",
         icon="mdi:sun-thermometer-outline",
         command=OverkizCommand.SET_SECURED_POSITION_TEMPERATURE,
         min_value=5,
@@ -110,13 +110,3 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
         await self.executor.async_execute_command(
             self.entity_description.command, value
         )
-
-    @property
-    def min_value(self) -> float:
-        """Return the minimum value."""
-        return self.entity_description.min_value or self._attr_min_value
-
-    @property
-    def max_value(self) -> float:
-        """Return the maximum value."""
-        return self.entity_description.max_value or self._attr_max_value
