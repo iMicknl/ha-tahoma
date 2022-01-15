@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "pyoverkiz==1.1.1"
+    "git+https://github.com/imicknl/python-overkiz-api.git@enhancement/move_to_somfy_oauth_implementation#pyoverkiz==1.1.1.1"
   ],
   "codeowners": [
     "@imicknl",
