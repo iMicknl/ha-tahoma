@@ -67,7 +67,9 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Device]]):
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
+            # Keep retrying until Somfy fixes their servers (https://github.com/iMicknl/ha-tahoma/issues/599)
             raise UpdateFailed("Invalid authentication.") from exception
+            # raise ConfigEntryAuthFailed() from exception
         except TooManyRequestsException as exception:
             raise UpdateFailed("Too many requests, try again later.") from exception
         except MaintenanceException as exception:
@@ -82,7 +84,9 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Device]]):
                 await self.client.login()
                 self.devices = await self._get_devices()
             except BadCredentialsException as exception:
+                # Keep retrying until Somfy fixes their servers (https://github.com/iMicknl/ha-tahoma/issues/599)
                 raise UpdateFailed("Invalid authentication.") from exception
+                # raise ConfigEntryAuthFailed() from exception
             except TooManyRequestsException as exception:
                 raise UpdateFailed("Too many requests, try again later.") from exception
 
