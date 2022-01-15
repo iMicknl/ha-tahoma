@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 import logging
+from typing import Dict
 
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
@@ -26,7 +27,7 @@ _LOGGER = logging.getLogger(__name__)
 EVENT_HANDLERS = Registry()
 
 
-class OverkizDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Device]]):
+class OverkizDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Device]]):
     """Class to manage fetching data from Overkiz platform."""
 
     def __init__(
