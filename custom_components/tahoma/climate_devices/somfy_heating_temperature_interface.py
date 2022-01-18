@@ -153,7 +153,7 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
             return None
 
         # Allow to get the current target temperature for the current preset
-        # The preset can be switch manually or on a schedule (auto).
+        # The preset can be switched manually or on a schedule (auto).
         # This allows to reflect the current target temperature automatically
         mode = PRESET_MODES_TO_OVERKIZ[self.preset_mode]
         if mode not in MAP_PRESET_TEMPERATURES:
