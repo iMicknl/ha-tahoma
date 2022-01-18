@@ -140,12 +140,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_zeroconf(
         self, discovery_info: zeroconf.ZeroconfServiceInfo
     ) -> FlowResult:
+        """Handle ZeroConf discovery."""
+
         # abort if we already have exactly this bridge id/host
         # reload the integration if the host got updated
         properties = discovery_info.properties
         gateway_id = properties["gateway_pin"]
 
-        _LOGGER.debug("ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id))
+        _LOGGER.debug(
+            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
+        )
 
         if self._gateway_already_configured(gateway_id):
             _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
