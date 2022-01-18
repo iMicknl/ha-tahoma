@@ -114,9 +114,11 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
             return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
-    def current_temperature(self):
+    def current_temperature(self) -> float:
         """Return current temperature."""
-        return self.temperature_device.states.get(OverkizState.CORE_TEMPERATURE)
+        return float(
+            self.temperature_device.states.get(OverkizState.CORE_TEMPERATURE).value
+        )
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
