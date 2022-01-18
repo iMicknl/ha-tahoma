@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 from aiohttp import ClientError
 from homeassistant import config_entries, data_entry_flow, setup
 from homeassistant.components import dhcp
+from homeassistant.components.zeroconf import ZeroconfServiceInfo
 from pyoverkiz.exceptions import (
     BadCredentialsException,
     MaintenanceException,
@@ -28,6 +29,21 @@ TEST_GATEWAY_ID = "1234-5678-9123"
 TEST_GATEWAY_ID2 = "4321-5678-9123"
 
 MOCK_GATEWAY_RESPONSE = [Mock(id=TEST_GATEWAY_ID)]
+
+
+FAKE_ZERO_CONF_INFO = ZeroconfServiceInfo(
+    host="192.168.0.51",
+    port=443,
+    hostname=f"gateway-{TEST_GATEWAY_ID}.local.",
+    type="_kizbox._tcp.local.",
+    name=f"gateway-{TEST_GATEWAY_ID}._kizbox._tcp.local.",
+    properties={
+        "api_version": "1",
+        "gateway_pin": TEST_GATEWAY_ID,
+        "fw_version": "2021.5.4-29",
+    },
+    _warning_logged=False,
+)
 
 
 async def test_form(hass):
@@ -229,6 +245,43 @@ async def test_dhcp_flow_already_configured(hass):
             macaddress="F8811A000000",
         ),
         context={"source": config_entries.SOURCE_DHCP},
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_ABORT
+    assert result["reason"] == "already_configured"
+
+
+async def test_zeroconfig_flow(hass):
+    """Test that DHCP discovery for new bridge works."""
+    result = await hass.config_entries.flow.async_init(
+        config_flow.DOMAIN,
+        data=FAKE_ZERO_CONF_INFO,
+        context={"source": config_entries.SOURCE_ZEROCONF},
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["step_id"] == config_entries.SOURCE_USER
+
+
+async def test_zeroconfig_flow_already_configured(hass):
+    """Test that DHCP doesn't setup already configured gateways."""
+    config_entry = MockConfigEntry(
+        domain=config_flow.DOMAIN,
+        unique_id=TEST_EMAIL,
+        data={"username": TEST_EMAIL, "password": TEST_PASSWORD, "hub": TEST_HUB},
+    )
+    config_entry.add_to_hass(hass)
+
+    device_registry = mock_device_registry(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={(config_flow.DOMAIN, "1234-5678-9123")},
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        config_flow.DOMAIN,
+        data=FAKE_ZERO_CONF_INFO,
+        context={"source": config_entries.SOURCE_ZEROCONF},
     )
 
     assert result["type"] == data_entry_flow.RESULT_TYPE_ABORT
