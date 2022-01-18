@@ -45,7 +45,7 @@ SELECT_DESCRIPTIONS = [
         icon="mdi:sun-snowflake",
         options=[OverkizCommandParam.HEATING, OverkizCommandParam.COOLING],
         select_option=lambda option, execute_command: execute_command(
-            "setOperatingMode", option
+            OverkizCommand.SET_OPERATING_MODE, option
         ),
         entity_category=EntityCategory.CONFIG,
     ),

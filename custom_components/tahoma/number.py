@@ -35,7 +35,6 @@ NUMBER_DESCRIPTIONS = [
         command=OverkizCommand.SET_ECO_TEMPERATURE,
         min_value=6,
         max_value=29,
-        step=0.5,
         entity_category=EntityCategory.CONFIG,
     ),
     OverkizNumberDescription(
@@ -45,7 +44,6 @@ NUMBER_DESCRIPTIONS = [
         command=OverkizCommand.SET_COMFORT_TEMPERATURE,
         min_value=7,
         max_value=30,
-        step=0.5,
         entity_category=EntityCategory.CONFIG,
     ),
     OverkizNumberDescription(
@@ -55,7 +53,6 @@ NUMBER_DESCRIPTIONS = [
         command=OverkizCommand.SET_SECURED_POSITION_TEMPERATURE,
         min_value=5,
         max_value=15,
-        step=0.5,
         entity_category=EntityCategory.CONFIG,
     ),
 ]
@@ -110,3 +107,13 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
         await self.executor.async_execute_command(
             self.entity_description.command, value
         )
+
+    @property
+    def min_value(self) -> float:
+        """Return the minimum value."""
+        return self.entity_description.min_value or self._attr_min_value
+
+    @property
+    def max_value(self) -> float:
+        """Return the maximum value."""
+        return self.entity_description.max_value or self._attr_max_value

@@ -57,7 +57,19 @@ MODE_COMMAND_MAPPING = {
 
 
 class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
-    """Representation of Somfy Heating Temperature Interface."""
+    """Representation of Somfy Heating Temperature Interface.
+
+    The thermostat has 3 ways of working:
+      - Auto: Switch to eco/comfort temperature on a schedule (day/hour of the day)
+      - Manual comfort: The thermostat use the temperature of the comfort setting (19°C degree by default)
+      - Manual eco: The thermostat use the temperature of the eco setting (17°C by default)
+      - Freeze protection: The thermostat use the temperature of the freeze protection (7°C by default)
+
+    There's also the possibility to change the working mode, this can be used to change from a heated
+    floor to a cooling floor in the summer.
+
+    documentation: https://damrexelprod.blob.core.windows.net/medias/2fb79f22-2075-4f5a-93d3-112b14a4b8c2
+    """
 
     _attr_temperature_unit = TEMP_CELSIUS
     _attr_hvac_modes = [*HVAC_MODES_TO_OVERKIZ]
@@ -140,6 +152,9 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
         if self.preset_mode not in PRESET_MODES_TO_OVERKIZ:
             return None
 
+        # Allow to get the current target temperature for the current preset
+        # The preset can be switch manually or on a schedule (auto).
+        # This allows to reflect the current target temperature automatically
         mode = PRESET_MODES_TO_OVERKIZ[self.preset_mode]
         if mode not in MAP_PRESET_TEMPERATURES:
             return None
