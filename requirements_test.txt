@@ -3,3 +3,4 @@ pytest-homeassistant-custom-component==0.5.3
 # required for DHCP discovery test
 scapy==2.4.5
 aiodiscover==1.4.5
+zeroconf
