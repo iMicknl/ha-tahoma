@@ -126,6 +126,10 @@ class OverkizBinarySensor(OverkizDescriptiveEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return the state of the sensor."""
+        # Prevent problem when changing name of equipment in the Somfy app
+        if not self.device:
+            return None
+
         state = self.device.states.get(self.entity_description.key)
 
         if not state:
