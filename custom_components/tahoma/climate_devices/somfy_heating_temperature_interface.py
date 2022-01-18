@@ -67,8 +67,6 @@ class SomfyHeatingTemperatureInterface(OverkizEntity, ClimateEntity):
 
     There's also the possibility to change the working mode, this can be used to change from a heated
     floor to a cooling floor in the summer.
-
-    documentation: https://damrexelprod.blob.core.windows.net/medias/2fb79f22-2075-4f5a-93d3-112b14a4b8c2
     """
 
     _attr_temperature_unit = TEMP_CELSIUS
