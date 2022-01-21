@@ -54,8 +54,16 @@ class Awning(OverkizGenericCover):
 
     async def async_open_cover(self, **_):
         """Open the cover."""
-        await self.executor.async_execute_command(OverkizCommand.DEPLOY)
+        if self.device.device_url.startswith("rts"):
+            # Set the execution duration to 0 seconds
+            await self.executor.async_execute_command(OverkizCommand.DEPLOY, 0)
+        else:
+            await self.executor.async_execute_command(OverkizCommand.DEPLOY)
 
     async def async_close_cover(self, **_):
         """Close the cover."""
-        await self.executor.async_execute_command(OverkizCommand.UNDEPLOY)
+        if self.device.device_url.startswith("rts"):
+            # Set the execution duration to 0 seconds
+            await self.executor.async_execute_command(OverkizCommand.UNDEPLOY, 0)
+        else:
+            await self.executor.async_execute_command(OverkizCommand.UNDEPLOY)

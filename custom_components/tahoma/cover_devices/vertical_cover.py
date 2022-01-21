@@ -105,18 +105,24 @@ class VerticalCover(OverkizGenericCover):
         if self.is_low_speed_enabled():
             await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 100})
         else:
-            await self.executor.async_execute_command(
-                self.executor.select_command(*COMMANDS_OPEN)
-            )
+            command = self.executor.select_command(*COMMANDS_OPEN)
+            if self.device.device_url.startswith("rts"):
+                # Set the execution duration to 0 seconds
+                await self.executor.async_execute_command(command, 0)
+            else:
+                await self.executor.async_execute_command(command)
 
     async def async_close_cover(self, **_):
         """Close the cover."""
         if self.is_low_speed_enabled():
             await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 0})
         else:
-            await self.executor.async_execute_command(
-                self.executor.select_command(*COMMANDS_CLOSE)
-            )
+            command = self.executor.select_command(*COMMANDS_CLOSE)
+            if self.device.device_url.startswith("rts"):
+                # Set the execution duration to 0 seconds
+                await self.executor.async_execute_command(command, 0)
+            else:
+                await self.executor.async_execute_command(command)
 
     def is_low_speed_enabled(self):
         """Return if low speed mode is enabled."""
