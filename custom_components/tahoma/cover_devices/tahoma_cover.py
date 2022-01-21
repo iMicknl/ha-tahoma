@@ -118,9 +118,12 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         if not success:
             # Fallback to available stop commands when no executions are found
             # Stop commands don't work with all devices, due to a bug in Somfy service
-            await self.executor.async_execute_command(
-                self.executor.select_command(*stop_commands)
-            )
+            command = self.executor.select_command(*stop_commands)
+            if self.device.device_url.startswith("rts"):
+                # Set the execution duration to 0 seconds
+                await self.executor.async_execute_command(command, 0)
+            else:
+                await self.executor.async_execute_command(command)
 
     @property
     def is_opening(self):
