@@ -9,13 +9,21 @@ from .const import DOMAIN
 from .water_heater_devices.domestic_hot_water_production import (
     DomesticHotWaterProduction,
 )
+from .water_heater_devices.domestic_hot_water_production_sauter_guelma import (
+    DomesticHotWaterProductionSauterGUELMA,
+)
 from .water_heater_devices.hitachi_dhw import HitachiDHW
+from pyoverkiz.enums import OverkizState
 
 TYPE = {
     UIWidget.DOMESTIC_HOT_WATER_PRODUCTION: DomesticHotWaterProduction,
     UIWidget.HITACHI_DHW: HitachiDHW,
+    UIWidget.DOMESTIC_HOT_WATER_PRODUCTION + "SauterGUELMA": DomesticHotWaterProductionSauterGUELMA
 }
 
+def device_type(device):
+    device_full_name = device.widget + device.states.get(OverkizState.CORE_MANUFACTURER_NAME).value + device.states.get(OverkizState.CORE_NAME).value
+    return device_full_name if device_full_name in TYPE else device.widget
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -31,7 +39,7 @@ async def async_setup_entry(
     ]
 
     entities = [
-        TYPE[device.widget](device.device_url, coordinator)
+        TYPE[device_type(device)](device.device_url, coordinator)
         for device in water_heater_devices
         if device.widget in TYPE
     ]

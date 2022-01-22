@@ -77,6 +77,13 @@ SENSOR_DESCRIPTIONS = [
         state_class=SensorStateClass.MEASUREMENT,
     ),
     OverkizSensorDescription(
+        key=OverkizState.CORE_REMAINING_HOT_WATER,
+        name="Remaining Hot Water Volume",
+        icon="mdi:water",
+        native_unit_of_measurement=VOLUME_LITERS,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    OverkizSensorDescription(
         key=OverkizState.CORE_WATER_CONSUMPTION,
         name="Water Consumption",
         icon="mdi:water",
@@ -106,6 +113,13 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key=OverkizState.IO_MIDDLE_WATER_TEMPERATURE,
         name="Middle Water Temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    OverkizSensorDescription(
+        key=OverkizState.MODBUSLINK_MIDDLE_WATER_TEMPERATURE,
+        name="Middle Water Temperature",
+        native_unit_of_measurement=TEMP_CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
