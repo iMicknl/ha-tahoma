@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "git+https://github.com/imicknl/python-overkiz-api.git@enhancement/move_to_somfy_oauth_implementation#pyoverkiz==1.1.1.1"
+    "git+https://github.com/imicknl/python-overkiz-api.git@enhancement/authv3#pyoverkiz==1.1.1.2"
   ],
   "codeowners": [
     "@imicknl",
@@ -14,7 +14,9 @@
   ],
   "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
   "version": "2.11",
-  "zeroconf": ["_kizbox._tcp.local."],
+  "zeroconf": [
+    "_kizbox._tcp.local."
+  ],
   "dhcp": [
     {
       "hostname": "gateway*",
