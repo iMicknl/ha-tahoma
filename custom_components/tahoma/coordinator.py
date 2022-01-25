@@ -92,6 +92,17 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Device]]):
             if event_handler := EVENT_HANDLERS.get(event.name):
                 await event_handler(self, event)
 
+                # Log errors via `overkiz_event`
+                if event.failure_type_code:
+                    self.hass.bus.fire(
+                        "overkiz.event",
+                        {
+                            "event_name": event.name.value,
+                            "failure_type_code": event.failure_type_code.value,
+                            "failure_type": event.failure_type,
+                        },
+                    )
+
         if not self.executions:
             self.update_interval = UPDATE_INTERVAL
 
