@@ -86,7 +86,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_validate_input(user_input)
             except TooManyRequestsException:
                 errors["base"] = "too_many_requests"
-            except BadCredentialsException as exception:
+            except BadCredentialsException:
                 errors["base"] = "invalid_auth"
             except (TimeoutError, ClientError):
                 errors["base"] = "cannot_connect"
