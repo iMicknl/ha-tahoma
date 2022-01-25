@@ -1,93 +1,126 @@
-"""Support for Overkiz select devices."""
+"""Support for Overkiz select."""
 from __future__ import annotations
 
-from homeassistant.components.select import SelectEntity
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
+
+from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
-from .entity import OverkizDescriptiveEntity, OverkizSelectDescription
+from .entity import OverkizDescriptiveEntity, OverkizDeviceClass
 
-SELECT_DESCRIPTIONS = [
+
+@dataclass
+class OverkizSelectDescriptionMixin:
+    """Define an entity description mixin for select entities."""
+
+    options: list[str | OverkizCommandParam]
+    select_option: Callable[[str, Callable[..., Awaitable[None]]], Awaitable[None]]
+
+
+@dataclass
+class OverkizSelectDescription(SelectEntityDescription, OverkizSelectDescriptionMixin):
+    """Class to describe an Overkiz select entity."""
+
+
+def _select_option_open_closed_pedestrian(
+    option: str, execute_command: Callable[..., Awaitable[None]]
+) -> Awaitable[None]:
+    """Change the selected option for Open/Closed/Pedestrian."""
+    return execute_command(
+        {
+            OverkizCommandParam.CLOSED: OverkizCommand.CLOSE,
+            OverkizCommandParam.OPEN: OverkizCommand.OPEN,
+            OverkizCommandParam.PEDESTRIAN: OverkizCommand.SET_PEDESTRIAN_POSITION,
+        }[OverkizCommandParam(option)],
+        None,
+    )
+
+
+def _select_option_memorized_simple_volume(
+    option: str, execute_command: Callable[..., Awaitable[None]]
+) -> Awaitable[None]:
+    """Change the selected option for Memorized Simple Volume."""
+    return execute_command(OverkizCommand.SET_MEMORIZED_SIMPLE_VOLUME, option)
+
+
+SELECT_DESCRIPTIONS: list[OverkizSelectDescription] = [
     OverkizSelectDescription(
         key=OverkizState.CORE_OPEN_CLOSED_PEDESTRIAN,
         name="Position",
         icon="mdi:content-save-cog",
         options=[
-            OverkizCommandParam.CLOSED,
             OverkizCommandParam.OPEN,
             OverkizCommandParam.PEDESTRIAN,
+            OverkizCommandParam.CLOSED,
         ],
-        select_option=lambda option, execute_command: execute_command(
-            {
-                OverkizCommandParam.CLOSED: OverkizCommand.CLOSE,
-                OverkizCommandParam.OPEN: OverkizCommand.OPEN,
-                OverkizCommandParam.PEDESTRIAN: OverkizCommand.SET_PEDESTRIAN_POSITION,
-            }[option]
-        ),
+        select_option=_select_option_open_closed_pedestrian,
+        device_class=OverkizDeviceClass.OPEN_CLOSED_PEDESTRIAN,
     ),
     OverkizSelectDescription(
         key=OverkizState.IO_MEMORIZED_SIMPLE_VOLUME,
         name="Memorized Simple Volume",
         icon="mdi:volume-high",
-        options=[OverkizCommandParam.HIGHEST, OverkizCommandParam.STANDARD],
-        select_option=lambda option, execute_command: execute_command(
-            OverkizCommand.SET_MEMORIZED_SIMPLE_VOLUME, option
-        ),
+        options=[OverkizCommandParam.STANDARD, OverkizCommandParam.HIGHEST],
+        select_option=_select_option_memorized_simple_volume,
         entity_category=EntityCategory.CONFIG,
+        device_class=OverkizDeviceClass.MEMORIZED_SIMPLE_VOLUME,
     ),
 ]
+
+SUPPORTED_STATES = {description.key: description for description in SELECT_DESCRIPTIONS}
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up the Overkiz select from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
+    entities: list[OverkizSelect] = []
 
-    entities = []
-
-    key_supported_states = {
-        description.key: description for description in SELECT_DESCRIPTIONS
-    }
-
-    for device in coordinator.data.values():
+    for device in data.coordinator.data.values():
         if (
-            device.widget not in IGNORED_OVERKIZ_DEVICES
-            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
+            device.widget in IGNORED_OVERKIZ_DEVICES
+            or device.ui_class in IGNORED_OVERKIZ_DEVICES
         ):
-            for state in device.definition.states:
-                if description := key_supported_states.get(state.qualified_name):
-                    entities.append(
-                        OverkizSelect(
-                            device.device_url,
-                            coordinator,
-                            description,
-                        )
+            continue
+
+        for state in device.definition.states:
+            if description := SUPPORTED_STATES.get(state.qualified_name):
+                entities.append(
+                    OverkizSelect(
+                        device.device_url,
+                        data.coordinator,
+                        description,
                     )
+                )
 
     async_add_entities(entities)
 
 
 class OverkizSelect(OverkizDescriptiveEntity, SelectEntity):
-    """Representation of an Overkiz Number entity."""
+    """Representation of an Overkiz Select entity."""
+
+    entity_description: OverkizSelectDescription
 
     @property
     def current_option(self) -> str | None:
         """Return the selected entity option to represent the entity state."""
         if state := self.device.states.get(self.entity_description.key):
-            return state.value
+            return str(state.value)
 
         return None
 
     @property
-    def options(self):
+    def options(self) -> list[str]:
         """Return a set of selectable options."""
         return self.entity_description.options
 
