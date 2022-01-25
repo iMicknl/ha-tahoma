@@ -1,20 +1,15 @@
 """Support for Overkiz covers - shutters etc."""
-from homeassistant.components.cover import ATTR_POSITION
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIClass
-import voluptuous as vol
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .cover_entities.awning import Awning
 from .cover_entities.generic_cover import OverkizGenericCover
 from .cover_entities.vertical_cover import VerticalCover
-
-SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
 
 
 async def async_setup_entry(
@@ -36,15 +31,3 @@ async def async_setup_entry(
     ]
 
     async_add_entities(entities)
-
-    platform = entity_platform.current_platform.get()
-
-    platform.async_register_entity_service(
-        SERVICE_COVER_POSITION_LOW_SPEED,
-        {
-            vol.Required(ATTR_POSITION): vol.All(
-                vol.Coerce(int), vol.Range(min=0, max=100)
-            )
-        },
-        "async_set_cover_position_low_speed",
-    )
