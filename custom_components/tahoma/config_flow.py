@@ -1,15 +1,15 @@
 """Config flow for Overkiz (by Somfy) integration."""
 from __future__ import annotations
 
-import logging
-from typing import Any
+from typing import Any, cast
 
 from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components import dhcp, zeroconf
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.data_entry_flow import AbortFlow, FlowResult
-from homeassistant.helpers import device_registry as dr
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.const import SUPPORTED_SERVERS
 from pyoverkiz.exceptions import (
@@ -20,57 +20,43 @@ from pyoverkiz.exceptions import (
 from pyoverkiz.models import obfuscate_id
 import voluptuous as vol
 
-from .const import CONF_HUB, DEFAULT_HUB
-from .const import DOMAIN  # pylint: disable=unused-import
-
-_LOGGER = logging.getLogger(__name__)
+from .const import CONF_HUB, DEFAULT_HUB, DOMAIN, LOGGER
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Somfy TaHoma."""
+    """Handle a config flow for Overkiz (by Somfy)."""
 
     VERSION = 2
 
+    _config_entry: ConfigEntry | None
+    _default_user: None | str
+    _default_hub: str
+
     def __init__(self) -> None:
-        """Start the Overkiz config flow."""
-        self._reauth_entry = None
-        self._default_username = None
+        """Initialize Overkiz Config Flow."""
+        super().__init__()
+
+        self._config_entry = None
+        self._default_user = None
         self._default_hub = DEFAULT_HUB
 
-    async def async_validate_input(self, user_input: dict[str, Any]) -> FlowResult:
+    async def async_validate_input(self, user_input: dict[str, Any]) -> None:
         """Validate user credentials."""
-        username = user_input.get(CONF_USERNAME)
-        password = user_input.get(CONF_PASSWORD)
+        username = user_input[CONF_USERNAME]
+        password = user_input[CONF_PASSWORD]
+        server = SUPPORTED_SERVERS[user_input[CONF_HUB]]
+        session = async_get_clientsession(self.hass)
 
-        server = SUPPORTED_SERVERS[user_input.get(CONF_HUB, DEFAULT_HUB)]
+        client = OverkizClient(
+            username=username, password=password, server=server, session=session
+        )
 
-        async with OverkizClient(
-            username=username, password=password, server=server
-        ) as client:
-            await client.login()
+        await client.login()
 
-            # Set first gateway as unique id
-            gateways = await client.get_gateways()
-            if gateways:
-                gateway_id = gateways[0].id
-                await self.async_set_unique_id(gateway_id)
-
-            # Create new config entry
-            if (
-                self._reauth_entry is None
-                or self._reauth_entry.unique_id != self.unique_id
-            ):
-                self._abort_if_unique_id_configured()
-                return self.async_create_entry(title=username, data=user_input)
-
-            # Modify existing entry in reauth scenario
-            self.hass.config_entries.async_update_entry(
-                self._reauth_entry, data=user_input
-            )
-
-            await self.hass.config_entries.async_reload(self._reauth_entry.entry_id)
-
-            return self.async_abort(reason="reauth_successful")
+        # Set first gateway id as unique id
+        if gateways := await client.get_gateways():
+            gateway_id = gateways[0].id
+            await self.async_set_unique_id(gateway_id)
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -79,11 +65,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input:
-            self._default_username = user_input[CONF_USERNAME]
-            self._default_hub = user_input[CONF_HUB]
-
             try:
-                return await self.async_validate_input(user_input)
+                await self.async_validate_input(user_input)
             except TooManyRequestsException:
                 errors["base"] = "too_many_requests"
             except BadCredentialsException:
@@ -92,17 +75,43 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except MaintenanceException:
                 errors["base"] = "server_in_maintenance"
-            except AbortFlow as abort_flow:
-                raise abort_flow
             except Exception as exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown"
-                _LOGGER.exception(exception)
+                LOGGER.exception(exception)
+            else:
+                if self._config_entry:
+                    if self._config_entry.unique_id != self.unique_id:
+                        return self.async_abort(reason="reauth_wrong_account")
+
+                    # Update existing entry during reauth
+                    self.hass.config_entries.async_update_entry(
+                        self._config_entry,
+                        data={
+                            **self._config_entry.data,
+                            **user_input,
+                        },
+                    )
+
+                    self.hass.async_create_task(
+                        self.hass.config_entries.async_reload(
+                            self._config_entry.entry_id
+                        )
+                    )
+
+                    return self.async_abort(reason="reauth_successful")
+
+                # Create new entry
+                self._abort_if_unique_id_configured()
+
+                return self.async_create_entry(
+                    title=user_input[CONF_USERNAME], data=user_input
+                )
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_USERNAME, default=self._default_username): str,
+                    vol.Required(CONF_USERNAME, default=self._default_user): str,
                     vol.Required(CONF_PASSWORD): str,
                     vol.Required(CONF_HUB, default=self._default_hub): vol.In(
                         {key: hub.name for key, hub in SUPPORTED_SERVERS.items()}
@@ -112,28 +121,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_reauth(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Perform reauth if the user credentials have changed."""
-        self._reauth_entry = self.hass.config_entries.async_get_entry(
-            self.context["entry_id"]
-        )
-        self._default_username = user_input[CONF_USERNAME]
-        self._default_hub = user_input[CONF_HUB]
-
-        return await self.async_step_user()
-
-    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo):
+    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo) -> FlowResult:
         """Handle DHCP discovery."""
         hostname = discovery_info.hostname
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
+        LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
 
-        if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
-            return self.async_abort(reason="already_configured")
+        await self.async_set_unique_id(gateway_id)
+        self._abort_if_unique_id_configured()
 
         return await self.async_step_user()
 
@@ -143,25 +139,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle ZeroConf discovery."""
 
         # abort if we already have exactly this bridge id/host
-        # reload the integration if the host got updated
         properties = discovery_info.properties
         gateway_id = properties["gateway_pin"]
 
-        _LOGGER.debug(
-            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
-        )
+        LOGGER.debug("ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id))
 
-        if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
-            return self.async_abort(reason="already_configured")
+        await self.async_set_unique_id(gateway_id)
+        self._abort_if_unique_id_configured()
 
         return await self.async_step_user()
 
-    def _gateway_already_configured(self, gateway_id: str):
-        """See if we already have a gateway matching the id."""
-        device_registry = dr.async_get(self.hass)
-        return bool(
-            device_registry.async_get_device(
-                identifiers={(DOMAIN, gateway_id)}, connections=set()
-            )
+    async def async_step_reauth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle reauth."""
+        self._config_entry = cast(
+            ConfigEntry,
+            self.hass.config_entries.async_get_entry(self.context["entry_id"]),
         )
+
+        self._default_user = self._config_entry.data[CONF_USERNAME]
+        self._default_hub = self._config_entry.data[CONF_HUB]
+
+        return await self.async_step_user(user_input)
