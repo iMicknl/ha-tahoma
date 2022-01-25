@@ -1,12 +1,13 @@
 """The Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 import asyncio
 from collections import defaultdict
-import logging
+from dataclasses import dataclass
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -23,23 +24,30 @@ from pyoverkiz.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyoverkiz.models import Command, Device
+from pyoverkiz.models import Command, Device, Scenario
 import voluptuous as vol
 
 from .const import (
     CONF_HUB,
     DOMAIN,
-    IGNORED_OVERKIZ_DEVICES,
+    LOGGER,
     OVERKIZ_DEVICE_TO_PLATFORM,
-    SUPPORTED_PLATFORMS,
+    PLATFORMS,
     UPDATE_INTERVAL,
     UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
 from .coordinator import OverkizDataUpdateCoordinator
 
-_LOGGER = logging.getLogger(__name__)
-
 SERVICE_EXECUTE_COMMAND = "execute_command"
+
+
+@dataclass
+class HomeAssistantOverkizData:
+    """Overkiz data stored in the Home Assistant data object."""
+
+    coordinator: OverkizDataUpdateCoordinator
+    platforms: defaultdict[Platform, list[Device]]
+    scenarios: list[Scenario]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -57,26 +65,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     try:
         await client.login()
 
-        tasks = [
-            client.get_setup(),
-            client.get_scenarios(),
-        ]
-        setup, scenarios = await asyncio.gather(*tasks)
+        setup, scenarios = await asyncio.gather(
+            *[
+                client.get_setup(),
+                client.get_scenarios(),
+            ]
+        )
     except BadCredentialsException as exception:
-        raise ConfigEntryAuthFailed from exception
+        raise ConfigEntryAuthFailed("Invalid authentication") from exception
     except TooManyRequestsException as exception:
         raise ConfigEntryNotReady("Too many requests, try again later") from exception
     except (TimeoutError, ClientError, ServerDisconnectedError) as exception:
         raise ConfigEntryNotReady("Failed to connect") from exception
     except MaintenanceException as exception:
         raise ConfigEntryNotReady("Server is down for maintenance") from exception
-    except Exception as exception:  # pylint: disable=broad-except
-        _LOGGER.exception(exception)
-        return False
 
     coordinator = OverkizDataUpdateCoordinator(
         hass,
-        _LOGGER,
+        LOGGER,
         name="device events",
         client=client,
         devices=setup.devices,
@@ -88,40 +94,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
 
     if coordinator.is_stateless:
-        _LOGGER.debug(
-            "All devices have assumed state. Update interval has been reduced to: %s",
+        LOGGER.debug(
+            "All devices have an assumed state. Update interval has been reduced to: %s",
             UPDATE_INTERVAL_ALL_ASSUMED_STATE,
         )
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
-    platforms = defaultdict(list)
-    platforms[SCENE] = scenarios
+    platforms: defaultdict[Platform, list[Device]] = defaultdict(list)
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "platforms": platforms,
-        "coordinator": coordinator,
-    }
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
+        coordinator=coordinator, platforms=platforms, scenarios=scenarios
+    )
 
-    # Map Overkiz device to Home Assistant platform
+    # Map Overkiz entities to Home Assistant platform
     for device in coordinator.data.values():
-        platform = OVERKIZ_DEVICE_TO_PLATFORM.get(
+        LOGGER.debug(
+            "The following device has been retrieved. Report an issue if not supported correctly (%s)",
+            device,
+        )
+
+        if platform := OVERKIZ_DEVICE_TO_PLATFORM.get(
             device.widget
-        ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class)
-        if platform:
+        ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class):
             platforms[platform].append(device)
-            log_device("Added device", device)
-        elif (
-            device.widget not in IGNORED_OVERKIZ_DEVICES
-            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
-        ):
-            log_device("Unsupported device detected", device)
 
-    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
+    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
-    device_registry = await dr.async_get_registry(hass)
+    device_registry = dr.async_get(hass)
 
     for gateway in setup.gateways:
-        _LOGGER.debug("Added gateway (%s)", gateway)
+        LOGGER.debug("Added gateway (%s)", gateway)
 
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
@@ -147,7 +149,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     "Home Assistant Service",
                 )
             except InvalidCommandException as exception:
-                _LOGGER.error(exception)
+                LOGGER.error(exception)
 
     service.async_register_admin_service(
         hass,
@@ -182,11 +184,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
 
-    unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, SUPPORTED_PLATFORMS
-    )
-
-    if unload_ok:
+    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
@@ -197,9 +195,4 @@ async def write_execution_history_to_log(client: OverkizClient):
     history = await client.get_execution_history()
 
     for item in history:
-        _LOGGER.info(item)
-
-
-def log_device(message: str, device: Device) -> None:
-    """Log device information."""
-    _LOGGER.debug("%s (%s)", message, device)
+        LOGGER.info(item)
