@@ -8,32 +8,30 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIClass
 import voluptuous as vol
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
-from .cover_devices.awning import Awning
-from .cover_devices.vertical_cover import VerticalCover
+from .cover_entities.awning import Awning
+from .cover_entities.generic_cover import OverkizGenericCover
+from .cover_entities.vertical_cover import VerticalCover
 
-SERVICE_COVER_MY_POSITION = "set_cover_my_position"
 SERVICE_COVER_POSITION_LOW_SPEED = "set_cover_position_low_speed"
-
-SUPPORT_COVER_POSITION_LOW_SPEED = 1024
 
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
-):
+) -> None:
     """Set up the Overkiz covers from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
-    entities = [
-        Awning(device.device_url, coordinator)
-        for device in data["platforms"][Platform.COVER]
+    entities: list[OverkizGenericCover] = [
+        Awning(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.COVER]
         if device.ui_class == UIClass.AWNING
     ]
 
     entities += [
-        VerticalCover(device.device_url, coordinator)
-        for device in data["platforms"][Platform.COVER]
+        VerticalCover(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.COVER]
         if device.ui_class != UIClass.AWNING
     ]
 
@@ -49,5 +47,4 @@ async def async_setup_entry(
             )
         },
         "async_set_cover_position_low_speed",
-        [SUPPORT_COVER_POSITION_LOW_SPEED],
     )

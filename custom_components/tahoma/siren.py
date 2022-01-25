@@ -1,4 +1,6 @@
 """Support for Overkiz sirens."""
+from typing import Any, cast
+
 from homeassistant.components.siren import SirenEntity
 from homeassistant.components.siren.const import (
     ATTR_DURATION,
@@ -13,6 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizState
 from pyoverkiz.enums.command import OverkizCommand, OverkizCommandParam
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .entity import OverkizEntity
 
@@ -21,37 +24,33 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up the Overkiz sirens from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
-    entities = [
-        OverkizSiren(device.device_url, coordinator)
-        for device in data["platforms"][Platform.SIREN]
-    ]
-
-    async_add_entities(entities)
+    async_add_entities(
+        OverkizSiren(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.SIREN]
+    )
 
 
 class OverkizSiren(OverkizEntity, SirenEntity):
-    """Representation an Overkiz Switch."""
+    """Representation an Overkiz Siren."""
 
     _attr_supported_features = SUPPORT_TURN_OFF | SUPPORT_TURN_ON | SUPPORT_DURATION
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Get whether the siren is in on state."""
         return (
             self.executor.select_state(OverkizState.CORE_ON_OFF)
             == OverkizCommandParam.ON
         )
 
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Send the on command."""
-
         if kwargs.get(ATTR_DURATION):
-            duration = kwargs.get(ATTR_DURATION)
+            duration = cast(int, kwargs.get(ATTR_DURATION))
         else:
             duration = 2 * 60  # 2 minutes
 
@@ -65,7 +64,7 @@ class OverkizSiren(OverkizEntity, SirenEntity):
             OverkizCommandParam.MEMORIZED_VOLUME,
         )
 
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs: Any) -> None:
         """Send the off command."""
         await self.executor.async_cancel_command(
             [OverkizCommand.RING_WITH_SINGLE_SIMPLE_SEQUENCE]
