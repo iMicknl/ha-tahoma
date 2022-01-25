@@ -1,10 +1,12 @@
 """Support for Overkiz climate devices."""
+from homeassistant.components.climate import ClimateEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIWidget
 
+from . import HomeAssistantOverkizData
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
     AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
@@ -49,16 +51,14 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up the Overkiz climate from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
-    climate_devices = [device for device in data["platforms"][Platform.CLIMATE]]
-
-    entities = [
-        TYPE[device.widget](device.device_url, coordinator)
-        for device in climate_devices
+    entities: list[ClimateEntity] = [
+        TYPE[device.widget](device.device_url, data.coordinator)
+        for device in data.platforms[Platform.CLIMATE]
         if device.widget in TYPE
     ]
+
     async_add_entities(entities)
