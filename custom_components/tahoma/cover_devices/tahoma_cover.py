@@ -106,7 +106,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
     async def async_stop_cover_tilt(self, **_):
         """Stop the cover tilt."""
-        await self.executor.async_cancel_or_stop_cover(
+        await self.async_cancel_or_stop_cover(
             COMMANDS_OPEN_TILT + COMMANDS_SET_TILT_POSITION + COMMANDS_CLOSE_TILT,
             COMMANDS_STOP_TILT,
         )
