@@ -8,7 +8,11 @@ from typing import Dict
 from aiohttp import ServerDisconnectedError
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    ConfigEntryAuthFailed,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 from homeassistant.util.decorator import Registry
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.enums import EventName, ExecutionState
@@ -67,9 +71,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Device]]):
         try:
             events = await self.client.fetch_events()
         except BadCredentialsException as exception:
-            # Keep retrying until Somfy fixes their servers (https://github.com/iMicknl/ha-tahoma/issues/599)
-            raise UpdateFailed("Invalid authentication.") from exception
-            # raise ConfigEntryAuthFailed() from exception
+            raise ConfigEntryAuthFailed() from exception
         except TooManyRequestsException as exception:
             raise UpdateFailed("Too many requests, try again later.") from exception
         except MaintenanceException as exception:
@@ -84,9 +86,7 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Device]]):
                 await self.client.login()
                 self.devices = await self._get_devices()
             except BadCredentialsException as exception:
-                # Keep retrying until Somfy fixes their servers (https://github.com/iMicknl/ha-tahoma/issues/599)
-                raise UpdateFailed("Invalid authentication.") from exception
-                # raise ConfigEntryAuthFailed() from exception
+                raise ConfigEntryAuthFailed() from exception
             except TooManyRequestsException as exception:
                 raise UpdateFailed("Too many requests, try again later.") from exception
 
