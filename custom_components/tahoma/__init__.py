@@ -50,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if await _block_if_core_is_configured(hass, entry):
         raise ConfigEntryNotReady(
-            "You cannot use overkiz from core and the custom component at the same time."
+            "You cannot use Overkiz from core and custom component at the same time."
         )
 
     # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
