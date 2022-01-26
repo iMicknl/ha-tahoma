@@ -128,6 +128,9 @@ class OverkizNumberDescription(NumberEntityDescription):
     """Class to describe an Overkiz number."""
 
     command: str = None
+
+    max_value: float | None = None
+    min_value: float | None = None
     min_step: float | None = None
     value: float | None = None
     state: Callable[[str], bool] = lambda state: state
