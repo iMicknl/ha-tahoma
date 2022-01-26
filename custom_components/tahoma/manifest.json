@@ -1,6 +1,6 @@
 {
   "domain": "tahoma",
-  "name": "Overkiz (by Somfy)",
+  "name": "Overkiz (by Somfy) - custom component",
   "iot_class": "cloud_polling",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",

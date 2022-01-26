@@ -1,5 +1,5 @@
 {
-  "name": "Overkiz (by Somfy)",
+  "name": "Overkiz (by Somfy) - custom component",
   "domains": [
     "alarm_control_panel",
     "binary_sensor",
