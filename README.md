@@ -83,7 +83,7 @@ You can subscribe to the `overkiz.event` event type in Developer Tools/Events in
 }
 ```
 
-You can find the list of available failure_type [here](https://github.com/iMicknl/python-overkiz-api/blob/master/pyoverkiz/enums.py#L118).
+You can find the list of available failure_type [here](https://github.com/iMicknl/python-overkiz-api/blob/main/pyoverkiz/enums/general.py).
 
 ### Enable debug logging
 
