@@ -48,6 +48,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     password = entry.data[CONF_PASSWORD]
     server = SUPPORTED_SERVERS[entry.data[CONF_HUB]]
 
+    if await _block_if_core_is_configured(hass, entry):
+        raise ConfigEntryNotReady(
+            "You cannot use Overkiz from core and custom component at the same time."
+        )
+
     # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
     session = async_create_clientsession(hass)
     client = OverkizClient(
@@ -203,3 +208,16 @@ async def write_execution_history_to_log(client: OverkizClient):
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
     _LOGGER.debug("%s (%s)", message, device)
+
+
+async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    overkiz_config_entries = hass.config_entries.async_entries("overkiz")
+
+    for overkiz_entry in overkiz_config_entries:
+        if (
+            entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+            and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
+        ):
+            return True
+
+    return False
