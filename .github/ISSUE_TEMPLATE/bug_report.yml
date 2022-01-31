@@ -86,7 +86,7 @@ body:
         <details><summary>Logs</summary>
 
         ```
-        Copy/paste any log here, between the starting and ending backticks
+        Copy/paste any log here, between the starting and ending backticks. The first log line must start with "Added device (Device...".
         ```
 
         </details>
