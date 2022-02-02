@@ -82,13 +82,11 @@ BINARY_SENSOR_DESCRIPTIONS = [
     OverkizBinarySensorDescription(
         key=OverkizState.IO_DHW_BOOST_MODE,
         name="Boost Mode",
-        device_class=None,
         is_on=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
         key=OverkizState.IO_DHW_ABSENCE_MODE,
         name="Away Mode",
-        device_class=None,
         is_on=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
