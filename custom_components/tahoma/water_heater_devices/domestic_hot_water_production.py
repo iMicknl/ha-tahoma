@@ -92,7 +92,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                 OverkizCommand.SET_BOOST_MODE, OverkizCommand.ON
             )
             return
-        if operation_mode != OverkizCommandParam.BOOST and self._is_boost_mode_on:
+        elif self._is_boost_mode_on:
             await self.executor.async_execute_command(
                 OverkizCommand.SET_BOOST_MODE, OverkizCommand.OFF
             )
