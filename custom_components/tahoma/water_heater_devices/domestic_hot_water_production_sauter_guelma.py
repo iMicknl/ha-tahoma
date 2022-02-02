@@ -1,4 +1,3 @@
-
 """Support for DomesticHotWaterProduction."""
 
 from homeassistant.components.water_heater import (
@@ -32,7 +31,7 @@ class DomesticHotWaterProductionSauterGUELMA(DomesticHotWaterProduction):
     _attr_temperature_unit = TEMP_CELSIUS
 
     def __init__(self, device_url, coordinator):
-        """Initialize DomesticHotWaterProductionSauterGUELMA"""
+        """Initialize DomesticHotWaterProductionSauterGUELMA."""
         super().__init__(device_url, coordinator)
 
     @property

@@ -18,10 +18,12 @@ TYPE = {
     UIWidget.DOMESTIC_HOT_WATER_PRODUCTION: DomesticHotWaterProduction,
     UIWidget.HITACHI_DHW: HitachiDHW,
     UIWidget.DOMESTIC_HOT_WATER_PRODUCTION
-    + "SauterGUELMA": DomesticHotWaterProductionSauterGUELMA
+    + "SauterGUELMA": DomesticHotWaterProductionSauterGUELMA,
 }
 
+
 def device_type(device):
+    """Build a device type from ui.widget and device properties."""
     device_full_name = (
         device.widget
         + device.states.get(OverkizState.CORE_MANUFACTURER_NAME).value
