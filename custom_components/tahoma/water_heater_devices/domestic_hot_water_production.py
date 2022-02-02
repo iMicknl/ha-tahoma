@@ -13,13 +13,14 @@ from ..entity import OverkizEntity
 
 DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
 DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
+DHWP_TYPE_MBL = "modbuslink:AtlanticDomesticHotWaterProductionMBLComponent"
 
 OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandParam.MANUAL_ECO_ACTIVE: STATE_ECO,
-    OverkizCommandParam.MANUAL_ECO_INACTIVE: OverkizCommandParam.MANUAL,
-    OverkizCommandParam.AUTO: OverkizCommandParam.AUTO,
-    OverkizCommandParam.AUTO_MODE: OverkizCommandParam.AUTO,
-    OverkizCommandParam.BOOST: OverkizCommandParam.BOOST,
+    OverkizCommandParam.MANUAL_ECO_INACTIVE: OverkizCommandParam.MANUAL.value,
+    OverkizCommandParam.AUTO: OverkizCommandParam.AUTO.value,
+    OverkizCommandParam.AUTO_MODE: OverkizCommandParam.AUTO.value,
+    OverkizCommandParam.BOOST: OverkizCommandParam.BOOST.value,
 }
 
 OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
@@ -75,13 +76,18 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
         return OVERKIZ_TO_OPERATION_MODE[
             OVERKIZ_TO_OPERATION_MODE[OverkizCommandParam.BOOST]
             if self._is_boost_mode_on
-            else self.executor.select_state(OverkizState.IO_DHW_MODE)
+            else self.executor.select_state(
+                OverkizState.IO_DHW_MODE, OverkizState.MODBUSLINK_DHW_MODE
+            )
         ]
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self.executor.select_state(OverkizState.IO_MIDDLE_WATER_TEMPERATURE)
+        return self.executor.select_state(
+            OverkizState.IO_MIDDLE_WATER_TEMPERATURE,
+            OverkizState.MODBUSLINK_MIDDLE_WATER_TEMPERATURE,
+        )
 
     @property
     def target_temperature(self):
@@ -157,6 +163,11 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                 self.executor.select_state(OverkizState.IO_DHW_ABSENCE_MODE)
                 == OverkizCommandParam.ON
             )
+        if self.device.controllable_name == DHWP_TYPE_MBL:
+            return (
+                self.executor.select_state(OverkizState.MODBUSLINK_DHW_ABSENCE_MODE)
+                == OverkizCommandParam.ON
+            )
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
@@ -168,7 +179,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                     OverkizCommandParam.ABSENCE: OverkizCommandParam.ON,
                 },
             )
-        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+        if self.device.controllable_name in [DHWP_TYPE_CE_FLAT_C2, DHWP_TYPE_MBL]:
             await self.executor.async_execute_command(
                 OverkizCommand.SET_ABSENCE_MODE, OverkizCommandParam.ON
             )
@@ -183,7 +194,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                     OverkizCommandParam.ABSENCE: OverkizCommandParam.OFF,
                 },
             )
-        if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
+        if self.device.controllable_name in [DHWP_TYPE_CE_FLAT_C2, DHWP_TYPE_MBL]:
             await self.executor.async_execute_command(
                 OverkizCommand.SET_ABSENCE_MODE, OverkizCommandParam.OFF
             )
