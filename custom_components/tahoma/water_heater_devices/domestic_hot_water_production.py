@@ -19,9 +19,12 @@ OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandParam.MANUAL_ECO_INACTIVE: OverkizCommandParam.MANUAL,
     OverkizCommandParam.AUTO: OverkizCommandParam.AUTO,
     OverkizCommandParam.AUTO_MODE: OverkizCommandParam.AUTO,
+    OverkizCommandParam.BOOST: OverkizCommandParam.BOOST,
 }
 
 OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
+
+SUPPORT_BOOST_MODE = 8
 
 
 class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
@@ -29,7 +32,10 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     _attr_operation_list = [*OPERATION_MODE_TO_OVERKIZ]
     _attr_supported_features = (
-        SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
+        SUPPORT_OPERATION_MODE
+        | SUPPORT_AWAY_MODE
+        | SUPPORT_TARGET_TEMPERATURE
+        | SUPPORT_BOOST_MODE
     )
     _attr_temperature_unit = TEMP_CELSIUS
 
@@ -51,7 +57,9 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
         return OVERKIZ_TO_OPERATION_MODE[
-            self.executor.select_state(OverkizState.IO_DHW_MODE)
+            OVERKIZ_TO_OPERATION_MODE[OverkizCommandParam.BOOST]
+            if self._is_boost_mode_on
+            else self.executor.select_state(OverkizState.IO_DHW_MODE)
         ]
 
     @property
