@@ -13,8 +13,10 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
-from pyhoma.enums import OverkizState
 
+from pyoverkiz.enums import OverkizState
+
+from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
 
 COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature"
@@ -68,6 +70,11 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
     _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
     _attr_temperature_unit = TEMP_CELSIUS
 
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
+        """Init method."""
+        super().__init__(device_url, coordinator)
+        self.temperature_device = self.executor.linked_device(7)
+
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
@@ -105,13 +112,14 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
         """Return the temperature."""
         if self.hvac_mode == HVAC_MODE_AUTO:
             return self.executor.select_state(IO_EFFECTIVE_TEMPERATURE_SETPOINT_STATE)
-        else:
-            return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
 
     @property
-    def current_temperature(self):
+    def current_temperature(self) -> float:
         """Return current temperature."""
-        return self.executor.select_state(CORE_COMFORT_ROOM_TEMPERATURE_STATE)
+        return float(
+            self.temperature_device.states.get(OverkizState.CORE_TEMPERATURE).value
+        )
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
