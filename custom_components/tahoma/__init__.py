@@ -1,12 +1,13 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
+from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
 from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -23,7 +24,7 @@ from pyoverkiz.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyoverkiz.models import Command, Device
+from pyoverkiz.models import Command, Device, Scenario
 import voluptuous as vol
 
 from .const import (
@@ -40,6 +41,15 @@ from .coordinator import OverkizDataUpdateCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
+
+
+@dataclass
+class HomeAssistantOverkizData:
+    """Overkiz data stored in the Home Assistant data object."""
+
+    coordinator: OverkizDataUpdateCoordinator
+    platforms: defaultdict[Platform, list[Device]]
+    scenarios: list[Scenario]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
