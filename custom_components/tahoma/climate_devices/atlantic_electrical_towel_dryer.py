@@ -13,7 +13,6 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
-
 from pyoverkiz.enums import OverkizState
 
 from ..coordinator import OverkizDataUpdateCoordinator
