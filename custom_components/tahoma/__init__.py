@@ -112,10 +112,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "platforms": platforms,
-        "coordinator": coordinator,
-    }
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
+        coordinator=coordinator, platforms=platforms, scenarios=scenarios
+    )
 
     # Map Overkiz device to Home Assistant platform
     for device in coordinator.data.values():
