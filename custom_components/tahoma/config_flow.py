@@ -9,7 +9,6 @@ from homeassistant import config_entries
 from homeassistant.components import dhcp, zeroconf
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
-from homeassistant.helpers import device_registry as dr
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.const import SUPPORTED_SERVERS
 from pyoverkiz.exceptions import (
@@ -155,12 +154,3 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         }
 
         return await self.async_step_user()
-
-    def _gateway_already_configured(self, gateway_id: str):
-        """See if we already have a gateway matching the id."""
-        device_registry = dr.async_get(self.hass)
-        return bool(
-            device_registry.async_get_device(
-                identifiers={(DOMAIN, gateway_id)}, connections=set()
-            )
-        )
