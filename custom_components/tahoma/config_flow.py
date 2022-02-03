@@ -8,7 +8,7 @@ from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components import dhcp, zeroconf
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyoverkiz.client import OverkizClient
@@ -130,11 +130,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         gateway_id = hostname[8:22]
 
         _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
-
-        await self.async_set_unique_id(gateway_id)
-        self._abort_if_unique_id_configured()
-
-        return await self.async_step_user()
+        return await self._process_discovery(gateway_id)
 
     async def async_step_zeroconf(
         self, discovery_info: zeroconf.ZeroconfServiceInfo
@@ -148,9 +144,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.debug(
             "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
         )
+        return await self._process_discovery(gateway_id)
 
+    async def _process_discovery(self, gateway_id: str) -> FlowResult:
+        """Handle discovery of a gateway."""
         await self.async_set_unique_id(gateway_id)
         self._abort_if_unique_id_configured()
+        self.context["title_placeholders"] = {
+            CONF_NAME: f"Gateway: {obfuscate_id(gateway_id)}"
+        }
 
         return await self.async_step_user()
 
