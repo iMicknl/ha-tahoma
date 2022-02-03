@@ -29,7 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Overkiz (by Somfy)."""
 
-    VERSION = 1
+    VERSION = 2
 
     _config_entry: ConfigEntry | None
     _default_user: None | str
@@ -129,7 +129,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         hostname = discovery_info.hostname
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
+        _LOGGER.debug(
+            "DHCP discovery detected gateway %s on host %s",
+            obfuscate_id(gateway_id),
+            discovery_info.hostname,
+        )
         return await self._process_discovery(gateway_id)
 
     async def async_step_zeroconf(
@@ -142,7 +146,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         gateway_id = properties["gateway_pin"]
 
         _LOGGER.debug(
-            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
+            "ZeroConf discovery detected gateway %s on host %s",
+            obfuscate_id(gateway_id),
+            discovery_info.host,
         )
         return await self._process_discovery(gateway_id)
 
