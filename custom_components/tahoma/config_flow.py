@@ -129,11 +129,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         hostname = discovery_info.hostname
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug(
-            "DHCP discovery detected gateway %s on host %s",
-            obfuscate_id(gateway_id),
-            discovery_info.hostname,
-        )
+        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
         return await self._process_discovery(gateway_id)
 
     async def async_step_zeroconf(
@@ -146,9 +142,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         gateway_id = properties["gateway_pin"]
 
         _LOGGER.debug(
-            "ZeroConf discovery detected gateway %s on host %s",
-            obfuscate_id(gateway_id),
-            discovery_info.host,
+            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
         )
         return await self._process_discovery(gateway_id)
 
