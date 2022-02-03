@@ -42,7 +42,6 @@ FAKE_ZERO_CONF_INFO = ZeroconfServiceInfo(
         "gateway_pin": TEST_GATEWAY_ID,
         "fw_version": "2021.5.4-29",
     },
-    _warning_logged=False,
 )
 
 
