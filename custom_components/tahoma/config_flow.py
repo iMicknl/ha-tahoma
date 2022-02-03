@@ -7,7 +7,7 @@ from typing import Any
 from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components import dhcp, zeroconf
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.helpers import device_registry as dr
 from pyoverkiz.client import OverkizClient
@@ -124,18 +124,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_user()
 
-    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo):
+    async def async_step_dhcp(self, discovery_info: dhcp.DhcpServiceInfo) -> FlowResult:
         """Handle DHCP discovery."""
         hostname = discovery_info.hostname
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
-
-        if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
-            return self.async_abort(reason="already_configured")
-
-        return await self.async_step_user()
+        LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
+        return await self._process_discovery(gateway_id)
 
     async def async_step_zeroconf(
         self, discovery_info: zeroconf.ZeroconfServiceInfo
@@ -143,17 +138,19 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle ZeroConf discovery."""
 
         # abort if we already have exactly this bridge id/host
-        # reload the integration if the host got updated
         properties = discovery_info.properties
         gateway_id = properties["gateway_pin"]
 
-        _LOGGER.debug(
-            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
-        )
+        LOGGER.debug("ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id))
+        return await self._process_discovery(gateway_id)
 
-        if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
-            return self.async_abort(reason="already_configured")
+    async def _process_discovery(self, gateway_id: str) -> FlowResult:
+        """Handle discovery of a gateway."""
+        await self.async_set_unique_id(gateway_id)
+        self._abort_if_unique_id_configured()
+        self.context["title_placeholders"] = {
+            CONF_NAME: f"Gateway: {obfuscate_id(gateway_id)}"
+        }
 
         return await self.async_step_user()
 
