@@ -141,7 +141,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         properties = discovery_info.properties
         gateway_id = properties["gateway_pin"]
 
-        _LOGGER.debug("ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id))
+        _LOGGER.debug(
+            "ZeroConf discovery detected gateway %s", obfuscate_id(gateway_id)
+        )
         return await self._process_discovery(gateway_id)
 
     async def _process_discovery(self, gateway_id: str) -> FlowResult:
