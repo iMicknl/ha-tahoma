@@ -1,4 +1,6 @@
-"""Support for Overkiz number devices."""
+"""Support for Overkiz (virtual) numbers."""
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import cast
 
@@ -9,8 +11,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizCommand, OverkizState
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizDescriptiveEntity
 

@@ -26,8 +26,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription

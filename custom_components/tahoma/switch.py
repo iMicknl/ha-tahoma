@@ -10,8 +10,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity

@@ -8,8 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.models import Scenario
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 
 

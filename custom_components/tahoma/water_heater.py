@@ -5,8 +5,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIWidget
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .water_heater_devices.domestic_hot_water_production import (
     DomesticHotWaterProduction,

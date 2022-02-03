@@ -1,11 +1,12 @@
 """The Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.scene import DOMAIN as SCENE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
@@ -109,8 +110,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
-    platforms = defaultdict(list)
-    platforms[SCENE] = scenarios
+    platforms: defaultdict[Platform, list[Device]] = defaultdict(list)
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
         coordinator=coordinator, platforms=platforms, scenarios=scenarios

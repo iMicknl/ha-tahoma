@@ -5,8 +5,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIWidget
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
     AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,

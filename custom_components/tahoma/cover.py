@@ -8,8 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIClass
 import voluptuous as vol
 
-from custom_components.tahoma import HomeAssistantOverkizData
-
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .cover_devices.awning import Awning
 from .cover_devices.vertical_cover import VerticalCover
