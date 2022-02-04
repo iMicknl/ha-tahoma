@@ -222,11 +222,11 @@ def log_device(message: str, device: Device) -> None:
 async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     overkiz_config_entries = hass.config_entries.async_entries("overkiz")
 
-    for overkiz_entry in overkiz_config_entries:
-        if (
-            entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+    return any(
+        (
+            overkiz_entry.source != "ignore"
+            and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
             and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
-        ):
-            return True
-
-    return False
+        )
+        for overkiz_entry in overkiz_config_entries
+    )
