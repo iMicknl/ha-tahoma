@@ -7,7 +7,12 @@ from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import (
+    SOURCE_DHCP,
+    SOURCE_USER,
+    SOURCE_ZEROCONF,
+    ConfigEntry,
+)
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
