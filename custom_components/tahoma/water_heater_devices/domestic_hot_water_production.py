@@ -15,9 +15,9 @@ DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
 DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
 DHWP_TYPE_MBL = "modbuslink:AtlanticDomesticHotWaterProductionMBLComponent"
 
-STATE_AUTO = "auto"
-STATE_BOOST = "boost"
-STATE_MANUAL = "manual"
+STATE_AUTO = "Auto"
+STATE_BOOST = "Boost"
+STATE_MANUAL = "Manual"
 
 OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandParam.MANUAL_ECO_ACTIVE: STATE_ECO,
