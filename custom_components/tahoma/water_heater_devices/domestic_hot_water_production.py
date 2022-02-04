@@ -73,7 +73,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     def current_operation(self):
         """Return current operation ie. eco, electric, performance, ..."""
         return OVERKIZ_TO_OPERATION_MODE[
-            OVERKIZ_TO_OPERATION_MODE[OverkizCommandParam.BOOST]
+            OverkizCommandParam.BOOST
             if self._is_boost_mode_on
             else self.executor.select_state(
                 OverkizState.IO_DHW_MODE, OverkizState.MODBUSLINK_DHW_MODE
@@ -116,7 +116,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
-        if operation_mode == OverkizCommandParam.BOOST:
+        if operation_mode == STATE_BOOST:
             if self.device.controllable_name == DHWP_TYPE_MURAL:
                 await self.executor.async_execute_command(
                     OverkizCommand.SET_CURRENT_OPERATING_MODE,
