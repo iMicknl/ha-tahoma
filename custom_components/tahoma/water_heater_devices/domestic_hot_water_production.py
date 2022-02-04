@@ -15,17 +15,19 @@ DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
 DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
 DHWP_TYPE_MBL = "modbuslink:AtlanticDomesticHotWaterProductionMBLComponent"
 
+STATE_AUTO = "auto"
+STATE_BOOST = "boost"
+STATE_MANUAL = "manual"
+
 OVERKIZ_TO_OPERATION_MODE = {
     OverkizCommandParam.MANUAL_ECO_ACTIVE: STATE_ECO,
-    OverkizCommandParam.MANUAL_ECO_INACTIVE: OverkizCommandParam.MANUAL.value,
-    OverkizCommandParam.AUTO: OverkizCommandParam.AUTO.value,
-    OverkizCommandParam.AUTO_MODE: OverkizCommandParam.AUTO.value,
-    OverkizCommandParam.BOOST: OverkizCommandParam.BOOST.value,
+    OverkizCommandParam.MANUAL_ECO_INACTIVE: STATE_MANUAL,
+    OverkizCommandParam.AUTO: STATE_AUTO,
+    OverkizCommandParam.AUTO_MODE: STATE_AUTO,
+    OverkizCommandParam.BOOST: STATE_BOOST,
 }
 
 OPERATION_MODE_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_OPERATION_MODE.items()}
-
-SUPPORT_BOOST_MODE = 8
 
 
 class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
@@ -33,10 +35,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     _attr_operation_list = [*OPERATION_MODE_TO_OVERKIZ]
     _attr_supported_features = (
-        SUPPORT_OPERATION_MODE
-        | SUPPORT_AWAY_MODE
-        | SUPPORT_TARGET_TEMPERATURE
-        | SUPPORT_BOOST_MODE
+        SUPPORT_OPERATION_MODE | SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE
     )
     _attr_temperature_unit = TEMP_CELSIUS
 
