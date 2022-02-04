@@ -224,7 +224,7 @@ async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) 
 
     return any(
         (
-            overkiz_entry.source != "ignore"
+            overkiz_entry.source in [SOURCE_USER, SOURCE_ZEROCONF, SOURCE_DHCP]
             and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
             and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
         )
