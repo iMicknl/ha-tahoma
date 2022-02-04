@@ -7,7 +7,12 @@ from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import (
+    SOURCE_DHCP,
+    SOURCE_USER,
+    SOURCE_ZEROCONF,
+    ConfigEntry,
+)
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
@@ -222,11 +227,11 @@ def log_device(message: str, device: Device) -> None:
 async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     overkiz_config_entries = hass.config_entries.async_entries("overkiz")
 
-    for overkiz_entry in overkiz_config_entries:
-        if (
-            entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+    return any(
+        (
+            overkiz_entry.source in [SOURCE_USER, SOURCE_ZEROCONF, SOURCE_DHCP]
+            and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
             and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
-        ):
-            return True
-
-    return False
+        )
+        for overkiz_entry in overkiz_config_entries
+    )
