@@ -1,2 +1,2 @@
 -r requirements.txt
-homeassistant==2021.12.0b6
+homeassistant==2022.2.0
