@@ -8,6 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.models import Scenario
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 
 
@@ -17,11 +18,10 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz scenes from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizScene(scene, coordinator.client) for scene in data["platforms"][SCENE]
+        OverkizScene(scene, data.coordinator.client) for scene in data.platforms[SCENE]
     ]
     async_add_entities(entities)
 

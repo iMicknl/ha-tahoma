@@ -6,6 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .entity import OverkizEntity
 
@@ -16,12 +17,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz locks from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizLock(device.device_url, coordinator)
-        for device in data["platforms"][Platform.LOCK]
+        OverkizLock(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.LOCK]
     ]
 
     async_add_entities(entities)
