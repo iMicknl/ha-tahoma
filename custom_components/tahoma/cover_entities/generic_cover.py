@@ -12,8 +12,9 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
-from homeassistant.components.overkiz.entity import OverkizEntity
 from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
+from ..entity import OverkizEntity
 
 ATTR_OBSTRUCTION_DETECTED = "obstruction-detected"
 
