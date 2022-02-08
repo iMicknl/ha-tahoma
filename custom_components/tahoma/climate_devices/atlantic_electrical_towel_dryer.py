@@ -26,7 +26,6 @@ COMMAND_SET_TOWEL_DRYER_TEMPORARY_STATE = "setTowelDryerTemporaryState"
 CORE_COMFORT_ROOM_TEMPERATURE_STATE = "core:ComfortRoomTemperatureState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
-CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 IO_TOWEL_DRYER_TEMPORARY_STATE_STATE = "io:TowelDryerTemporaryStateState"
 IO_EFFECTIVE_TEMPERATURE_SETPOINT_STATE = "io:EffectiveTemperatureSetpointState"
@@ -83,8 +82,10 @@ class AtlanticElectricalTowelDryer(OverkizEntity, ClimateEntity):
                 self.executor.select_state(CORE_OPERATING_MODE_STATE)
             ]
 
-        if CORE_ON_OFF_STATE in self.device.states:
-            return TAHOMA_TO_HVAC_MODE[self.executor.select_state(CORE_ON_OFF_STATE)]
+        if OverkizState.CORE_ON_OFF in self.device.states:
+            return TAHOMA_TO_HVAC_MODE[
+                self.executor.select_state(OverkizState.CORE_ON_OFF)
+            ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
