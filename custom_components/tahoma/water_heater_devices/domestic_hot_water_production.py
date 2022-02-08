@@ -13,6 +13,7 @@ from ..entity import OverkizEntity
 
 DHWP_TYPE_MURAL = "io:AtlanticDomesticHotWaterProductionV2_MURAL_IOComponent"
 DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOComponent"
+DHWP_TYPE_CV4E_IO = "io:AtlanticDomesticHotWaterProductionV2_CV4E_IOComponent"
 DHWP_TYPE_MBL = "modbuslink:AtlanticDomesticHotWaterProductionMBLComponent"
 
 STATE_AUTO = "Auto"
@@ -42,7 +43,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     @property
     def _is_boost_mode_on(self) -> bool:
         """Return true if boost mode is on."""
-        if self.device.controllable_name == DHWP_TYPE_MURAL:
+        if self.device.controllable_name in [DHWP_TYPE_MURAL, DHWP_TYPE_CV4E_IO]:
             return (
                 self.executor.select_state(OverkizState.CORE_OPERATING_MODE).get(
                     OverkizCommandParam.RELAUNCH
@@ -118,7 +119,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
     async def async_set_operation_mode(self, operation_mode):
         """Set new target operation mode."""
         if operation_mode == STATE_BOOST:
-            if self.device.controllable_name == DHWP_TYPE_MURAL:
+            if self.device.controllable_name in [DHWP_TYPE_MURAL, DHWP_TYPE_CV4E_IO]:
                 await self.executor.async_execute_command(
                     OverkizCommand.SET_CURRENT_OPERATING_MODE,
                     {
@@ -132,7 +133,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                 )
             return
         if self._is_boost_mode_on:
-            if self.device.controllable_name == DHWP_TYPE_MURAL:
+            if self.device.controllable_name in [DHWP_TYPE_MURAL, DHWP_TYPE_CV4E_IO]:
                 await self.executor.async_execute_command(
                     OverkizCommand.SET_CURRENT_OPERATING_MODE,
                     {
@@ -158,6 +159,13 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                 )
                 == OverkizCommandParam.ON
             )
+        if self.device.controllable_name == DHWP_TYPE_CV4E_IO:
+            return (
+                self.executor.select_state(OverkizState.CORE_OPERATING_MODE).get(
+                    OverkizCommandParam.AWAY
+                )
+                == OverkizCommandParam.ON
+            )
         if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
             return (
                 self.executor.select_state(OverkizState.IO_DHW_ABSENCE_MODE)
@@ -171,7 +179,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_turn_away_mode_on(self):
         """Turn away mode on."""
-        if self.device.controllable_name == DHWP_TYPE_MURAL:
+        if self.device.controllable_name in [DHWP_TYPE_MURAL, DHWP_TYPE_CV4E_IO]:
             await self.executor.async_execute_command(
                 OverkizCommand.SET_CURRENT_OPERATING_MODE,
                 {
@@ -186,7 +194,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
 
     async def async_turn_away_mode_off(self):
         """Turn away mode off."""
-        if self.device.controllable_name == DHWP_TYPE_MURAL:
+        if self.device.controllable_name in [DHWP_TYPE_MURAL, DHWP_TYPE_CV4E_IO]:
             await self.executor.async_execute_command(
                 OverkizCommand.SET_CURRENT_OPERATING_MODE,
                 {
