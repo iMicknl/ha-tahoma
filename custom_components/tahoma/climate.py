@@ -6,15 +6,15 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyoverkiz.enums import UIWidget
 
 from . import HomeAssistantOverkizData
-from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater²
-from .climate_devices.atlantic_heat_recovery_ventilation import (
-    AtlanticHeatRecoveryVentilation,
-)
+from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
     AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
 )
 from .climate_devices.atlantic_electrical_towel_dryer import (
     AtlanticElectricalTowelDryer,
+)
+from .climate_devices.atlantic_heat_recovery_ventilation import (
+    AtlanticHeatRecoveryVentilation,
 )
 from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
     AtlanticPassAPCHeatingAndCoolingZone,
