@@ -20,9 +20,6 @@ SET_BOOST_MODE_DURATION = "setBoostModeDuration"  # remove when added to pyoverk
 REFRESH_BOOST_MODE_DURATION = (
     "refreshBoostModeDuration"  # remove when added to pyoverkiz
 )
-REFRESH_CURRENT_OPERATING_MODE = (
-    "refreshCurrentOperatingMode"  # remove when added to pyoverkiz
-)
 
 STATE_AUTO = "Auto"
 STATE_BOOST = "Boost"
