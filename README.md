@@ -10,7 +10,7 @@
 
 Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
 
->This component is an updated version of the [original Tahoma integration](https://www.home-assistant.io/integrations/tahoma/) in Home Assistant with the goal of eventually merging into core. The installation of this component will replace the original TaHoma integration and thus allows you to beta-test [all changes](https://github.com/iMicknl/ha-tahoma/releases).
+> Home Assistant 2022.2 will have the Overkiz (by Somfy) integration available in core. Most platforms are supported, except for siren, climate and water heater. Please use **one** of the integrations (core vs custom), to avoid calling Somfy's servers from two separate integrations and to avoid authentication issues.
 
 ## Supported hubs
 
@@ -83,7 +83,7 @@ You can subscribe to the `overkiz.event` event type in Developer Tools/Events in
 }
 ```
 
-You can find the list of available failure_type [here](https://github.com/iMicknl/python-tahoma-api/blob/master/pyhoma/enums.py#L118).
+You can find the list of available failure_type [here](https://github.com/iMicknl/python-overkiz-api/blob/main/pyoverkiz/enums/general.py#L34).
 
 ### Enable debug logging
 

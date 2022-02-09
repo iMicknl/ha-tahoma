@@ -5,15 +5,13 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
-from homeassistant.components.button import ButtonEntityDescription
-from homeassistant.components.number import NumberEntityDescription
 from homeassistant.components.select import SelectEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo, EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from pyhoma.enums import OverkizAttribute, OverkizCommandParam, OverkizState
-from pyhoma.models import Device
+from pyoverkiz.enums import OverkizAttribute, OverkizCommandParam, OverkizState
+from pyoverkiz.models import Device
 
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
@@ -124,19 +122,6 @@ class OverkizBinarySensorDescription(BinarySensorEntityDescription):
 
 
 @dataclass
-class OverkizNumberDescription(NumberEntityDescription):
-    """Class to describe an Overkiz number."""
-
-    command: str = None
-
-    max_value: float | None = None
-    min_value: float | None = None
-    min_step: float | None = None
-    value: float | None = None
-    state: Callable[[str], bool] = lambda state: state
-
-
-@dataclass
 class OverkizSelectDescription(SelectEntityDescription):
     """Class to describe an Overkiz select entity."""
 
@@ -151,14 +136,12 @@ class OverkizDescriptiveEntity(OverkizEntity):
         self,
         device_url: str,
         coordinator: OverkizDataUpdateCoordinator,
-        description: OverkizSensorDescription
-        | OverkizBinarySensorDescription
-        | OverkizNumberDescription
-        | ButtonEntityDescription
-        | OverkizSelectDescription,
-    ):
+        description: EntityDescription,
+    ) -> None:
         """Initialize the device."""
         super().__init__(device_url, coordinator)
         self.entity_description = description
-        self._attr_name = f"{super().name} {self.entity_description.name}"
         self._attr_unique_id = f"{super().unique_id}-{self.entity_description.key}"
+
+        if self.entity_description.name:
+            self._attr_name = f"{super().name} {self.entity_description.name}"

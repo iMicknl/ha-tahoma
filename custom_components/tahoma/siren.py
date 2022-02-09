@@ -10,9 +10,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import OverkizState
-from pyhoma.enums.command import OverkizCommand, OverkizCommandParam
+from pyoverkiz.enums import OverkizState
+from pyoverkiz.enums.command import OverkizCommand, OverkizCommandParam
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .entity import OverkizEntity
 
@@ -23,12 +24,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz sirens from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizSiren(device.device_url, coordinator)
-        for device in data["platforms"][Platform.SIREN]
+        OverkizSiren(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.SIREN]
     ]
 
     async_add_entities(entities)

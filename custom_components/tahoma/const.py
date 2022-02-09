@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Final
 
 from homeassistant.const import Platform
-from pyhoma.enums import UIClass, UIWidget
+from pyoverkiz.enums import UIClass, UIWidget
 
 DOMAIN: Final = "tahoma"
 
@@ -69,6 +69,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.SHUTTER: Platform.COVER,
     UIClass.SIREN: Platform.SIREN,
     UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (switch)
+    UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.STATELESS_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     UIClass.SWIMMING_POOL: Platform.SWITCH,

@@ -8,7 +8,9 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import OverkizCommandParam, OverkizState
+from pyoverkiz.enums import OverkizCommandParam, OverkizState
+
+from custom_components.tahoma import HomeAssistantOverkizData
 
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity
@@ -80,6 +82,18 @@ BINARY_SENSOR_DESCRIPTIONS = [
     ),
     # DomesticHotWaterProduction/WaterHeatingSystem
     OverkizBinarySensorDescription(
+        key=OverkizState.IO_DHW_BOOST_MODE,
+        name="Boost Mode",
+        icon="hass:water-boiler-alert",
+        is_on=lambda state: state == OverkizCommandParam.ON,
+    ),
+    OverkizBinarySensorDescription(
+        key=OverkizState.IO_DHW_ABSENCE_MODE,
+        name="Away Mode",
+        icon="hass:water-boiler-off",
+        is_on=lambda state: state == OverkizCommandParam.ON,
+    ),
+    OverkizBinarySensorDescription(
         key=OverkizState.IO_OPERATING_MODE_CAPABILITIES,
         name="Energy Demand Status",
         device_class=BinarySensorDeviceClass.HEAT,
@@ -94,15 +108,14 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz sensors from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
     entities = []
 
     key_supported_states = {
         description.key: description for description in BINARY_SENSOR_DESCRIPTIONS
     }
 
-    for device in coordinator.data.values():
+    for device in data.coordinator.data.values():
         if (
             device.widget not in IGNORED_OVERKIZ_DEVICES
             and device.ui_class not in IGNORED_OVERKIZ_DEVICES
@@ -112,7 +125,7 @@ async def async_setup_entry(
                     entities.append(
                         OverkizBinarySensor(
                             device.device_url,
-                            coordinator,
+                            data.coordinator,
                             description,
                         )
                     )

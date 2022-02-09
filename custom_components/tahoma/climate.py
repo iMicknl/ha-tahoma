@@ -3,8 +3,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import UIWidget
+from pyoverkiz.enums import UIWidget
 
+from . import HomeAssistantOverkizData
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
 from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_setpoint import (
     AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
@@ -24,6 +25,9 @@ from .climate_devices.hitachi_air_to_air_heat_pump import HitachiAirToAirHeatPum
 from .climate_devices.hitachi_air_to_water_heating_zone import (
     HitachiAirToWaterHeatingZone,
 )
+from .climate_devices.somfy_heating_temperature_interface import (
+    SomfyHeatingTemperatureInterface,
+)
 from .climate_devices.somfy_thermostat import SomfyThermostat
 from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
@@ -40,6 +44,7 @@ TYPE = {
     UIWidget.HEATING_SET_POINT: HeatingSetPoint,
     UIWidget.HITACHI_AIR_TO_AIR_HEAT_PUMP: HitachiAirToAirHeatPump,
     UIWidget.HITACHI_AIR_TO_WATER_HEATING_ZONE: HitachiAirToWaterHeatingZone,
+    UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: SomfyHeatingTemperatureInterface,
     UIWidget.SOMFY_THERMOSTAT: SomfyThermostat,
     UIWidget.STATELESS_EXTERIOR_HEATING: StatelessExteriorHeating,
 }
@@ -51,13 +56,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz climate from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
-    climate_devices = [device for device in data["platforms"][Platform.CLIMATE]]
+    climate_devices = [device for device in data.platforms[Platform.CLIMATE]]
 
     entities = [
-        TYPE[device.widget](device.device_url, coordinator)
+        TYPE[device.widget](device.device_url, data.coordinator)
         for device in climate_devices
         if device.widget in TYPE
     ]

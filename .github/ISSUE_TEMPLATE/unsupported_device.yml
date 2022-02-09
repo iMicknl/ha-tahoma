@@ -30,16 +30,30 @@ body:
     attributes:
       label: Home Assistant log
       description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste your full log here. We redact your id's and emailaddresses by default.
-      render: shell
-    validations:
-      required: true
+      value: |
+        <details><summary>Logs</summary>
+
+        ```
+        Copy/paste any log here, between the starting and ending backticks. The first log line must start with "Added device (Device...".
+        ```
+
+        </details>
 
   - type: textarea
     id: device_command_log
+    validations:
+      required: true
     attributes:
       label: Device commands
       description: In order to gather more information, you can use the `tahoma.get_execution_history` service which will print your execution history to the Home Assistant log. Run the commands via the official vendor app (e.g. TaHoma) and capture the commands. [Read more](https://github.com/iMicknl/ha-tahoma#device-not-working-correctly).
-      render: shell
+      value: |
+        <details><summary>Commands logs</summary>
+
+        ```
+        Copy/paste your execution history here.
+        ```
+
+        </details>
 
   - type: markdown
     attributes:

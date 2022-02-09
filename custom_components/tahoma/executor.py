@@ -5,7 +5,7 @@ import logging
 from typing import Any
 from urllib.parse import urlparse
 
-from pyhoma.models import Command, Device
+from pyoverkiz.models import Command, Device
 
 from .coordinator import OverkizDataUpdateCoordinator
 
@@ -25,6 +25,10 @@ class OverkizExecutor:
     def device(self) -> Device:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
+
+    def linked_device(self, index) -> Device:
+        """Return Overkiz device sharing the same base url."""
+        return self.coordinator.data[f"{self.base_device_url}#{index}"]
 
     def select_command(self, *commands: str) -> str | None:
         """Select first existing command in a list of commands."""

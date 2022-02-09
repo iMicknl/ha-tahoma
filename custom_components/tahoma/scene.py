@@ -5,9 +5,10 @@ from homeassistant.components.scene import DOMAIN as SCENE, Scene
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.client import TahomaClient
-from pyhoma.models import Scenario
+from pyoverkiz.client import OverkizClient
+from pyoverkiz.models import Scenario
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 
 
@@ -17,11 +18,10 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz scenes from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizScene(scene, coordinator.client) for scene in data["platforms"][SCENE]
+        OverkizScene(scene, data.coordinator.client) for scene in data.platforms[SCENE]
     ]
     async_add_entities(entities)
 
@@ -29,7 +29,7 @@ async def async_setup_entry(
 class OverkizScene(Scene):
     """Representation of an Overkiz scene entity."""
 
-    def __init__(self, scenario: Scenario, client: TahomaClient):
+    def __init__(self, scenario: Scenario, client: OverkizClient):
         """Initialize the scene."""
         self.scenario = scenario
         self.client = client

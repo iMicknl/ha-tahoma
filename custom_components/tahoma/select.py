@@ -6,8 +6,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizDescriptiveEntity, OverkizSelectDescription
 
@@ -39,6 +40,16 @@ SELECT_DESCRIPTIONS = [
         ),
         entity_category=EntityCategory.CONFIG,
     ),
+    OverkizSelectDescription(
+        key=OverkizState.OVP_HEATING_TEMPERATURE_INTERFACE_OPERATING_MODE,
+        name="Operating Mode",
+        icon="mdi:sun-snowflake",
+        options=[OverkizCommandParam.HEATING, OverkizCommandParam.COOLING],
+        select_option=lambda option, execute_command: execute_command(
+            OverkizCommand.SET_OPERATING_MODE, option
+        ),
+        entity_category=EntityCategory.CONFIG,
+    ),
 ]
 
 
@@ -48,8 +59,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz select from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = []
 
@@ -57,7 +67,7 @@ async def async_setup_entry(
         description.key: description for description in SELECT_DESCRIPTIONS
     }
 
-    for device in coordinator.data.values():
+    for device in data.coordinator.data.values():
         if (
             device.widget not in IGNORED_OVERKIZ_DEVICES
             and device.ui_class not in IGNORED_OVERKIZ_DEVICES
@@ -67,7 +77,7 @@ async def async_setup_entry(
                     entities.append(
                         OverkizSelect(
                             device.device_url,
-                            coordinator,
+                            data.coordinator,
                             description,
                         )
                     )

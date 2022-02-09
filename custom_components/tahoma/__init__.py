@@ -1,12 +1,19 @@
 """The Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 import asyncio
 from collections import defaultdict
+from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.config_entries import (
+    SOURCE_DHCP,
+    SOURCE_USER,
+    SOURCE_ZEROCONF,
+    ConfigEntry,
+)
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -15,15 +22,15 @@ from homeassistant.helpers import (
     service,
 )
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from pyhoma.client import TahomaClient
-from pyhoma.const import SUPPORTED_SERVERS
-from pyhoma.exceptions import (
+from pyoverkiz.client import OverkizClient
+from pyoverkiz.const import SUPPORTED_SERVERS
+from pyoverkiz.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command, Device
+from pyoverkiz.models import Command, Device, Scenario
 import voluptuous as vol
 
 from .const import (
@@ -42,15 +49,29 @@ _LOGGER = logging.getLogger(__name__)
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
 
+@dataclass
+class HomeAssistantOverkizData:
+    """Overkiz data stored in the Home Assistant data object."""
+
+    coordinator: OverkizDataUpdateCoordinator
+    platforms: defaultdict[Platform, list[Device]]
+    scenarios: list[Scenario]
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Overkiz from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
     server = SUPPORTED_SERVERS[entry.data[CONF_HUB]]
 
+    if await _block_if_core_is_configured(hass, entry):
+        raise ConfigEntryNotReady(
+            "You cannot use Overkiz from core and custom component at the same time."
+        )
+
     # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
     session = async_create_clientsession(hass)
-    client = TahomaClient(
+    client = OverkizClient(
         username=username, password=password, session=session, server=server
     )
 
@@ -58,12 +79,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await client.login()
 
         tasks = [
-            client.get_devices(),
+            client.get_setup(),
             client.get_scenarios(),
-            client.get_gateways(),
-            client.get_places(),
         ]
-        devices, scenarios, gateways, places = await asyncio.gather(*tasks)
+        setup, scenarios = await asyncio.gather(*tasks)
     except BadCredentialsException as exception:
         raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
@@ -81,8 +100,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER,
         name="device events",
         client=client,
-        devices=devices,
-        places=places,
+        devices=setup.devices,
+        places=setup.root_place,
         update_interval=UPDATE_INTERVAL,
         config_entry_id=entry.entry_id,
     )
@@ -96,13 +115,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
-    platforms = defaultdict(list)
-    platforms[SCENE] = scenarios
+    platforms: defaultdict[Platform, list[Device]] = defaultdict(list)
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "platforms": platforms,
-        "coordinator": coordinator,
-    }
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
+        coordinator=coordinator, platforms=platforms, scenarios=scenarios
+    )
 
     # Map Overkiz device to Home Assistant platform
     for device in coordinator.data.values():
@@ -122,7 +139,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     device_registry = await dr.async_get_registry(hass)
 
-    for gateway in gateways:
+    for gateway in setup.gateways:
         _LOGGER.debug("Added gateway (%s)", gateway)
 
         device_registry.async_get_or_create(
@@ -194,7 +211,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def write_execution_history_to_log(client: TahomaClient):
+async def write_execution_history_to_log(client: OverkizClient):
     """Retrieve execution history and write output to log."""
     history = await client.get_execution_history()
 
@@ -205,3 +222,16 @@ async def write_execution_history_to_log(client: TahomaClient):
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
     _LOGGER.debug("%s (%s)", message, device)
+
+
+async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    overkiz_config_entries = hass.config_entries.async_entries("overkiz")
+
+    return any(
+        (
+            overkiz_entry.source in [SOURCE_USER, SOURCE_ZEROCONF, SOURCE_DHCP]
+            and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+            and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
+        )
+        for overkiz_entry in overkiz_config_entries
+    )

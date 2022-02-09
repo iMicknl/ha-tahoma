@@ -8,8 +8,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from pyhoma.enums import OverkizCommand, OverkizCommandParam, OverkizState
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
@@ -21,18 +22,17 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz switch from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizSwitch(device.device_url, coordinator)
-        for device in data["platforms"][Platform.SWITCH]
+        OverkizSwitch(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.SWITCH]
     ]
 
     entities.extend(
         [
-            OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
-            for device in data["platforms"][Platform.COVER]
+            OverkizLowSpeedCoverSwitch(device.device_url, data.coordinator)
+            for device in data.platforms[Platform.COVER]
             if OverkizCommand.SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
     )

@@ -1,14 +1,32 @@
-"""Support for Overkiz number devices."""
-from homeassistant.components.number import NumberEntity
+"""Support for Overkiz (virtual) numbers."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import cast
+
+from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyhoma.enums import OverkizCommand, OverkizState
+from pyoverkiz.enums import OverkizCommand, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
-from .coordinator import OverkizDataUpdateCoordinator
-from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizNumberDescription
+from .entity import OverkizDescriptiveEntity
+
+
+@dataclass
+class OverkizNumberDescriptionMixin:
+    """Define an entity description mixin for number entities."""
+
+    command: str
+
+
+@dataclass
+class OverkizNumberDescription(NumberEntityDescription, OverkizNumberDescriptionMixin):
+    """Class to describe an Overkiz number."""
+
 
 NUMBER_DESCRIPTIONS = [
     # Cover: My Position (0 - 100)
@@ -46,39 +64,63 @@ NUMBER_DESCRIPTIONS = [
         command="setAwayModeDuration",
         min_value=0,
         max_value=10,
+    OverkizNumberDescription(
+        key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
+        name="Eco Room Temperature",
+        icon="mdi:thermometer",
+        command=OverkizCommand.SET_ECO_TEMPERATURE,
+        min_value=6,
+        max_value=29,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    OverkizNumberDescription(
+        key=OverkizState.CORE_COMFORT_ROOM_TEMPERATURE,
+        name="Comfort Room Temperature",
+        icon="mdi:home-thermometer-outline",
+        command=OverkizCommand.SET_COMFORT_TEMPERATURE,
+        min_value=7,
+        max_value=30,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    OverkizNumberDescription(
+        key=OverkizState.CORE_SECURED_POSITION_TEMPERATURE,
+        name="Freeze Protection Temperature",
+        icon="mdi:sun-thermometer-outline",
+        command=OverkizCommand.SET_SECURED_POSITION_TEMPERATURE,
+        min_value=5,
+        max_value=15,
+        entity_category=EntityCategory.CONFIG,
     ),
 ]
+
+SUPPORTED_STATES = {description.key: description for description in NUMBER_DESCRIPTIONS}
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
     """Set up the Overkiz number from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
+    entities: list[OverkizNumber] = []
 
-    entities = []
-
-    key_supported_states = {
-        description.key: description for description in NUMBER_DESCRIPTIONS
-    }
-
-    for device in coordinator.data.values():
+    for device in data.coordinator.data.values():
         if (
-            device.widget not in IGNORED_OVERKIZ_DEVICES
-            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
+            device.widget in IGNORED_OVERKIZ_DEVICES
+            or device.ui_class in IGNORED_OVERKIZ_DEVICES
         ):
-            for state in device.definition.states:
-                if description := key_supported_states.get(state.qualified_name):
-                    entities.append(
-                        OverkizNumber(
-                            device.device_url,
-                            coordinator,
-                            description,
-                        )
+            continue
+
+        for state in device.definition.states:
+            if description := SUPPORTED_STATES.get(state.qualified_name):
+                entities.append(
+                    OverkizNumber(
+                        device.device_url,
+                        data.coordinator,
+                        description,
                     )
+                )
 
                 if state.qualified_name == "core:BoostModeDurationState":
                     entities.append(
@@ -92,22 +134,24 @@ async def async_setup_entry(
 
 
 class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
-    """Representation of an Overkiz Number entity."""
+    """Representation of an Overkiz Number."""
+
+    entity_description: OverkizNumberDescription
 
     @property
-    def value(self) -> float:
-        """Return the current number."""
+    def value(self) -> float | None:
+        """Return the entity value to represent the entity state."""
         if state := self.device.states.get(self.entity_description.key):
-            return state.value
+            return cast(float, state.value)
 
         return None
 
     async def async_set_value(self, value: float) -> None:
-        """Update the My position value. Min: 0, max: 100."""
+        """Set new value."""
         await self.executor.async_execute_command(
             self.entity_description.command, value
         )
-
+      
     @property
     def min_value(self) -> float:
         """Return the minimum value."""
@@ -158,3 +202,4 @@ class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
             )
 
         await self.executor.async_execute_command("refreshBoostModeDuration")
+
