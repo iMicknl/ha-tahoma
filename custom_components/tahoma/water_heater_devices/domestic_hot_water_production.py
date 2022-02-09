@@ -16,6 +16,8 @@ DHWP_TYPE_CE_FLAT_C2 = "io:AtlanticDomesticHotWaterProductionV2_CE_FLAT_C2_IOCom
 DHWP_TYPE_CV4E_IO = "io:AtlanticDomesticHotWaterProductionV2_CV4E_IOComponent"
 DHWP_TYPE_MBL = "modbuslink:AtlanticDomesticHotWaterProductionMBLComponent"
 
+SET_BOOST_MODE_DURATION = "setBoostModeDuration"  # remove when added to pyoverkiz
+
 STATE_AUTO = "Auto"
 STATE_BOOST = "Boost"
 STATE_MANUAL = "Manual"
@@ -142,6 +144,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                         OverkizCommandParam.ABSENCE: OverkizCommandParam.OFF,
                     },
                 )
+                await self.executor.async_execute_command(SET_BOOST_MODE_DURATION, 7)
             if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
                 await self.executor.async_execute_command(
                     OverkizCommand.SET_BOOST_MODE, OverkizCommand.ON
@@ -164,6 +167,7 @@ class DomesticHotWaterProduction(OverkizEntity, WaterHeaterEntity):
                         OverkizCommandParam.ABSENCE: OverkizCommandParam.OFF,
                     },
                 )
+                await self.executor.async_execute_command(SET_BOOST_MODE_DURATION, 0)
             if self.device.controllable_name == DHWP_TYPE_CE_FLAT_C2:
                 await self.executor.async_execute_command(
                     OverkizCommand.SET_BOOST_MODE, OverkizCommand.OFF
