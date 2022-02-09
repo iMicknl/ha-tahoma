@@ -1,5 +1,5 @@
 """Support for Atlantic Electrical Heater."""
-from typing import List, Optional
+from typing import Optional
 
 from homeassistant.components.climate import (
     HVAC_MODE_OFF,
@@ -13,12 +13,12 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import TEMP_CELSIUS
+from pyoverkiz.enums import OverkizState
 
-from ..tahoma_entity import TahomaEntity
+from ..entity import OverkizEntity
 
 COMMAND_SET_HEATING_LEVEL = "setHeatingLevel"
 
-CORE_ON_OFF_STATE = "core:OnOffState"
 IO_TARGET_HEATING_LEVEL_STATE = "io:TargetHeatingLevelState"
 
 PRESET_COMFORT1 = "comfort-1"
@@ -44,47 +44,36 @@ TAHOMA_TO_HVAC_MODES = {
 HVAC_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_HVAC_MODES.items()}
 
 
-class AtlanticElectricalHeater(TahomaEntity, ClimateEntity):
+class AtlanticElectricalHeater(OverkizEntity, ClimateEntity):
     """Representation of Atlantic Electrical Heater."""
 
-    @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE
+    _attr_hvac_modes = [*HVAC_MODES_TO_TAHOMA]
+    _attr_preset_modes = [*PRESET_MODES_TO_TAHOMA]
+    _attr_supported_features = SUPPORT_PRESET_MODE
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        return TAHOMA_TO_HVAC_MODES[self.select_state(CORE_ON_OFF_STATE)]
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODES_TO_TAHOMA]
+        return TAHOMA_TO_HVAC_MODES[
+            self.executor.select_state(OverkizState.CORE_ON_OFF)
+        ]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_HEATING_LEVEL, HVAC_MODES_TO_TAHOMA[hvac_mode]
         )
 
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODES[self.select_state(IO_TARGET_HEATING_LEVEL_STATE)]
-
-    @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [*PRESET_MODES_TO_TAHOMA]
+        return TAHOMA_TO_PRESET_MODES[
+            self.executor.select_state(IO_TARGET_HEATING_LEVEL_STATE)
+        ]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_HEATING_LEVEL, PRESET_MODES_TO_TAHOMA[preset_mode]
         )

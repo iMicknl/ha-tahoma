@@ -1,6 +1,5 @@
 """Support for HitachiAirToWaterHeatingZone."""
-import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
@@ -13,9 +12,7 @@ from homeassistant.components.climate.const import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
-from ..tahoma_entity import TahomaEntity
-
-_LOGGER = logging.getLogger(__name__)
+from ..entity import OverkizEntity
 
 COMMAND_SET_AUTO_MANU_MODE = "setAutoManuMode"
 COMMAND_SET_TARGET_MODE = "setTargetMode"
@@ -54,8 +51,16 @@ TAHOMA_TO_PRESET_MODE = {
 PRESET_MODE_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_PRESET_MODE.items()}
 
 
-class HitachiAirToWaterHeatingZone(TahomaEntity, ClimateEntity):
+class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
     """Representation of HitachiAirToWaterHeatingZone."""
+
+    _attr_hvac_modes = [*HVAC_MODE_TO_TAHOMA]
+    _attr_max_temp = 35.0
+    _attr_min_temp = 5.0
+    _attr_preset_modes = [*PRESET_MODE_TO_TAHOMA]
+    _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+    _attr_target_temperature_step = 1.0
+    _attr_temperature_unit = TEMP_CELSIUS
 
     @property
     def device_info(self) -> Dict[str, Any]:
@@ -66,78 +71,49 @@ class HitachiAirToWaterHeatingZone(TahomaEntity, ClimateEntity):
         return device_info
 
     @property
-    def temperature_unit(self) -> str:
-        """Return the unit of measurement used by the platform."""
-        return TEMP_CELSIUS
-
-    @property
-    def supported_features(self) -> int:
-        """Return the list of supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-
-    @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
         return TAHOMA_TO_HVAC_MODE[
-            self.select_state(MODBUS_AUTO_MANU_MODE_ZONE_1_STATE)
+            self.executor.select_state(MODBUS_AUTO_MANU_MODE_ZONE_1_STATE)
         ]
-
-    @property
-    def hvac_modes(self) -> List[str]:
-        """Return the list of available hvac operation modes."""
-        return [*HVAC_MODE_TO_TAHOMA]
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_AUTO_MANU_MODE, HVAC_MODE_TO_TAHOMA[hvac_mode]
         )
 
     @property
-    def preset_modes(self) -> Optional[List[str]]:
-        """Return a list of available preset modes."""
-        return [*PRESET_MODE_TO_TAHOMA]
-
-    @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., home, away, temp."""
-        return TAHOMA_TO_PRESET_MODE[self.select_state(MODBUS_YUTAKI_TARGET_MODE_STATE)]
+        return TAHOMA_TO_PRESET_MODE[
+            self.executor.select_state(MODBUS_YUTAKI_TARGET_MODE_STATE)
+        ]
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set new preset mode."""
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_TARGET_MODE, PRESET_MODE_TO_TAHOMA[preset_mode]
         )
 
     @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
-        return self.select_state(MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE)
-
-    @property
-    def min_temp(self) -> float:
-        """Return the minimum temperature."""
-        return 5.0
-
-    @property
-    def max_temp(self) -> float:
-        """Return the maximum temperature."""
-        return 35.0
-
-    @property
-    def target_temperature_step(self) -> Optional[float]:
-        """Return the supported step of target temperature."""
-        return 1.0
+        return self.executor.select_state(
+            MODBUS_ROOM_AMBIENT_TEMPERATURE_STATUS_ZONE_1_STATE
+        )
 
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self.select_state(MODBUS_THERMOSTAT_SETTING_CONTROL_ZONE_1_STATE)
+        return self.executor.select_state(
+            MODBUS_THERMOSTAT_SETTING_CONTROL_ZONE_1_STATE
+        )
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_THERMOSTAT_SETTING_CONTROL_ZONE_1, int(temperature)
         )

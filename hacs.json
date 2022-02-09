@@ -1,14 +1,18 @@
 {
-  "name": "Somfy TaHoma",
+  "name": "Overkiz (by Somfy) - Custom component",
   "domains": [
+    "alarm_control_panel",
+    "binary_sensor",
+    "climate",
     "cover",
     "light",
     "lock",
+    "number",
     "sensor",
     "switch",
-    "climate"
+    "water_heater"
   ],
-  "homeassistant": "2021.7.0",
+  "homeassistant": "2022.02.0",
   "render_readme": "true",
   "iot_class": "Cloud Polling"
 }

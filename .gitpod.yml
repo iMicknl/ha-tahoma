@@ -1,0 +1,23 @@
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - init: pip3 install -r requirements_test.txt
+ports:
+  - port: 9123
+    onOpen: notify
+github:
+  prebuilds:
+    master: true
+    branches: false
+    pullRequests: true
+    pullRequestsFromForks: true
+    addCheck: true
+    addComment: false
+    addBadge: true
+    addLabel: prebuilt-in-gitpod
+vscode:
+  extensions:
+    - esbenp.prettier-vscode
+    - github.vscode-pull-request-github
+    - eamodio.gitlens
+    - ms-python.python

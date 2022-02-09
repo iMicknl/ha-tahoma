@@ -65,22 +65,12 @@ body:
   - type: input
     id: overkiz_device_model
     validations:
-      required: true
+      required: false
     attributes:
       label: Device model
       placeholder: e.g. PositionableScreen
       description: >
         Can be found in the Configuration panel -> Integrations -> Somfy TaHoma -> (x) devices -> Model.
-
-  - type: input
-    id: overkiz_device_type
-    validations:
-      required: true
-    attributes:
-      label: Device type
-      placeholder: e.g. io:DimmableLightIOComponent
-      description: >
-        Can be found in the Configuration panel -> Integrations -> Somfy TaHoma -> (x) devices. Click on the device and copy the firmware.
 
   - type: markdown
     attributes:
@@ -88,17 +78,24 @@ body:
         ## Details
 
   - type: textarea
+    id: logs
+    attributes:
+      label: Home Assistant log
+      description: Enable [debug logging](https://github.com/iMicknl/ha-tahoma#enable-debug-logging) and paste your full log here. We redact your id's and emailaddresses by default.
+      value: |
+        <details><summary>Logs</summary>
+
+        ```
+        Copy/paste any log here, between the starting and ending backticks. The first log line must start with "Added device (Device...".
+        ```
+
+        </details>
+
+  - type: textarea
     id: additional-information
     attributes:
       label: Additional information
       description: If you have any additional information for us, use the field below. Please note, you can attach screenshots or screen recordings here, by dragging and dropping files in the field below.
-
-  - type: textarea
-    id: logs
-    attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
 
   - type: markdown
     attributes:

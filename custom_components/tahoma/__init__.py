@@ -1,14 +1,19 @@
-"""The TaHoma integration."""
+"""The Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 import asyncio
 from collections import defaultdict
-from datetime import datetime, timedelta
-from enum import Enum
+from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
+from homeassistant.config_entries import (
+    SOURCE_DHCP,
+    SOURCE_USER,
+    SOURCE_ZEROCONF,
+    ConfigEntry,
+)
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -16,107 +21,68 @@ from homeassistant.helpers import (
     device_registry as dr,
     service,
 )
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from pyhoma.client import TahomaClient
-from pyhoma.exceptions import (
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from pyoverkiz.client import OverkizClient
+from pyoverkiz.const import SUPPORTED_SERVERS
+from pyoverkiz.exceptions import (
     BadCredentialsException,
     InvalidCommandException,
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import Command, Device
+from pyoverkiz.models import Command, Device, Scenario
 import voluptuous as vol
 
 from .const import (
     CONF_HUB,
-    CONF_UPDATE_INTERVAL,
-    DEFAULT_HUB,
-    DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
-    HUB_MANUFACTURER,
-    IGNORED_TAHOMA_DEVICES,
-    SUPPORTED_ENDPOINTS,
-    TAHOMA_DEVICE_TO_PLATFORM,
+    IGNORED_OVERKIZ_DEVICES,
+    OVERKIZ_DEVICE_TO_PLATFORM,
+    SUPPORTED_PLATFORMS,
+    UPDATE_INTERVAL,
+    UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
-HOMEKIT_SETUP_CODE = "homekit:SetupCode"
-HOMEKIT_STACK = "HomekitStack"
 
-CONFIG_SCHEMA = vol.Schema(
-    {
-        DOMAIN: vol.All(
-            cv.deprecated(CONF_EXCLUDE),
-            vol.Schema(
-                {
-                    vol.Required(CONF_USERNAME): cv.string,
-                    vol.Required(CONF_PASSWORD): cv.string,
-                    vol.Optional(CONF_EXCLUDE, default=[]): vol.All(
-                        cv.ensure_list, [cv.string]
-                    ),
-                }
-            ),
-        )
-    },
-    extra=vol.ALLOW_EXTRA,
-)
+@dataclass
+class HomeAssistantOverkizData:
+    """Overkiz data stored in the Home Assistant data object."""
 
-
-async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the TaHoma component."""
-    configuration = config.get(DOMAIN)
-
-    if configuration is None:
-        return True
-
-    if any(
-        configuration.get(CONF_USERNAME) in entry.data.get(CONF_USERNAME)
-        for entry in hass.config_entries.async_entries(DOMAIN)
-    ):
-        return True
-
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN,
-            context={CONF_SOURCE: SOURCE_IMPORT},
-            data=configuration,
-        )
-    )
-
-    return True
+    coordinator: OverkizDataUpdateCoordinator
+    platforms: defaultdict[Platform, list[Device]]
+    scenarios: list[Scenario]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up TaHoma from a config entry."""
-    hass.data.setdefault(DOMAIN, {})
+    """Set up Overkiz from a config entry."""
+    username = entry.data[CONF_USERNAME]
+    password = entry.data[CONF_PASSWORD]
+    server = SUPPORTED_SERVERS[entry.data[CONF_HUB]]
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-    hub = entry.data.get(CONF_HUB, DEFAULT_HUB)
-    endpoint = SUPPORTED_ENDPOINTS[hub]
+    if await _block_if_core_is_configured(hass, entry):
+        raise ConfigEntryNotReady(
+            "You cannot use Overkiz from core and custom component at the same time."
+        )
 
-    session = async_get_clientsession(hass)
-    client = TahomaClient(
-        username,
-        password,
-        session=session,
-        api_url=endpoint,
+    # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
+    session = async_create_clientsession(hass)
+    client = OverkizClient(
+        username=username, password=password, session=session, server=server
     )
 
     try:
         await client.login()
 
         tasks = [
-            client.get_devices(),
+            client.get_setup(),
             client.get_scenarios(),
-            client.get_gateways(),
-            client.get_places(),
         ]
-        devices, scenarios, gateways, places = await asyncio.gather(*tasks)
+        setup, scenarios = await asyncio.gather(*tasks)
     except BadCredentialsException as exception:
         raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
@@ -129,85 +95,61 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.exception(exception)
         return False
 
-    update_interval = timedelta(
-        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
-    )
-
-    tahoma_coordinator = TahomaDataUpdateCoordinator(
+    coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
         name="device events",
         client=client,
-        devices=devices,
-        places=places,
-        update_interval=update_interval,
+        devices=setup.devices,
+        places=setup.root_place,
+        update_interval=UPDATE_INTERVAL,
+        config_entry_id=entry.entry_id,
     )
 
-    _LOGGER.debug(
-        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
+    await coordinator.async_config_entry_first_refresh()
+
+    if coordinator.is_stateless:
+        _LOGGER.debug(
+            "All devices have assumed state. Update interval has been reduced to: %s",
+            UPDATE_INTERVAL_ALL_ASSUMED_STATE,
+        )
+        coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
+
+    platforms: defaultdict[Platform, list[Device]] = defaultdict(list)
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
+        coordinator=coordinator, platforms=platforms, scenarios=scenarios
     )
 
-    await tahoma_coordinator.async_refresh()
-
-    platforms = defaultdict(list)
-    platforms[SCENE] = scenarios
-
-    hass.data[DOMAIN][entry.entry_id] = {
-        "platforms": platforms,
-        "coordinator": tahoma_coordinator,
-        "update_listener": entry.add_update_listener(update_listener),
-    }
-
-    for device in tahoma_coordinator.data.values():
-        platform = TAHOMA_DEVICE_TO_PLATFORM.get(
+    # Map Overkiz device to Home Assistant platform
+    for device in coordinator.data.values():
+        platform = OVERKIZ_DEVICE_TO_PLATFORM.get(
             device.widget
-        ) or TAHOMA_DEVICE_TO_PLATFORM.get(device.ui_class)
+        ) or OVERKIZ_DEVICE_TO_PLATFORM.get(device.ui_class)
         if platform:
             platforms[platform].append(device)
             log_device("Added device", device)
         elif (
-            device.widget not in IGNORED_TAHOMA_DEVICES
-            and device.ui_class not in IGNORED_TAHOMA_DEVICES
+            device.widget not in IGNORED_OVERKIZ_DEVICES
+            and device.ui_class not in IGNORED_OVERKIZ_DEVICES
         ):
             log_device("Unsupported device detected", device)
 
-        if device.widget == HOMEKIT_STACK:
-            print_homekit_setup_code(device)
-
-    for platform in platforms:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
 
     device_registry = await dr.async_get_registry(hass)
 
-    for gateway in gateways:
-        _LOGGER.debug(
-            "Added gateway (%s - %s - %s)",
-            gateway.id,
-            gateway.type,
-            gateway.sub_type,
-        )
-
-        gateway_model = (
-            beautify_name(gateway.sub_type.name)
-            if isinstance(gateway.sub_type, Enum)
-            else None
-        )
-
-        gateway_name = (
-            f"{beautify_name(gateway.type.name)} hub"
-            if isinstance(gateway.type, Enum)
-            else gateway.type
-        )
+    for gateway in setup.gateways:
+        _LOGGER.debug("Added gateway (%s)", gateway)
 
         device_registry.async_get_or_create(
             config_entry_id=entry.entry_id,
             identifiers={(DOMAIN, gateway.id)},
-            model=gateway_model,
-            manufacturer=HUB_MANUFACTURER[hub],
-            name=gateway_name,
+            model=gateway.sub_type.beautify_name if gateway.sub_type else None,
+            manufacturer=server.manufacturer,
+            name=gateway.type.beautify_name,
             sw_version=gateway.connectivity.protocol_version,
+            configuration_url=server.configuration_url,
         )
 
     async def handle_execute_command(call: ServiceCall):
@@ -218,7 +160,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entity = entity_registry.entities.get(entity_id)
 
             try:
-                await tahoma_coordinator.client.execute_command(
+                await coordinator.client.execute_command(
                     entity.unique_id,
                     Command(call.data.get("command"), call.data.get("args")),
                     "Home Assistant Service",
@@ -244,7 +186,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def handle_get_execution_history(call):
         """Handle get execution history service."""
-        await write_execution_history_to_log(tahoma_coordinator.client)
+        await write_execution_history_to_log(coordinator.client)
 
     service.async_register_admin_service(
         hass,
@@ -258,77 +200,38 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    entities_per_platform = hass.data[DOMAIN][entry.entry_id]["platforms"]
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in entities_per_platform
-            ]
-        )
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        entry, SUPPORTED_PLATFORMS
     )
 
     if unload_ok:
-        hass.data[DOMAIN][entry.entry_id]["update_listener"]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
 
 
-async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Update when config_entry options update."""
-    if entry.options[CONF_UPDATE_INTERVAL]:
-        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
-        coordinator.update_interval = new_update_interval
-        coordinator.original_update_interval = new_update_interval
-
-        await coordinator.async_refresh()
-
-
-def print_homekit_setup_code(device: Device):
-    """Retrieve and print HomeKit Setup Code."""
-    if device.attributes:
-        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
-
-        if homekit:
-            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
-
-
-async def write_execution_history_to_log(client: TahomaClient):
+async def write_execution_history_to_log(client: OverkizClient):
     """Retrieve execution history and write output to log."""
     history = await client.get_execution_history()
 
     for item in history:
-        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
-
-        for command in item.commands:
-            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-            _LOGGER.info(
-                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
-                    command=command.command,
-                    timestamp=date,
-                    device=command.deviceurl,
-                    parameters=command.parameters,
-                    app=item.label,
-                )
-            )
-
-
-def beautify_name(name: str):
-    """Return human readable string."""
-    return name.replace("_", " ").title()
+        _LOGGER.info(item)
 
 
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
-    _LOGGER.debug(
-        "%s (%s - %s - %s - %s)",
-        message,
-        device.controllable_name,
-        device.ui_class,
-        device.widget,
-        device.deviceurl,
+    _LOGGER.debug("%s (%s)", message, device)
+
+
+async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    overkiz_config_entries = hass.config_entries.async_entries("overkiz")
+
+    return any(
+        (
+            overkiz_entry.source in [SOURCE_USER, SOURCE_ZEROCONF, SOURCE_DHCP]
+            and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+            and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
+        )
+        for overkiz_entry in overkiz_config_entries
     )
