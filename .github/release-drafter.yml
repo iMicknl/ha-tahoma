@@ -4,6 +4,8 @@ exclude-labels:
   - 'Meta: Exclude From Changelog'
   - 'auto-changelog'
 categories:
+  - title: '⤽ Backport from Core'
+    label: 'backport'
   - title: '⚠️ Breaking changes'
     label: 'breaking'
   - title: '🚀 Features'
