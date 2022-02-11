@@ -1,4 +1,6 @@
 """Support for Overkiz light devices."""
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
@@ -13,7 +15,6 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN

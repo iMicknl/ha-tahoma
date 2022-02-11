@@ -1,6 +1,8 @@
 """Support for Atlantic Electrical Towel Dryer."""
 from typing import Optional
 
+from pyoverkiz.enums import OverkizState
+
 from homeassistant.components.climate import (
     SUPPORT_PRESET_MODE,
     SUPPORT_TARGET_TEMPERATURE,
@@ -13,7 +15,6 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
-from pyoverkiz.enums import OverkizState
 
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity

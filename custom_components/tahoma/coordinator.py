@@ -5,11 +5,6 @@ from datetime import timedelta
 import logging
 
 from aiohttp import ServerDisconnectedError
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.util.decorator import Registry
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.enums import EventName, ExecutionState
 from pyoverkiz.exceptions import (
@@ -19,6 +14,12 @@ from pyoverkiz.exceptions import (
     TooManyRequestsException,
 )
 from pyoverkiz.models import Device, Event, Place
+
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util.decorator import Registry
 
 from .const import DOMAIN, LOGGER, UPDATE_INTERVAL
 

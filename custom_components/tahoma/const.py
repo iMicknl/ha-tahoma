@@ -3,8 +3,9 @@ from datetime import timedelta
 import logging
 from typing import Final
 
-from homeassistant.const import Platform
 from pyoverkiz.enums import UIClass, UIWidget
+
+from homeassistant.const import Platform
 
 DOMAIN: Final = "tahoma"
 LOGGER: logging.Logger = logging.getLogger(__package__)
