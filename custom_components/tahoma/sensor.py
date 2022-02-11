@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -24,7 +26,6 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES

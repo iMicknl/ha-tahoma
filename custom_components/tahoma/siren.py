@@ -1,4 +1,7 @@
 """Support for Overkiz sirens."""
+from pyoverkiz.enums import OverkizState
+from pyoverkiz.enums.command import OverkizCommand, OverkizCommandParam
+
 from homeassistant.components.siren import SirenEntity
 from homeassistant.components.siren.const import (
     ATTR_DURATION,
@@ -10,8 +13,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizState
-from pyoverkiz.enums.command import OverkizCommand, OverkizCommandParam
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN

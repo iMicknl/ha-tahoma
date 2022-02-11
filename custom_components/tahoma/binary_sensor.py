@@ -1,6 +1,9 @@
 """Support for Overkiz binary sensors."""
 from __future__ import annotations
 
+from pyoverkiz.enums import OverkizCommandParam, OverkizState
+
+from custom_components.tahoma import HomeAssistantOverkizData
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
@@ -8,9 +11,6 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizCommandParam, OverkizState
-
-from custom_components.tahoma import HomeAssistantOverkizData
 
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .entity import OverkizBinarySensorDescription, OverkizDescriptiveEntity

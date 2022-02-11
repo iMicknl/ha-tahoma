@@ -5,12 +5,6 @@ import logging
 from typing import Any, cast
 
 from aiohttp import ClientError
-from homeassistant import config_entries
-from homeassistant.components import dhcp, zeroconf
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.data_entry_flow import FlowResult
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.const import SUPPORTED_SERVERS
 from pyoverkiz.exceptions import (
@@ -20,6 +14,13 @@ from pyoverkiz.exceptions import (
 )
 from pyoverkiz.models import obfuscate_id
 import voluptuous as vol
+
+from homeassistant import config_entries
+from homeassistant.components import dhcp, zeroconf
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import CONF_HUB, DEFAULT_HUB, DOMAIN
 
