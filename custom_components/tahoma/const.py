@@ -1,11 +1,13 @@
 """Constants for the Overkiz (by Somfy) integration."""
 from datetime import timedelta
+import logging
 from typing import Final
 
 from homeassistant.const import Platform
 from pyoverkiz.enums import UIClass, UIWidget
 
 DOMAIN: Final = "tahoma"
+LOGGER: logging.Logger = logging.getLogger(__package__)
 
 CONF_HUB = "hub"
 DEFAULT_HUB = "somfy_europe"
