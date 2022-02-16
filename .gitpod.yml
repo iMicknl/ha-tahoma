@@ -13,8 +13,7 @@ github:
     pullRequestsFromForks: true
     addCheck: true
     addComment: false
-    addBadge: true
-    addLabel: prebuilt-in-gitpod
+    addBadge: false
 vscode:
   extensions:
     - esbenp.prettier-vscode
