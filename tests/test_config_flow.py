@@ -4,10 +4,6 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 from aiohttp import ClientError
-from homeassistant import config_entries, data_entry_flow
-from homeassistant.components import dhcp
-from homeassistant.components.zeroconf import ZeroconfServiceInfo
-from homeassistant.core import HomeAssistant
 from pyoverkiz.exceptions import (
     BadCredentialsException,
     MaintenanceException,
@@ -20,6 +16,10 @@ from pytest_homeassistant_custom_component.common import (
 )
 
 from custom_components.tahoma import config_flow
+from homeassistant import config_entries, data_entry_flow
+from homeassistant.components import dhcp
+from homeassistant.components.zeroconf import ZeroconfServiceInfo
+from homeassistant.core import HomeAssistant
 
 TEST_EMAIL = "test@testdomain.com"
 TEST_EMAIL2 = "test@testdomain.nl"
