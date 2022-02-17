@@ -1,4 +1,6 @@
 """Support for Overkiz light devices."""
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_EFFECT,
@@ -13,8 +15,8 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 import homeassistant.util.color as color_util
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizEntity
@@ -35,12 +37,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz lights from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = [
-        OverkizLight(device.device_url, coordinator)
-        for device in data["platforms"][Platform.LIGHT]
+        OverkizLight(device.device_url, data.coordinator)
+        for device in data.platforms[Platform.LIGHT]
     ]
 
     async_add_entities(entities)

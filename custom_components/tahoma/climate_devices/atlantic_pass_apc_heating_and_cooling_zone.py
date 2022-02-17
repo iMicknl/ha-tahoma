@@ -40,7 +40,6 @@ CORE_MINIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
 CORE_MAXIMUM_HEATING_TARGET_TEMPERATURE_STATE = (
     "core:MaximumHeatingTargetTemperatureState"
 )
-CORE_ON_OFF_STATE = "core:OnOffState"
 CORE_OPERATING_MODE_STATE = "core:OperatingModeState"
 CORE_TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState"
 

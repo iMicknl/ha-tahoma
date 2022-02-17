@@ -1,5 +1,5 @@
 {
-  "name": "Overkiz (by Somfy)",
+  "name": "Overkiz (by Somfy) - Custom component",
   "domains": [
     "alarm_control_panel",
     "binary_sensor",
@@ -12,7 +12,7 @@
     "switch",
     "water_heater"
   ],
-  "homeassistant": "2021.12.0",
+  "homeassistant": "2022.02.0",
   "render_readme": "true",
   "iot_class": "Cloud Polling"
 }

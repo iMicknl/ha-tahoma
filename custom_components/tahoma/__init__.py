@@ -1,20 +1,12 @@
 """The Overkiz (by Somfy) integration."""
+from __future__ import annotations
+
 import asyncio
 from collections import defaultdict
+from dataclasses import dataclass
 import logging
 
 from aiohttp import ClientError, ServerDisconnectedError
-from homeassistant.components.scene import DOMAIN as SCENE
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
-from homeassistant.helpers import (
-    config_validation as cv,
-    device_registry as dr,
-    service,
-)
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from pyoverkiz.client import OverkizClient
 from pyoverkiz.const import SUPPORTED_SERVERS
 from pyoverkiz.exceptions import (
@@ -23,8 +15,24 @@ from pyoverkiz.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyoverkiz.models import Command, Device
+from pyoverkiz.models import Command, Device, Scenario
 import voluptuous as vol
+
+from homeassistant.config_entries import (
+    SOURCE_DHCP,
+    SOURCE_USER,
+    SOURCE_ZEROCONF,
+    ConfigEntry,
+)
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.helpers import (
+    config_validation as cv,
+    device_registry as dr,
+    service,
+)
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .const import (
     CONF_HUB,
@@ -42,11 +50,25 @@ _LOGGER = logging.getLogger(__name__)
 SERVICE_EXECUTE_COMMAND = "execute_command"
 
 
+@dataclass
+class HomeAssistantOverkizData:
+    """Overkiz data stored in the Home Assistant data object."""
+
+    coordinator: OverkizDataUpdateCoordinator
+    platforms: defaultdict[Platform, list[Device]]
+    scenarios: list[Scenario]
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Overkiz from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
     server = SUPPORTED_SERVERS[entry.data[CONF_HUB]]
+
+    if await _block_if_core_is_configured(hass, entry):
+        raise ConfigEntryNotReady(
+            "You cannot use Overkiz from core and custom component at the same time."
+        )
 
     # To allow users with multiple accounts/hubs, we create a new session so they have separate cookies
     session = async_create_clientsession(hass)
@@ -94,13 +116,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
 
-    platforms = defaultdict(list)
-    platforms[SCENE] = scenarios
+    platforms: defaultdict[Platform, list[Device]] = defaultdict(list)
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "platforms": platforms,
-        "coordinator": coordinator,
-    }
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HomeAssistantOverkizData(
+        coordinator=coordinator, platforms=platforms, scenarios=scenarios
+    )
 
     # Map Overkiz device to Home Assistant platform
     for device in coordinator.data.values():
@@ -203,3 +223,16 @@ async def write_execution_history_to_log(client: OverkizClient):
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
     _LOGGER.debug("%s (%s)", message, device)
+
+
+async def _block_if_core_is_configured(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    overkiz_config_entries = hass.config_entries.async_entries("overkiz")
+
+    return any(
+        (
+            overkiz_entry.source in [SOURCE_USER, SOURCE_ZEROCONF, SOURCE_DHCP]
+            and entry.data[CONF_USERNAME] == overkiz_entry.data[CONF_USERNAME]
+            and entry.data[CONF_HUB] == overkiz_entry.data[CONF_HUB]
+        )
+        for overkiz_entry in overkiz_config_entries
+    )

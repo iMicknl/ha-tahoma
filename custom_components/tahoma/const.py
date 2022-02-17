@@ -1,11 +1,14 @@
 """Constants for the Overkiz (by Somfy) integration."""
 from datetime import timedelta
+import logging
 from typing import Final
 
-from homeassistant.const import Platform
 from pyoverkiz.enums import UIClass, UIWidget
 
+from homeassistant.const import Platform
+
 DOMAIN: Final = "tahoma"
+LOGGER: logging.Logger = logging.getLogger(__package__)
 
 CONF_HUB = "hub"
 DEFAULT_HUB = "somfy_europe"
@@ -69,6 +72,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.SHUTTER: Platform.COVER,
     UIClass.SIREN: Platform.SIREN,
     UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (switch)
+    UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.STATELESS_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
     UIClass.SWIMMING_POOL: Platform.SWITCH,

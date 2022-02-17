@@ -1,6 +1,8 @@
 """Support for Stateless Exterior Heating device."""
 import logging
 
+from pyoverkiz.enums import OverkizCommand
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import HVAC_MODE_HEAT, HVAC_MODE_OFF
 from homeassistant.const import TEMP_CELSIUS
@@ -8,9 +10,6 @@ from homeassistant.const import TEMP_CELSIUS
 from ..entity import OverkizEntity
 
 _LOGGER = logging.getLogger(__name__)
-
-COMMAND_OFF = "off"
-COMMAND_ON = "on"
 
 
 class StatelessExteriorHeating(OverkizEntity, ClimateEntity):
@@ -24,6 +23,6 @@ class StatelessExteriorHeating(OverkizEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVAC_MODE_HEAT:
-            await self.executor.async_execute_command(COMMAND_ON)
+            await self.executor.async_execute_command(OverkizCommand.ON)
         else:
-            await self.executor.async_execute_command(COMMAND_OFF)
+            await self.executor.async_execute_command(OverkizCommand.OFF)

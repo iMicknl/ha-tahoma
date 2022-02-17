@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -24,8 +26,8 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizAttribute, OverkizState, UIWidget
 
+from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
 from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
@@ -77,6 +79,13 @@ SENSOR_DESCRIPTIONS = [
         state_class=SensorStateClass.MEASUREMENT,
     ),
     OverkizSensorDescription(
+        key=OverkizState.CORE_REMAINING_HOT_WATER,
+        name="Remaining Hot Water Volume",
+        icon="mdi:water",
+        native_unit_of_measurement=VOLUME_LITERS,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    OverkizSensorDescription(
         key=OverkizState.CORE_WATER_CONSUMPTION,
         name="Water Consumption",
         icon="mdi:water",
@@ -106,6 +115,13 @@ SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
         key=OverkizState.IO_MIDDLE_WATER_TEMPERATURE,
         name="Middle Water Temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    OverkizSensorDescription(
+        key=OverkizState.MODBUSLINK_MIDDLE_WATER_TEMPERATURE,
+        name="Middle Water Temperature",
+        native_unit_of_measurement=TEMP_CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -328,6 +344,12 @@ SENSOR_DESCRIPTIONS = [
         key=OverkizState.IO_ELECTRIC_BOOSTER_OPERATING_TIME,
         name="Electric Booster Operating Time",
     ),
+    OverkizSensorDescription(
+        key=OverkizState.CORE_TARGET_CLOSURE,
+        name="Target Closure",
+        native_unit_of_measurement=PERCENTAGE,
+        entity_registry_enabled_default=False,
+    ),
 ]
 
 
@@ -337,8 +359,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up the Overkiz sensors from a config entry."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    data: HomeAssistantOverkizData = hass.data[DOMAIN][entry.entry_id]
 
     entities = []
 
@@ -346,7 +367,7 @@ async def async_setup_entry(
         description.key: description for description in SENSOR_DESCRIPTIONS
     }
 
-    for device in coordinator.data.values():
+    for device in data.coordinator.data.values():
         if (
             device.widget not in IGNORED_OVERKIZ_DEVICES
             and device.ui_class not in IGNORED_OVERKIZ_DEVICES
@@ -356,7 +377,7 @@ async def async_setup_entry(
                     entities.append(
                         OverkizStateSensor(
                             device.device_url,
-                            coordinator,
+                            data.coordinator,
                             description,
                         )
                     )
@@ -365,7 +386,7 @@ async def async_setup_entry(
                 entities.append(
                     OverkizHomeKitSetupCodeSensor(
                         device.device_url,
-                        coordinator,
+                        data.coordinator,
                     )
                 )
 
