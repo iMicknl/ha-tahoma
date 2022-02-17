@@ -7,6 +7,7 @@ tasks:
       . .venv/bin/activate
       pip3 install pre-commit
       pre-commit install
+      pre-commit run --all-files
       pip3 install -r requirements_test.txt
 ports:
   - port: 9123
