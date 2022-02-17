@@ -7,6 +7,6 @@ RUN pyenv install 3.9.7 &&\
     echo "export PIP_USER=no" >> /home/gitpod/.bashrc &&\
     python -m pip install virtualenv &&\
     python -m virtualenv .venv &&\
-    source .venv/bin/activate &&\
+    . .venv/bin/activate &&\
     pip3 install pre-commit &&\
     pre-commit install
