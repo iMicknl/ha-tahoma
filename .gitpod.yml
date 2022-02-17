@@ -3,6 +3,9 @@ image:
 tasks:
   - name: Requirements
     init: |
+      python -m virtualenv .venv
+      . .venv/bin/activate
+      pip3 install pre-commit
       pre-commit install
       pip3 install -r requirements_test.txt
 ports:
