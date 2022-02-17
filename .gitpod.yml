@@ -1,7 +1,8 @@
 image:
   file: .gitpod.Dockerfile
 tasks:
-  - init: |
+  - name: Requirements
+    init: |
       pre-commit install
       pip3 install -r requirements_test.txt
 ports:
