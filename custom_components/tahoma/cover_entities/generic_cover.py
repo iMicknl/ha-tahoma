@@ -4,6 +4,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, cast
 
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.cover import (
     ATTR_TILT_POSITION,
     SUPPORT_CLOSE_TILT,
@@ -12,7 +14,6 @@ from homeassistant.components.cover import (
     SUPPORT_STOP_TILT,
     CoverEntity,
 )
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from ..entity import OverkizEntity
 

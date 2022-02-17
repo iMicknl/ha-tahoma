@@ -1,6 +1,8 @@
 """Support for Overkiz switches."""
 from typing import Any
 
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.switch import DEVICE_CLASS_SWITCH, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
@@ -8,7 +10,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN

@@ -1,9 +1,10 @@
 """Support for Overkiz water heater devices."""
+from pyoverkiz.enums import UIWidget
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import UIWidget
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN

@@ -1,6 +1,8 @@
 """Support for Atlantic Electrical Heater."""
 from typing import Optional
 
+from pyoverkiz.enums import OverkizState
+
 from homeassistant.components.climate import (
     HVAC_MODE_OFF,
     SUPPORT_PRESET_MODE,
@@ -13,7 +15,6 @@ from homeassistant.components.climate.const import (
     PRESET_NONE,
 )
 from homeassistant.const import TEMP_CELSIUS
-from pyoverkiz.enums import OverkizState
 
 from ..entity import OverkizEntity
 

@@ -1,7 +1,14 @@
 image:
   file: .gitpod.Dockerfile
 tasks:
-  - init: pip3 install -r requirements_test.txt
+  - name: Requirements
+    init: |
+      python -m virtualenv .venv
+      . .venv/bin/activate
+      pip3 install pre-commit
+      pre-commit install
+      pre-commit run --all-files
+      pip3 install -r requirements_test.txt
 ports:
   - port: 9123
     onOpen: notify
@@ -13,8 +20,7 @@ github:
     pullRequestsFromForks: true
     addCheck: true
     addComment: false
-    addBadge: true
-    addLabel: prebuilt-in-gitpod
+    addBadge: false
 vscode:
   extensions:
     - esbenp.prettier-vscode

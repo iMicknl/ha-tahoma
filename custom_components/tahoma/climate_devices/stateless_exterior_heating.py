@@ -1,10 +1,11 @@
 """Support for Stateless Exterior Heating device."""
 import logging
 
+from pyoverkiz.enums import OverkizCommand
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import HVAC_MODE_HEAT, HVAC_MODE_OFF
 from homeassistant.const import TEMP_CELSIUS
-from pyoverkiz.enums import OverkizCommand
 
 from ..entity import OverkizEntity
 
