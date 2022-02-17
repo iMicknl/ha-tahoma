@@ -8,5 +8,4 @@ RUN pyenv install 3.9.7 &&\
     python -m pip install virtualenv &&\
     python -m virtualenv .venv &&\
     . .venv/bin/activate &&\
-    pip3 install pre-commit &&\
-    pre-commit install
+    pip3 install pre-commit
