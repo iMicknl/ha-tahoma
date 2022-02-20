@@ -7,7 +7,6 @@ from typing import Any, Callable
 from pyoverkiz.enums import OverkizAttribute, OverkizCommandParam, OverkizState
 from pyoverkiz.models import Device
 
-from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.select import SelectEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
@@ -113,13 +112,6 @@ class OverkizSensorDescription(SensorEntityDescription):
     native_value: Callable[
         [str | int | float], str | int | float
     ] | None = lambda val: val
-
-
-@dataclass
-class OverkizBinarySensorDescription(BinarySensorEntityDescription):
-    """Class to describe an Overkiz binary sensor."""
-
-    is_on: Callable[[str], bool] = lambda state: state
 
 
 @dataclass
