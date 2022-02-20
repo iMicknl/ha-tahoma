@@ -15,6 +15,7 @@ from homeassistant.const import (
     STATE_ALARM_ARMED_NIGHT,
     STATE_ALARM_DISARMED,
     STATE_ALARM_PENDING,
+    STATE_ALARM_TRIGGERED,
 )
 
 from ..entity import OverkizEntity
@@ -31,6 +32,12 @@ class TSKAlarmController(OverkizEntity, AlarmControlPanelEntity):
     @property
     def state(self):
         """Return the state of the device."""
+        if (
+            self.executor.select_state(OverkizState.INTERNAL_INTRUSION_DETECTED)
+            == OverkizCommandParam.DETECTED
+        ):
+            return STATE_ALARM_TRIGGERED
+
         if self.executor.select_state(
             OverkizState.INTERNAL_CURRENT_ALARM_MODE
         ) != self.executor.select_state(OverkizState.INTERNAL_TARGET_ALARM_MODE):
