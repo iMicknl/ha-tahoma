@@ -106,13 +106,13 @@ BINARY_SENSOR_DESCRIPTIONS: list[OverkizBinarySensorDescription] = [
         key=OverkizState.IO_DHW_BOOST_MODE,
         name="Boost Mode",
         icon="hass:water-boiler-alert",
-        is_on=lambda state: state == OverkizCommandParam.ON,
+        value_fn=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
         key=OverkizState.IO_DHW_ABSENCE_MODE,
         name="Away Mode",
         icon="hass:water-boiler-off",
-        is_on=lambda state: state == OverkizCommandParam.ON,
+        value_fn=lambda state: state == OverkizCommandParam.ON,
     ),
     OverkizBinarySensorDescription(
         key=OverkizState.IO_OPERATING_MODE_CAPABILITIES,
