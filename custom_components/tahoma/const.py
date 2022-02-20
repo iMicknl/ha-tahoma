@@ -41,6 +41,7 @@ IGNORED_OVERKIZ_DEVICES = [
 OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.ADJUSTABLE_SLATS_ROLLER_SHUTTER: Platform.COVER,
     UIClass.ALARM: Platform.ALARM_CONTROL_PANEL,
+    UIWidget.ATLANTIC_HEAT_RECOVERY_VENTILATION: Platform.CLIMATE,
     UIWidget.ATLANTIC_ELECTRICAL_HEATER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
