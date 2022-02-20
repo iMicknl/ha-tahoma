@@ -40,7 +40,6 @@ IGNORED_OVERKIZ_DEVICES = [
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.ADJUSTABLE_SLATS_ROLLER_SHUTTER: Platform.COVER,
-    UIClass.ALARM: Platform.ALARM_CONTROL_PANEL,
     UIClass.AWNING: Platform.COVER,
     UIClass.CURTAIN: Platform.COVER,
     UIClass.DOOR_LOCK: Platform.LOCK,
@@ -59,6 +58,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.SWINGING_SHUTTER: Platform.COVER,
     UIClass.VENETIAN_BLIND: Platform.COVER,
     UIClass.WINDOW: Platform.COVER,
+    UIWidget.ALARM_PANEL_CONTROLLER: Platform.ALARM_CONTROL_PANEL,  # widgetName, uiClass is Alarm (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_HEATER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
@@ -73,13 +73,13 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.HITACHI_AIR_TO_AIR_HEAT_PUMP: Platform.CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     UIWidget.HITACHI_AIR_TO_WATER_HEATING_ZONE: Platform.CLIMATE,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
     UIWidget.HITACHI_DHW: Platform.WATER_HEATER,  # widgetName, uiClass is HitachiHeatingSystem (not supported)
-    UIWidget.MY_FOX_SECURITY_CAMERA: Platform.SWITCH,  # widgetName, uiClass is Camera (not supported)
-    UIWidget.RTD_INDOOR_SIREN: Platform.SWITCH,  # widgetName, uiClass is Siren (siren)
-    UIWidget.RTD_OUTDOOR_SIREN: Platform.SWITCH,  # widgetName, uiClass is Siren (siren)
+    UIWidget.MY_FOX_ALARM_CONTROLLER: Platform.ALARM_CONTROL_PANEL,  # widgetName, uiClass is Alarm (not supported)
+    UIWidget.MY_FOX_SECURITY_CAMERA: Platform.COVER,  # widgetName, uiClass is Camera (not supported)
     UIWidget.RTS_GENERIC: Platform.COVER,  # widgetName, uiClass is Generic (not supported)
-    UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (siren)
+    UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (switch)
     UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    UIWidget.STATELESS_ALARM_CONTROLLER: Platform.SWITCH,  # widgetName, uiClass is Alarm (not supported)
-    UIWidget.STATELESS_EXTERIOR_HEATING: Platform.SWITCH,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+    UIWidget.STATEFUL_ALARM_CONTROLLER: Platform.ALARM_CONTROL_PANEL,  # widgetName, uiClass is Alarm (not supported)
+    UIWidget.STATELESS_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
+    UIWidget.TSKALARM_CONTROLLER: Platform.ALARM_CONTROL_PANEL,  # widgetName, uiClass is Alarm (not supported)
 }
