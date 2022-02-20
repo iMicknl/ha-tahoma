@@ -74,7 +74,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.SIREN_STATUS: None,  # widgetName, uiClass is Siren (switch)
     UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
-    UIWidget.STATELESS_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem.
+    UIWidget.STATELESS_EXTERIOR_HEATING: Platform.SWITCH,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
     UIClass.SWIMMING_POOL: Platform.SWITCH,
     UIClass.SWINGING_SHUTTER: Platform.COVER,
     UIClass.VENETIAN_BLIND: Platform.COVER,
