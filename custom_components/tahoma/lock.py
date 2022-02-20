@@ -1,10 +1,11 @@
 """Support for Overkiz lock."""
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.lock import LockEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN

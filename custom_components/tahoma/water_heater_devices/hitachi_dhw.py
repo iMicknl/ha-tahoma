@@ -1,4 +1,6 @@
 """Support for HitachiDHW."""
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 from homeassistant.components.water_heater import (
     STATE_HIGH_DEMAND,
@@ -11,7 +13,6 @@ from homeassistant.const import (
     STATE_OFF,
     TEMP_CELSIUS,
 )
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from ..entity import OverkizEntity
 

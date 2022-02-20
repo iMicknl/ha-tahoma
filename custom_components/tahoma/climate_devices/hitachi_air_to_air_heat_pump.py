@@ -1,6 +1,8 @@
 """Support for HitachiAirToAirHeatPump."""
 from typing import Any, Dict, List, Optional
 
+from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     FAN_AUTO,
@@ -24,7 +26,6 @@ from homeassistant.components.climate.const import (
     SWING_VERTICAL,
 )
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
-from pyoverkiz.enums import OverkizCommand, OverkizCommandParam, OverkizState
 
 from ..entity import OverkizEntity
 

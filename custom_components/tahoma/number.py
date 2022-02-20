@@ -4,12 +4,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
+from pyoverkiz.enums import OverkizCommand, OverkizState
+
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizCommand, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
