@@ -13,8 +13,8 @@ from homeassistant.const import EVENT_HOMEASSISTANT_START, STATE_UNKNOWN, TEMP_C
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 
-from ..coordinator import TahomaDataUpdateCoordinator
-from ..tahoma_entity import TahomaEntity
+from ..coordinator import OverkizDataUpdateCoordinator
+from ..entity import OverkizEntity
 
 FAN_BOOST = "home_boost"
 FAN_KITCHEN = "kitchen_boost"
@@ -50,10 +50,10 @@ PRESET_MODES = [PRESET_AUTO, PRESET_PROG, PRESET_MANUAL]
 _LOGGER = logging.getLogger(__name__)
 
 
-class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
+class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
     """Representation of a AtlanticHeatRecoveryVentilation device."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
 
@@ -147,10 +147,10 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     @property
     def preset_mode(self) -> Optional[str]:
         """Return the current preset mode, e.g., auto, smart, interval, favorite."""
-        state_ventilation_configuration = self.select_state(
+        state_ventilation_configuration = self.executor.select_state(
             IO_VENTILATION_CONFIGURATION_MODE_STATE
         )
-        state_ventilation_mode = self.select_state(IO_VENTILATION_MODE_STATE)
+        state_ventilation_mode = self.executor.select_state(IO_VENTILATION_MODE_STATE)
         state_prog = state_ventilation_mode.get("prog")
 
         if state_prog == "on":
@@ -172,40 +172,42 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the preset mode of the fan."""
         if preset_mode == PRESET_AUTO:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "comfort"
             )
             await self._set_ventilation_mode(prog="off")
 
         if preset_mode == PRESET_PROG:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "standard"
             )
             await self._set_ventilation_mode(prog="on")
 
         if preset_mode == PRESET_MANUAL:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "standard"
             )
             await self._set_ventilation_mode(prog="off")
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_REFRESH_VENTILATION_CONFIGURATION_MODE,
         )
 
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        ventilation_mode_state = self.select_state(IO_VENTILATION_MODE_STATE)
+        ventilation_mode_state = self.executor.select_state(IO_VENTILATION_MODE_STATE)
         cooling = ventilation_mode_state.get("cooling")
 
         if cooling == "on":
             return FAN_BYPASS
         else:
-            return TAHOMA_TO_FAN_MODES[self.select_state(IO_AIR_DEMAND_MODE_STATE)]
+            return TAHOMA_TO_FAN_MODES[
+                self.executor.select_state(IO_AIR_DEMAND_MODE_STATE)
+            ]
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
@@ -215,16 +217,18 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
         if fan_mode == FAN_BYPASS:
-            await self.async_execute_command(COMMAND_SET_AIR_DEMAND_MODE, "auto")
+            await self.executor.async_execute_command(
+                COMMAND_SET_AIR_DEMAND_MODE, "auto"
+            )
         else:
-            await self.async_execute_command(
+            await self.executor.async_execute_command(
                 COMMAND_SET_AIR_DEMAND_MODE, FAN_MODES_TO_TAHOMA[fan_mode]
             )
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_REFRESH_VENTILATION_STATE,
         )
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_REFRESH_VENTILATION_CONFIGURATION_MODE,
         )
 
@@ -234,7 +238,7 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
         prog=None,
     ):
         """Execute ventilation mode command with all parameters."""
-        ventilation_mode_state = self.select_state(IO_VENTILATION_MODE_STATE)
+        ventilation_mode_state = self.executor.select_state(IO_VENTILATION_MODE_STATE)
 
         if cooling:
             ventilation_mode_state["cooling"] = cooling
@@ -242,6 +246,6 @@ class AtlanticHeatRecoveryVentilation(TahomaEntity, ClimateEntity):
         if prog:
             ventilation_mode_state["prog"] = prog
 
-        await self.async_execute_command(
+        await self.executor.async_execute_command(
             COMMAND_SET_VENTILATION_MODE, ventilation_mode_state
         )
