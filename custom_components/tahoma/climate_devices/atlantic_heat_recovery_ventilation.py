@@ -2,6 +2,8 @@
 import logging
 from typing import List, Optional
 
+from pyoverkiz.enums import OverkizCommand, OverkizState
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     FAN_AUTO,
@@ -9,9 +11,7 @@ from homeassistant.components.climate.const import (
     SUPPORT_FAN_MODE,
     SUPPORT_PRESET_MODE,
 )
-from homeassistant.const import EVENT_HOMEASSISTANT_START, STATE_UNKNOWN, TEMP_CELSIUS
-from homeassistant.core import callback
-from homeassistant.helpers.event import async_track_state_change
+from homeassistant.const import TEMP_CELSIUS
 
 from ..coordinator import OverkizDataUpdateCoordinator
 from ..entity import OverkizEntity
@@ -35,7 +35,7 @@ IO_AIR_DEMAND_MODE_STATE = "io:AirDemandModeState"
 IO_VENTILATION_MODE_STATE = "io:VentilationModeState"
 IO_VENTILATION_CONFIGURATION_MODE_STATE = "io:VentilationConfigurationModeState"
 
-TAHOMA_TO_FAN_MODES = {
+OVERKIZ_TO_FAN_MODES = {
     "auto": FAN_AUTO,
     "away": FAN_BOOST,
     "boost": FAN_KITCHEN,
@@ -43,7 +43,7 @@ TAHOMA_TO_FAN_MODES = {
     None: FAN_BYPASS,
 }
 
-FAN_MODES_TO_TAHOMA = {v: k for k, v in TAHOMA_TO_FAN_MODES.items()}
+FAN_MODES_TO_OVERKIZ = {v: k for k, v in OVERKIZ_TO_FAN_MODES.items()}
 
 PRESET_MODES = [PRESET_AUTO, PRESET_PROG, PRESET_MANUAL]
 
@@ -56,70 +56,12 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Init method."""
         super().__init__(device_url, coordinator)
-
-        self._temp_sensor_entity_id = None
-        self._current_temperature = None
-
-    async def async_added_to_hass(self):
-        """Register temperature sensor after added to hass."""
-        await super().async_added_to_hass()
-
-        base_url = self.get_base_device_url()
-        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
-        self._temp_sensor_entity_id = next(
-            (
-                entity_id
-                for entity_id, entry in entity_registry.entities.items()
-                if entry.unique_id == f"{base_url}#4"
-            ),
-            None,
-        )
-
-        if self._temp_sensor_entity_id:
-            async_track_state_change(
-                self.hass, self._temp_sensor_entity_id, self._async_temp_sensor_changed
-            )
-
-        else:
-            _LOGGER.warning(
-                "Temperature sensor could not be found for entity %s", self.name
-            )
-
-        @callback
-        def _async_startup(event):
-            """Init on startup."""
-            if self._temp_sensor_entity_id:
-                temp_sensor_state = self.hass.states.get(self._temp_sensor_entity_id)
-                if temp_sensor_state and temp_sensor_state.state != STATE_UNKNOWN:
-                    self.update_temp(temp_sensor_state)
-
-        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _async_startup)
-
-        self.schedule_update_ha_state(True)
-
-    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state) -> None:
-        """Handle temperature changes."""
-        if new_state is None or old_state == new_state:
-            return
-
-        self.update_temp(new_state)
-        self.schedule_update_ha_state()
-
-    @callback
-    def update_temp(self, state):
-        """Update thermostat with latest state from sensor."""
-        if state is None or state.state == STATE_UNKNOWN:
-            return
-
-        try:
-            self._current_temperature = float(state.state)
-        except ValueError as ex:
-            _LOGGER.error("Unable to update from sensor: %s", ex)
+        self.temperature_device = self.executor.linked_device(4)
 
     @property
     def current_temperature(self) -> Optional[float]:
         """Return the current temperature."""
-        return self._current_temperature
+        return self.temperature_device.states.get(OverkizState.CORE_TEMPERATURE).value
 
     @property
     def temperature_unit(self) -> str:
@@ -143,6 +85,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Not implemented since there is only one hvac_mode."""
+        pass
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -173,7 +116,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
         """Set the preset mode of the fan."""
         if preset_mode == PRESET_AUTO:
             await self.executor.async_execute_command(
-                COMMAND_SET_VENTILATION_CONFIGURATION_MODE, "comfort"
+                OverkizCommand.SET_VENTILATION_CONFIGURATION_MODE, "comfort"
             )
             await self._set_ventilation_mode(prog="off")
 
@@ -205,14 +148,14 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
         if cooling == "on":
             return FAN_BYPASS
         else:
-            return TAHOMA_TO_FAN_MODES[
+            return OVERKIZ_TO_FAN_MODES[
                 self.executor.select_state(IO_AIR_DEMAND_MODE_STATE)
             ]
 
     @property
     def fan_modes(self) -> Optional[List[str]]:
         """Return the list of available fan modes."""
-        return [*FAN_MODES_TO_TAHOMA]
+        return [*FAN_MODES_TO_OVERKIZ]
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
@@ -222,7 +165,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
             )
         else:
             await self.executor.async_execute_command(
-                COMMAND_SET_AIR_DEMAND_MODE, FAN_MODES_TO_TAHOMA[fan_mode]
+                COMMAND_SET_AIR_DEMAND_MODE, FAN_MODES_TO_OVERKIZ[fan_mode]
             )
 
         await self.executor.async_execute_command(
