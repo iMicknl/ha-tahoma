@@ -40,7 +40,6 @@ IGNORED_OVERKIZ_DEVICES = [
 # Used to map the Somfy widget and ui_class to the Home Assistant platform
 OVERKIZ_DEVICE_TO_PLATFORM = {
     UIClass.ADJUSTABLE_SLATS_ROLLER_SHUTTER: Platform.COVER,
-    UIClass.ALARM: Platform.ALARM_CONTROL_PANEL,
     UIClass.AWNING: Platform.COVER,
     UIClass.CURTAIN: Platform.COVER,
     UIClass.DOOR_LOCK: Platform.LOCK,
