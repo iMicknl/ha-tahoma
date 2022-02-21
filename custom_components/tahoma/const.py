@@ -3,7 +3,7 @@ from datetime import timedelta
 import logging
 from typing import Final
 
-from pyoverkiz.enums import UIClass, UIWidget
+from pyoverkiz.enums import OverkizCommandParam, UIClass, UIWidget
 
 from homeassistant.const import Platform
 
@@ -83,4 +83,17 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.SOMFY_THERMOSTAT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.STATELESS_ALARM_CONTROLLER: Platform.SWITCH,  # widgetName, uiClass is Alarm (not supported)
     UIWidget.STATELESS_EXTERIOR_HEATING: Platform.SWITCH,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
+}
+
+# Map Overkiz camelCase to Home Assistant snake_case for translation
+OVERKIZ_STATE_TO_TRANSLATION: dict[str, str] = {
+    OverkizCommandParam.EXTERNAL_GATEWAY: "external_gateway",
+    OverkizCommandParam.LOCAL_USER: "local_user",
+    OverkizCommandParam.LOW_BATTERY: "low_battery",
+    OverkizCommandParam.LSC: "lsc",
+    OverkizCommandParam.MAINTENANCE_REQUIRED: "maintenance_required",
+    OverkizCommandParam.NO_DEFECT: "no_defect",
+    OverkizCommandParam.SAAC: "saac",
+    OverkizCommandParam.SFC: "sfc",
+    OverkizCommandParam.UPS: "ups",
 }
