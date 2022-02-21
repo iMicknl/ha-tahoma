@@ -27,9 +27,9 @@ PRESET_MANUAL = "manual"
 
 OVERKIZ_TO_FAN_MODES = {
     OverkizCommandParam.AUTO: FAN_AUTO,
-    OverkizCommandParam.AWAY: FAN_BOOST,
-    OverkizCommandParam.BOOST: FAN_KITCHEN,
-    OverkizCommandParam.HIGH: FAN_AWAY,
+    OverkizCommandParam.AWAY: FAN_AWAY,
+    OverkizCommandParam.BOOST: FAN_BOOST,
+    OverkizCommandParam.HIGH: FAN_KITCHEN,
     None: FAN_BYPASS,
 }
 
