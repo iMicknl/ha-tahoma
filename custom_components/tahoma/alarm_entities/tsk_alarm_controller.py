@@ -45,8 +45,8 @@ class TSKAlarmController(OverkizEntity, AlarmControlPanelEntity):
 
         MAP_INTERNAL_STATUS_STATE = {
             OverkizCommandParam.OFF: STATE_ALARM_DISARMED,
-            "zone1": STATE_ALARM_ARMED_HOME,
-            "zone2": STATE_ALARM_ARMED_NIGHT,
+            OverkizCommandParam.ZONE_1: STATE_ALARM_ARMED_HOME,
+            OverkizCommandParam.ZONE_2: STATE_ALARM_ARMED_NIGHT,
             OverkizCommandParam.TOTAL: STATE_ALARM_ARMED_AWAY,
         }
 
@@ -60,16 +60,20 @@ class TSKAlarmController(OverkizEntity, AlarmControlPanelEntity):
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
-        await self.executor.async_execute_command("setTargetAlarmMode", "partial1")
+        await self.executor.async_execute_command(
+            OverkizCommand.SET_TARGET_ALARM_MODE, OverkizCommandParam.PARTIAL_1
+        )
 
     async def async_alarm_arm_night(self, code=None):
         """Send arm night command."""
-        await self.executor.async_execute_command("setTargetAlarmMode", "partial2")
+        await self.executor.async_execute_command(
+            OverkizCommand.SET_TARGET_ALARM_MODE, OverkizCommandParam.PARTIAL_2
+        )
 
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
         await self.executor.async_execute_command(
-            "setTargetAlarmMode", OverkizCommandParam.TOTAL
+            OverkizCommand.SET_TARGET_ALARM_MODE, OverkizCommandParam.TOTAL
         )
 
     async def async_alarm_trigger(self, code=None) -> None:
