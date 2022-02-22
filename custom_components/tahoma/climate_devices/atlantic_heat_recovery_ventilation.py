@@ -80,10 +80,8 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
         ventilation_configuration = self.executor.select_state(
             OverkizState.IO_VENTILATION_CONFIGURATION_MODE
         )
-        
-        ventilation_mode = self.executor.select_state(
-            OverkizState.IO_VENTILATION_MODE
-        )
+
+        ventilation_mode = self.executor.select_state(OverkizState.IO_VENTILATION_MODE)
         prog = ventilation_mode.get(OverkizCommandParam.PROG)
 
         if prog == OverkizCommandParam.PROG:
@@ -135,9 +133,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
     @property
     def fan_mode(self) -> Optional[str]:
         """Return the fan setting."""
-        ventilation_mode = self.executor.select_state(
-            OverkizState.IO_VENTILATION_MODE
-        )
+        ventilation_mode = self.executor.select_state(OverkizState.IO_VENTILATION_MODE)
         cooling = ventilation_mode.get(OverkizCommandParam.COOLING)
 
         if cooling == OverkizCommandParam.ON:
@@ -176,9 +172,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
         prog=None,
     ):
         """Execute ventilation mode command with all parameters."""
-        ventilation_mode = self.executor.select_state(
-            OverkizState.IO_VENTILATION_MODE
-        )
+        ventilation_mode = self.executor.select_state(OverkizState.IO_VENTILATION_MODE)
 
         if cooling:
             ventilation_mode[OverkizCommandParam.COOLING] = cooling
