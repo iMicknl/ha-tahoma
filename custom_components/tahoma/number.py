@@ -29,7 +29,7 @@ class OverkizNumberDescription(NumberEntityDescription, OverkizNumberDescription
     """Class to describe an Overkiz number."""
 
 
-NUMBER_DESCRIPTIONS = [
+NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
     # Cover: My Position (0 - 100)
     OverkizNumberDescription(
         key=OverkizState.CORE_MEMORIZED_1_POSITION,
@@ -65,6 +65,7 @@ NUMBER_DESCRIPTIONS = [
         command="setAwayModeDuration",
         min_value=0,
         max_value=10,
+    # SomfyHeatingTemperatureInterface
     OverkizNumberDescription(
         key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
         name="Eco Room Temperature",
