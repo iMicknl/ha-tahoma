@@ -113,11 +113,3 @@ class Awning(OverkizGenericCover):
             return None
 
         return cast(int, current_closure.value) > cast(int, target_closure.value)
-
-    def is_running(self, commands: list[OverkizCommand]) -> bool:
-        """Return if the given commands are currently running."""
-        return any(
-            execution.get("device_url") == self.device.device_url
-            and execution.get("command_name") in commands
-            for execution in self.coordinator.executions.values()
-        )
