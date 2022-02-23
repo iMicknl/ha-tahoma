@@ -119,12 +119,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         if self.assumed_state:
             return None
 
-        # Check if cover movement execution is currently running
-        if any(
-            execution.get("device_url") == self.device.device_url
-            and execution.get("command_name") in COMMANDS_OPEN + COMMANDS_OPEN_TILT
-            for execution in self.coordinator.executions.values()
-        ):
+        if self.is_running(COMMANDS_OPEN + COMMANDS_OPEN_TILT):
             return True
 
         # Check if cover is moving based on current state
@@ -144,12 +139,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         if self.assumed_state:
             return None
 
-        # Check if cover movement execution is currently running
-        if any(
-            execution.get("device_url") == self.device.device_url
-            and execution.get("command_name") in COMMANDS_CLOSE + COMMANDS_CLOSE_TILT
-            for execution in self.coordinator.executions.values()
-        ):
+        if self.is_running(COMMANDS_CLOSE + COMMANDS_CLOSE_TILT):
             return True
 
         # Check if cover is moving based on current state
@@ -161,6 +151,14 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
             return None
 
         return cast(int, current_closure.value) < cast(int, target_closure.value)
+
+    def is_running(self, commands: list[OverkizCommand]) -> bool:
+        """Return if the given commands are currently running."""
+        return any(
+            execution.get("device_url") == self.device.device_url
+            and execution.get("command_name") in commands
+            for execution in self.coordinator.executions.values()
+        )
 
     @property
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
