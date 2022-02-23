@@ -1,60 +1,46 @@
 """Support for Overkiz Vertical Covers."""
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from pyoverkiz.enums import OverkizCommand, OverkizState, UIClass, UIWidget
 
-from custom_components.tahoma.coordinator import OverkizDataUpdateCoordinator
 from homeassistant.components.cover import (
     ATTR_POSITION,
-    DEVICE_CLASS_AWNING,
-    DEVICE_CLASS_BLIND,
-    DEVICE_CLASS_CURTAIN,
-    DEVICE_CLASS_GARAGE,
-    DEVICE_CLASS_GATE,
-    DEVICE_CLASS_SHUTTER,
-    DEVICE_CLASS_WINDOW,
     SUPPORT_CLOSE,
     SUPPORT_OPEN,
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
+    CoverDeviceClass,
 )
+from homeassistant.components.overkiz.coordinator import OverkizDataUpdateCoordinator
 
-from .generic_cover import COMMANDS_STOP, OverkizGenericCover
+from .generic_cover import (
+    COMMANDS_CLOSE_TILT,
+    COMMANDS_OPEN_TILT,
+    COMMANDS_STOP,
+    OverkizGenericCover,
+)
 
 COMMANDS_OPEN = [OverkizCommand.OPEN, OverkizCommand.UP, OverkizCommand.CYCLE]
 COMMANDS_CLOSE = [OverkizCommand.CLOSE, OverkizCommand.DOWN, OverkizCommand.CYCLE]
 
 OVERKIZ_DEVICE_TO_DEVICE_CLASS = {
-    UIClass.CURTAIN: DEVICE_CLASS_CURTAIN,
-    UIClass.EXTERIOR_SCREEN: DEVICE_CLASS_BLIND,
-    UIClass.EXTERIOR_VENETIAN_BLIND: DEVICE_CLASS_BLIND,
-    UIClass.GARAGE_DOOR: DEVICE_CLASS_GARAGE,
-    UIClass.GATE: DEVICE_CLASS_GATE,
-    UIWidget.MY_FOX_SECURITY_CAMERA: DEVICE_CLASS_SHUTTER,
-    UIClass.PERGOLA: DEVICE_CLASS_AWNING,
-    UIClass.ROLLER_SHUTTER: DEVICE_CLASS_SHUTTER,
-    UIClass.SWINGING_SHUTTER: DEVICE_CLASS_SHUTTER,
-    UIClass.WINDOW: DEVICE_CLASS_WINDOW,
+    UIClass.CURTAIN: CoverDeviceClass.CURTAIN,
+    UIClass.EXTERIOR_SCREEN: CoverDeviceClass.BLIND,
+    UIClass.EXTERIOR_VENETIAN_BLIND: CoverDeviceClass.BLIND,
+    UIClass.GARAGE_DOOR: CoverDeviceClass.GARAGE,
+    UIClass.GATE: CoverDeviceClass.GATE,
+    UIWidget.MY_FOX_SECURITY_CAMERA: CoverDeviceClass.SHUTTER,
+    UIClass.PERGOLA: CoverDeviceClass.AWNING,
+    UIClass.ROLLER_SHUTTER: CoverDeviceClass.SHUTTER,
+    UIClass.SWINGING_SHUTTER: CoverDeviceClass.SHUTTER,
+    UIClass.WINDOW: CoverDeviceClass.WINDOW,
 }
 
 
 class VerticalCover(OverkizGenericCover):
     """Representation of an Overkiz vertical cover."""
-
-    def __init__(
-        self,
-        device_url: str,
-        coordinator: OverkizDataUpdateCoordinator,
-        low_speed: bool = False,
-    ):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self.low_speed = low_speed
-        if self.low_speed:
-            self._attr_name = f"{self._attr_name} Low Speed"
-            self._attr_unique_id = f"{self._attr_unique_id}_low_speed"
 
     @property
     def supported_features(self) -> int:
@@ -83,7 +69,7 @@ class VerticalCover(OverkizGenericCover):
             (
                 OVERKIZ_DEVICE_TO_DEVICE_CLASS.get(self.device.widget)
                 or OVERKIZ_DEVICE_TO_DEVICE_CLASS.get(self.device.ui_class)
-                or DEVICE_CLASS_BLIND
+                or CoverDeviceClass.BLIND
             ),
         )
 
@@ -94,47 +80,107 @@ class VerticalCover(OverkizGenericCover):
 
         None is unknown, 0 is closed, 100 is fully open.
         """
-        position = cast(
-            Union[int, None],
-            self.executor.select_state(
-                OverkizState.CORE_CLOSURE,
-                OverkizState.CORE_CLOSURE_OR_ROCKER_POSITION,
-                OverkizState.CORE_PEDESTRIAN_POSITION,
-            ),
+        position = self.executor.select_state(
+            OverkizState.CORE_CLOSURE,
+            OverkizState.CORE_CLOSURE_OR_ROCKER_POSITION,
+            OverkizState.CORE_PEDESTRIAN_POSITION,
         )
 
-        # Uno devices can have a position not in 0 to 100 range when unknown
-        if position is None or position < 0 or position > 100:
+        if position is None:
             return None
 
-        return 100 - position
+        return 100 - cast(int, position)
 
     async def async_set_cover_position(self, **kwargs: Any) -> None:
         """Move the cover to a specific position."""
-        if self.low_speed:
-            await self.async_set_cover_position_low_speed(**kwargs)
-        else:
-            position = 100 - kwargs.get(ATTR_POSITION, 0)
-            await self.executor.async_execute_command(
-                OverkizCommand.SET_CLOSURE, position
-            )
+        position = 100 - kwargs[ATTR_POSITION]
+        await self.executor.async_execute_command(OverkizCommand.SET_CLOSURE, position)
 
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Open the cover."""
-        if self.low_speed:
-            await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 100})
-
-        elif command := self.executor.select_command(*COMMANDS_OPEN):
+        if command := self.executor.select_command(*COMMANDS_OPEN):
             await self.executor.async_execute_command(command)
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Close the cover."""
-        if self.low_speed:
-            await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 0})
-        elif command := self.executor.select_command(*COMMANDS_CLOSE):
+        if command := self.executor.select_command(*COMMANDS_CLOSE):
             await self.executor.async_execute_command(command)
 
-    async def async_set_cover_position_low_speed(self, **kwargs):
+    @property
+    def is_opening(self) -> bool | None:
+        """Return if the cover is opening or not."""
+
+        if self.assumed_state:
+            return None
+
+        if self.is_running(COMMANDS_OPEN + COMMANDS_OPEN_TILT):
+            return True
+
+        # Check if cover is moving based on current state
+        is_moving = self.device.states.get(OverkizState.CORE_MOVING)
+        current_closure = self.device.states.get(OverkizState.CORE_CLOSURE)
+        target_closure = self.device.states.get(OverkizState.CORE_TARGET_CLOSURE)
+
+        if not is_moving or not current_closure or not target_closure:
+            return None
+
+        return cast(int, current_closure.value) > cast(int, target_closure.value)
+
+    @property
+    def is_closing(self) -> bool | None:
+        """Return if the cover is closing or not."""
+
+        if self.assumed_state:
+            return None
+
+        if self.is_running(COMMANDS_CLOSE + COMMANDS_CLOSE_TILT):
+            return True
+
+        # Check if cover is moving based on current state
+        is_moving = self.device.states.get(OverkizState.CORE_MOVING)
+        current_closure = self.device.states.get(OverkizState.CORE_CLOSURE)
+        target_closure = self.device.states.get(OverkizState.CORE_TARGET_CLOSURE)
+
+        if not is_moving or not current_closure or not target_closure:
+            return None
+
+        return cast(int, current_closure.value) < cast(int, target_closure.value)
+
+    def is_running(self, commands: list[OverkizCommand]) -> bool:
+        """Return if the given commands are currently running."""
+        return any(
+            execution.get("device_url") == self.device.device_url
+            and execution.get("command_name") in commands
+            for execution in self.coordinator.executions.values()
+        )
+
+
+class LowSpeedCover(VerticalCover):
+    """Representation of an Overkiz Low Speed cover."""
+
+    def __init__(
+        self,
+        device_url: str,
+        coordinator: OverkizDataUpdateCoordinator,
+    ) -> None:
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self._attr_name = f"{self._attr_name} Low Speed"
+        self._attr_unique_id = f"{self._attr_unique_id}_low_speed"
+
+    async def async_set_cover_position(self, **kwargs: Any) -> None:
+        """Move the cover to a specific position."""
+        await self.async_set_cover_position_low_speed(**kwargs)
+
+    async def async_open_cover(self, **kwargs: Any) -> None:
+        """Open the cover."""
+        await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 100})
+
+    async def async_close_cover(self, **kwargs: Any) -> None:
+        """Close the cover."""
+        await self.async_set_cover_position_low_speed(**{ATTR_POSITION: 0})
+
+    async def async_set_cover_position_low_speed(self, **kwargs: Any) -> None:
         """Move the cover to a specific position with a low speed."""
         position = 100 - kwargs.get(ATTR_POSITION, 0)
 
