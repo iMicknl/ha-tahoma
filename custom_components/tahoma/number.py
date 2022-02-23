@@ -4,12 +4,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
+from pyoverkiz.enums import OverkizCommand, OverkizState
+
 from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import OverkizCommand, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
@@ -29,7 +30,7 @@ class OverkizNumberDescription(NumberEntityDescription, OverkizNumberDescription
     """Class to describe an Overkiz number."""
 
 
-NUMBER_DESCRIPTIONS = [
+NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
     # Cover: My Position (0 - 100)
     OverkizNumberDescription(
         key=OverkizState.CORE_MEMORIZED_1_POSITION,
@@ -67,6 +68,7 @@ NUMBER_DESCRIPTIONS = [
         max_value=10,
         entity_category=EntityCategory.CONFIG,
     ),
+    # SomfyHeatingTemperatureInterface
     OverkizNumberDescription(
         key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
         name="Eco Room Temperature",

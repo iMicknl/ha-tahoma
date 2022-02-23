@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+from pyoverkiz.enums import OverkizCommand, OverkizState
+
 from homeassistant.components.cover import (
     ATTR_POSITION,
     DEVICE_CLASS_AWNING,
@@ -11,7 +13,6 @@ from homeassistant.components.cover import (
     SUPPORT_SET_POSITION,
     SUPPORT_STOP,
 )
-from pyoverkiz.enums import OverkizCommand, OverkizState
 
 from .generic_cover import COMMANDS_STOP, OverkizGenericCover
 

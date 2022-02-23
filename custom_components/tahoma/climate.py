@@ -1,9 +1,10 @@
 """Support for Overkiz climate devices."""
+from pyoverkiz.enums import UIWidget
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyoverkiz.enums import UIWidget
 
 from . import HomeAssistantOverkizData
 from .climate_devices.atlantic_electrical_heater import AtlanticElectricalHeater
@@ -29,7 +30,6 @@ from .climate_devices.somfy_heating_temperature_interface import (
     SomfyHeatingTemperatureInterface,
 )
 from .climate_devices.somfy_thermostat import SomfyThermostat
-from .climate_devices.stateless_exterior_heating import StatelessExteriorHeating
 from .const import DOMAIN
 
 TYPE = {
@@ -46,7 +46,6 @@ TYPE = {
     UIWidget.HITACHI_AIR_TO_WATER_HEATING_ZONE: HitachiAirToWaterHeatingZone,
     UIWidget.SOMFY_HEATING_TEMPERATURE_INTERFACE: SomfyHeatingTemperatureInterface,
     UIWidget.SOMFY_THERMOSTAT: SomfyThermostat,
-    UIWidget.STATELESS_EXTERIOR_HEATING: StatelessExteriorHeating,
 }
 
 
