@@ -13,6 +13,7 @@ from pyoverkiz.enums import OverkizCommand, OverkizState
 
 from . import HomeAssistantOverkizData
 from .const import DOMAIN, IGNORED_OVERKIZ_DEVICES
+from .coordinator import OverkizDataUpdateCoordinator
 from .entity import OverkizDescriptiveEntity
 
 
@@ -64,6 +65,8 @@ NUMBER_DESCRIPTIONS = [
         command="setAwayModeDuration",
         min_value=0,
         max_value=10,
+        entity_category=EntityCategory.CONFIG,
+    ),
     OverkizNumberDescription(
         key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
         name="Eco Room Temperature",
@@ -126,7 +129,7 @@ async def async_setup_entry(
                     entities.append(
                         OverkizBoostModeDurationNumber(
                             device.device_url,
-                            coordinator,
+                            data.coordinator,
                         )
                     )
 
@@ -151,7 +154,7 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
         await self.executor.async_execute_command(
             self.entity_description.command, value
         )
-      
+
     @property
     def min_value(self) -> float:
         """Return the minimum value."""
@@ -167,7 +170,7 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
         return self.entity_description.max_value or self._attr_max_value
 
 
-class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
+class OverkizBoostModeDurationNumber(OverkizDescriptiveEntity, NumberEntity):
     """Representation of an Overkiz BoostModeDuration Number entity."""
 
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
@@ -202,4 +205,3 @@ class OverkizBoostModeDurationNumber(OverkizEntity, NumberEntity):
             )
 
         await self.executor.async_execute_command("refreshBoostModeDuration")
-
