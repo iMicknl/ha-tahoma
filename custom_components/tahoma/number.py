@@ -177,7 +177,7 @@ class OverkizBoostModeDurationNumber(OverkizDescriptiveEntity, NumberEntity):
 
     def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
-        super().__init__(device_url, coordinator)
+        super().__init__(device_url, coordinator, "BoostModeDurationState")
         self._attr_max_value = 7
         self._attr_min_value = 0
         self._attr_icon = "mdi:water-boiler-alert"
