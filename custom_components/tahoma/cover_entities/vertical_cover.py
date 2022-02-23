@@ -13,8 +13,8 @@ from homeassistant.components.cover import (
     SUPPORT_STOP,
     CoverDeviceClass,
 )
-from homeassistant.components.overkiz.coordinator import OverkizDataUpdateCoordinator
 
+from ..coordinator import OverkizDataUpdateCoordinator
 from .generic_cover import (
     COMMANDS_CLOSE_TILT,
     COMMANDS_OPEN_TILT,
