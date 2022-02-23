@@ -72,7 +72,6 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Not implemented since there is only one hvac_mode."""
-        pass
 
     @property
     def preset_mode(self) -> Optional[str]:
@@ -181,5 +180,5 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
             ventilation_mode[OverkizCommandParam.PROG] = prog
 
         await self.executor.async_execute_command(
-            OverkizCommand.SET_VENTILATION_MODE, ventilation_mode
+            OverkizCommand.SET_VENTILATIN_MODE, ventilation_mode
         )
