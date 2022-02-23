@@ -65,6 +65,8 @@ NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
         command="setAwayModeDuration",
         min_value=0,
         max_value=10,
+        entity_category=EntityCategory.CONFIG,
+    ),
     # SomfyHeatingTemperatureInterface
     OverkizNumberDescription(
         key=OverkizState.CORE_ECO_ROOM_TEMPERATURE,
