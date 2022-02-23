@@ -84,7 +84,7 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
         ventilation_mode = self.executor.select_state(OverkizState.IO_VENTILATION_MODE)
         prog = ventilation_mode.get(OverkizCommandParam.PROG)
 
-        if prog == OverkizCommandParam.PROG:
+        if prog == OverkizCommandParam.ON:
             return PRESET_PROG
 
         if ventilation_configuration == OverkizCommandParam.COMFORT:
