@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/tahoma",
   "requirements": [
-    "git+https://github.com/iMicknl/python-overkiz-api.git@fix/67225#pyoverkiz==1.3.6.1"
+    "pyoverkiz==1.3.9"
   ],
   "codeowners": [
     "@imicknl",
