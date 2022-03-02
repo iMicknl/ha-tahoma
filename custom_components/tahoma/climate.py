@@ -17,6 +17,7 @@ from .climate_devices.atlantic_electrical_towel_dryer import (
 from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
     AtlanticPassAPCHeatingAndCoolingZone,
 )
+from .climate_devices.atlantic_pass_apc_heating_zone import AtlanticPassAPCHeatingZone
 from .climate_devices.atlantic_pass_apc_zone_control import AtlanticPassAPCZoneControl
 from .climate_devices.atlantic_pass_apcdhw import AtlanticPassAPCDHW
 from .climate_devices.dimmer_exterior_heating import DimmerExteriorHeating
@@ -37,6 +38,7 @@ TYPE = {
     UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
     UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: AtlanticElectricalTowelDryer,
     UIWidget.ATLANTIC_PASS_APC_DHW: AtlanticPassAPCDHW,
+    UIWidget.ATLANTIC_PASS_APC_HEATING_ZONE: AtlanticPassAPCHeatingZone,
     UIWidget.ATLANTIC_PASS_APC_HEATING_AND_COOLING_ZONE: AtlanticPassAPCHeatingAndCoolingZone,
     UIWidget.ATLANTIC_PASS_APC_ZONE_CONTROL: AtlanticPassAPCZoneControl,
     UIWidget.DIMMER_EXTERIOR_HEATING: DimmerExteriorHeating,

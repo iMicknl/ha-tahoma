@@ -63,6 +63,7 @@ OVERKIZ_DEVICE_TO_PLATFORM = {
     UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_PASS_APC_DHW: Platform.CLIMATE,  # widgetName, uiClass is WaterHeatingSystem (not supported)
+    UIWidget.ATLANTIC_PASS_APC_HEATING_ZONE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_PASS_APC_HEATING_AND_COOLING_ZONE: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.ATLANTIC_PASS_APC_ZONE_CONTROL: Platform.CLIMATE,  # widgetName, uiClass is HeatingSystem (not supported)
     UIWidget.DIMMER_EXTERIOR_HEATING: Platform.CLIMATE,  # widgetName, uiClass is ExteriorHeatingSystem (not supported)
