@@ -59,7 +59,7 @@ class HitachiAirToWaterHeatingZone(OverkizEntity, ClimateEntity):
     _attr_min_temp = 5.0
     _attr_preset_modes = [*PRESET_MODE_TO_TAHOMA]
     _attr_supported_features = SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
-    _attr_target_temperature_step = 1.0
+    _attr_target_temperature_step = 0.5
     _attr_temperature_unit = TEMP_CELSIUS
 
     @property
