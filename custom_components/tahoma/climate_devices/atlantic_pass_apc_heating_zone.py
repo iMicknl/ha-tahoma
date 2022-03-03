@@ -168,9 +168,9 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
         """Return hvac operation."""
 
         hvac_map = {
-          PASS_APC_HEATING_MODE_STATE_STOP: HVAC_MODE_OFF
-          PASS_APC_HEATING_MODE_STATE_INTERNAL_SCHEDULING: HVAC_MODE_AUTO
-          PASS_APC_HEATING_MODE_STATE_ABSENCE: HVAC_MODE_AUTO
+            PASS_APC_HEATING_MODE_STATE_STOP: HVAC_MODE_OFF,
+            PASS_APC_HEATING_MODE_STATE_INTERNAL_SCHEDULING: HVAC_MODE_AUTO,
+            PASS_APC_HEATING_MODE_STATE_ABSENCE: HVAC_MODE_AUTO,
         }
 
         state = self.executor.select_state(IO_PASS_APC_HEATING_MODE_STATE)
