@@ -218,7 +218,7 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
-        temperature = kwargs.get(ATTR_TEMPERATURE)
+        temperature = kwargs[ATTR_TEMPERATURE]
 
         if self.hvac_mode == HVAC_MODE_AUTO:
             await self.executor.async_execute_command(
