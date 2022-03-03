@@ -205,16 +205,15 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
     def target_temperature(self) -> None:
         """Return the temperature."""
 
-        if self.preset_mode == PRESET_COMFORT:
-            return self.executor.select_state(
-                CORE_COMFORT_HEATING_TARGET_TEMPERATURE_STATE
-            )
-        if self.preset_mode == PRESET_ECO:
-            return self.executor.select_state(CORE_ECO_HEATING_TARGET_TEMPERATURE_STATE)
-        if self.preset_mode == CUSTOM_PRESET_DEROGATION:
-            return self.executor.select_state(CORE_DEROGATED_TARGET_TEMPERATURE_STATE)
+        preset_map = {
+            PRESET_COMFORT: CORE_COMFORT_HEATING_TARGET_TEMPERATURE_STATE,
+            PRESET_ECO: CORE_ECO_HEATING_TARGET_TEMPERATURE_STATE,
+            CUSTOM_PRESET_DEROGATION: CORE_DEROGATED_TARGET_TEMPERATURE_STATE,
+        }
 
-        return self.executor.select_state(CORE_TARGET_TEMPERATURE_STATE)
+        return self.executor.select_state(
+            preset_map.get(self.preset_mode, CORE_TARGET_TEMPERATURE_STATE)
+        )
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new temperature."""
