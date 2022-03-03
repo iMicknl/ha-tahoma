@@ -157,20 +157,6 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
             self.entity_description.command, value
         )
 
-    @property
-    def min_value(self) -> float:
-        """Return the minimum value."""
-        if hasattr(super(), "min_value"):
-            return super().min_value
-        return self.entity_description.min_value or self._attr_min_value
-
-    @property
-    def max_value(self) -> float:
-        """Return the maximum value."""
-        if hasattr(super(), "max_value"):
-            return super().max_value
-        return self.entity_description.max_value or self._attr_max_value
-
 
 class OverkizBoostModeDurationNumber(OverkizDescriptiveEntity, NumberEntity):
     """Representation of an Overkiz BoostModeDuration Number entity."""
