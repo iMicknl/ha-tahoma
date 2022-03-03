@@ -111,7 +111,7 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
             self.executor.select_state(IO_PASS_APC_HEATING_PROFILE_STATE)
             == PASS_APC_HEATING_PROFILE_STATE_DEROGATION
         ):
-          presets.append(CUSTOM_PRESET_DEROGATION)
+            presets.append(CUSTOM_PRESET_DEROGATION)
 
         return presets
 
@@ -233,11 +233,11 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
                 COMMAND_SET_DEROGATED_TARGET_TEMPERATURE, temperature
             )
         else:
-            if self.preset_mode == "comfort":
+            if self.preset_mode == PRESET_COMFORT:
                 await self.executor.async_execute_command(
                     COMMAND_SET_COMFORT_HEATING_TARGET_TEMPERATURE, temperature
                 )
-            elif self.preset_mode == "eco":
+            elif self.preset_mode == PRESET_ECO:
                 await self.executor.async_execute_command(
                     COMMAND_SET_ECO_HEATING_TARGET_TEMPERATURE, temperature
                 )
