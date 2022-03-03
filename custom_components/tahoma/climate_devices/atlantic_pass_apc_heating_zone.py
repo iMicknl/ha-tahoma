@@ -99,27 +99,21 @@ class AtlanticPassAPCHeatingZone(OverkizEntity, ClimateEntity):
     @property
     def preset_modes(self) -> Optional[List[str]]:
         """Return preset mode list."""
-
-        if (
-            self.executor.select_state(IO_PASS_APC_HEATING_PROFILE_STATE)
-            == PASS_APC_HEATING_PROFILE_STATE_DEROGATION
-        ):
-            return [
-                PRESET_COMFORT,
-                PRESET_ECO,
-                CUSTOM_PRESET_AUTO,
-                CUSTOM_PRESET_DEROGATION,
-                CUSTOM_PRESET_STOP,
-                PRESET_AWAY,
-            ]
-
-        return [
+        presets = [
             PRESET_COMFORT,
             PRESET_ECO,
             CUSTOM_PRESET_AUTO,
             CUSTOM_PRESET_STOP,
             PRESET_AWAY,
         ]
+
+        if (
+            self.executor.select_state(IO_PASS_APC_HEATING_PROFILE_STATE)
+            == PASS_APC_HEATING_PROFILE_STATE_DEROGATION
+        ):
+          presets.append(CUSTOM_PRESET_DEROGATION)
+
+        return presets
 
     @property
     def preset_mode(self) -> Optional[str]:
