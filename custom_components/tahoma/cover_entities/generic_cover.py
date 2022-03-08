@@ -182,13 +182,17 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.executor.has_command(*COMMANDS_OPEN_TILT) or self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
+        if self.executor.has_command(*COMMANDS_OPEN_TILT) or self.executor.has_command(
+            *COMMANDS_SET_TILT_POSITION
+        ):
             supported_features |= SUPPORT_OPEN_TILT
 
             if self.executor.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
-
-        if self.executor.has_command(*COMMANDS_CLOSE_TILT) or self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
+                
+        if self.executor.has_command(*COMMANDS_CLOSE_TILT) or self.executor.has_command(
+            *COMMANDS_SET_TILT_POSITION
+        ):
             supported_features |= SUPPORT_CLOSE_TILT
 
         if self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
