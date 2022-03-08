@@ -189,7 +189,7 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
 
             if self.executor.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
-                
+
         if self.executor.has_command(*COMMANDS_CLOSE_TILT) or self.executor.has_command(
             *COMMANDS_SET_TILT_POSITION
         ):
