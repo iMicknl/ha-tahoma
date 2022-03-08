@@ -96,11 +96,15 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         """Open the cover tilt."""
         if command := self.executor.select_command(*COMMANDS_OPEN_TILT):
             await self.executor.async_execute_command(command)
+        elif command := self.executor.select_command(*COMMANDS_SET_TILT_POSITION):
+            await self.executor.async_execute_command(command, 0)
 
     async def async_close_cover_tilt(self, **kwargs: Any) -> None:
         """Close the cover tilt."""
         if command := self.executor.select_command(*COMMANDS_CLOSE_TILT):
             await self.executor.async_execute_command(command)
+        elif command := self.executor.select_command(*COMMANDS_SET_TILT_POSITION):
+            await self.executor.async_execute_command(command, 100)
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Stop the cover."""
@@ -178,13 +182,13 @@ class OverkizGenericCover(OverkizEntity, CoverEntity):
         """Flag supported features."""
         supported_features = 0
 
-        if self.executor.has_command(*COMMANDS_OPEN_TILT):
+        if self.executor.has_command(*COMMANDS_OPEN_TILT) or self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_OPEN_TILT
 
             if self.executor.has_command(*COMMANDS_STOP_TILT):
                 supported_features |= SUPPORT_STOP_TILT
 
-        if self.executor.has_command(*COMMANDS_CLOSE_TILT):
+        if self.executor.has_command(*COMMANDS_CLOSE_TILT) or self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
             supported_features |= SUPPORT_CLOSE_TILT
 
         if self.executor.has_command(*COMMANDS_SET_TILT_POSITION):
