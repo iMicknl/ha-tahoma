@@ -1,9 +1,9 @@
 ![Details page of an awning](https://user-images.githubusercontent.com/8216238/132857336-ee7c719e-498c-49f9-adc2-017305b7bc7e.png)
 
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![GitHub release](https://img.shields.io/github/release/iMicknl/ha-tahoma.svg)](https://GitHub.com/iMicknl/ha-tahoma/releases/)
 [![HA integration usage](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.tahoma.total)](https://analytics.home-assistant.io/custom_integrations.json)
+[![HA core integration usage](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=core%20integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/data.json&query=current.integrations.overkiz)](https://www.home-assistant.io/integrations/knx/)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/iMicknl/ha-tahoma/)
 [![Discord](https://img.shields.io/discord/718361810985549945?label=chat&logo=discord)](https://discord.gg/RRXuSVDAzG)
 
