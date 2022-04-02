@@ -153,16 +153,15 @@ class AtlanticHeatRecoveryVentilation(OverkizEntity, ClimateEntity):
             await self.executor.async_execute_command(
                 OverkizCommand.SET_AIR_DEMAND_MODE, OverkizCommandParam.AUTO
             )
+            await self._set_ventilation_mode(cooling=OverkizCommandParam.ON)
         else:
+            await self._set_ventilation_mode(cooling=OverkizCommandParam.OFF)
             await self.executor.async_execute_command(
                 OverkizCommand.SET_AIR_DEMAND_MODE, FAN_MODES_TO_OVERKIZ[fan_mode]
             )
 
         await self.executor.async_execute_command(
             OverkizCommand.REFRESH_VENTILATION_STATE,
-        )
-        await self.executor.async_execute_command(
-            OverkizCommand.REFRESH_VENTILATION_CONFIGURATION_MODE,
         )
 
     async def _set_ventilation_mode(
