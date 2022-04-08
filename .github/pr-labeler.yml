@@ -4,3 +4,4 @@ bug: fix/*
 breaking: breaking/*
 documentation: doc/*
 backport: '*backport*'
+'Meta: Exclude From Changelog': 'meta/*'
