@@ -167,7 +167,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
             try:
                 await entity.coordinator.client.execute_command(
-
                     entity.unique_id,
                     Command(call.data.get("command"), call.data.get("args")),
                     "Home Assistant Service",
