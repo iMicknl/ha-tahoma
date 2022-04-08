@@ -37,7 +37,7 @@
 
 **Fixed bugs:**
 
-- custom\_components.tahoma.config\_flow - Unexpected exception - ValueError: No ui Class [\#99](https://github.com/iMicknl/ha-tahoma/issues/99)
+- custom_components.tahoma.config_flow - Unexpected exception - ValueError: No ui Class [\#99](https://github.com/iMicknl/ha-tahoma/issues/99)
 - Update for light component \(rgb\) fails - error in logs [\#96](https://github.com/iMicknl/ha-tahoma/issues/96)
 - Not authenticated error. [\#86](https://github.com/iMicknl/ha-tahoma/issues/86)
 - Remove exception raising in Device `\_\_init\_\_` in the API [\#101](https://github.com/iMicknl/ha-tahoma/pull/101) ([vlebourl](https://github.com/vlebourl))
@@ -49,7 +49,7 @@
 
 **Fixed bugs:**
 
-- \[fix\] color\_RGB\_to\_hs is missing parameters [\#97](https://github.com/iMicknl/ha-tahoma/pull/97) ([vlebourl](https://github.com/vlebourl))
+- \[fix\] color_RGB_to_hs is missing parameters [\#97](https://github.com/iMicknl/ha-tahoma/pull/97) ([vlebourl](https://github.com/vlebourl))
 - Re-log in the API after a "error":"Not authenticated" [\#95](https://github.com/iMicknl/ha-tahoma/pull/95) ([vlebourl](https://github.com/vlebourl))
 - Bugfix for unable to change tilt position on io:BioclimaticPergolaIOComponent \#74 [\#77](https://github.com/iMicknl/ha-tahoma/pull/77) ([iMicknl](https://github.com/iMicknl))
 
@@ -59,9 +59,9 @@
 
 **Fixed bugs:**
 
-- Actions are applied sequentialy [\#92](https://github.com/iMicknl/ha-tahoma/issues/92)
+- Actions are applied sequentially [\#92](https://github.com/iMicknl/ha-tahoma/issues/92)
 - Covers move step by step and can't be stopped while moving [\#90](https://github.com/iMicknl/ha-tahoma/issues/90)
-- Remove the lock on apply\_action [\#93](https://github.com/iMicknl/ha-tahoma/pull/93) ([vlebourl](https://github.com/vlebourl))
+- Remove the lock on apply_action [\#93](https://github.com/iMicknl/ha-tahoma/pull/93) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.4.1](https://github.com/iMicknl/ha-tahoma/tree/1.4.1) (2020-07-01)
 
@@ -70,13 +70,13 @@
 **Implemented enhancements:**
 
 - Add climate platform [\#12](https://github.com/iMicknl/ha-tahoma/issues/12)
-- Add active\_states to device\_state\_attributes [\#89](https://github.com/iMicknl/ha-tahoma/pull/89) ([vlebourl](https://github.com/vlebourl))
+- Add active_states to device_state_attributes [\#89](https://github.com/iMicknl/ha-tahoma/pull/89) ([vlebourl](https://github.com/vlebourl))
 
 **Fixed bugs:**
 
 - fix api for missing states at login [\#94](https://github.com/iMicknl/ha-tahoma/pull/94) ([vlebourl](https://github.com/vlebourl))
 - \[fix\] fix AttributeError: 'NoneType' object has no attribute 'state' … [\#87](https://github.com/iMicknl/ha-tahoma/pull/87) ([vlebourl](https://github.com/vlebourl))
-- Add part of fix\_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
+- Add part of fix_44 changes already [\#82](https://github.com/iMicknl/ha-tahoma/pull/82) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.4](https://github.com/iMicknl/ha-tahoma/tree/1.4) (2020-06-22)
 
@@ -90,7 +90,7 @@
 - Adjust code style according to home-assistant/core [\#20](https://github.com/iMicknl/ha-tahoma/issues/20)
 - \[feat\] Support io:TotalElectricalEnergyConsumptionIOSystemSensor [\#81](https://github.com/iMicknl/ha-tahoma/pull/81) ([vlebourl](https://github.com/vlebourl))
 - Update cover & changelog [\#78](https://github.com/iMicknl/ha-tahoma/pull/78) ([iMicknl](https://github.com/iMicknl))
-- Wait for apply\_action to finish before returning. [\#76](https://github.com/iMicknl/ha-tahoma/pull/76) ([vlebourl](https://github.com/vlebourl))
+- Wait for apply_action to finish before returning. [\#76](https://github.com/iMicknl/ha-tahoma/pull/76) ([vlebourl](https://github.com/vlebourl))
 - Add support for "setRGB" command for light entity. [\#75](https://github.com/iMicknl/ha-tahoma/pull/75) ([vlebourl](https://github.com/vlebourl))
 - Add climate entity for Somfy's Smart Thermostat [\#54](https://github.com/iMicknl/ha-tahoma/pull/54) ([vlebourl](https://github.com/vlebourl))
 
@@ -113,7 +113,7 @@
 
 **Implemented enhancements:**
 
-- Detected I/O inside the event loop. This is causing stability issues.  [\#2](https://github.com/iMicknl/ha-tahoma/issues/2)
+- Detected I/O inside the event loop. This is causing stability issues. [\#2](https://github.com/iMicknl/ha-tahoma/issues/2)
 - up/down as alternatives to open/close [\#71](https://github.com/iMicknl/ha-tahoma/pull/71) ([vlebourl](https://github.com/vlebourl))
 
 ## [1.4-alpha1](https://github.com/iMicknl/ha-tahoma/tree/1.4-alpha1) (2020-06-17)
@@ -127,15 +127,15 @@
 **Implemented enhancements:**
 
 - Support disabling of entities, for use with Somfy integration [\#17](https://github.com/iMicknl/ha-tahoma/issues/17)
-- Make assumed\_state for RTS configurable via option flow [\#9](https://github.com/iMicknl/ha-tahoma/issues/9)
-- adds async\_apply\_action [\#70](https://github.com/iMicknl/ha-tahoma/pull/70) ([vlebourl](https://github.com/vlebourl))
+- Make assumed_state for RTS configurable via option flow [\#9](https://github.com/iMicknl/ha-tahoma/issues/9)
+- adds async_apply_action [\#70](https://github.com/iMicknl/ha-tahoma/pull/70) ([vlebourl](https://github.com/vlebourl))
 - Added stack trace [\#65](https://github.com/iMicknl/ha-tahoma/pull/65) ([vlebourl](https://github.com/vlebourl))
-- Change `turn\_on` and `turn\_off` to sync calls  [\#64](https://github.com/iMicknl/ha-tahoma/pull/64) ([vlebourl](https://github.com/vlebourl))
+- Change `turn\_on` and `turn\_off` to sync calls [\#64](https://github.com/iMicknl/ha-tahoma/pull/64) ([vlebourl](https://github.com/vlebourl))
 - Enable debug logging, remove warnings [\#63](https://github.com/iMicknl/ha-tahoma/pull/63) ([iMicknl](https://github.com/iMicknl))
 - Update light.py [\#60](https://github.com/iMicknl/ha-tahoma/pull/60) ([vlebourl](https://github.com/vlebourl))
 - Add new device types [\#58](https://github.com/iMicknl/ha-tahoma/pull/58) ([iMicknl](https://github.com/iMicknl))
 - Schedule devices update right after it's added [\#53](https://github.com/iMicknl/ha-tahoma/pull/53) ([vlebourl](https://github.com/vlebourl))
-- Added device\_class to sensors [\#51](https://github.com/iMicknl/ha-tahoma/pull/51) ([vlebourl](https://github.com/vlebourl))
+- Added device_class to sensors [\#51](https://github.com/iMicknl/ha-tahoma/pull/51) ([vlebourl](https://github.com/vlebourl))
 - Enable scenes [\#50](https://github.com/iMicknl/ha-tahoma/pull/50) ([iMicknl](https://github.com/iMicknl))
 
 **Fixed bugs:**
@@ -152,7 +152,7 @@
 
 **Merged pull requests:**
 
-- fixes get\_events [\#55](https://github.com/iMicknl/ha-tahoma/pull/55) ([vlebourl](https://github.com/vlebourl))
+- fixes get_events [\#55](https://github.com/iMicknl/ha-tahoma/pull/55) ([vlebourl](https://github.com/vlebourl))
 - renamed tahoma or Tahoma to TaHoma. [\#46](https://github.com/iMicknl/ha-tahoma/pull/46) ([vlebourl](https://github.com/vlebourl))
 - Add french translation [\#45](https://github.com/iMicknl/ha-tahoma/pull/45) ([vlebourl](https://github.com/vlebourl))
 
@@ -194,7 +194,7 @@
 
 - `TahomaLight` object has no attribute `\_brightness` [\#22](https://github.com/iMicknl/ha-tahoma/issues/22)
 - Fix faulty if statement [\#34](https://github.com/iMicknl/ha-tahoma/pull/34) ([iMicknl](https://github.com/iMicknl))
-- Fix TahomaLight` object has no attribute `\_brightness [\#29](https://github.com/iMicknl/ha-tahoma/pull/29) ([iMicknl](https://github.com/iMicknl))
+- Fix TahomaLight`object has no attribute`\_brightness [\#29](https://github.com/iMicknl/ha-tahoma/pull/29) ([iMicknl](https://github.com/iMicknl))
 
 ## [1.1-alpha2](https://github.com/iMicknl/ha-tahoma/tree/1.1-alpha2) (2020-06-05)
 
@@ -211,7 +211,7 @@
 **Implemented enhancements:**
 
 - Add support for scenes [\#10](https://github.com/iMicknl/ha-tahoma/issues/10)
-- Incorporate changes from tahoma\_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
+- Incorporate changes from tahoma_extended [\#5](https://github.com/iMicknl/ha-tahoma/issues/5)
 - Add occupancy sensor and start fixing async [\#15](https://github.com/iMicknl/ha-tahoma/pull/15) ([iMicknl](https://github.com/iMicknl))
 - Add support for scenes [\#14](https://github.com/iMicknl/ha-tahoma/pull/14) ([iMicknl](https://github.com/iMicknl))
 
@@ -222,9 +222,7 @@
 **Implemented enhancements:**
 
 - Support Awning devices and update readme + changelog [\#11](https://github.com/iMicknl/ha-tahoma/pull/11) ([iMicknl](https://github.com/iMicknl))
-- Apply fixes from tahoma\_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
+- Apply fixes from tahoma_extended & sensor/binary sensor improvements [\#7](https://github.com/iMicknl/ha-tahoma/pull/7) ([iMicknl](https://github.com/iMicknl))
 - Add binary sensor and remove parts from normal sensor [\#6](https://github.com/iMicknl/ha-tahoma/pull/6) ([iMicknl](https://github.com/iMicknl))
 
-
-
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
+\* _This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)_
