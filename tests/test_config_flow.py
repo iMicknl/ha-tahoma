@@ -10,9 +10,7 @@ from pyoverkiz.exceptions import (
     TooManyRequestsException,
 )
 import pytest
-from pytest_homeassistant_custom_component.common import (
-    MockConfigEntry,
-)
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.tahoma import config_flow
 from homeassistant import config_entries, data_entry_flow
