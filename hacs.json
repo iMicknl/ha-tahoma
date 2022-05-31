@@ -12,7 +12,7 @@
     "switch",
     "water_heater"
   ],
-  "homeassistant": "2022.02.0",
+  "homeassistant": "2022.5.0",
   "render_readme": "true",
   "iot_class": "Cloud Polling"
 }
