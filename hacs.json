@@ -1,6 +1,6 @@
 {
   "name": "Overkiz (by Somfy) - Custom component",
   "homeassistant": "2022.5.0",
-  "render_readme": "true",
+  "render_readme": true,
   "iot_class": "Cloud Polling"
 }
