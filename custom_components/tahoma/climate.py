@@ -14,6 +14,9 @@ from .climate_devices.atlantic_electrical_heater_with_adjustable_temperature_set
 from .climate_devices.atlantic_electrical_towel_dryer import (
     AtlanticElectricalTowelDryer,
 )
+from .climate_devices.atlantic_heat_recovery_ventilation import (
+    AtlanticHeatRecoveryVentilation,
+)
 from .climate_devices.atlantic_pass_apc_heating_and_cooling_zone import (
     AtlanticPassAPCHeatingAndCoolingZone,
 )
@@ -36,6 +39,7 @@ TYPE = {
     UIWidget.ATLANTIC_ELECTRICAL_HEATER: AtlanticElectricalHeater,
     UIWidget.ATLANTIC_ELECTRICAL_HEATER_WITH_ADJUSTABLE_TEMPERATURE_SETPOINT: AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint,
     UIWidget.ATLANTIC_ELECTRICAL_TOWEL_DRYER: AtlanticElectricalTowelDryer,
+    UIWidget.ATLANTIC_HEAT_RECOVERY_VENTILATION: AtlanticHeatRecoveryVentilation,
     UIWidget.ATLANTIC_PASS_APC_DHW: AtlanticPassAPCDHW,
     UIWidget.ATLANTIC_PASS_APC_HEATING_AND_COOLING_ZONE: AtlanticPassAPCHeatingAndCoolingZone,
     UIWidget.ATLANTIC_PASS_APC_ZONE_CONTROL: AtlanticPassAPCZoneControl,
