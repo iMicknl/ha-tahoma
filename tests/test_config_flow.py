@@ -10,10 +10,7 @@ from pyoverkiz.exceptions import (
     TooManyRequestsException,
 )
 import pytest
-from pytest_homeassistant_custom_component.common import (
-    MockConfigEntry,
-    mock_device_registry,
-)
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.tahoma import config_flow
 from homeassistant import config_entries, data_entry_flow
@@ -35,6 +32,7 @@ MOCK_GATEWAY2_RESPONSE = [Mock(id=TEST_GATEWAY_ID2)]
 
 FAKE_ZERO_CONF_INFO = ZeroconfServiceInfo(
     host="192.168.0.51",
+    addresses=[],
     port=443,
     hostname=f"gateway-{TEST_GATEWAY_ID}.local.",
     type="_kizbox._tcp.local.",
