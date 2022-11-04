@@ -16,6 +16,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import OverkizDataUpdateCoordinator
@@ -76,7 +77,7 @@ class AtlanticPassAPCHeatingAndCoolingZone(OverkizEntity, ClimateEntity):
         """Register temperature sensor after added to hass."""
         await super().async_added_to_hass()
 
-        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        entity_registry = er.async_get(self.hass)
 
         # The linked temperature sensor uses subsystem_id + 1
         new_subsystem_id = int(self.device_url.split("#", 1)[1]) + 1

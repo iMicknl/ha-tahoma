@@ -25,6 +25,7 @@ from homeassistant.const import (
     TEMP_CELSIUS,
 )
 from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import async_track_state_change
 
 from ..coordinator import OverkizDataUpdateCoordinator
@@ -106,7 +107,7 @@ class AtlanticElectricalHeaterWithAdjustableTemperatureSetpoint(
         ):
             return
 
-        entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
+        entity_registry = er.async_get(self.hass)
         self._temp_sensor_entity_id = next(
             (
                 entity_id

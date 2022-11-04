@@ -21,7 +21,6 @@ from .entity import OverkizDescriptiveEntity, OverkizDeviceClass
 class OverkizSelectDescriptionMixin:
     """Define an entity description mixin for select entities."""
 
-    options: list[str | OverkizCommandParam]
     select_option: Callable[[str, Callable[..., Awaitable[None]]], Awaitable[None]]
 
 
