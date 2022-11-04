@@ -44,8 +44,8 @@ NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
         name="Expected Number Of Shower",
         icon="mdi:shower-head",
         command=OverkizCommand.SET_EXPECTED_NUMBER_OF_SHOWER,
-        min_value=2,
-        max_value=4,
+        native_min_value=2,
+        native_max_value=4,
         entity_category=EntityCategory.CONFIG,
     ),
     # SomfyHeatingTemperatureInterface
@@ -54,8 +54,8 @@ NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
         name="Eco Room Temperature",
         icon="mdi:thermometer",
         command=OverkizCommand.SET_ECO_TEMPERATURE,
-        min_value=6,
-        max_value=29,
+        native_min_value=6,
+        native_max_value=29,
         entity_category=EntityCategory.CONFIG,
     ),
     OverkizNumberDescription(
@@ -63,8 +63,8 @@ NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
         name="Comfort Room Temperature",
         icon="mdi:home-thermometer-outline",
         command=OverkizCommand.SET_COMFORT_TEMPERATURE,
-        min_value=7,
-        max_value=30,
+        native_min_value=7,
+        native_max_value=30,
         entity_category=EntityCategory.CONFIG,
     ),
     OverkizNumberDescription(
@@ -72,8 +72,8 @@ NUMBER_DESCRIPTIONS: list[OverkizNumberDescription] = [
         name="Freeze Protection Temperature",
         icon="mdi:sun-thermometer-outline",
         command=OverkizCommand.SET_SECURED_POSITION_TEMPERATURE,
-        min_value=5,
-        max_value=15,
+        native_min_value=5,
+        native_max_value=15,
         entity_category=EntityCategory.CONFIG,
     ),
 ]
@@ -116,14 +116,14 @@ class OverkizNumber(OverkizDescriptiveEntity, NumberEntity):
     entity_description: OverkizNumberDescription
 
     @property
-    def value(self) -> float | None:
+    def native_value(self) -> float | None:
         """Return the entity value to represent the entity state."""
         if state := self.device.states.get(self.entity_description.key):
             return cast(float, state.value)
 
         return None
 
-    async def async_set_value(self, value: float) -> None:
+    async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
         await self.executor.async_execute_command(
             self.entity_description.command, value
