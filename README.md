@@ -7,11 +7,11 @@
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/iMicknl/ha-tahoma/)
 [![Discord](https://img.shields.io/discord/718361810985549945?label=chat&logo=discord)](https://discord.gg/RRXuSVDAzG)
 
-# Overkiz (by Somfy) - Home Assistant
+# (deprecated) Overkiz (by Somfy) - Home Assistant
 
-Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
+Since Home Assistant 2022.2 the Overkiz (by Somfy) integration is available in core and thus this custom component is **deprecated**. New functionality will only be added to the core integration. If you miss functionality in the core integration, please create an issue [here](https://github.com/home-assistant/core/issues).
 
-> Home Assistant 2022.2 will have the Overkiz (by Somfy) integration available in core. Most platforms are supported, except for siren, climate and water heater. Please use **one** of the integrations (core vs custom), to avoid calling Somfy's servers from two separate integrations and to avoid authentication issues.
+>Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
 
 ## Supported hubs
 
