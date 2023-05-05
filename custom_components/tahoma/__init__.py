@@ -137,7 +137,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
-    hass.config_entries.async_setup_platforms(entry, SUPPORTED_PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(entry, SUPPORTED_PLATFORMS)
 
     device_registry = dr.async_get(hass)
 
