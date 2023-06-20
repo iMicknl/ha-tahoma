@@ -1,26 +1,26 @@
 {
   "domain": "tahoma",
   "name": "Overkiz (by Somfy) - Custom component",
-  "iot_class": "cloud_polling",
-  "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/tahoma",
-  "requirements": [
-    "pyoverkiz==1.5.6"
-  ],
   "codeowners": [
     "@imicknl",
     "@vlebourl",
     "@tetienne"
   ],
-  "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
-  "version": "2.15.0",
-  "zeroconf": [
-    "_kizbox._tcp.local."
-  ],
+  "config_flow": true,
   "dhcp": [
     {
       "hostname": "gateway*",
       "macaddress": "F8811A*"
     }
-  ]
+  ],
+  "documentation": "https://www.home-assistant.io/integrations/tahoma",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/imicknl/ha-tahoma/issues",
+  "requirements": [
+    "pyoverkiz==1.8.0"
+  ],
+  "version": "2.15.0",
+  "zeroconf": [
+    "_kizbox._tcp.local."
+  ]  
 }
