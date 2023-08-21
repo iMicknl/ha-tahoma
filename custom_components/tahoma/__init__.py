@@ -159,10 +159,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         entity_registry = er.async_get(hass)
 
         for entity_id in call.data.get("entity_id"):
-            entity = entity_registry.entities.get(entity_id)
+            registry_entry = entity_registry.entities.get(entity_id)
+            entity = [
+                e
+                for e in hass.data["entity_components"][registry_entry.domain].entities
+                if e.unique_id == registry_entry.unique_id
+            ][0]
 
             try:
-                await coordinator.client.execute_command(
+                await entity.coordinator.client.execute_command(
                     entity.unique_id,
                     Command(call.data.get("command"), call.data.get("args")),
                     "Home Assistant Service",
