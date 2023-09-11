@@ -1,0 +1,25 @@
+{
+  "config": {
+    "flow_title": "Gateway: {gateway_id}",
+    "step": {
+      "user": {
+        "description": "The Overkiz platform is used by various vendors like Somfy (Connexoon / TaHoma), Hitachi (Hi Kumo), Rexel (Energeasy Connect) and Atlantic (Cozytouch). Enter your application credentials and select your hub.",
+        "data": {
+          "username": "Email addresa",
+          "password": "Heslo",
+          "hub": "Hub"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodarilo sa pripojiť",
+      "invalid_auth": "Neplatné overenie",
+      "server_in_maintenance": "Server je mimo prevádzky z dôvodu údržby.",
+      "too_many_requests": "Príliš veľa žiadostí, skúste to znova neskôr.",
+      "unknown": "Neočakávaná chyba"
+    },
+    "abort": {
+      "already_configured": "Účet je už nakonfigurovaný"
+    }
+  }
+}
