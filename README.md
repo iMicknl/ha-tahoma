@@ -1,17 +1,20 @@
 ![Details page of an awning](https://user-images.githubusercontent.com/8216238/132857336-ee7c719e-498c-49f9-adc2-017305b7bc7e.png)
 
-
 [![GitHub release](https://img.shields.io/github/release/iMicknl/ha-tahoma.svg)](https://GitHub.com/iMicknl/ha-tahoma/releases/)
 [![HA integration usage](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.tahoma.total)](https://analytics.home-assistant.io/custom_integrations.json)
 [![HA core integration usage](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=core%20integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/data.json&query=current.integrations.overkiz)](https://www.home-assistant.io/integrations/overkiz/)
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/iMicknl/ha-tahoma/)
 [![Discord](https://img.shields.io/discord/718361810985549945?label=chat&logo=discord)](https://discord.gg/RRXuSVDAzG)
 
 # (deprecated) Overkiz (by Somfy) - Home Assistant
 
-Since Home Assistant 2022.2 the Overkiz (by Somfy) integration is available in core and thus this custom component is **deprecated**. New functionality will only be added to the core integration. If you miss functionality in the core integration, please create an issue [here](https://github.com/home-assistant/core/issues).
+> [!NOTE]    
+> This custom integration for Home Assistant is now deprecated. Please use the [Overkiz integration](https://www.home-assistant.io/integrations/overkiz), which has been included with Home Assistant since version 2022.2. The Overkiz integration provides greater stability and new features, such as support for the local API.    
+>   
+> The [source code](https://github.com/home-assistant/core/tree/dev/homeassistant/components/overkiz) and [documentation](https://www.home-assistant.io/integrations/overkiz) are available for the new, built-in core Overkiz integration.
+>   
+> This repository is now archived.  
 
->Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
+Custom component for Home Assistant to interact with smart devices via the Overkiz platform.
 
 ## Supported hubs
 
